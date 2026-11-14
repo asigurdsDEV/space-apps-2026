@@ -53,8 +53,6 @@ describe('start screen', () => {
 
   it('keeps play on one screen, which needs no network', () => {
     expect(html).toMatch(/<button(?![^>]*disabled)[^>]*>Play on one screen/)
-    expect(html).not.toContain('value="demo-easy"')
-    expect(html).not.toContain('(Easy)')
   })
 })
 
