@@ -5,17 +5,18 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 10:46
+**Last updated:** 2026-11-14 10:56
 
 ## claude@aiden
 
-**Branch:** aiden-claude/briefing (PR #14); aiden-claude/builder (PR #10); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
+**Branch:** aiden-claude/builder (PR #10, working now); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-Nothing claimed. Next per the workflow: the top unclaimed task, after Aiden's go.
+[P1] Role-aware builder: each builder section shows which co-op role owns it (`ROLE_PARAM_KEYS` from `shared/net.ts`), other roles' sections are locked, and who changed what is shown. Branch aiden-claude/builder (PR #10).
 
 ### Files / folders I'm touching (hands off)
-None outside my open PRs (#14: `ui/briefing/`; #10: `ui/builder/`; #4: scaffold files; #3: decision 002).
+- `ui/builder/` (whole folder, PR #10)
+- Plus my open PRs: #14 `ui/briefing/`, #4 scaffold files, #3 decision 002.
 
 ### Just finished
 [P0] Briefing screen (PR #14): `<Briefing config onStart onBack? />` with scenario title + objective, budget / science goal / mission length (/ deadline) cards, 5 "how to win" rules, 6 key terms for beginners. Checked at desktop + phone, light + dark.

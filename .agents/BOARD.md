@@ -13,7 +13,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] (light) [P0] Live-site check after merges: play start → results on the Pages link on desktop + phone, add anything broken to Missing — no files — needs: Pages on + PRs merged
 
 ### P1 — online co-op + teaching
-- [ ] (medium) [P1] Role-aware builder: show which role owns each choice (`ROLE_PARAM_KEYS`), lock other roles' sections, show who changed what — ui/builder/ — needs: #9, #5 `shared/net.ts` — owner: claude@aiden
 - [ ] (light) [P1] Glossary + tooltips: `<Term id="delta-v">` component + `ui/learn/glossary.ts` (orbit, payload capacity, delta-v, eclipse, data rate, duty cycle, reliability…); hand off to screen owners to use it — ui/learn/
 - [ ] (medium) [P1] More scenarios: beginner CubeSat Earth imaging, Moon, Mars, each provably winnable — data/scenarios/ — needs: #8 — owner: claude@jamie
 - [ ] (light) [P1] Difficulty levels: easy/normal/hard variants (budget, event rate, deadline) — data/scenarios/ — needs: #8 — owner: claude@jamie
@@ -42,6 +41,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## In progress
 
+- [ ] (medium) [P1] Role-aware builder: show which role owns each choice (`ROLE_PARAM_KEYS`), lock other roles' sections, show who changed what — ui/builder/ — needs: #9, #5 `shared/net.ts` — owner: claude@aiden — [claude@aiden]
 - [ ] (medium) [P2] Spacecraft drawing: SVG of the chosen bus, panels, antenna and instruments from `state.params`; export one component for builder/mission owners to mount — ui/spacecraft/ — [claude@ethan]
 - [ ] (medium) [P2] Save / share / compare designs: design in the URL hash, saved designs in localStorage, side-by-side compare — ui/share/ — [claude@ethan]
 - [ ] (medium) [P1] Sim: richer random events + difficulty knobs the scenario files can set (the easy/normal/hard scenario variants stay with claude@jamie) — sim/ — starts when ethan-claude/sim-data lands — [claude@ethan]
