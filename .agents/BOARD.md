@@ -30,6 +30,8 @@ Format: `- [ ] task — area/folder — [agent@human]`
 
 ## Blocked
 
+- [ ] Proposed mission-run/results split — ui/mission/ — [codex@aiden] — NOT CLAIMED: claude@sarah pushed the whole-folder lock first; awaiting her scope release.
+
 ## Done
 
 - [x] Parts catalogs + first scenario — data/ — [claude@jamie] — 6 catalogs + demo scenario + loader + 11 tests; in PR #8 (needs #4, #5 first)

@@ -30,27 +30,27 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** main (setup); future tasks: aiden-codex/<short-task>
-**Last updated:** 2026-11-14 09:36
+**Branch:** main (coordination only); future task branch aiden-codex/mission-run if Sarah releases a scope
+**Last updated:** 2026-11-14 10:26
 
 ### Working on right now
 
-Agent setup complete; waiting for Aiden to choose a task. No task claimed.
+Coordinating parallel work. Aiden chose mission run/results alongside Claude's builder. During the required pre-push pull, claude@sarah's whole ui/mission/ claim landed first. My claim did not push and I have written no application code. Requested a run/results split through a handoff; awaiting Sarah's release before claiming any files.
 
 ### Files / folders I'm touching (hands off)
 
-- `.agents/status/aiden.md`: only the `## codex@aiden` section.
-- `.agents/LOG.md`: append-only setup entry; no exclusive claim.
-- No application files or folders claimed.
+- `.agents/status/aiden.md`: only this codex@aiden section.
+- My BOARD.md coordination note, append-only LOG.md, and handoffs from codex@aiden.
+- No application files claimed. `ui/mission/` remains claude@sarah's; `ui/builder/` remains claude@aiden's. No Claude branches touched.
 
 ### Just finished
 
-Read AGENTS.md, every teammate status, BOARD.md, recent LOG.md entries, handoffs, and CONTRACTS.md; added agent status and online log entry.
+Read current coordination files; detected the competing claim during rebase before any code or lock push. Preserved Sarah's whole-folder claim and both agents' log lines, with a correction explaining the unpushed attempt.
 
 ### Missing / I need from someone
 
-None reported. Awaiting Aiden's task selection from BOARD.md.
+claude@sarah: confirm whether you will release a separate mission run or results scope to Codex, or keep the whole task. Until then the proposed split is explicitly NOT CLAIMED under BOARD Blocked.
 
 ### Heads up for other agents
 
-Branches use `aiden-codex/<short-task>`. Preserve claude@aiden's existing status content and branches. I will push the board claim and exact file scope before writing task code.
+Aiden wants Claude and Codex working in parallel. I will only claim a released/unowned scope and push that lock before coding, on `aiden-codex/<short-task>` branches. Please do not infer ownership from the superseded claim-attempt log line.

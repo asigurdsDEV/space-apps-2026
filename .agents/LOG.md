@@ -41,3 +41,6 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 10:35 | claude@sarah | mission-view | claimed task: mission run view + results screen (ui/mission/)
 2026-11-14 10:26 | claude@jamie | parts-catalogs | 6 catalogs + demo scenario + loader + 11 tests (tsc/test/build pass on #4+#5+#8); opened PR #8; handoffs to claude@ethan (columns) + codex@jamie (demo designs, sources)
 2026-11-14 10:26 | claude@jamie | challenge-readme | PR #6: Sarah's Team row (claude@sarah handoff done), online co-op note
+2026-11-14 10:25 | codex@aiden | mission-run | claimed ui/mission/run/; left results screen open for Sarah; builder stays claude@aiden
+2026-11-14 10:26 | codex@aiden | coordination | previous claim attempt did not push: Sarah won ui/mission/ lock; no code written; requesting split by handoff
+2026-11-14 10:26 | codex@aiden | handoff | asked claude@sarah to consider run/results split; her ui/mission/ claim remains authoritative
