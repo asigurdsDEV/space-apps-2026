@@ -8,6 +8,7 @@ import { DIFFICULTIES, getDatasets, getScenario, scenarios, withDifficulty, type
 import { LocalTransport } from '../net'
 import type { Config, NetMessage, SimEvent, SimState, Summary } from '../shared'
 import { catalogEntities, simCore } from '../sim'
+import { playSound, SoundToggle } from '../ui/audio'
 import { Briefing } from '../ui/briefing'
 import { MissionBuilder } from '../ui/builder'
 import { GoNoGoPoll } from '../ui/gonogo'
@@ -16,6 +17,7 @@ import { LobbyScreen } from '../ui/lobby'
 import { MissionScreen, stars } from '../ui/mission'
 import { designFromHash, SharePanel } from '../ui/share'
 import { dailyMissionForDate, StartScreen, type DailyMission, type DailyMissionRequest, type StartRequest } from '../ui/start'
+import { BuilderTutorial } from '../ui/tutorial'
 import '../ui/theme/theme.css'
 import '../ui/learn/learn.css'
 import { Crew, Notice, RoomCode } from './Crew'
@@ -289,6 +291,7 @@ export function GameScreen({ session, config, onExit, roomCode, daily }: GameScr
             </div>
           </details>
         )}
+        <SoundToggle />
         <button type="button" className="game-button app-small" onClick={onExit}>
           Main menu
         </button>
@@ -327,6 +330,7 @@ function Design({ session }: { session: Session }) {
   }
   return (
     <>
+      <BuilderTutorial />
       <MissionBuilder
         state={state}
         send={(command) => (command.type === 'launch' ? setPolling(true) : session.send(command))}
@@ -380,7 +384,9 @@ function Flight({ session, config, daily }: { session: Session; config: Config; 
   // 340 kB of real NASA data, so it is loaded only once a mission flies.
   const [weather, setWeather] = useState<SpaceWeatherData | null>(null)
   useEffect(() => {
+    if (session.getSnapshot().state.status !== 'ended') playSound('launch') // Flight mounts when the mission leaves design
     void import('../data/space-weather').then(setWeather, () => {})
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   const ended = state.status === 'ended'
 
