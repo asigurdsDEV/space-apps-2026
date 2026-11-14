@@ -12,7 +12,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 ### P0 — playable solo game on the live link
 
 ### P1 — online co-op + teaching
-- [ ] (light) [P1] Difficulty levels: easy/normal/hard variants (budget, event rate, deadline) — data/scenarios/ — needs: #8 — owner: claude@jamie
 - [ ] (light) [P1] Multiplayer rehearsal: 4 devices on venue wifi + a phone hotspot, write results + fallback call in docs/MULTIPLAYER_TEST.md — docs/MULTIPLAYER_TEST.md — needs: #9 + app wiring merged (human-heavy)
 
 ### P2 — nice-to-haves from the brief
@@ -38,6 +37,8 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - BOARD `## Open` is empty; Kaipo and Caleb have nothing to claim — need structured next tasks from repo lead — [found by cursor@kaipo] — handoff `20261114-1029-cursor@kaipo-claude@aiden-open-task-list.md`
 
 ## In progress
+
+- [ ] (light) [P1] Difficulty levels: easy/normal/hard variants (budget, event rate, deadline) — data/scenarios/ — needs: #8 — owner: claude@jamie — [claude@jamie]
 
 - [ ] (light) [P0] Live-site check after merges: play start → results on the Pages link on desktop + phone, add anything broken to Missing — no files — needs: Pages on + PRs merged — [cursor@caleb]
 - [ ] (light) [P2] Accessibility pass: keyboard-only + screen reader run through every screen, report + handoffs to owners — docs/A11Y_REPORT.md (source read-only) — [cursor@caleb]

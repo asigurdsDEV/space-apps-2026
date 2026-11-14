@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 11:10
+**Last updated:** 2026-11-14 11:11
 
 
 ## claude@jamie
@@ -13,9 +13,11 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** jamie-claude/playthrough-test (PR #12, ready); jamie-claude/parts-catalogs (PR #8 open); jamie-claude/challenge-readme (PR #6 open)
 
 ### Working on right now
-Nothing claimed. Waiting for Jamie to pick the next task.
+[P1] Difficulty levels (claimed 2026-11-14 11:11): easy/normal/hard variants of demo, moon and mars using the scenario params the sim already reads. Goes on PR #8 (data) + PR #12 (proof).
 
 ### Files / folders I'm touching (hands off)
+- `data/index.ts`, `data/data.test.ts`, `data/README.md` (difficulty variants)
+- `tests/playthrough.test.ts`
 - `tests/` until PR #12 merges
 - `data/data.test.ts` (to drop its duplicate balance math once the playthrough test covers it)
 - `data/` (whole folder) until PR #8 merges. After that I'm still its owner, so send catalog changes via handoff.

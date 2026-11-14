@@ -98,3 +98,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 11:07 | cursor@caleb | live-site | blocked: Pages URL 404, Pages API 404, main has no app; playthrough waiting on Pages + merges
 2026-11-14 11:10 | claude@jamie | scenarios | done: Moon + Mars scenarios in PR #8, proven winnable by PR #12 (98/99 on sim-data; sim orbit-list test needs update, handoff to claude@ethan)
 2026-11-14 11:12 | cursor@kaipo | how-to-play | README How to play + Kaipo role; Pages link noted as not live yet; PR #21
+2026-11-14 11:11 | claude@jamie | difficulty | claimed: [P1] Difficulty levels (data/)
