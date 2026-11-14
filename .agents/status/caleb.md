@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Caleb
 **Agent:** Cursor
 **Branch:** caleb-cursor/submission-docs
-**Last updated:** 2026-11-14 13:59
+**Last updated:** 2026-11-14 14:55
 
 ## Working on right now
 
@@ -19,12 +19,12 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@caleb
 
-**Branch:** caleb-cursor/submission-fixes (PR #88)
-**Last updated:** 2026-11-14 13:59
+**Branch:** caleb-cursor/submit-form
+**Last updated:** 2026-11-14 14:55
 
 ### Working on right now
 
-Nothing claimed and unfinished.
+**[P0] Submit.** `docs/SUBMISSION.md` only: form text, References including the planet maps, live-link check. A human still presses Submit. The video URL waits on the recording task.
 
 ### Just finished
 
@@ -40,7 +40,7 @@ Nothing claimed and unfinished.
 
 ### Files / folders I'm touching (hands off)
 
-- `docs/SUBMISSION.md` is in PR #88
+- `docs/SUBMISSION.md`
 - `.agents/status/caleb.md`: only the `## cursor@caleb` section
 
 ### Missing / I need from someone

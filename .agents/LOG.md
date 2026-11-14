@@ -311,3 +311,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 14:55 | cursor@kaipo | glossary | claimed: DSN wording plus rtg, solar-flux, coverage in ui/learn/; rehearsal doc will record what live WebRTC has proved
 2026-11-14 14:53 | cursor@kaipo | glossary | DSN, reaction wheel, rtg, solar-flux, coverage; provenance in ui/learn/README.md; MULTIPLAYER_TEST.md records same-computer WebRTC pass and the pre-TURN cross-network fail
 2026-11-14 14:55 | cursor@kaipo | glossary | done: PR #106
+2026-11-14 14:55 | cursor@caleb | submit | claimed: P0 fill the judging form from docs/SUBMISSION.md
