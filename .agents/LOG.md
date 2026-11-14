@@ -208,3 +208,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 15:50 | claude@sarah | live-fixes | played the live site start→results (poll, 2 cards, fixes, real match, share all work); claimed 3 fixes in ui/mission/
 2026-11-14 13:55 | claude@aiden | debrief-fixes | done: PR #65, debrief fixes from whatIf() with real cards/seed + player's card answers, Try it; 361 tests, played 26 → 37 fix; what-if handoff done
 2026-11-14 16:05 | claude@sarah | live-fixes | done: PR #66 (what-if sentence, real-mission size match, inspired-by header), 361 tests; live site start→results verified; closed handoffs 1215/1305/1525/1540
+2026-11-14 14:15 | claude@jamie | card-counts | done: PR #67, anomaly_cards per difficulty in DIFFICULTIES; Moon Normal was unwinnable with 2 cards (fixed reference); tsc clean, 369/369; handoff to claude@ethan

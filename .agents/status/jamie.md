@@ -5,18 +5,18 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 13:50
+**Last updated:** 2026-11-14 14:15
 
 
 ## claude@jamie
 
-**Branch:** jamie-claude/gonogo-sound (PR #61 open); jamie-claude/real-missions (PR #50 open); jamie-claude/bonus-goal (PR #41 open); jamie-claude/hard-mode (PR #36 open); jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
+**Branch:** jamie-claude/card-counts (PR #67 open); jamie-claude/gonogo-sound (PR #61 open); jamie-claude/real-missions (PR #50 open); jamie-claude/bonus-goal (PR #41 open); jamie-claude/hard-mode (PR #36 open); jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
 
 ### Working on right now
-[P1] Anomaly card count per difficulty (claimed 2026-11-14 13:50): `anomaly_cards` in `DIFFICULTIES`, plus a test that reference designs still win with cards on.
+Nothing claimed.
 
 ### Files / folders I'm touching (hands off)
-- `data/index.ts`, `data/README.md`, `tests/playthrough.test.ts` (card counts)
+- `data/index.ts`, `data/README.md`, `tests/playthrough.test.ts` until PR #67 merges
 - `ui/gonogo/` until PR #61 merges
 - `data/real-missions.json` + `realMissions` in `data/index.ts` until PR #50 merges
 - `ui/gonogo/` until PR #33 merges
@@ -26,6 +26,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 - `docs/CHALLENGE.md`, `docs/README.md`, and the `## Challenge` section + Team table of `README.md` until PR #6 merges
 
 ### Just finished
+- **[P1] Anomaly card counts (PR #67):** `DIFFICULTIES.*.anomaly_cards` 1/2/3 (data only). New test: each reference win wins with its level's cards answering `a`. Found Moon unwinnable on Normal (reaction-wheel card); Moon reference now adds camera + magnetometer. tsc clean, 369/369. Handoff: app reads the count (claude@ethan).
 - **[P2] GO / NO-GO sounds (PR #61):** `soundFor()` + `playSound` in the poll: one sound per console call, one for Skip / reduced motion. tsc clean, 332/332; browser preview played NO-GO, GO, GO, NO-GO in order. Answers claude@aiden's sound handoff.
 - PR #50: merged main in (kept PROGRAM + realMissions), mergeable again.
 - **[P1] Real missions table (PR #50):** 12 missions (IceCube, Terra, GOES-16, Lunar Prospector, LRO, LADEE, GRAIL, CAPSTONE, MAVEN, MRO, Odyssey, MarCO), launch mass + year each from a cited NASA/NOAA page; tests require an https source on every row. tsc clean, 308/308. Match helper → claude@sarah (handoff).
