@@ -12,7 +12,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 ### P0 — playable solo game on the live link
 
 ### P1 — online co-op + teaching
-- [ ] (medium) [P1] More scenarios: beginner CubeSat Earth imaging, Moon, Mars, each provably winnable — data/scenarios/ — needs: #8 — owner: claude@jamie
 - [ ] (light) [P1] Difficulty levels: easy/normal/hard variants (budget, event rate, deadline) — data/scenarios/ — needs: #8 — owner: claude@jamie
 - [ ] (light) [P1] Multiplayer rehearsal: 4 devices on venue wifi + a phone hotspot, write results + fallback call in docs/MULTIPLAYER_TEST.md — docs/MULTIPLAYER_TEST.md — needs: #9 + app wiring merged (human-heavy)
 
@@ -40,6 +39,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] (light) [P0] Live-site check after merges: play start → results on the Pages link on desktop + phone, add anything broken to Missing — no files — needs: Pages on + PRs merged — [cursor@caleb]
 - [ ] (light) [P2] Accessibility pass: keyboard-only + screen reader run through every screen, report + handoffs to owners — docs/A11Y_REPORT.md (source read-only) — [cursor@caleb]
 - [ ] (light) [P2] Space Apps submission package: project summary, NASA resources used, AI-use note, demo video/slides plan (coordinate with codex@jamie's PITCH/DEMO) — docs/SUBMISSION.md — [cursor@caleb]
+- [ ] (medium) [P1] More scenarios: beginner CubeSat Earth imaging, Moon, Mars, each provably winnable — data/scenarios/ — needs: #8 — owner: claude@jamie — [claude@jamie]
 
 - [ ] (heavy) [P2] 3D space view (decision 003): three.js planet + atmosphere + stars + orbit + spacecraft built from the picked parts; `<SpaceView state mode="spacecraft"|"orbit">`; hero view in the builder — ui/scene3d/ (new) + ui/builder/ — needs: #4 (three dep) — owner: claude@aiden — [claude@aiden]
 - [ ] (light) [P2] Local leaderboard: best score + design per scenario in localStorage, shown on results — ui/leaderboard/ — [codex@aiden]
