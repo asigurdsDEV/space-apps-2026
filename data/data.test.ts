@@ -79,7 +79,7 @@ describe('demo scenario', () => {
   const demo = getScenario('demo')!
 
   it('every scenario is a valid Config that lists only real datasets', () => {
-    expect(scenarios.map((c) => c.scenario_id)).toEqual(['demo', 'moon', 'mars'])
+    expect(scenarios.map((c) => c.scenario_id)).toEqual(['demo', 'moon', 'mars', 'sandbox'])
     for (const c of scenarios) {
       expect(c.contract_version).toBe(CONTRACT_VERSION)
       expect(c.scenario_id).toMatch(KEBAB)

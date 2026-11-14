@@ -90,8 +90,8 @@ describe('playthrough (real sim + real data)', () => {
     expect(smaller.issues.some((issue) => issue.code === 'power_negative')).toBe(true)
   })
 
-  it('the mission program lists every scenario once', () => {
-    expect([...PROGRAM].sort()).toEqual(scenarios.map((s) => s.scenario_id).sort())
+  it('the mission program lists every scenario once (Sandbox is free play, outside the program)', () => {
+    expect([...PROGRAM].sort()).toEqual(scenarios.map((s) => s.scenario_id).filter((id) => id !== 'sandbox').sort())
   })
 
   it.each(Object.keys(WINS))('%s: the starting design does not win', (id) => {

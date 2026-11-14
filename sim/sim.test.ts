@@ -141,8 +141,9 @@ describe('init', () => {
   it('leaves the old optional features off when data/ has no column or key for them', () => {
     const m = init(calm(), fixtureDatasets).metrics
     expect(m.cruise_days).toBe(0)
-    expect(m.schedule_months).toBe(0)
-    expect(m.deadline_months).toBe(0)
+    // data/ now has build_months and First Light a deadline (brief: Time = development + lifetime).
+    expect(m.schedule_months).toBeGreaterThan(0)
+    expect(m.deadline_months).toBe(18)
     expect(m.ops_cost_usd).toBe(0)
     expect(m.ground_stations).toBe(1)
   })
