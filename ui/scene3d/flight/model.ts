@@ -122,7 +122,11 @@ export function chase(pose: Pose, side = 1): { eye: Vec3; aim: Vec3; up: Vec3 } 
   }
 }
 
-/** The nearest target that is in the crosshair's cone, or so close that aim no longer matters. Distance is in planet radii. */
+/**
+ * The nearest target that is in the crosshair's cone or in range. In range needs no aim: the craft cannot pitch,
+ * so a relay at its own altitude sits above the crosshair, and a coasting craft slides a ground target out of it.
+ * Distance is in planet radii.
+ */
 export function pickTarget(pose: Pose, ids: readonly string[]): { id: string; distance: number; inRange: boolean } | null {
   const { eye, aim } = chase(pose)
   let best: { id: string; distance: number; inRange: boolean } | null = null
@@ -130,8 +134,9 @@ export function pickTarget(pose: Pose, ids: readonly string[]): { id: string; di
     const spot = SPOTS[id]
     if (!spot) continue
     const distance = len(add(spot.at, pose.pos, -1))
+    const inRange = distance <= spot.range
     const aimed = dot(unit(add(spot.at, eye, -1)), aim) >= AIM_COS
-    if ((aimed || distance <= spot.range / 2) && (!best || distance < best.distance)) best = { id, distance, inRange: distance <= spot.range }
+    if ((aimed || inRange) && (!best || distance < best.distance)) best = { id, distance, inRange }
   }
   return best
 }

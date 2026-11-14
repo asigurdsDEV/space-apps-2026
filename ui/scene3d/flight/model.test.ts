@@ -99,10 +99,12 @@ describe('targets', () => {
 
   it('focuses the target in the crosshair, in range once close, and nothing when it is behind', () => {
     for (const id of ids) expect(pickTarget(facing(id), ids)).toMatchObject({ id, inRange: true })
-    // Turned around and backed off: the fire is behind the camera and too far to count as close.
+    // Turned around: still in range, so it stays focused without aim (the craft cannot pitch up at a relay).
     const near = facing('wildfire')
-    const away: Pose = { ...near, pos: add(near.pos, near.heading, -0.3), heading: add([0, 0, 0], near.heading, -1) }
-    expect(pickTarget(away, ['wildfire'])).toBeNull()
+    const back: Vec3 = add([0, 0, 0], near.heading, -1)
+    expect(pickTarget({ ...near, heading: back }, ['wildfire'])).toMatchObject({ id: 'wildfire', inRange: true })
+    // Turned around and backed off: behind the camera and out of range.
+    expect(pickTarget({ ...near, pos: add(near.pos, near.heading, -0.3), heading: back }, ['wildfire'])).toBeNull()
   })
 
   it('counts the hold up to hold_s while interact is held in range, and resets when it is let go or aim is lost', () => {
