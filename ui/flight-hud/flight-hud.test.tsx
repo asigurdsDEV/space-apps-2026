@@ -2,6 +2,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 import { trainingRoute } from '../../data/pilot-training'
 import { FlightHud } from './FlightHud'
+import { DEFAULT_HINTS } from './model'
 import { focusLine, formatDistance, nextTarget, scanShare, targetState } from './model'
 
 const [hurricane, wildfire, relay] = trainingRoute.targets
@@ -59,3 +60,31 @@ describe('FlightHud', () => {
     expect(html).toContain(trainingRoute.complete_text)
   })
 })
+
+describe('V1 alignment', () => {
+  it('hints use V1 keys (Space brakes, E scans), not the old placeholders', () => {
+    const text = DEFAULT_HINTS.map((h) => `${h.keys} ${h.action}`).join(' | ')
+    expect(text).toContain('Space Brake')
+    expect(text).toContain('Hold E Scan or transmit')
+    expect(DEFAULT_HINTS.some((h) => h.keys.includes('Space') && h.action.includes('Scan'))).toBe(false)
+  })
+
+  it('scan button: keyboard/assistive activation toggles, pointer clicks do not', () => {
+    const calls: string[] = []
+    const props = { objective: 'x', targets: trainingRoute.targets, results: {}, focus: { id: 'hurricane', inRange: true, held_s: 0 }, onScanStart: () => calls.push('start'), onScanEnd: () => calls.push('end') }
+    const button = (scanHeld: boolean) => findScan(FlightHud({ ...props, scanHeld }))
+    button(false).props.onClick({ detail: 0 })
+    button(true).props.onClick({ detail: 0 })
+    button(false).props.onClick({ detail: 1 }) // the click after a pointer hold: ignored
+    expect(calls).toEqual(['start', 'end'])
+    expect(renderToStaticMarkup(<FlightHud {...props} scanHeld />)).toContain('aria-pressed="true"')
+  })
+})
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function findScan(node: any): any {
+  if (!node || typeof node !== 'object') return null
+  if (Array.isArray(node)) return node.map(findScan).find(Boolean) ?? null
+  if (node.type === 'button' && node.props?.className === 'fh-scan-btn') return node
+  return findScan(node.props?.children)
+}

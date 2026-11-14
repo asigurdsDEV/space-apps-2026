@@ -31,9 +31,15 @@ export interface FlightHudProps {
   onPause?: () => void
   onRecenter?: () => void
   onExit?: () => void
-  /** Touch: press and hold to scan/transmit (same as holding the key). */
+  /**
+   * Scan/transmit button. Pointer: press and hold. Keyboard or screen reader: activating it starts
+   * the scan and activating again stops it (an explicit action, no hold gesture needed). OR this
+   * held source with V1's `intent.interact`.
+   */
   onScanStart?: () => void
   onScanEnd?: () => void
+  /** True while the HUD's scan source is held, so the button can show it's on. */
+  scanHeld?: boolean
 }
 
 const STATE_ICON = { done: '✓', partial: '◐', open: '○', locked: '🔒' } as const
@@ -117,8 +123,11 @@ export function FlightHud(props: FlightHudProps) {
               onPointerUp={props.onScanEnd}
               onPointerLeave={props.onScanEnd}
               onPointerCancel={props.onScanEnd}
+              // detail 0 = keyboard / assistive activation, not a pointer click: toggle instead of hold.
+              onClick={(e) => e.detail === 0 && (props.scanHeld ? props.onScanEnd?.() : props.onScanStart?.())}
+              aria-pressed={props.scanHeld ?? false}
             >
-              {aimed?.kind === 'relay' ? 'Hold to transmit' : 'Hold to scan'}
+              {props.scanHeld ? 'Stop' : aimed?.kind === 'relay' ? 'Hold to transmit' : 'Hold to scan'}
             </button>
           )}
           {props.onRecenter && (

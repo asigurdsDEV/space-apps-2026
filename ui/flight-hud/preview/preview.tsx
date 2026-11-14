@@ -1,5 +1,5 @@
 // Dev-only preview of the V2 HUD with claude@jamie's real V4 route. No 3D: "Fly to" stands in for the
-// scene (V7, claude@ethan). Hold Space or the Scan button to scan; the result comes from the real interact().
+// scene (V7, claude@ethan). Hold E (V1's interact key) or the Scan button to scan; the result comes from the real interact().
 // Open http://localhost:5173/ui/flight-hud/preview/preview.html. ?parts=camera-basic,thermal-imager picks instruments.
 
 import { StrictMode, useEffect, useRef, useState } from 'react'
@@ -14,6 +14,8 @@ function Preview() {
   const [focus, setFocus] = useState<HudFocus | null>(null)
   const [message, setMessage] = useState<FlightHudProps['message']>(null)
   const holding = useRef(false)
+  const [held, setHeld] = useState(false)
+  const hold = (on: boolean) => ((holding.current = on), setHeld(on))
 
   // Approach: 1,200 km out, in range a second later.
   const flyTo = (id: string) => {
@@ -29,7 +31,7 @@ function Preview() {
         const t = trainingRoute.targets.find((x) => x.id === f.id)!
         const held = f.held_s + 0.1
         if (held < t.hold_s) return { ...f, held_s: held }
-        holding.current = false
+        hold(false)
         const done = Object.keys(results)
         const r = interact(f.id, done, parts)
         if (r) {
@@ -39,9 +41,9 @@ function Preview() {
         return { ...f, held_s: 0 }
       })
     }, 100)
-    const down = (e: KeyboardEvent) => e.code === 'Space' && ((holding.current = true), e.preventDefault())
-    const up = (e: KeyboardEvent) => e.code === 'Space' && (holding.current = false)
-    const release = () => (holding.current = false) // controls never stick after blur (plan: V1/V7 rule)
+    const down = (e: KeyboardEvent) => (e.code === 'KeyE' ? hold(true) : e.code === 'Escape' && hold(false))
+    const up = (e: KeyboardEvent) => e.code === 'KeyE' && hold(false)
+    const release = () => hold(false) // controls never stick after blur (plan: V1/V7 rule)
     addEventListener('keydown', down)
     addEventListener('keyup', up)
     addEventListener('blur', release)
@@ -71,8 +73,9 @@ function Preview() {
         focus={focus}
         message={message}
         completeText={routeComplete(doneIds) ? trainingRoute.complete_text : null}
-        onScanStart={() => (holding.current = true)}
-        onScanEnd={() => (holding.current = false)}
+        onScanStart={() => hold(true)}
+        onScanEnd={() => hold(false)}
+        scanHeld={held}
         onRecenter={() => setFocus(null)}
         onPause={() => alert('Paused (V7 decides what pause does)')}
         onExit={() => alert('Exit (V7 decides where this goes)')}

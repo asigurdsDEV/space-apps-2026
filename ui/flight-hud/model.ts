@@ -31,14 +31,15 @@ export interface ControlHint {
 }
 
 /**
- * shortcut: placeholder labels until V1 (codex@aiden, ui/pilot-input) publishes its actions;
- * pass V1's real hints in the `hints` prop then.
+ * Compact hints matching V1's keys (ui/pilot-input PILOT_CONTROLS: W/S/A/D move, R/F up/down,
+ * Space brake, E interact). V7 passes the real ones: `PILOT_CONTROLS.map(({ key, label }) => ({ keys: key, action: label }))`.
  */
 export const DEFAULT_HINTS: ControlHint[] = [
-  { keys: 'W A S D / drag', action: 'Fly' },
-  { keys: 'Hold Space / hold Scan', action: 'Scan or transmit' },
-  { keys: 'R', action: 'Recenter' },
-  { keys: 'Esc', action: 'Pause' },
+  { keys: 'W A S D', action: 'Move' },
+  { keys: 'R / F', action: 'Up / down' },
+  { keys: 'Space', action: 'Brake' },
+  { keys: 'Hold E', action: 'Scan or transmit' },
+  { keys: 'Esc', action: 'Release controls' },
 ]
 
 export type TargetState = 'done' | 'partial' | 'open' | 'locked'
