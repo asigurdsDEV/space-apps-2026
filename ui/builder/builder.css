@@ -1,0 +1,112 @@
+.mb {
+  /* Shared theme tokens (ui/theme/theme.css, codex@aiden); light/dark comes from there. */
+  --mb-bg: var(--game-bg);
+  --mb-panel: var(--game-panel);
+  --mb-text: var(--game-text);
+  --mb-muted: var(--game-muted);
+  --mb-line: var(--game-border);
+  --mb-accent: var(--game-accent);
+  --mb-pick: var(--game-selected);
+  --mb-ok: var(--game-success);
+  --mb-bad: var(--game-danger);
+  --mb-warn: var(--game-warning);
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 24px;
+  padding: 24px;
+  background: var(--mb-bg);
+  color: var(--mb-text);
+  font-family: var(--game-font);
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+@media (max-width: 800px) {
+  .mb { grid-template-columns: minmax(0, 1fr); padding: 16px; }
+  /* keep budgets in view while picking parts */
+  .mb-side { position: sticky; top: auto; bottom: 0; max-height: 45vh; overflow-y: auto; box-shadow: 0 -4px 16px rgb(0 0 0 / 0.15); }
+}
+
+.mb-title { margin: 0 0 16px; font-size: 1.5rem; }
+.mb-muted { color: var(--mb-muted); font-weight: normal; }
+.mb-hint { color: var(--mb-muted); font-size: 0.85rem; margin: 2px 0 8px; }
+.mb-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+.mb-slot {
+  background: var(--mb-panel);
+  border: 1px solid var(--mb-line);
+  border-radius: 10px;
+  padding: 12px 16px 16px;
+  margin: 0 0 16px;
+  min-width: 0; /* fieldsets default to min-content width, which overflows on phones */
+}
+.mb-slot legend { font-weight: 600; padding: 0 4px; }
+
+.mb-table-wrap { overflow-x: auto; }
+.mb-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.mb-table th { text-align: left; font-weight: 600; text-transform: capitalize; border-bottom: 1px solid var(--mb-line); padding: 6px 8px; white-space: nowrap; }
+.mb-table td { padding: 6px 8px; border-bottom: 1px solid var(--mb-line); vertical-align: top; }
+.mb-table tr.is-picked td { background: var(--mb-pick); }
+.mb-table input { accent-color: var(--mb-accent); width: 18px; height: 18px; margin: 0; }
+.mb-name { font-weight: 500; cursor: pointer; }
+.mb-num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.mb-side {
+  position: sticky;
+  top: 24px;
+  align-self: start;
+  background: var(--mb-panel);
+  border: 1px solid var(--mb-line);
+  border-radius: 10px;
+  padding: 16px;
+}
+.mb-side h2 { margin: 0 0 12px; font-size: 1.1rem; }
+
+.mb-bar { margin-bottom: 14px; }
+.mb-bar-head { display: flex; justify-content: space-between; gap: 8px; font-size: 0.85rem; margin-bottom: 4px; font-variant-numeric: tabular-nums; }
+.mb-bar-head strong { color: var(--mb-bad); }
+.mb-track { height: 10px; border-radius: 5px; background: var(--mb-line); overflow: hidden; }
+.mb-fill { height: 100%; background: var(--mb-ok); transition: width 150ms ease; }
+.mb-bar.is-bad .mb-fill { background: var(--mb-bad); }
+.mb-bar.is-goal.is-bad .mb-fill { background: var(--mb-warn); }
+.mb-bar.is-goal.is-bad .mb-bar-head strong { color: var(--mb-warn); }
+
+.mb-issues { list-style: none; padding: 0; margin: 0 0 12px; font-size: 0.85rem; }
+.mb-issue { padding: 6px 8px; border-left: 3px solid; margin-bottom: 6px; border-radius: 0 4px 4px 0; }
+.mb-issue.is-error { border-color: var(--mb-bad); }
+.mb-issue.is-warning { border-color: var(--mb-warn); }
+
+.mb-launch {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: 0;
+  border-radius: 8px;
+  background: var(--mb-accent);
+  color: var(--game-on-accent);
+  cursor: pointer;
+}
+.mb-launch:disabled { opacity: 0.45; cursor: not-allowed; }
+.mb-launch:focus-visible, .mb-table input:focus-visible { outline: 2px solid var(--mb-accent); outline-offset: 2px; }
+.mb-objective { margin: -8px 0 16px; padding: 10px 12px; border-left: 3px solid var(--mb-accent); background: var(--mb-panel); border-radius: 0 6px 6px 0; }
+.mb-table td:nth-child(2) { min-width: 11rem; }
+
+/* co-op roles */
+.mb-role {
+  margin-left: 8px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--mb-pick);
+  color: var(--mb-accent);
+  font-size: 0.8em;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.mb-slot.is-locked .mb-table-wrap { opacity: 0.6; }
+.mb-lock { margin: 4px 0 8px; color: var(--mb-warn); font-size: 0.9em; }
+.mb-changed { margin: 0 0 8px; font-size: 0.85em; }
+
+/* 3D close-up of the craft (ui/scene3d) at the top of the parts list. */
+.mb-hero { height: 300px; margin-bottom: 16px; }
+@media (max-width: 800px) { .mb-hero { height: 220px; } }
