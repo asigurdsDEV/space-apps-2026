@@ -138,12 +138,25 @@ async function join(page, name, code) {
   await page.getByRole('button', { name: 'Join room' }).click()
 }
 
+/** Briefing -> builder, closing the tips that open on a first visit. */
+async function toBuilder(page) {
+  await page.getByRole('button', { name: 'Start designing' }).click()
+  await page.waitForSelector('.mb')
+  await page.getByRole('button', { name: 'Skip tips' }).click()
+}
+
+/** Every player watches the 3D launch on their own screen: skip it to reach the flight. */
+async function toFlight(page) {
+  await page.locator('.s3d-launch').getByRole('button', { name: /^(Skip|Continue)$/ }).click()
+  await page.waitForSelector('.mv')
+}
+
 /** From the builder, through the GO / NO-GO poll, to the flight. */
 async function launch(page) {
   await page.getByRole('button', { name: 'Launch mission' }).click()
   await page.getByRole('button', { name: 'Skip the poll' }).click()
   await page.getByRole('button', { name: 'Launch', exact: true }).click()
-  await page.waitForSelector('.mv')
+  await toFlight(page)
 }
 
 /**
@@ -154,7 +167,12 @@ async function toResults(page, ms, players = [page]) {
   const end = Date.now() + ms
   while ((await page.locator('.mv-results').count()) === 0) {
     if (Date.now() > end) throw new Error(`no results after ${Math.round(ms / 1000)} s`)
-    for (const player of players) await player.locator('.mv-decision__option:enabled').first().click({ timeout: 500 }).catch(() => {})
+    for (const player of players) {
+      // A story cutscene covers the screen for a few seconds: skip it, as a player in a hurry would.
+      for (const button of [player.locator('.st-skip'), player.locator('.mv-decision__option:enabled').first()]) {
+        if (await button.count()) await button.click({ timeout: 500 }).catch(() => {})
+      }
+    }
     await page.waitForTimeout(250)
   }
 }
@@ -221,10 +239,7 @@ await check(
     await guest.waitForSelector('.bf')
     const titles = [await text(host, '.bf-title'), await text(guest, '.bf-title')]
     must(titles[0] !== '' && titles[0] === titles[1], `briefings differ: "${titles[0]}" and "${titles[1]}"`)
-    for (const page of [host, guest]) {
-      await page.getByRole('button', { name: 'Start designing' }).click()
-      await page.waitForSelector('.mb')
-    }
+    for (const page of [host, guest]) await toBuilder(page)
     return titles[0]
   },
   { needed: true },
@@ -296,7 +311,7 @@ await check(
   'launch: the mission planner launches and both screens fly',
   async () => {
     await launch(host)
-    await guest.waitForSelector('.mv')
+    await toFlight(guest)
   },
   { needed: true },
 )
@@ -409,8 +424,7 @@ await check(
     await local.locator('.app-same-screen').getByLabel('Mission').selectOption(SCENARIO)
     await local.locator('.app-same-screen').getByLabel('Difficulty').selectOption('easy')
     await local.getByRole('button', { name: 'Play on one screen' }).click()
-    await local.getByRole('button', { name: 'Start designing' }).click()
-    await local.waitForSelector('.mb')
+    await toBuilder(local)
     must((await local.locator('fieldset.mb-slot:disabled').count()) === 0, 'a section is locked')
     // One part from each role: planning, spacecraft (twice), science, comms.
     for (const id of [await another(local, 'launch_vehicle'), 'launch_vehicle-rideshare', `bus-${WIN.bus}`, `solar-${WIN.solar}`, `instruments-${WIN.instrument}`, `comms-${WIN.comms}`]) {

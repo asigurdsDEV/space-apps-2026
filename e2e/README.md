@@ -8,7 +8,7 @@ What it plays:
 - One impossible design (demo, geostationary orbit on the rideshare rocket): the Launch button must be off and a readable reason must be on screen.
 - One design that launches and must lose (demo on Normal with the starting design).
 
-An anomaly card stops the mission clock until it is answered, so both scripts answer every card with its first option.
+An anomaly card stops the mission clock until it is answered, so both scripts answer every card with its first option. They also press what a player in a hurry presses: "Skip tips" on the builder's first-visit tour, "Skip" on the 3D launch, and "Skip" on each story cutscene. The walk between stations is waited out.
 
 `coop.mjs` puts up to five browser contexts in one online room (real PeerJS broker, real WebRTC): join by code, roles and locks, refused commands, launch, a hidden host tab, the same results on both screens, leaving, a full room, a wrong code, a closed tab, the host closing the room. Then it plays on one screen with no network. Run it the same way: `node e2e/coop.mjs`. Online cases print `SKIP`, never `PASS`, when the public broker cannot be reached.
 
