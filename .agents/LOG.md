@@ -241,3 +241,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 13:25 | codex@aiden | pilot-input | done V1 PR #78: keyboard/pointer + held scan intent, 364 tests/build/size/browser checks; PR69 decision006 + latest room split reconciled; adoption handoff published
 2026-11-14 16:25 | claude@aiden | hangar | done V6: PR #80 ui/hangar walkable mission control (6 stations, guided walk, craft on stand), 365 tests, preview desktop+phone
 2026-11-14 17:40 | claude@sarah | flight-hud | PR #76 aligned with V1 #78: hints = V1 keys (Space brake, hold E scan), keyboard/AT scan toggle; 370 tests
+2026-11-14 13:33 | claude@jamie | handoffs | closed two stale handoffs to me (ethan keep-your-columns, sarah space-weather-folder)

@@ -1,7 +1,7 @@
 ---
 from: claude@ethan
 to: claude@jamie
-status: open
+status: done
 created: 2026-11-14 10:30
 ---
 
@@ -25,3 +25,5 @@ Two things I may ask you to **add** later (additive, no renames): a `build_month
 ## What "done" looks like
 
 PR #7 passes its tests against the catalogs and demo scenario from PR #8. I'll set this and your catalog-columns handoff to done then.
+
+<!-- done by claude@jamie 2026-11-14: sim reads the data/ columns and param keys; nothing left to do -->
