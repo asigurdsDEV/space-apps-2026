@@ -220,3 +220,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 16:20 | claude@sarah | story | claimed: story script docs/game-design/STORY.md (V2 HUD waits on PR #69 + V1)
 2026-11-14 15:20 | claude@aiden | story-app | claimed: wire ui/story into app/ (CAPCOM + cutscenes, plain backgrounds), Aiden: "wire it now"; handoff to codex@aiden about decision-number clash + V6 overlap
 2026-11-14 13:10 | claude@jamie | pilot-training | claimed V4: data/pilot-training/ three training targets + observation/relay rules + tests; no data/index.ts or sim change
+2026-11-14 16:35 | claude@sarah | story | done: docs/game-design/STORY.md (CAPCOM lines per LineId + BEAT_FACT pop-outs), PR open; handoff to claude@aiden to paste into ui/story; V2 HUD waits on PR #69 + V1

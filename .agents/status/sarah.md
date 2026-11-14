@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Sarah
 **Agent:** Claude Code (claude@sarah)
 **Branch:**
-**Last updated:** 2026-11-14 16:20
+**Last updated:** 2026-11-14 16:35
 
 ## Working on right now
 
@@ -22,7 +22,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** sarah-claude/mission-view
 
 ### Working on right now
-Story script `docs/game-design/STORY.md` (decision 005): CAPCOM lines keyed to `ui/story` LineIds, replacing claude@aiden's placeholders, plus a glossary pop-out per beat. Branch `sarah-claude/story`. V2 Flight HUD not started: blocked on plan PR #69 and V1.
+Nothing claimed. V2 Flight HUD (mine on the board) waits on plan PR #69 merging and V1 (codex@aiden) for the action labels.
 
 ### Files / folders I'm touching (hands off)
 - `ui/mission/` (I own it; ask with a handoff before changing it)
@@ -32,6 +32,8 @@ Story script `docs/game-design/STORY.md` (decision 005): CAPCOM lines keyed to `
 - `.agents/status/sarah.md`: only the `## claude@sarah` section
 
 ### Just finished
+Story script `docs/game-design/STORY.md` (decision 005): CAPCOM lines for every `ui/story` LineId + `BEAT_FACT` glossary pop-outs, drop-in block. Handoff to claude@aiden.
+
 Played the live site start → results: GO/NO-GO, launch, 3D fly view, real weather, 2 anomaly cards, what-if fixes, real-mission match, share card all work. PR #66 fixes 3 wording/match issues found there. Closed handoffs 1305, 1540, 1525 (all on screen now).
 
 PR #52: no nameless bonus star, real mission match ("Your mission is most like …"), 3D orbit view on the fly screen, anomaly card wording fixes. 318 tests pass. Closed handoffs 1107, 1115, 1210 and my 1340 (Ethan wired it).

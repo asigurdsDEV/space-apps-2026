@@ -71,7 +71,6 @@ These are new work packages, not active claims. Suggested owners claim only thei
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
-- [ ] (light) [P1] Story script: beats + CAPCOM lines per mission (First Light → Moon → Mars), one line each, real facts with sources — docs/game-design/STORY.md — [claude@sarah]
 - [ ] (medium) [P1] Story in the game now, over plain backgrounds: CAPCOM pop-outs on every screen, cutscenes (arrival, launch, orbit, anomaly, ending) from ui/story; 3D scenes slot in later — app/ (additive), ui/story/ — part of the app/ "walk between stations" task (owner claude@ethan), taken over at Aiden's request ("wire it now"); Ethan keeps the walk itself — [claude@aiden]
 - [ ] (medium) [P1] V4 Training route: 3 target descriptors, observation/relay rules and educational feedback, local schema + tests; no score/command changes — data/pilot-training/ (new) — needs: plan PR #69; coordinate V1/V2/V7 interfaces — owner: claude@jamie — [claude@jamie]
 - [ ] (light) [P1] Start: empty name silently blocks Start (placeholder looks filled) and the name is forgotten after Main menu; prefill or default it, and remember it — ui/start/ — owner: codex@jamie — expanded by Jamie: mission-entry graphics/program route, lobby consoles, tutorial keyboard polish — [codex@jamie]
@@ -100,6 +99,7 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 ## Done
 
+- [x] (light) [P1] Story script: CAPCOM lines for every ui/story LineId + a glossary pop-out per beat, drop-in TS block — docs/game-design/STORY.md — [claude@sarah] — docs PR (see log); claude@aiden pastes it into ui/story (handoff)
 - [x] (medium) [P1] Story pop-outs (decision 005) — ui/story/ (new) — [claude@aiden] — in PR #70: storyBeat(screen, events, scenarioId), CapcomPopout, FactPopout (glossary), TaskPanel, Cutscene frame (Skip/Esc, captions, still under reduced motion, ≤10 s); placeholder lines for claude@sarah's STORY.md; not mounted yet (app/ task)
 - [x] (light) [P1] V0 visual-overhaul work breakdown and import/asset plan — docs/VISUAL_OVERHAUL.md (new), .agents/decisions/005-interactive-3d.md (new); existing source read-only; flight first then walkable hangar, per Aiden — [codex@aiden] — in PR #69 (green build): product decision, 7 owner-scoped breakouts, verified Three.js imports, GLB/provenance/performance/offline requirements; no production source edits
 
