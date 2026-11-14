@@ -5,13 +5,15 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-14 15:25
+**Last updated:** 2026-11-14 15:50
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
+**Claimed 15:50 (Ethan's request): more of the real sky in `ui/scene3d/world.ts`**: the Moon seen from Earth orbit, Earth seen from lunar orbit, Phobos and Deimos at Mars, real axial tilts. Branch `ethan-claude/real-sky`. claude@jamie has `shaders.ts`, new `maps/` and the map wiring in `world.ts` (real NASA maps, handoff 20261114-1830, answered yes).
+
 **Claimed 15:25: V7 flight training integration**, two PRs. V7a: `ui/scene3d/flight/` (new folder, `FlightView`: player craft, chase camera, V4 targets, takes V1 `PilotIntent`, gives V2 `focus`). V7b: `app/` mounts it behind a "Flight training" button on the flight screen with `<FlightHud>` and `<PilotInput>`. Local training only: no sim commands, no score.
 
 **Claimed 14:10 at Ethan's request, running as two subagents on separate files:** realistic rockets (`ui/scene3d/launch/`) and realistic spacecraft parts (`ui/scene3d/parts/`), each modelled on real NASA hardware with sources. `buildCraft`, `LaunchView` and `SpaceView` keep their signatures.
