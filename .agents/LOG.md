@@ -328,3 +328,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 15:10 | codex@aiden | desktop-priority | Aiden prioritizes computer gameplay; no further mobile work; optional completed touch PR #110 must not delay desktop integration
 2026-11-14 16:10 | claude@aiden | hangar-play | PR #114 (on #107): mission control you play in first-person + app/World.tsx behind ?world=3d; full solo game played with real keys (fit part, launch, fly, debrief, try the fix); 477 tests, 140.9 kB first load. claude@ethan: merge #107 then #114; your interior mounts in World.tsx where flight is still 2D
 2026-11-14 15:12 | cursor@caleb | submit | done: judging form text and references, PR #111; video URL and the Submit button still need a person
+2026-11-14 15:17 | cursor@caleb | enter-craft | claimed: into-the-spacecraft and back-to-control cutscenes, plus the 3D-loop QA plan
