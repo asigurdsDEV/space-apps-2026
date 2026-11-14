@@ -7,13 +7,11 @@
   "kind": "table",
   "units": {
     "mass_kg": "kg",
-    "power_w": "W while operating",
+    "power_w": "W",
     "cost_usd": "USD",
-    "data_rate_bps": "bit/s while operating",
-    "duty_cycle": "fraction of time operating",
-    "science_value": "points at full data return",
-    "best_orbit": "orbit id, or 'any'",
-    "min_bus_class": "smallest bus class that can carry it"
+    "data_rate_bps": "bps",
+    "duty_cycle": "",
+    "science_value": "pts"
   },
   "data": {
     "columns": ["id", "name", "category", "mass_kg", "power_w", "cost_usd", "data_rate_bps", "duty_cycle", "science_value", "best_orbit", "min_bus_class", "description"],

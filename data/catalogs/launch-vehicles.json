@@ -12,7 +12,7 @@
     "payload_tli_kg": "kg",
     "cost_usd": "USD",
     "cost_per_kg_usd": "USD/kg",
-    "reliability": "probability 0-1"
+    "reliability": ""
   },
   "data": {
     "columns": ["id", "name", "provider", "payload_leo_kg", "payload_sso_kg", "payload_gto_kg", "payload_tli_kg", "cost_usd", "cost_per_kg_usd", "reliability", "description"],

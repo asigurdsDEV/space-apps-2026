@@ -7,13 +7,13 @@
   "kind": "table",
   "units": {
     "dry_mass_kg": "kg",
-    "max_added_mass_kg": "kg (instruments + power + comms)",
-    "max_instruments": "count",
-    "base_power_w": "W (computer, attitude control, heaters)",
+    "max_added_mass_kg": "kg",
+    "max_instruments": "",
+    "base_power_w": "W",
     "propulsion_delta_v_ms": "m/s",
     "cost_usd": "USD",
     "design_life_s": "s",
-    "reliability": "probability 0-1 over design life"
+    "reliability": ""
   },
   "data": {
     "columns": ["id", "name", "class", "dry_mass_kg", "max_added_mass_kg", "max_instruments", "base_power_w", "propulsion_delta_v_ms", "cost_usd", "design_life_s", "reliability", "description"],

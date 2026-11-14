@@ -8,10 +8,9 @@
   "units": {
     "mass_kg": "kg",
     "cost_usd": "USD",
-    "power_w": "W generated in sunlight (solar) or always (rtg); 0 for batteries",
-    "capacity_wh": "Wh stored (batteries); 0 otherwise",
-    "degradation_per_year": "fraction of output lost per year",
-    "min_bus_class": "smallest bus class that can carry it"
+    "power_w": "W",
+    "capacity_wh": "Wh",
+    "degradation_per_year": ""
   },
   "data": {
     "columns": ["id", "name", "type", "mass_kg", "cost_usd", "power_w", "capacity_wh", "degradation_per_year", "min_bus_class", "description"],

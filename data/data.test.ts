@@ -25,7 +25,9 @@ describe('catalogs', () => {
       for (const id of ids) expect(String(id), ds.id).toMatch(KEBAB)
       for (const [i, col] of ds.data.columns.entries()) {
         const numeric = ds.data.rows.every((r) => typeof r[i] === 'number')
-        if (numeric) expect(ds.units[col], `${ds.id}.${col} needs a unit`).toBeTruthy()
+        // Every numeric column has a units entry; "" means a unitless ratio/count.
+        if (numeric) expect(typeof ds.units[col], `${ds.id}.${col} needs a units entry`).toBe('string')
+        else expect(ds.units[col], `${ds.id}.${col} is not numeric, so no unit`).toBeUndefined()
         for (const r of ds.data.rows) {
           if (typeof r[i] === 'number') expect(Number.isFinite(r[i]) && num(r[i]) >= 0, `${ds.id}.${col}`).toBe(true)
         }

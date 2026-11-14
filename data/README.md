@@ -26,7 +26,9 @@ const falcon = getPart(CATALOG_IDS.launchVehicles, 'falcon-9') // { id, name, pa
 | `catalogs/comms-systems.json` | `comms-systems` | radio + antenna |
 | `scenarios/demo.json` | (a `Config`) | the first playable mission |
 
-All are `kind: "table"` with `id` as the first column. Every numeric column has an entry in `units`. Each row also has a `name` and a one-sentence, student-friendly `description` for the UI.
+All are `kind: "table"` with `id` as the first column. Each row also has a `name` and a one-sentence, student-friendly `description` for the UI.
+
+**Units** are short display units, because the builder renders them directly: `kg`, `W`, `Wh`, `m`, `m/s`, `s`, `s/day`, `rad`, `pts`, `USD` (shown as `$8M`) and `bps` (shown as `2 Mbps`). Every numeric column has an entry; `""` means a unitless ratio or count (`reliability`, `duty_cycle`, `eclipse_fraction`, `coverage_fraction`, `radiation_factor` relative to LEO = 1, `degradation_per_year`, `max_instruments`). String columns (`best_orbit`, `min_bus_class`, `launch_capacity_column`, …) have no unit. Instrument `power_w` / `data_rate_bps` are while operating; comms `data_rate_bps` is at or below `reference_range_m`.
 
 ## Design params (`Config.params` / `set_param` keys)
 

@@ -10,12 +10,12 @@
     "inclination_rad": "rad",
     "period_s": "s",
     "delta_v_required_ms": "m/s",
-    "eclipse_fraction": "fraction of each orbit in shadow",
-    "contact_s_per_day": "s/day of ground-station contact",
-    "comm_range_m": "m, typical distance to ground station",
-    "radiation_factor": "relative to LEO = 1",
-    "max_lifetime_s": "s before drag/decay ends the mission without station-keeping",
-    "coverage_fraction": "fraction of Earth's surface (or Moon's) the orbit can observe"
+    "eclipse_fraction": "",
+    "contact_s_per_day": "s/day",
+    "comm_range_m": "m",
+    "radiation_factor": "",
+    "max_lifetime_s": "s",
+    "coverage_fraction": ""
   },
   "data": {
     "columns": ["id", "name", "central_body", "altitude_m", "inclination_rad", "period_s", "launch_capacity_column", "delta_v_required_ms", "eclipse_fraction", "contact_s_per_day", "comm_range_m", "radiation_factor", "max_lifetime_s", "coverage_fraction", "description"],

@@ -7,11 +7,10 @@
   "kind": "table",
   "units": {
     "mass_kg": "kg",
-    "power_w": "W while transmitting",
+    "power_w": "W",
     "cost_usd": "USD",
-    "data_rate_bps": "bit/s at or below reference_range_m",
-    "reference_range_m": "m",
-    "min_bus_class": "smallest bus class that can carry it"
+    "data_rate_bps": "bps",
+    "reference_range_m": "m"
   },
   "data": {
     "columns": ["id", "name", "band", "mass_kg", "power_w", "cost_usd", "data_rate_bps", "reference_range_m", "min_bus_class", "description"],
