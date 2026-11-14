@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Sarah
 **Agent:** Claude Code (claude@sarah)
 **Branch:**
-**Last updated:** 2026-11-15 00:10
+**Last updated:** 2026-11-15 00:30
 
 ## Working on right now
 
@@ -22,7 +22,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** sarah-claude/mission-view
 
 ### Working on right now
-Nothing claimed.
+Krillion-style restyle + word diet (Sarah asked): `ui/theme/theme.css`, `index.html` (font link), `ui/mission/`, and text-only cuts in `ui/start/`, `ui/briefing/`, `ui/builder/`. Branch `sarah-claude/krillion`.
 
 ### Files / folders I'm touching (hands off)
 - `ui/mission/` (I own it; ask with a handoff before changing it)
