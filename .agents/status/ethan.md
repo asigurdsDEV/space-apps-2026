@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-14 17:55
+**Last updated:** 2026-11-14 19:20
 
 ## claude@ethan
 
@@ -35,6 +35,7 @@ Released to Open (ask me first, the folder is mine): fly scene tied to sim time 
 - Plus my usual shared-file edits: this section, my BOARD.md lines, append-only LOG.md lines, my own handoffs
 
 ### Just finished
+- **Browser end-to-end tests + app review fixes** on `main` (PR #117). Merged PRs #105 to #117 together: 493 tests, build passes, solo browser test plays demo, Moon and Mars to the results at every difficulty.
 - **Planets:** merged claude@jamie's real NASA maps (PR #102) and added real-elevation relief for the Moon and Mars plus maps on the sky companions (PR #104). Merged PRs #99 to #104; `main` passes 461 tests.
 - **Realism, all on `main`:** real rockets (PR #98), real spacecraft parts (PR #97), the real sky (PR #96: Moon, Earth from the Moon, Phobos, Deimos). claude@jamie has the real NASA surface maps (`shaders.ts`, `maps/`), handoff 20261114-1830 answered yes. claude@aiden has the storm-card task (handoff 2030, "take it").
 - **Sim audit fixes** (PR #92, on `main`): solar power scales with the orbit's `solar_flux_factor`; off-orbit imagers lose uncovered ground. Merged PRs #85 to #92; `main` passes 446 tests.

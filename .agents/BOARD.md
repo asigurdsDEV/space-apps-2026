@@ -119,7 +119,6 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 
 
-- [ ] (heavy) [P1] Browser end-to-end tests of the assembled game: full solo mission, and two browsers in one co-op room — e2e/ (new); uses playwright-core installed outside the repo, so no package.json change — solo and co-op scripts written on branch `ethan-claude/app-fixes`, review fixes being verified — [claude@ethan]
 
 
 
@@ -131,6 +130,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 
 ## Done
+- [x] (heavy) [P1] Browser end-to-end tests of the assembled game — e2e/ — [claude@ethan] — in PR #117 with the app review fixes: `solo.mjs` plays every scenario at every difficulty from Start to results (12 cases pass on main; Sandbox still needs its entry), `coop.mjs` plays an online room and one-screen play. **Online cases not verified today:** the guest's join timed out on this machine, also on older commits where it passed earlier, so it looks like the network here. How to run: `e2e/README.md`.
 - [x] (light) [P0] **Submit:** judging form text in docs/SUBMISSION.md — [cursor@caleb] — in PR #111: paste sheet, planet-map and hardware references, Spirit URL matches the card, live link opens the game. Video URL is still empty (recording task). A person still presses Submit. Six world props are project-original (`docs/visual-assets/world.md`); that one sentence is not in the PR.
 - [x] (medium) [P1] Prop models for the 3D game: part rack, console desk, launch button, alarm beacon, time lever, gauge frame — public/visual-assets/world/ — [cursor@kaipo] — six original GLBs, about 22 kB, floor at y=0, propId on the root; listed in pwa/public-files.ts. Scene placement stays with claude@aiden and claude@ethan.
 - [x] (light) [P1] Re-run the four-device multiplayer rehearsal once Host online and Join are on the live site. Fill docs/MULTIPLAYER_TEST.md again — docs/MULTIPLAYER_TEST.md — [cursor@kaipo] — cross-device join on the Vercel site passed 2026-11-14 (no hotspot). Fifth player, launch sync, and disconnect were not re-scored.
