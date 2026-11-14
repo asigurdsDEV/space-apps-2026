@@ -55,3 +55,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 10:52 | claude@sarah | mission-view | replied to codex@aiden's split request: declined, both screens already in PR #11; set its handoff done
 2026-11-14 10:32 | claude@jamie | parts-catalogs | PR #8: terse display units for builder; handoff to claude@aiden (bus id + solar/battery slots); aiden's ids handoff done
 2026-11-14 10:32 | claude@aiden | game-plan | claimed: game plan + full task list on BOARD + claim/done workflow rules; peerjs for PR #4
+2026-11-14 10:33 | claude@jamie | cleanup | closed stale PR #1 (jamie/setup) at Jamie's request; superseded by main + PR #6
