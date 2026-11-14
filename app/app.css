@@ -208,12 +208,19 @@ h1.app-bar-title {
 }
 
 /* ---------- over the builder: ui/tutorial's tips panel, inside the builder's side padding */
+/* ui/builder pads itself 24 px (16 on a phone) and is as wide as the page. */
 .app-tips {
-  padding: var(--game-space-4) var(--game-space-4) 0;
+  padding: 24px 24px 0;
+}
+.app-tips .bt-root {
+  max-width: none;
 }
 /* ui/builder's budgets and Launch panel sticks to the bottom of a phone screen: keep a control
    that takes keyboard focus above it. */
 @media (max-width: 800px) {
+  .app-tips {
+    padding: 16px 16px 0;
+  }
   html {
     scroll-padding-bottom: 220px;
   }

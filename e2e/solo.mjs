@@ -52,8 +52,8 @@ async function openBuilder(page, at, config, level) {
   await page.goto(BASE)
   await page.getByLabel('Your name').fill('E2E')
   at(`pick ${config.scenario_id} at ${level} and press Start mission`)
-  await page.getByLabel('Mission scenario').selectOption(config.scenario_id)
-  await page.getByLabel('Difficulty').selectOption(level)
+  await page.locator('.ss-root').getByLabel('Mission scenario').selectOption(config.scenario_id)
+  await page.locator('.ss-root').getByLabel('Difficulty').selectOption(level)
   await page.getByRole('button', { name: 'Start mission' }).click()
   at('read the briefing and press Start designing')
   const title = await page.locator('.bf-title').innerText()
@@ -80,6 +80,19 @@ async function build(page, at, design) {
 
 const blockers = (page) => page.locator('.mb-issue.is-error').allInnerTexts()
 
+/**
+ * Wait for the results on `page`. An anomaly card stops the mission clock until it is answered,
+ * so every card that shows is answered with its first option, by whichever of `players` may answer it.
+ */
+async function toResults(page, ms, players = [page]) {
+  const end = Date.now() + ms
+  while ((await page.locator('.mv-results').count()) === 0) {
+    if (Date.now() > end) throw new Error(`no results after ${Math.round(ms / 1000)} s`)
+    for (const player of players) await player.locator('.mv-decision__option:enabled').first().click({ timeout: 500 }).catch(() => {})
+    await page.waitForTimeout(250)
+  }
+}
+
 /** Launch mission -> GO / NO-GO poll -> Launch -> 60x -> results. Returns what the results screen says. */
 async function fly(page, at, config) {
   at('builder: press Launch mission')
@@ -102,7 +115,7 @@ async function fly(page, at, config) {
   at('flight: wait for the results')
   // 60× is 60 mission days a second. Three times that, plus half a minute, before giving up.
   const days = config.duration_s / config.dt_s
-  await page.locator('.mv-results').waitFor({ timeout: 30_000 + (days / 60) * 3000 })
+  await toResults(page, 30_000 + (days / 60) * 3000)
   const outcome = (await page.locator('.mv-results .mv-title').innerText()).trim()
   const score = (await page.locator('.mv-results .mv-score').innerText()).replace(/\s+/g, ' ').trim()
   const why = (await page.locator('.mv-why li').allInnerTexts()).join(' ')
@@ -181,7 +194,8 @@ try {
   const levels = await run(browser, 'start screen', async (page, at) => {
     at('open the Start screen')
     await page.goto(BASE)
-    const values = (label) => page.getByLabel(label).locator('option').evaluateAll((options) => options.map((option) => option.value))
+    // Inside the Start screen: the one-screen strip under it has a Difficulty picker of its own.
+    const values = (label) => page.locator('.ss-root').getByLabel(label).locator('option').evaluateAll((options) => options.map((option) => option.value))
     const offered = await values('Mission scenario')
     const missing = scenarios.map((s) => s.scenario_id).filter((id) => !offered.includes(id))
     if (missing.length) throw new Error(`data/scenarios has ${missing.join(', ')}, but the Start screen does not offer it`)

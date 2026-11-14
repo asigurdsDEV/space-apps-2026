@@ -146,6 +146,19 @@ async function launch(page) {
   await page.waitForSelector('.mv')
 }
 
+/**
+ * Wait for the results on `page`. An anomaly card stops the mission clock until it is answered,
+ * so every card that shows is answered with its first option, by whichever of `players` may answer it.
+ */
+async function toResults(page, ms, players = [page]) {
+  const end = Date.now() + ms
+  while ((await page.locator('.mv-results').count()) === 0) {
+    if (Date.now() > end) throw new Error(`no results after ${Math.round(ms / 1000)} s`)
+    for (const player of players) await player.locator('.mv-decision__option:enabled').first().click({ timeout: 500 }).catch(() => {})
+    await page.waitForTimeout(250)
+  }
+}
+
 const result = async (page) => `${await text(page, '.mv-title')}, ${await text(page, '.mv-score')}`
 
 // ------------------------------------------------------------------ online: two to four browsers, one room
@@ -164,8 +177,8 @@ await check(
   async () => {
     await host.getByRole('button', { name: /Host online/ }).click()
     await host.getByLabel('Your name').fill('Hana')
-    await host.getByLabel('Mission scenario').selectOption(SCENARIO)
-    await host.getByLabel('Difficulty').selectOption('easy')
+    await host.locator('.ss-root').getByLabel('Mission scenario').selectOption(SCENARIO)
+    await host.locator('.ss-root').getByLabel('Difficulty').selectOption('easy')
     await host.getByRole('button', { name: 'Create room' }).click()
     await host.waitForSelector('.ls-root', { timeout: 25_000 }).catch(async () => {
       throw new Error(`no lobby after 25 s; the Start screen says: ${(await text(host, '.ss-error')) || 'nothing, still "Connecting…"'}`)
@@ -312,7 +325,7 @@ await check('flight: the mission keeps running for the guest while the host’s 
 
 await check('results: both players reach the same results', async () => {
   await host.locator('.mv-speeds button').last().click()
-  await host.waitForSelector('.mv-results', { timeout: 120_000 })
+  await toResults(host, 120_000, [host, guest])
   await guest.waitForSelector('.mv-results', { timeout: 15_000 })
   const results = [await result(host), await result(guest)]
   must(results[0] === results[1], `host: "${results[0]}", guest: "${results[1]}"`)
@@ -412,7 +425,7 @@ await check(
   async () => {
     await launch(local)
     await local.locator('.mv-speeds button').last().click()
-    await local.waitForSelector('.mv-results', { timeout: 120_000 })
+    await toResults(local, 120_000)
     return result(local)
   },
   { local: true },

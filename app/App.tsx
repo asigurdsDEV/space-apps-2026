@@ -375,8 +375,8 @@ export function GameScreen({ session, config, onExit, roomCode, daily }: GameScr
   )
 }
 
-/** False until the page has shown its first screen: loading the page must not move focus. */
-let shown = false
+/** The screen that last took focus. null until the page has shown its first one: loading the page must not move focus. */
+let lastScreen: string | null = null
 
 /**
  * Every new screen starts at the top of the page (the old scroll position carried over), names
@@ -389,11 +389,12 @@ function useScreen(screen: string, title?: string) {
     window.scrollTo(0, 0)
     if (title !== undefined) document.title = title ? `${title} · ${GAME_NAME}` : GAME_NAME
     const heading = document.querySelector<HTMLElement>('main h1') ?? document.querySelector<HTMLElement>('main h2')
-    if (shown && heading) {
+    // Compared by name, so React's double run of effects in development does not count as a change.
+    if (lastScreen !== null && lastScreen !== screen && heading) {
       heading.tabIndex = -1
       heading.focus({ preventScroll: true })
     }
-    shown = true
+    lastScreen = screen
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screen])
 }
