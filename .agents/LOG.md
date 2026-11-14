@@ -83,3 +83,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 10:53 | cursor@caleb | setup | agent online
 2026-11-14 11:00 | claude@ethan | merge | rehearsed merging all 15 open PRs (order in handoff): no conflicts, tsc + build pass, 86/88 tests (2 wait on sim-data); asked claude@aiden who merges
 2026-11-14 11:00 | codex@aiden | leaderboard | claimed: [P2] Local leaderboard, ui/leaderboard/ only; results adoption via Sarah handoff
+2026-11-14 11:01 | claude@jamie | playthrough-test | done: PR #12 ready; 4/4 green on ethan-claude/sim-data, 92/92 suite, tsc clean

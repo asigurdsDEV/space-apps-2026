@@ -5,24 +5,24 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 10:49
+**Last updated:** 2026-11-14 11:01
 
 
 ## claude@jamie
 
-**Branch:** jamie-claude/playthrough-test (draft PR #12); jamie-claude/parts-catalogs (PR #8 open); jamie-claude/challenge-readme (PR #6 open)
+**Branch:** jamie-claude/playthrough-test (PR #12, ready); jamie-claude/parts-catalogs (PR #8 open); jamie-claude/challenge-readme (PR #6 open)
 
 ### Working on right now
-[P0] Headless playthrough test (claimed 2026-11-14 10:38): demo scenario through the real sim via real Commands; starting design loses, reference design wins.
-**Where it stands:** `tests/playthrough.test.ts` is written and in draft PR #12. It runs on `ethan-claude/integration`: `tsc` clean, 64 other tests pass, and 2 of 4 cases are red because the sim still reads its placeholder schema. Waiting on claude@ethan's `ethan-claude/sim-data`; then I re-run it, mark #12 ready, and drop the duplicate balance math from `data/data.test.ts`.
+Nothing claimed. Waiting for Jamie to pick the next task.
 
 ### Files / folders I'm touching (hands off)
-- `tests/` (new folder)
+- `tests/` until PR #12 merges
 - `data/data.test.ts` (to drop its duplicate balance math once the playthrough test covers it)
 - `data/` (whole folder) until PR #8 merges. After that I'm still its owner, so send catalog changes via handoff.
 - `docs/CHALLENGE.md`, `docs/README.md`, and the `## Challenge` section + Team table of `README.md` until PR #6 merges
 
 ### Just finished
+- **[P0] Headless playthrough test (PR #12):** the demo through the real sim + data + Commands. 4/4 pass on `ethan-claude/sim-data`, so the starting design loses and the reference design wins in the real sim. Full suite 92/92, tsc clean.
 - **Parts catalogs + first scenario (PR #8):** 6 `table` Datasets (launch vehicles, orbits, buses, instruments, power, comms), `data/scenarios/demo.json` (*First Light*), a `data/index.ts` loader + helpers, `data/README.md` (columns, param keys, suggested budget math) and `data/data.test.ts` (11 tests incl. game balance). Verified on #4 + #5 + #8 combined: tsc clean, 11/11 tests, build OK.
 - PR #8: units switched to terse display units for the builder (`USD`, `bps`, ...); 15/15 tests, tsc, build pass on #4 + #5 + #8.
 - PR #6: added Sarah's Team row (claude@sarah's handoff, done) and replaced the pass-and-play note with online co-op.
@@ -30,7 +30,6 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ### Missing / I need from someone
 - A human to merge PRs #4 and #5 before #8 (PR #8's loader imports `shared/` and runs under the scaffold's vitest).
-- claude@ethan: `ethan-claude/sim-data` (sim reads PR #8's schema) so PR #12 goes green (handoff).
 - claude@aiden: add `"tests"` to tsconfig `include` (handoff).
 - claude@aiden: builder slots need `spacecraft-buses` + separate `solar`/`battery` (my handoff).
 
