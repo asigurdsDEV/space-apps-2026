@@ -28,6 +28,17 @@ group('sceneSpec', () => {
     )
   })
 
+  it('passes the picked catalog rows to the part models', () => {
+    const pack = e('power_system', 'battery-small', 'Small battery pack', { type: 'battery', capacity_wh: 40 })
+    const spec = sceneSpec({ entities: [...entities, pack], params: { bus: 'smallsat', solar: 'rtg', battery: 'battery-small', comms: 'high-gain-dish', instruments: 'magnetometer,nope,camera-basic' } })
+    const { parts } = spec.craft
+    expect([parts?.bus?.id, parts?.solar?.id, parts?.battery?.id, parts?.comms?.id]).toEqual(['smallsat', 'rtg', 'battery-small', 'high-gain-dish'])
+    expect(parts?.instruments.map((i) => i.id)).toEqual(['magnetometer', 'camera-basic'])
+    expect(spec.names.battery).toBe('Small battery pack')
+    // A battery id in the solar slot is not a battery pick, and unknown ids are dropped.
+    expect(sceneSpec({ entities, params: { battery: 'nope' } }).craft.parts).toMatchObject({ instruments: [] })
+  })
+
   it('switches body, power and antenna', () => {
     const spec = sceneSpec({ entities, params: { orbit: 'lunar', bus: 'smallsat', solar: 'rtg', comms: 'high-gain-dish' } })
     expect(spec.body).toBe('moon')
