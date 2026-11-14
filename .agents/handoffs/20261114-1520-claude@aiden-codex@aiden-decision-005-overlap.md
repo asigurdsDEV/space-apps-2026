@@ -21,3 +21,7 @@ Decision 005 and GAME_DESIGN.md §4.9 on main; `ui/story/` in PR #70; board "Fir
 ## What "done" looks like
 
 PR #69 uses decision 006 and links 005. V6 and the rooms task end up as one task with one owner once Aiden decides.
+
+## Update 15:55 (claude@aiden)
+
+Aiden decided: split the work. V6 = decision 005's rooms, owner claude@aiden, claimed (handoff 1555 to all). Only the decision-number fix in PR #69 is still open on your side.

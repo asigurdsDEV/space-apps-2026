@@ -12,15 +12,16 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 These are new work packages, not active claims. Suggested owners claim only their isolated scope with the normal lock push. Ethan keeps ui/scene3d/, part models, launch/fly branches, app/sim/shared/e2e. No immediate change or response is needed from him; V7 is a later integration checkpoint. Existing Start/Lobby/Tutorial graphics remain codex@jamie's current task.
 
 - [ ] (medium) [P1] V3 Flight prop/target asset pack: actual optimized GLB geometry + credited sources/axes/size manifest; reuse Ethan's craft/planets — public/visual-assets/flight/, art/flight/, docs/visual-assets/flight.md (new) — needs: plan PR #69; coordinate venue-rehearsal priority — owner: cursor@kaipo
-- [ ] (heavy) [P2] V6 Walkable hangar/mission-control room: bounded movement, clickable build/briefing/launch stations, standalone preview and callback navigation — ui/hangar/, public/visual-assets/hangar/, art/hangar/ (new) — needs: first flight slice accepted; no Ethan source edits — owner: claude@aiden
 - [ ] (heavy) [P1] V7 Integrate at a checkpoint chosen by existing owners: player-craft control/chase camera + one large scene + HUD; preserve published SpaceView and sim authority — ui/scene3d/ + app/ owner: claude@ethan; ui/mission/ owner: claude@sarah; cache/config owner: claude@aiden — needs: reviewed V1/V2/V4, optional V3; owner agreement on additive API; no current 3D work takeover
 
 
 
 ### First-person story (decision 005, Aiden 14:45: walk through the mission tasks, cutscenes, pop-outs; GAME_DESIGN.md §4.9)
-- [ ] (heavy) [P1] First-person mission control in 3D: rooms for each station (wall screen, assembly bay, 4 consoles, launch pad, ops room, debrief), guided walking camera (tap / Enter / → to the next station, look with arrows/WASD), phone-friendly — ui/scene3d/ — owner: claude@ethan
-- [ ] (heavy) [P1] Cutscenes in 3D from the real design: arrival, launch (pad → lift-off → fairing → orbit, the `LaunchView` seam), Moon/Mars arrival, anomaly alarm, ending (data home / signal lost); each ≤ 10 s, `onDone` when finished — ui/scene3d/ — owner: claude@ethan
-- [ ] (medium) [P1] Walk between stations instead of switching screens + play cutscenes (falls back to today's screens with no WebGL) — app/ — needs: ui/story, scene3d rooms — owner: claude@ethan
+<!-- Split 15:50 at Aiden's request ("split it so we get as much done as we can within usage limits"): nothing here waits on claude@ethan. His claimed ui/scene3d/ work (part models, launch sequence, fly scene) stays his. New folders, so nobody collides. -->
+- [ ] (light) [P1] → The 3D rooms + guided walk are now **V6** (`ui/hangar/`, claude@aiden, In progress): same thing as decision 005's rooms, so one task
+- [ ] (heavy) [P1] Cutscene scenes in 3D: arrival (mission control), Moon/Mars orbit arrival, anomaly alarm, ending (data home / signal lost). Each a React component that fills its parent and animates ≤ `CUTSCENE_MS[id]`, passed as `<Cutscene>` children (ui/story README); reuse `buildCraft` from ui/scene3d read-only; lazy-loaded; still under reduced motion is already handled — ui/cutscenes/ (new) — owner: open (any agent with usage left; not claude@ethan)
+- [ ] (medium) [P1] Launch cutscene (pad → lift-off → fairing → orbit) — ui/scene3d/ — owner: claude@ethan (partial work on `ethan-claude/scene3d-launch`). If it isn't on main by 17:30, the ui/cutscenes/ owner builds a simple one there instead
+- [ ] (medium) [P1] Walk between stations instead of switching screens: mount the V6 rooms behind the screens, walk on each screen change, task panels pop out at each station (falls back to today's screens with no WebGL) — app/ — needs: V6 — owner: claude@aiden (split from claude@ethan at Aiden's request 15:50)
 
 ### Playtest 14:15 (claude@aiden played main start → results; details in handoff 20261114-1420 playtest)
 
@@ -69,6 +70,7 @@ These are new work packages, not active claims. Suggested owners claim only thei
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
+- [ ] (heavy) [P2] V6 Walkable hangar/mission-control room: bounded movement, clickable build/briefing/launch stations, standalone preview and callback navigation — ui/hangar/, public/visual-assets/hangar/, art/hangar/ (new) — also decision 005's rooms (wall screen, assembly bay, 4 consoles, launch pad, ops room, debrief) with the guided walk; Aiden 15:50: start now, in parallel with the flight slice; no Ethan source edits — owner: claude@aiden — [claude@aiden]
 - [ ] (medium) [P1] V1 Flight input kit: focused keyboard + touch movement intent, brake/interact, Escape/blur release; isolated preview + tests — ui/pilot-input/ (new) — needs: plan PR #69 — owner: codex@aiden — [codex@aiden]
 
 
