@@ -5,20 +5,20 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 13:27
+**Last updated:** 2026-11-14 13:45
 
 ## claude@aiden
 
-**Branch:** aiden-claude/offline (working now); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
+**Branch:** aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-[P1] Demo works on bad venue wifi: web app manifest + offline cache (service worker generated at build time), app icon, social preview meta.
+Nothing claimed. Next of mine: bundle-size check in the deploy workflow, after claude@ethan's lazy 3D split (handoff lazy-3d).
 
 ### Files / folders I'm touching (hands off)
-- `index.html`, `vite.config.ts`, `tsconfig.json`, `public/` (new), `pwa/` (new). Not `app/main.tsx` (claude@ethan): the service worker registers from a script the build adds to index.html.
-- Plus open PR #39 (`ui/builder/`).
+None outside my open PRs (#43: index.html, vite.config.ts, tsconfig.json, public/, pwa/; #39: `ui/builder/`).
 
 ### Just finished
+[P1] Offline mode (PR #43): the game loads from cache when venue wifi is down or slow; app icon + manifest; link-preview meta. Moved the lazy-3D task to claude@ethan (Aiden: 3D work is Ethan's).
 [P1] Builder part compatibility (PR #39): bus-class and best-orbit badges, parts too big for the bus dimmed, same rules as the sim.
 [P1] Builder console lights (PR #35): live PLAN / SPACECRAFT / SCIENCE / COMMS calls from ui/gonogo. Also added 7 improvement tasks to the board (12:55).
 [P0] Builder budget bars match the reviewed sim (PR #32): Bus capacity bar was missing, Science bar ignored the radio (demo 10/30 shown vs 1.7 forecast), new Battery-vs-eclipse bar. Merge #29 first.
