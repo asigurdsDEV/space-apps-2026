@@ -36,7 +36,7 @@ function paramsFor(e: Entity): Params {
 
 function partCell(e: Entity): Cell {
   const params = paramsFor(e)
-  const spec = sceneSpec({ entities, params }).craft
+  const spec = sceneSpec({ entities: [...entities, e], params }).craft
   const layout = craftLayout(spec)
   const mount = layout.mounts[0]
   const alone = e.kind === 'bus' ? buildBus(layout.bus) : q.has('on') || !mount ? buildCraft(spec) : buildPart(mount, layout.bus)

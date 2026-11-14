@@ -17,6 +17,7 @@ export interface CraftAnchors {
  * The craft, scaled to fit a unit sphere around its origin. `userData.anchors` (CraftAnchors) is in the
  * returned group's coordinates. Each part is a sub-group with `userData.part` ('bus' | 'power' | 'comms' |
  * 'instrument') and `userData.id` (the catalog id), so a part can be found and highlighted by traversing.
+ * Materials are shared between parts and crafts: clone a mesh's material before tinting it.
  */
 export function buildCraft(spec: CraftSpec): THREE.Group {
   const layout = craftLayout(spec)
@@ -47,13 +48,14 @@ export function buildCraft(spec: CraftSpec): THREE.Group {
   return pivot
 }
 
-/** Frees the geometries, materials and textures of a craft (or any object). */
+/** Frees the geometries, materials and textures of a craft (or any object). The shared part materials stay: every craft reuses them. */
 export function disposeObject(obj: THREE.Object3D): void {
   obj.traverse((o) => {
     if (!(o instanceof THREE.Mesh || o instanceof THREE.Points || o instanceof THREE.Line || o instanceof THREE.Sprite)) return
     // Sprites share one geometry inside three.js; only their materials are ours.
     if (!(o instanceof THREE.Sprite)) o.geometry.dispose()
     for (const m of Array.isArray(o.material) ? o.material : [o.material]) {
+      if (m.userData.shared) continue
       for (const v of Object.values(m)) if (v instanceof THREE.Texture) v.dispose()
       m.dispose()
     }

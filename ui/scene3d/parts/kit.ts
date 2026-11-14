@@ -1,6 +1,6 @@
 // Shared materials, canvas textures and small mesh helpers for every part model.
-// Everything is drawn in code: no image files. Materials are made once and shared by all parts;
-// disposeObject() may free them, and three.js uploads them again on the next use.
+// Everything is drawn in code: no image files. Materials and their textures are made once and shared
+// by every part and every rebuild; only geometry is made (and disposed) per craft.
 import * as THREE from 'three'
 
 // Tests run without a DOM: there the materials simply have no texture maps.
@@ -284,8 +284,14 @@ function build() {
 }
 
 let cache: ReturnType<typeof build> | null = null
-/** The shared material set. */
-export const mats = () => (cache ??= build())
+/** The shared material set. Marked `userData.shared`, so disposeObject() keeps it when a craft is replaced. */
+export function mats() {
+  if (!cache) {
+    cache = build()
+    for (const m of Object.values(cache)) m.userData.shared = true
+  }
+  return cache
+}
 export type Mats = ReturnType<typeof build>
 
 export type PartTag = 'bus' | 'power' | 'comms' | 'instrument'
