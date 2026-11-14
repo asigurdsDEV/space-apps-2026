@@ -15,7 +15,7 @@ import {
   phaseLabel,
   str,
 } from './format'
-import type { Decision } from './game'
+import { STORM_LABEL, type Decision, type SpaceWeather } from './game'
 import { OrbitDiagram } from './OrbitDiagram'
 
 /** Speed buttons. The multiplier goes straight into `set_speed`; the app decides what 1x means. */
@@ -39,6 +39,8 @@ export interface MissionViewProps {
   onDecide?: (decisionId: string, optionId: string) => void
   /** Co-op: false when another player's console owns the open card. */
   canDecide?: boolean
+  /** Today's real space weather for this mission day (data/space-weather). Hidden when absent. */
+  spaceWeather?: SpaceWeather | null
 }
 
 export function MissionView({
@@ -51,6 +53,7 @@ export function MissionView({
   decision,
   onDecide,
   canDecide,
+  spaceWeather,
 }: MissionViewProps) {
   const m = state.metrics
   const phase = str(m, 'phase', 'design')
@@ -139,6 +142,19 @@ export function MissionView({
           when={phase === 'operations' && missionDay > 0 ? `Day ${Math.floor(missionDay)}` : eventWhen(state.t_s)}
           canAnswer={canDecide ?? !!onDecide}
         />
+      )}
+
+      {spaceWeather && (
+        <p
+          className={`mv-weather mv-tone-${spaceWeather.storm_g >= 3 ? 'bad' : spaceWeather.storm_g >= 1 ? 'warn' : 'good'}`}
+          aria-live="polite"
+        >
+          <strong>☀ Space weather: {STORM_LABEL[spaceWeather.storm_g] ?? STORM_LABEL[0]}</strong>
+          <span>Kp {spaceWeather.kp_max.toFixed(1)}</span>
+          <span>{Math.round(spaceWeather.sunspots)} sunspots</span>
+          <span>Solar flux {Math.round(spaceWeather.f107_sfu)}</span>
+          <span className="mv-muted">Real NASA data from {formatDate(spaceWeather.date)}</span>
+        </p>
       )}
 
       <div className="mv-body">

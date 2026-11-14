@@ -6,13 +6,15 @@
 // Query string: ?seed=7 changes the random rolls, ?sandbox turns off random failures,
 // ?weak flies a design with one ground station (loses data, so the debrief has fixes to show).
 //
-// The anomaly card is a STAND-IN until the sim emits `decision_required` (decision 004):
-// it pops up on day 20 and the choice has no effect here. The what-if fixes ARE real:
-// the same mission rerun with one change, the way sim/analysis.ts whatIf() will do it.
+// Space weather is REAL (data/space-weather, NASA OMNI): the mission replays the real days from
+// ?weather=YYYY-MM-DD (default 2003-10-01, so the Halloween 2003 storms hit on their real dates).
+// The storm card fires on the first real G3+ day; until the sim emits `decision_required`
+// (decision 004) the choice has no effect here. The what-if fixes are real reruns of the sim.
 
 import { StrictMode, useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import type { Command, ParamValue, SimEvent, SimState } from '../../../shared'
+import { weatherForMissionDay } from '../../../data/space-weather'
 import { init, step, summary } from '../../../sim'
 import { demoConfig, fixtureDatasets, goodDesign } from '../../../sim/testing/fixtures'
 import type { Decision, WhatIfFix } from '../game'
@@ -25,24 +27,25 @@ const config = {
   params: { ...demoConfig.params, random_failures: !query.has('sandbox') },
 }
 const design: Record<string, ParamValue> = query.has('weak') ? { ...goodDesign, ground_stations: 1 } : goodDesign
-const DAY_S = 86400
+const WEATHER_START = query.get('weather') ?? '2003-10-01'
 
-const SAMPLE_CARD: Decision = {
-  decision_id: 'preview-1',
-  card_id: 'reaction-wheel',
-  title: 'Reaction wheel failure',
-  body: "One of the spinning wheels that points your spacecraft has stopped. You can't hold your instruments steady on targets.",
-  console: 'spacecraft',
+/** ANOMALY_CARDS.md #3, triggered by a real storm day. */
+const stormCard = (date: string, g: number): Decision => ({
+  decision_id: `storm-${date}`,
+  card_id: 'geomagnetic-storm',
+  title: `G${g} geomagnetic storm`,
+  body: "A burst from the Sun is heating Earth's upper atmosphere, and it puffs up. More air at your altitude means more drag pulling you down.",
+  console: 'mission-planning',
   options: [
-    { id: 'a', label: 'Switch to coarse pointing', effect_text: 'Science −40% from now on. No risk.' },
-    { id: 'b', label: 'Try to restart the wheel', effect_text: "Good chance it's fixed. If not, 5 days in safe mode." },
+    { id: 'a', label: 'Go to safe mode, edge-on to the wind', effect_text: 'Lose 2 days of science. Drag mostly avoided.' },
+    { id: 'b', label: 'Keep observing', effect_text: "Fine if you're high enough. Very risky in a low orbit." },
   ],
   story: {
-    mission: 'Kepler',
-    year: 2013,
-    text: 'Kepler lost its second reaction wheel. Engineers balanced it with sunlight pressure and flew a new mission, K2.',
+    mission: `Real storm, ${date}`,
+    year: date.slice(0, 4),
+    text: 'This storm really happened on this date (NASA OMNI data). In February 2022, a much smaller G1 storm raised drag enough to bring down about 40 new Starlink satellites.',
   },
-}
+})
 
 function launched(params: Record<string, ParamValue>): { state: SimState; events: SimEvent[] } {
   let state = init(config, fixtureDatasets)
@@ -94,6 +97,7 @@ function Preview() {
   const [speed, setSpeed] = useState(1)
   const [decision, setDecision] = useState<Decision | null>(null)
   const [cardShown, setCardShown] = useState(false)
+  const weather = weatherForMissionDay(WEATHER_START, Number(run.state.metrics.mission_day ?? 0))
   const [fixes, setFixes] = useState<WhatIfFix[]>([])
   const runRef = useRef(run)
   runRef.current = run
@@ -104,8 +108,9 @@ function Preview() {
     const id = setInterval(() => {
       const { state, events } = step(runRef.current.state, [], config.dt_s)
       setRun({ state, events: [...runRef.current.events, ...events] })
-      if (!cardShown && state.metrics.phase === 'operations' && state.t_s >= 20 * DAY_S) {
-        setDecision(SAMPLE_CARD)
+      const today = weatherForMissionDay(WEATHER_START, Number(state.metrics.mission_day ?? 0))
+      if (!cardShown && state.metrics.phase === 'operations' && today && today.storm_g >= 3) {
+        setDecision(stormCard(today.date, today.storm_g))
         setCardShown(true)
       }
     }, 1000 / speed)
@@ -142,6 +147,7 @@ function Preview() {
       title={config.title}
       decision={decision}
       onDecide={() => setDecision(null)}
+      spaceWeather={run.state.metrics.phase === 'operations' ? weather : null}
       bonusGoal="no_data_lost"
       fixes={fixes}
       onTryFix={(fix) => fix.params && restart(fix.params as Record<string, ParamValue>)}
