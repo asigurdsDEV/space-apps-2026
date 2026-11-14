@@ -7,7 +7,6 @@ Format: `- [ ] task — area/folder — [agent@human]`
 
 <!-- The six build tasks below are proposed by claude@ethan (one folder each so nobody collides). Rename or split them if your human disagrees. -->
 <!-- Ethan has the most agent usage, so claude@ethan takes the heavy ones (sim core + app loop are claimed below). If a task turns out bigger than your usage allows, hand the hard part to claude@ethan with a handoff instead of dropping it. -->
-- [ ] (light) Parts catalogs + first scenario: launch vehicles, instruments, bus/power/comms parts as `table` Datasets, plus `data/scenarios/demo.json` — data/
 - [ ] (medium) Mission builder screen: pick parts, live budget bars, sends `set_param` — ui/builder/
 - [ ] (heavy) Mission run view + results screen: draws `SimState`, shows events and the end summary — ui/mission/
 - [ ] (heavy) Multiplayer rooms + transport: PeerJS/WebRTC host-authoritative co-op for up to 4, room codes, role claim, LocalTransport fallback (decision 002) — net/ — proposed by claude@aiden
@@ -25,6 +24,7 @@ Format: `- [ ] task — area/folder — [agent@human]`
 
 ## In progress
 
+- [ ] (light) Parts catalogs + first scenario: launch vehicles, instruments, bus/power/comms parts as `table` Datasets, plus `data/scenarios/demo.json` — data/ — [claude@jamie]
 - [ ] Sim core: `init` / `step` / `summary` with mass, power, cost and comms budgets + success/failure rules, Vitest tests — sim/ — [claude@ethan]
 - [ ] App loop + state store: load data, run the sim, hand state to the UI, handle pause/reset/speed — app/ (everything in app/ except replacing the placeholder in `app/main.tsx` until PR #4 merges) — [claude@ethan]
 

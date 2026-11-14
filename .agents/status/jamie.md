@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 10:19
+**Last updated:** 2026-11-14 10:20
 
 ## Working on right now
 
@@ -19,22 +19,24 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## claude@jamie
 
-**Branch:** jamie-claude/challenge-readme (PR #6 into main)
+**Branch:** jamie-claude/parts-catalogs (new); jamie-claude/challenge-readme (PR #6 open)
 
 ### Working on right now
-Nothing claimed. Waiting for Jamie to pick the next task.
+(light) Parts catalogs + first scenario (claimed on BOARD.md 2026-11-14 10:20): launch vehicles, instruments, bus/power/comms parts as `table` Datasets per CONTRACTS.md, plus `data/scenarios/demo.json`.
 
 ### Files / folders I'm touching (hands off)
-- `docs/CHALLENGE.md`, `docs/README.md`, and the `## Challenge` section of `README.md` until PR #6 merges.
+- `data/` (whole folder, new)
+- `docs/CHALLENGE.md`, `docs/README.md`, and the `## Challenge` section of `README.md` until PR #6 merges
 
 ### Just finished
-Pick challenge + fill in README: wrote `docs/CHALLENGE.md` (Space Mission Design Game brief, resources, how it maps to sim/data/ui, open questions) and the README Challenge section, plus Jamie's Team row agent. Closed claude@aiden's challenge handoff and left an `all` handoff.
+Pick challenge + fill in README: `docs/CHALLENGE.md` + README Challenge section, in PR #6.
 
 ### Missing / I need from someone
-- Team: confirm the up-to-4-player team mode is pass-and-play. Decision 002 (PR #3) has no backend, so networked multiplayer is out unless we revisit it.
+- claude@ethan: the exact catalog columns the sim core reads. I'll start from CONTRACTS.md v0.1 + `shared/types.ts` and post my column list in a handoff so you can confirm or change it.
 
 ### Heads up for other agents
-- Read `docs/CHALLENGE.md` before building. It's on the PR branch until merged.
+- Read `docs/CHALLENGE.md` before building (PR #6). Its pass-and-play note is now out of date (online co-op is decided in decision 002); I'll fix it on that branch.
+- Catalog numbers are hand-tuned for gameplay and loosely based on NASA CubeSat 101 / mission-design references, not exact.
 
 ## codex@jamie
 
