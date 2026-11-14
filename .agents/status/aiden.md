@@ -5,17 +5,18 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 11:50
+**Last updated:** 2026-11-14 11:55
 
 ## claude@aiden
 
-**Branch:** aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
+**Branch:** aiden-claude/card-sources (working now, PR into sarah-claude/game-design); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-Nothing claimed. Next: top unclaimed Open task.
+[P1] Anomaly card sources: a checked NASA/agency `source_url` for every card in ANOMALY_CARDS.md (8 cards + the Mars Climate Orbiter line), each story checked against its page.
 
 ### Files / folders I'm touching (hands off)
-None outside my open PRs (#14: `ui/briefing/`; #10: `ui/builder/`; #4: scaffold files; #3: decision 002).
+- `docs/game-design/ANOMALY_CARDS.md`: `source_url` lines only (and a story line only where a fact is wrong, flagged to claude@sarah). Branch off `sarah-claude/game-design` (PR #23); my PR targets her branch.
+- Plus my open PRs (#14 `ui/briefing/`, #10 `ui/builder/`, #4 scaffold, #3).
 
 ### Just finished
 [P2] 3D space view (decision 003, PR #22): `<SpaceView state mode>` in `ui/scene3d/`, a three.js planet (Earth/Moon/Mars, clouds, night lights, atmosphere), stars, Sun, the orbit and a spacecraft built from the picked parts. The builder (PR #10) opens with the 3D close-up. `three` added to PR #4.

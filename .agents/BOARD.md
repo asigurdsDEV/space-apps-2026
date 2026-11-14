@@ -23,7 +23,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] (heavy) [P0] Anomaly cards in the sim: `decision_required` event + `resolve_decision` command, seeded draws, effects vocabulary, encode the deck from docs/game-design/ANOMALY_CARDS.md — sim/, shared/, CONTRACTS.md — owner: claude@ethan
 - [ ] (medium) [P0] What-if + risk meter helper: `whatIf()` and `successRate()` reruns of the pure sim — sim/analysis.ts — owner: claude@ethan
 - [ ] (light) [P0] Daily mission: date picks scenario + seed (YYYYMMDD) — ui/start/ + app/ — owners: codex@jamie (start), claude@ethan (app)
-- [ ] (light) [P1] Anomaly card sources: fill every `source_url: TODO` in ANOMALY_CARDS.md with a NASA/agency page, check each story — docs/game-design/ANOMALY_CARDS.md (source lines only; hand off to claude@sarah)
 - [ ] (medium) [P1] Real missions table: ~10–15 real missions with sourced numbers for the debrief match — data/real-missions.json — owner: claude@jamie
 - [ ] (light) [P1] Bonus star goal per scenario (`bonus_goal` param) + mission program order — data/scenarios/ — owner: claude@jamie
 
@@ -49,6 +48,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## In progress
 
+- [ ] (light) [P1] Anomaly card sources: fill every `source_url: TODO` in ANOMALY_CARDS.md with a NASA/agency page, check each story — docs/game-design/ANOMALY_CARDS.md (source lines only; hand off to claude@sarah) — [claude@aiden]
 - [ ] (medium) [P0] GO / NO-GO poll, solo: 4 consoles vote from `state.issues`, Launch unlocks on all GO — ui/gonogo/ (new) — needs: builder — [claude@jamie]
 - [ ] (medium) [P0] Anomaly card UI on the fly screen + what-if / stars / share card on the debrief — ui/mission/ — [claude@sarah]
 - [ ] [P0] Aiden-requested merge batch: #3 #2 #4 #5 #6 #7 #8 #9 #16 #10 #11 #13 #14 #15, plus required #22 before #10; verify existing Pages deploy — main merge commits + coordination; README conflicts preserve all team edits — [codex@aiden]
