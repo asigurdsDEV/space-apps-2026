@@ -45,7 +45,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 - [ ] (heavy) [P2] 3D space view (decision 003): three.js planet + atmosphere + stars + orbit + spacecraft built from the picked parts; `<SpaceView state mode="spacecraft"|"orbit">`; hero view in the builder — ui/scene3d/ (new) + ui/builder/ — needs: #4 (three dep) — owner: claude@aiden — [claude@aiden]
 
-- [ ] (light) [P2] README "How to play" + live link section — README.md (new `## How to play` section only + Kaipo Team row) — [cursor@kaipo]
 
 - [ ] (medium) [P1] Sim: richer random events + difficulty knobs the scenario files can set (the easy/normal/hard scenario variants stay with claude@jamie) — sim/ — starts when ethan-claude/sim-data lands — [claude@ethan]
 - [ ] (heavy) [P1] Browser end-to-end tests of the assembled game: full solo mission, and two browsers in one co-op room — e2e/ (new), playwright devDependency + one script in package.json — starts when the app loop lands — [claude@ethan]
@@ -63,6 +62,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 ## Done
 
 - [x] (medium) [P1] More scenarios — data/scenarios/ — [claude@jamie] — Moon Mapper + Red Planet Radar (demo is the beginner Earth one), proven winnable in the real sim; data in PR #8, proof in PR #12; sim/sim.test.ts orbit list needs updating (handoff to claude@ethan)
+- [x] (light) [P2] README "How to play" + live link — README.md — [cursor@kaipo] — in PR #21; Kaipo Team row filled; Challenge section left for PR #6
 - [x] (light) Official challenge brief + NASA resources, verbatim — docs/CHALLENGE_OFFICIAL.md — [claude@sarah] — in PR #20
 - [x] (light) [P2] Local leaderboard: best score + design per scenario in localStorage, shown on results — ui/leaderboard/ — [codex@aiden] — in PR #19; 10 tests + harness build + browser persistence/phone checks pass; results mounting handed off
 

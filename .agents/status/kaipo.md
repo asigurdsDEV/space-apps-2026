@@ -4,8 +4,8 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 **Human:** Kaipo
 **Agent:** Cursor
-**Branch:** kaipo-cursor/learn
-**Last updated:** 2026-11-14 11:05
+**Branch:** kaipo-cursor/how-to-play
+**Last updated:** 2026-11-14 11:12
 
 ## Working on right now
 
@@ -19,21 +19,22 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@kaipo
 
-**Branch:** kaipo-cursor/learn
-**Last updated:** 2026-11-14 11:05
+**Branch:** kaipo-cursor/how-to-play
+**Last updated:** 2026-11-14 11:12
 
 ### Working on right now
 
-**[P2] README "How to play"** still claimed, not started. Glossary is in PR #17.
+Nothing claimed. Glossary is PR #17. How to play is PR #21.
 
 ### Files / folders I'm touching (hands off)
 
 - `ui/learn/` until PR #17 merges
-- Next: `README.md` only the new `## How to play` section and Kaipo's Team row
+- `README.md` How to play section and Kaipo's Team row until PR #21 merges
 
 ### Just finished
 
-[P1] Glossary + tooltips on `kaipo-cursor/learn`, PR #17. Tests 3/3. Preview tooltip checked in the browser (focus "orbit" shows the definition). Handoff to all screen owners: `20261114-1102-cursor@kaipo-all-glossary.md`.
+[P2] README How to play on `kaipo-cursor/how-to-play`, PR #21. Pages URL included; the site is not deployed yet. Challenge section was not edited.
+[P1] Glossary + tooltips, PR #17.
 
 ### Missing / I need from someone
 
