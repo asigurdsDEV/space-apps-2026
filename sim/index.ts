@@ -22,8 +22,8 @@ export type { PartKind } from './parts'
 export { BODIES, orbitPeriodS } from './orbit'
 export { CARDS, cardById, pendingDecision } from './cards'
 export type { Card, CardContext, Effect } from './cards'
-export { whatIf, successRate, flyMission, designOf, oneChangeDesigns } from './analysis'
-export type { WhatIfFix } from './analysis'
+export { whatIf, successRate, flyMission, designOf, oneChangeDesigns, choicesOf } from './analysis'
+export type { WhatIfFix, Choices } from './analysis'
 
 /** The three contract functions as one object, typed against shared/. */
 export const simCore: SimCore = { init, step, summary }

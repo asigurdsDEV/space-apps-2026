@@ -5,7 +5,7 @@
 // Cost: one flown mission is a few hundred steps of pure functions, so ~40 what-if reruns or
 // 50 seed reruns take well under a second in the browser. Call them once per debrief, not per frame.
 
-import type { Command, Config, Dataset, Entity, Params, ParamValue, SimState, Summary } from '../shared'
+import type { Command, Config, Dataset, Entity, Params, ParamValue, SimEvent, SimState, Summary } from '../shared'
 import { instrumentIds, SLOTS } from './params'
 import { catalogEntities } from './parts'
 import { init, step, summary } from './sim'
@@ -19,6 +19,16 @@ export interface WhatIfFix {
   outcome?: string
   /** The full design with the change, ready to load into the builder ("Try it"). */
   params: Params
+}
+
+/** The player's anomaly-card answers: card id → option id. */
+export type Choices = Record<string, string>
+
+/** The answers given in a flown mission, from its `decision_resolved` events. */
+export function choicesOf(events: readonly SimEvent[]): Choices {
+  const out: Choices = {}
+  for (const e of events) if (e.type === 'decision_resolved') out[e.payload.card_id] = e.payload.option_id
+  return out
 }
 
 /** Player design keys: the part slots, the instrument list and the ground stations. */
@@ -35,18 +45,20 @@ export function designOf(params: Params): Params {
 
 /**
  * Flies `design` start to finish: init → set_param → launch → step until ended.
+ * Anomaly cards are answered from `choices` (card id → option id), else with option a.
  * Returns null when the design can't launch (a blocking issue), since that's not a flown mission.
  */
-export function flyMission(config: Config, datasets: Dataset[], design: Params): Summary | null {
+export function flyMission(config: Config, datasets: Dataset[], design: Params, choices: Choices = {}): Summary | null {
   let state: SimState = init(config, datasets)
   const commands: Command[] = Object.entries(design).map(([key, value]) => ({ type: 'set_param', payload: { key, value } }))
   state = step(state, commands, config.dt_s).state
   state = step(state, [{ type: 'launch', payload: {} }], config.dt_s).state
   if (state.metrics.phase === 'design') return null
   for (let n = 0; state.status !== 'ended' && n < MAX_STEPS; n++) {
-    // A what-if rerun has nobody to ask, so it takes the safe option (a) of every anomaly card.
+    // A rerun has nobody to ask: it gives the player's own answer, or the safe option (a) for a card they never met.
     const decision_id = state.metrics.decision_id
-    const answer: Command[] = decision_id ? [{ type: 'resolve_decision', payload: { decision_id: String(decision_id), option_id: 'a' } }] : []
+    const option_id = choices[String(state.metrics.decision_card ?? '')] ?? 'a'
+    const answer: Command[] = decision_id ? [{ type: 'resolve_decision', payload: { decision_id: String(decision_id), option_id } }] : []
     state = step(state, answer, config.dt_s).state
   }
   return summary(state)
@@ -99,13 +111,12 @@ export function oneChangeDesigns(datasets: Dataset[], params: Params): { change:
  * The flown mission rerun with every single change, same seed (so it's a fair comparison).
  * Designs that can't launch are left out. Sorted best score first; ui/mission's `bestFixes`
  * then keeps the ones that beat the real score.
- * shortcut: anomaly-card choices aren't replayed yet (they don't exist in the sim); add a
- * `choices` argument when `resolve_decision` lands.
+ * Pass the player's card answers (`choicesOf(events)`) so the reruns meet the cards the same way.
  */
-export function whatIf(config: Config, datasets: Dataset[], params: Params): WhatIfFix[] {
+export function whatIf(config: Config, datasets: Dataset[], params: Params, choices: Choices = {}): WhatIfFix[] {
   const fixes: WhatIfFix[] = []
   for (const { change, design } of oneChangeDesigns(datasets, params)) {
-    const result = flyMission(config, datasets, design)
+    const result = flyMission(config, datasets, design, choices)
     if (!result) continue
     fixes.push({ change, score: Number(result.score) || 0, grade: String(result.grade ?? ''), outcome: String(result.outcome ?? ''), params: design })
   }

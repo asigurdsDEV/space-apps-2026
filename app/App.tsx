@@ -3,7 +3,7 @@
 // The screens only get props. Everything about who runs the game is behind `Session` (app/session.ts),
 // so solo, same-screen, host and guest play all use the same screens.
 
-import { useEffect, useLayoutEffect, useRef, useState, type ComponentType, type FormEvent } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ComponentType, type FormEvent } from 'react'
 import { DIFFICULTIES, getDatasets, getScenario, scenarios, withDifficulty, type Difficulty } from '../data'
 import { LocalTransport } from '../net'
 import type { Config, NetMessage, SimEvent, SimState, Summary } from '../shared'
@@ -15,7 +15,7 @@ import { MissionBuilder } from '../ui/builder'
 import { GoNoGoPoll } from '../ui/gonogo'
 import { LocalLeaderboard } from '../ui/leaderboard'
 import { LobbyScreen } from '../ui/lobby'
-import { MissionScreen, stars } from '../ui/mission'
+import { MissionScreen, stars, type WhatIfFix } from '../ui/mission'
 import { designFromHash, SharePanel } from '../ui/share'
 import { dailyMissionForDate, StartScreen, type DailyMission, type DailyMissionRequest, type StartRequest } from '../ui/start'
 import { BuilderTutorial } from '../ui/tutorial'
@@ -23,6 +23,7 @@ import '../ui/theme/theme.css'
 import '../ui/learn/learn.css'
 import { Crew, Notice, RoomCode } from './Crew'
 import { ErrorBoundary } from './ErrorBoundary'
+import { useFixes } from './useFixes'
 import { startDriver, timerClock } from './driver'
 import { createGame, type Game } from './game'
 import { cleanRoomCode, openRoom } from './room'
@@ -323,7 +324,7 @@ export function GameScreen({ session, config, onExit, roomCode, daily }: GameScr
           <Design session={session} config={config} />
         ) : (
           // Unmounts on reset, so every launch starts it fresh.
-          <Flight session={session} config={config} daily={daily} />
+          <Flight session={session} config={config} daily={daily} online={roomCode !== null} />
         )}
       </ErrorBoundary>
     </div>
@@ -411,8 +412,17 @@ export function weatherStart(config: Config, seed: number): string {
 type SpaceWeatherData = typeof import('../data/space-weather')
 
 /** Everything after launch: (the launch sequence,) cruise and operations, then the results with the personal best. */
-function Flight({ session, config, daily }: { session: Session; config: Config; daily?: DailyMission }) {
+function Flight({ session, config, daily, online }: { session: Session; config: Config; daily?: DailyMission; online?: boolean }) {
   const { state, events, paused, speed, players, me } = useSession(session)
+  // The what-if reruns fly the game as it was flown: its anomaly cards and seed (the daily's, if it is the daily).
+  const flown = useMemo(() => withCards(daily ? { ...config, seed: daily.seed } : config), [config, daily])
+  const fixes = useFixes(flown, state.params, events, state.status === 'ended')
+  // "Try it" loads the fixed design into the builder. Online each role owns its own parts, so it is solo/same-screen only.
+  const tryFix = ({ params }: WhatIfFix) => {
+    if (!params) return
+    session.send({ type: 'reset', payload: {} })
+    for (const [key, value] of Object.entries(params)) session.send({ type: 'set_param', payload: { key, value } })
+  }
   const [launchDone, setLaunchDone] = useState(false)
   // 340 kB of real NASA data, so it is loaded only once a mission flies.
   const [weather, setWeather] = useState<SpaceWeatherData | null>(null)
@@ -443,6 +453,8 @@ function Flight({ session, config, daily }: { session: Session; config: Config; 
         title={config.title}
         summary={summary}
         bonusGoal={bonusGoal}
+        fixes={fixes}
+        onTryFix={online ? undefined : tryFix}
         share={{ daily: daily?.date, anomalies: String(state.metrics.cards_drawn ?? '').split(',').filter(Boolean).length }}
         decision={decision}
         onDecide={decide}
