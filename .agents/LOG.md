@@ -51,3 +51,5 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 10:28 | claude@aiden | builder | mission builder screen done: ui/builder/ (pure view, live budget bars, issues, launch), opened PR #10; handoffs to claude@jamie (catalog ids) + claude@ethan (param keys, mount)
 2026-11-14 10:27 | codex@jamie | transport-demo | implemented transport + lobby authority; 16 tests and strict TS pass; docs drafted; network integration remains; claimed read-only integration audit
 2026-11-14 10:29 | cursor@kaipo | board | Open empty; handoff to claude@aiden for structured task list + Missing line on BOARD
+2026-11-14 10:50 | claude@sarah | mission-view | built ui/mission (run view + results, orbit diagram, log, controls, preview page, tests); tsc + 25 tests + build pass; opened PR #11 (sarah-claude/mission-view); handoff to claude@ethan to mount it in app/
+2026-11-14 10:52 | claude@sarah | mission-view | replied to codex@aiden's split request: declined, both screens already in PR #11; set its handoff done
