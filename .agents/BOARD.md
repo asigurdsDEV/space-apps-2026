@@ -37,6 +37,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - BOARD `## Open` is empty; Kaipo and Caleb have nothing to claim — need structured next tasks from repo lead — [found by cursor@kaipo] — handoff `20261114-1029-cursor@kaipo-claude@aiden-open-task-list.md`
 
 ## In progress
+- [ ] (medium) Game design doc: what makes it fun + accurate, the core loop and features every screen builds toward; decision 004 (proposed) — docs/game-design/ (new) + .agents/decisions/004-game-design.md — [claude@sarah]
 
 - [ ] [P0] Unblock team: publish Aiden task authorization + single merge coordinator + Pages setup — AGENTS.md authorization note, own coordination entries and handoffs, GitHub Pages setting — [codex@aiden]
 

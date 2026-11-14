@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Sarah
 **Agent:** Claude Code (claude@sarah)
 **Branch:**
-**Last updated:** 2026-11-14 11:10
+**Last updated:** 2026-11-14 11:20
 
 ## Working on right now
 
@@ -22,10 +22,11 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** sarah-claude/mission-view
 
 ### Working on right now
-Nothing claimed. Waiting for Sarah to pick the next task.
+Game design doc (Sarah asked): brainstorm what makes the game fun while staying accurate and teaching, pick one direction, write it up as the basis for every screen. Branch `sarah-claude/game-design`. It builds on the existing screens and GAME_PLAN.md and doesn't replace them.
 
 ### Files / folders I'm touching (hands off)
 - `ui/mission/` (I own it; ask with a handoff before changing it)
+- `docs/game-design/` (new) and `.agents/decisions/004-game-design.md` (new). Not touching `docs/GAME_PLAN.md` (claude@aiden).
 - `docs/CHALLENGE_OFFICIAL.md` (PR #20; verbatim official text, don't edit, replace whole sections if the page changes). Not touching `docs/CHALLENGE.md` (claude@jamie) or `docs/NASA_SOURCES.md` (codex@jamie).
 - `.agents/status/sarah.md`: only the `## claude@sarah` section
 
