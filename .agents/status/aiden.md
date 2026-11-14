@@ -49,27 +49,25 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** main (done coordination); aiden-codex/visual-overhaul-plan (PR #69)
-**Last updated:** 2026-11-14 13:03
+**Branch:** aiden-codex/pilot-input (V1); aiden-codex/visual-overhaul-plan (PR #69 corrections)
+**Last updated:** 2026-11-14 13:15
 
 ### Working on right now
 
-V0 complete: interactive 3D overhaul plan and seven independent work packages published. PR #69 is open with a green build. No implementation scope claimed; V1 flight input is my proposed next independent task, not yet locked. Aiden chose both spacecraft flight and a walkable mission-control/hangar, starting with flight.
+V1 flight input kit: keyboard/touch intent, scoped focus and reliable release, standalone preview and tests. Astra assists with read-only design review per Aiden's request. Also correcting my PR #69 decision number to 006 and holding duplicate V6 pending room ownership; no room work starts.
 
 ### Files / folders I'm touching (hands off)
 
-No active production source edits. PR #69 changes only `docs/VISUAL_OVERHAUL.md` and `.agents/decisions/005-interactive-3d.md`; own BOARD/status/log/handoffs on main. CONTRACTS.md, all Ethan source/branches, Claude section/branches, existing mission/start/lobby/tutorial/data source untouched. Unrelated docs/CHALLENGE 2.md left untouched.
+New `ui/pilot-input/` only for implementation. Existing own PR #69: `docs/VISUAL_OVERHAUL.md`, rename `.agents/decisions/005-interactive-3d.md` to `006-interactive-3d.md`. Own BOARD rows, codex status section, append-only LOG and addressed/own handoffs. No app/scene3d/story/HUD/data/sim/shared/config edits; no Claude sections or branches. Unrelated docs/CHALLENGE 2.md untouched.
 
 ### Just finished
 
-Inspected current Three.js scene, procedural craft/planets, published SpaceView props, fly mounting and PWA asset listing. All six proposed imports (GLTFLoader, FlyControls, PointerLockControls, Raycaster, AnimationMixer, LoadingManager) resolve from installed dependencies; no npm change needed. Plan defines actual player-craft movement and observation/relay interactions, GLB asset pipeline with credits, 7 isolated scopes, a second-milestone hangar, load/device targets and additive owner-led integration. PR #69 CI build is green.
-
-Previous PR #56 Daily-record QA merged; matching score/design/stars survived reload and regular/Daily isolation. Last follow-up test/build run passed 331 tests; this planning PR's newer head is covered by its green CI, not a fresh manual gameplay check.
+Read current claims/contracts/handoffs. V4 training route is in PR #73; V5 QA plan claimed by Caleb; Sarah awaits V1 labels for V2. V0 plan PR #69 published; resolving Claude's decision-number/room-overlap feedback before implementation.
 
 ### Missing / I need from someone
 
-V1–V7 implementation remains. Ethan keeps renderer/launch/part models and chooses the integration checkpoint; no immediate interruption requested. Owners should claim isolated modules on BOARD before coding and publish their actual local exports. New scored piloting must go through sim/shared/CONTRACTS ownership; the current day-step simulator is not a real-time flight controller. New public GLBs need explicit cache/version handling by Claude's PWA owner.
+V7 scene/app adoption remains with existing owners; input module alone does not move the production spacecraft. V6 is held to avoid duplicating decision 005 rooms. Scored flight requires an agreed sim contract; training input never writes SimState.
 
 ### Heads up for other agents
 
-Seven tasks are Open with suggested owners, not silently claimed on their behalf. Codex Jamie's existing mission-entry graphics scope stays separate. Reuse Three.js and existing configurable models; model/texture candidate links are not downloaded assets. Source/API changes were deliberately left for the corresponding implementation tasks. Ethan remains merge coordinator.
+V1 will publish plain intent plus explicit interact/release actions; no global keyboard takeover, renderer or dependencies. Sarah can build V2 independently with mock props and adopt final labels from README. Ethan need not interrupt current work. No task assigned to another agent by this claim.
