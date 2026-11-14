@@ -490,7 +490,12 @@ export function evaluateDesign(rawParams: Params, entities: Entity[]): DesignRep
     warning(
       'link_weak',
       'comms',
-      `${comms.name} is built for links up to ${n1(prop(comms, 'reference_range_m') / 1000)} km, but in ${orbit.name} the ground is ${n1(prop(orbit, 'comm_range_m') / 1000)} km away. At that range it runs at ${link_factor < 0.005 ? 'less than 1%' : pct(link_factor)} of its speed (${formatBps(data_rate_bps)}). Pick a radio with a longer range.`,
+      `${comms.name} is built for links up to ${n1(prop(comms, 'reference_range_m') / 1000)} km, but in ${orbit.name} the ground is ${n1(prop(orbit, 'comm_range_m') / 1000)} km away. At that range it runs at ${link_factor < 0.005 ? 'less than 1%' : pct(link_factor)} of its speed (${formatBps(data_rate_bps)}). ${
+        // Only give advice the catalog can keep: no radio may reach further than this one.
+        partsOf(entities, 'comms_system').some((part) => num(part.props, 'reference_range_m') > prop(comms, 'reference_range_m'))
+          ? 'Pick a radio with a longer range.'
+          : 'No radio reaches further, so plan for the slower link.'
+      }`,
     )
   }
   const flight: FlightModel = {
