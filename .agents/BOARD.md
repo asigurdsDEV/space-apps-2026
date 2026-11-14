@@ -59,6 +59,13 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 - [ ] (light) [P1] **Schedule bar in the builder** (brief: show Time clearly): the sim gives `schedule_months` / `deadline_months` now that parts have build times (PR #105); today time only shows as an error — ui/builder/ — owner: claude@aiden
 - [ ] (light) [P1] Show each console's **priority** on the GO / NO-GO poll so co-op players negotiate before launch (GAME_DESIGN §4.7) — ui/gonogo/ — owner: claude@jamie
 
+### UX declutter + fun (Sarah's ask 22:40; spec with word budgets: docs/game-design/UX_DECLUTTER.md)
+- [ ] (heavy) [P0] **Builder: cards instead of spreadsheet tables** (1,394 words, 8 screens tall → ≤ 250 words, no page scroll): one slot per tab (Orbit → Rocket → Bus → Instruments → Power → Battery → Radio), part cards with 2 key stat chips, pinned resource bars with ghost deltas on hover/tap, full table behind "Compare all ⓘ", one-line issues + ⓘ — ui/builder/ — owner: claude@aiden
+- [ ] (medium) [P1] **Start: mission cards** instead of the dropdown (art + one line + budget/goal chips), difficulty as a segmented control, helper sentences cut (350 → ≤ 120 words); fixes the repeated (Easy)/(Hard) list — ui/start/ — owner: codex@jamie
+- [ ] (light) [P1] **Briefing:** 3 fact chips + bonus chip, "How to win" as 3 icon rows ≤ 8 words, glossary wall → tap-to-learn chips (385 → ≤ 90 words) — ui/briefing/ — owner: claude@aiden
+- [ ] (light) [P1] **GO / NO-GO:** one short line per console + ⓘ for the rest, plus each console's priority chip (171 → ≤ 80 words) — ui/gonogo/ — owner: claude@jamie
+- [ ] (light) [P2] **CAPCOM pop-outs auto-dismiss** after ~6 s unless hovered/focused; on results it covers the leaderboard card — ui/story/ — owner: claude@aiden
+
 ## Missing / needed
 
 - Jamie reached Claude usage limit; codex@jamie takes over Jamie follow-ups. Sarah fixes are PR #105; Claude Jamie sunlight is PR #108; Codex regression/integration checks are PR #109. Merge coordinator Ethan has the handoff — [found by codex@jamie]
@@ -100,8 +107,6 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
-- [ ] (medium) [P0] Fly + results screens: far less text, HUD over a big 3D view, compact controls, collapsible log, animated score/stars, short anomaly cards with a "this really happened" fold — ui/mission/ — [claude@sarah] — Sarah asked: UI less cluttered, easier, more fun
-- [ ] (medium) [P1] Touch controls for walking: left-thumb move pad, drag to look, E button; gives `{ move: [x, y], look: [dx, dy] }` + interact — ui/pilot-input/ — by Sat 20:00 — owner: codex@aiden — [codex@aiden]
 - [ ] (light) [P0] **Submit:** judging form filled from docs/SUBMISSION.md, video link, every external resource in References, project page link checked in a private window — docs/SUBMISSION.md — owner: cursor@caleb (+ a human to press Submit) — [cursor@caleb]
 - [ ] (light) [P1] **Walk + cutscenes on a phone and with reduced motion / a screen reader:** hall and panels at 375 px, reduced motion cuts straight to each station, screen reader hears the screens not the hall, cutscene Skip/Escape works — app/Walk.tsx, app/StoryLayer.tsx, app/app.css — owner: claude@aiden — [claude@aiden]
 - [ ] (medium) [P1] Rockets fully rendered (Ethan's request): surface detail on every launch vehicle (panel seams, weld lines, markings, engine detail), shadows, exhaust and pad effects — ui/scene3d/launch/ — branch `ethan-claude/rocket-render` — [claude@ethan]
@@ -128,6 +133,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 ## Done
 - [x] (medium) [P1] Prop models for the 3D game: part rack, console desk, launch button, alarm beacon, time lever, gauge frame — public/visual-assets/world/ — [cursor@kaipo] — six original GLBs, about 22 kB, floor at y=0, propId on the root; listed in pwa/public-files.ts. Scene placement stays with claude@aiden and claude@ethan.
 - [x] (light) [P1] Re-run the four-device multiplayer rehearsal once Host online and Join are on the live site. Fill docs/MULTIPLAYER_TEST.md again — docs/MULTIPLAYER_TEST.md — [cursor@kaipo] — cross-device join on the Vercel site passed 2026-11-14 (no hotspot). Fifth player, launch sync, and disconnect were not re-scored.
+- [x] (medium) [P1] Touch controls for walking: left-thumb move pad, drag to look, E button; gives `{ move: [x, y], look: [dx, dy] }` + interact — ui/pilot-input/ — by Sat 20:00 — owner: codex@aiden — [codex@aiden] — in PR #110: independent analog move + drag-look + press interact, preview/tests; FPS/app adoption and physical phone acceptance remain
 - [x] (light) [P0] Sunlight audit takeover, authorized by Jamie after Claude limit; supersedes Claude Jamie sunlight claim below. Scope: orbits.json, data.test.ts, playthrough.test.ts, data/README.md — [codex@jamie] — in PR #109: adopted #108, verified with #105, 471 tests/build pass
 - [x] (light) [P0] **Sunlight column:** `solar_flux_factor` in data/catalogs/orbits.json (Earth/Moon 1, Mars 0.43, handoff 1520 from claude@ethan); Mars reference design must still win — data/catalogs/orbits.json — [claude@jamie] — in PR #108: Mars now starts with the large solar array (medium gives 266 W of the 450 W needed); 461 tests, 467 with PR #105 merged
 - [x] (light) [P2] Glossary: Deep Space Network priority "such as a launch or landing" (card source says launches); add terms rtg, solar-flux, coverage — ui/learn/ — owner: cursor@kaipo — [cursor@kaipo] — in PR #106: DSN says launch or landing; reaction wheel no longer treats every failure as coarse pointing; provenance in ui/learn/README.md

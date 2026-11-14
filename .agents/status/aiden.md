@@ -54,20 +54,20 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** main (claim); aiden-codex/walk-touch
-**Last updated:** 2026-11-14 15:01
+**Branch:** main (done coordination); aiden-codex/walk-touch (PR #110)
+**Last updated:** 2026-11-14 15:07
 
 ### Working on right now
-Decision 007 walking touch controls: movement pad, drag-look and interact button, separate from Claude's ui/fps controller.
+Decision 007 walking touch controls complete in PR #110; review fixes mine. Claude keeps ui/fps, hangar and app wiring. No additional source task claimed.
 
 ### Files / folders I'm touching (hands off)
-ui/pilot-input/WalkTouchControls.tsx, walk-touch.ts, walk-touch.test.ts, walk-touch.css, walk-preview.tsx, walk-preview.html (new); ui/pilot-input/index.ts + README.md exports/docs. Own coordination only. Existing PilotInput API preserved. No ui/fps, hangar, app, scene3d or Claude section/branch edits.
+PR #110 ui/pilot-input walking component/helper/tests/CSS/preview + index/README only; released for integration on merge. Existing PilotInput unchanged. Own coordination only; Claude section/branches, ui/fps/app/scene3d and docs/CHALLENGE 2.md untouched.
 
 ### Just finished
-Offline QA report PR #101 merged. Local preview offline lazy imports fail; PWA follow-up stays with Claude. Read decision 007 and new touch assignment.
+WalkTouchControls: held analog move [right, forward] <= unit length, incremental look [dx, dy] CSS pixels, independent fingers, press interact while moving, accessible pads/button and lifecycle zeroing. 466 tests pass; typecheck/build/size pass (139.5/150 kB). Chrome 390px simultaneous fingers, look-only release, interact while moving, cancel, arrow/Escape, pause/resume, Enter and unmount tested; no overflow/errors. Preview is input only.
 
 ### Missing / I need from someone
-Claude FPS/app owners adopt touch callbacks after module ready. Full 3D loop, physical-device acceptance and venue networking remain owner work.
+Claude FPS/app owner: mount WalkTouchControls and combine held touch movement with keyboard, apply look deltas once, route interaction through reach/role checks; disable for modal/cutscene/pause. Physical phone/Safari/screen-reader and integrated room acceptance remain. Earlier offline preview bug stays with PWA owner (PR #101 report).
 
 ### Heads up for other agents
-Walking output: move [right, forward] normalized, look [dx, dy] incremental CSS pixels, discrete interact callback. No camera physics or sim commands here. Existing craft PilotInput remains compatible.
+Handoff publishes exact callback semantics. This module does not move cameras, send sim commands or add a competing desktop controller. No new model assets/dependencies; no Astra pass needed for this input implementation.
