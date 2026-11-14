@@ -23,12 +23,12 @@ The sim reads the catalogs and scenario in `data/` exactly as they are: same dat
 `metrics.phase` goes `design` → `cruise` → `operations` → `ended`.
 
 - **design:** time stands still. Every step re-checks the design and refreshes the budgets in `state.metrics` and the problems in `state.issues`. `set_param` changes a choice. `launch` starts the mission, or is refused with a `warning` event while any issue has severity `error`.
-- **launch:** one random roll against the launch vehicle's `reliability`. Failure ends the mission (`launch_failure`).
+- **launch:** with `random_failures` on, one random roll against the launch vehicle's `reliability`. Failure ends the mission (`launch_failure`).
 - **cruise:** lasts the orbit's `cruise_days` (or `cruise_s`). data/ has no such column today, so cruise takes no time: the launch step enters `cruise` and the next step enters `operations`.
-- **operations:** each day the instruments make data, the radio sends what it can, the rest waits in storage, and anything that does not fit is lost. **Science only counts when its data reaches the ground.** The bus can fail (`spacecraft_failure`) and random events can cost a day.
-- **ended:** `success` if `science_score` reached `science_goal`, otherwise `science_shortfall`. A `scenario_ended` event carries `summary(state)`.
+- **operations:** each day the instruments make data, the radio sends what it can, the rest waits in storage, and anything that does not fit is lost. **Science only counts when its data reaches the ground**, and the radio sends the most valuable data (most science per GB) first. With `random_failures` on, the bus can fail (`spacecraft_failure`) and random events can cost a day.
+- **ended:** `success` if `science_score` reached `science_goal` (within 0.000001 of a point, because the score is a sum of daily amounts), otherwise `science_shortfall`. A spacecraft that fails after the goal was reached is still a `success`. A `scenario_ended` event carries `summary(state)`.
 
-The mission clock starts at launch and runs for `mission_duration_s`. With the demo's `dt_s` of one day that is the launch step plus 365 steps. After launch the design is locked. After `ended`, `step` returns the same state.
+The mission clock starts at launch and runs for `mission_duration_s`. With the demo's `dt_s` of one day that is the launch step plus 365 steps. After launch the design is locked, including for `set_param` commands that follow `launch` in the same step. After `ended`, `step` returns the same state. A `dt_s` that is not a positive number moves no time. Malformed commands are skipped.
 
 ## Catalogs the sim reads
 
@@ -66,13 +66,15 @@ Scenario settings (`Config.params`):
 | `target_science_score` | science points needed for success | any science is a success |
 | `mission_duration_s` | planned mission length from launch | `Config.duration_s` |
 | `budget_usd` | whole-mission budget | no limit |
-| `random_failures` | `false` = sandbox: no launch failure, bus failure or random events | `true` |
+| `random_failures` | `true` = launches and the bus can fail, and random events happen. The rolls depend only on the seed, so test the seed before shipping a scenario with this on | `false` (sandbox) |
 | `event_rate_per_day` | chance per day of a solar storm or ground station outage | 0 (off) |
 | `ops_cost_usd_per_day`, `ground_station_cost_usd_per_day` | running costs | 0 (off) |
-| `ground_stations` | 1 to 6; multiplies the daily contact time | 1 |
+| `ground_stations` | 1 to 6; multiplies the daily contact time. Ignored unless `ground_station_cost_usd_per_day` is above 0 | 1 |
 | `deadline_months`, `integration_months_per_instrument` | schedule limit; needs `build_months` columns | off |
 
 `objective` and `objective_text` are for the UI; the sim does not read them.
+
+Values are checked in `init` and on every `set_param` (`cleanParam` in `sim/params.ts`): a number sent as text for a numeric key is converted (`"100"` → 100), and `NaN`, `null`, objects and non-numeric text for a numeric key are refused (`set_param` then raises a `warning` event).
 
 ### Aliases
 
@@ -86,7 +88,7 @@ All in `sim/params.ts` (`PARAM_ALIASES`, `SCENARIO_ALIASES`), nowhere else.
 | `science_goal` | `target_science_score` | old sim name |
 | `mission_days` | `mission_duration_s` / 86400 | old sim name |
 
-In `Config.params` an alias is used only when the real key is unset. A `set_param` on an alias also sets the real key. `state.params.power` is kept equal to `solar`, because the builder reads it back to show the current pick.
+In `Config.params` an alias is used only when the real key is unset. A `set_param` on an alias also sets the real key. `state.params.power` is kept equal to `solar` (also when `power_system` is the key sent), because the builder reads it back to show the current pick.
 
 ## The rules, one sentence each
 
@@ -96,21 +98,23 @@ In `Config.params` an alias is used only when the real key is unset. A `set_para
 | Bus capacity | A bus can carry only so many kilograms and so many instruments. | `max_added_mass_kg`, `max_instruments` |
 | Bus size | Big parts need a big enough class of bus (`cubesat` < `smallsat` < `medium` < `flagship`). | `min_bus_class`, `class` |
 | Launch | The rocket must be able to lift the whole spacecraft to the chosen orbit. | the orbit's `launch_capacity_column` |
-| Propulsion | If the orbit needs a burn of more than 100 m/s the bus must be able to do it; a smaller shortfall still flies, but the spacecraft drifts and stays in that orbit half as long. | `delta_v_required_ms`, `propulsion_delta_v_ms`, `max_lifetime_s` |
+| Propulsion | If the orbit needs a burn of more than 100 m/s the bus must be able to do it; a smaller shortfall still flies, but the spacecraft drifts and stays in that orbit half as long (only mentioned, as `orbit_life_short`, when that is shorter than the mission). | `delta_v_required_ms`, `propulsion_delta_v_ms`, `max_lifetime_s` |
 | Power | Solar panels only make power in sunlight (an RTG always does), and that average must cover the bus and radio; instruments take turns on whatever is left. | `power_w`, `eclipse_fraction`, `base_power_w` |
-| Battery | The battery must run everything through each eclipse, or the instruments switch off in shadow. | `capacity_wh`, `period_s`, `eclipse_fraction` |
+| Battery | The battery must run everything through each eclipse, or the instruments switch off in shadow. Uptime is the smaller of the power share and the sunlit share, not their product. | `capacity_wh`, `period_s`, `eclipse_fraction` |
 | Fading | The power source loses `degradation_per_year` of its output each year. | `degradation_per_year` |
 | Cost | You pay for every part and for the launch, and some rockets also charge per kilogram. | `cost_usd`, `cost_per_kg_usd` |
 | Data | Instruments make data while they are on; the radio sends data only while a ground station is in view. | `data_rate_bps`, `duty_cycle`, `contact_s_per_day` |
 | Range | Beyond its reference range a radio slows down with the square of the distance. | `reference_range_m`, `comm_range_m` |
 | Storage | The spacecraft holds one day of observations (or the bus's `storage_gb`); when that is full, new data is lost. | `storage_gb` |
-| Science | Each instrument earns its `science_value` over the full planned mission, in step with how much of the data gets home. | `science_value` |
+| Science | Each instrument earns its `science_value` over the full planned mission, in step with how much of its data gets home; when the radio cannot send everything, the data worth the most science per GB goes first, so adding an instrument never lowers the total. | `science_value` |
 | Best orbit | An instrument flown outside its best orbit earns half its science. | `best_orbit` |
 | Lifetime | The mission ends at the planned time, or sooner if the bus wears out or the orbit decays. | `design_life_s`, `max_lifetime_s` |
-| Risk | A bus's `reliability` is its chance of lasting its whole design life near Earth, and radiation multiplies the failure rate. | `reliability`, `design_life_s`, `radiation_factor` |
+| Risk (only with `random_failures` on) | A bus's `reliability` is its chance of lasting its whole design life near Earth, and radiation multiplies the failure rate. | `reliability`, `design_life_s`, `radiation_factor` |
 | Schedule (off) | The slowest part sets the build time, plus a month per instrument. | `build_months` |
 
-The constants are in `sim/design.ts`: `OFF_ORBIT_SCIENCE_FACTOR` 0.5, `CAPTURE_DELTA_V_MS` 100, `DRIFT_LIFETIME_FACTOR` 0.5, mass margin warning at 90%, survival warning below 70%.
+The constants are in `sim/design.ts`: `OFF_ORBIT_SCIENCE_FACTOR` 0.5, `CAPTURE_DELTA_V_MS` 100, `DRIFT_LIFETIME_FACTOR` 0.5, mass margin warning at 90%, survival warning below 90% (`radiation_risk`, only with `random_failures` on), `SCIENCE_TOLERANCE` 0.000001.
+
+**Time is not a trade-off in the demo.** Of the six resources (mass, power, budget, data, comms, time), the demo exercises five. The Schedule rule is off because the catalogs have no `build_months` column and the scenario has no `deadline_months`; cruise takes no time; and the Lifetime rule cannot bind, because every bus and every orbit outlasts the one-year mission. The sim already reads all of these, so time becomes a real trade-off as soon as data/ adds `build_months` columns and a `deadline_months` key (and, for lifetime, a mission longer than the shortest bus or orbit life).
 
 ## state.metrics
 
@@ -136,7 +140,7 @@ Budgets, refreshed every step:
 
 Progress: `phase`, `outcome`, `mission_day` (days since launch), `science_score`, `data_generated_gb`, `data_downlinked_gb`, `data_stored_gb`, `data_lost_gb`, `cost_spent_usd`.
 
-`science_score` is the science returned so far. **In the design phase it shows the forecast** (`science_expected`) so the builder's "Science score" means something; it starts again from 0 at launch.
+`science_score` is the science returned so far. **In the design phase it shows the forecast** (`science_expected`) so the builder's "Science score" means something; it starts again from 0 at launch. The forecast is the flight run ahead of time with no bad luck (same days, same fading power source, same radio, via `dayOfData` in `sim/design.ts`), so the two agree.
 
 ## state.issues
 
@@ -152,7 +156,7 @@ Each code appears at most once. Each `message` is written for students and says 
 | `over_budget` | error | budget |
 | `behind_schedule` (optional feature) | error | time |
 | `mass_margin_low` | warning | mass |
-| `no_station_keeping`, `off_best_orbit`, `radiation_risk`, `science_short` | warning | design |
+| `off_best_orbit`, `radiation_risk`, `science_short` | warning | design |
 | `power_short`, `power_fades`, `battery_small` | warning | power |
 | `link_weak`, `downlink_short` | warning | comms |
 | `bus_life_short`, `orbit_life_short` | warning | time |
@@ -167,7 +171,7 @@ Each code appears at most once. Each `message` is written for students and says 
 
 ## summary(state)
 
-`outcome`, `score` (0 to 100: 70 science, 10 budget left, 10 launch margin, 10 data delivered), `grade` (A to F), `science_score`, `science_goal`, `cost_usd`, `budget_usd`, `mass_kg`, `mass_limit_kg`, `data_generated_gb`, `data_downlinked_gb`, `data_lost_gb`, `mission_days_flown`, and `why`: sentences explaining the result.
+`outcome`, `score` (0 to 100: 70 science, 10 budget left, 10 launch margin, 10 data delivered; a failed mission scores at most 69), `grade` (A to F; a failed mission gets at most a C), `science_score`, `science_goal`, `cost_usd`, `budget_usd`, `mass_kg`, `mass_limit_kg`, `data_generated_gb`, `data_downlinked_gb`, `data_lost_gb`, `mission_days_flown`, and `why`: sentences explaining the result. After a flown mission the design warnings follow, introduced by "Before launch the design check said:"; a launch failure lists none, and a lost spacecraft only `radiation_risk`.
 
 ## The demo scenario in the sim
 
@@ -176,4 +180,4 @@ Each code appears at most once. Each `message` is written for students and says 
 - **Starting design:** no launch blockers, flies 365 days, returns 1.7 of 30 points (`science_shortfall`, grade F). The camera makes 2.16 GB a day and the S-band radio sends 0.375 GB.
 - **Reference design** (12U, camera + IR spectrometer, large wings, X-band): no issues at all, returns 40 points against a target of 30 (`success`, score 94, grade A).
 
-With random failures on (the default when the scenario has no `random_failures` key), a mission can also be lost to bad luck. As of this commit the demo's seed 42 loses the spacecraft on day 193 whichever design flies, so set `random_failures: false` or pick another seed for a live demo.
+Random failures are off unless the scenario sets `random_failures: true`, so the demo as shipped is decided by the design alone. Do not switch them on for the demo without changing its seed: with seed 42 the bus-failure roll on day 193 is low enough to lose every design that can launch.
