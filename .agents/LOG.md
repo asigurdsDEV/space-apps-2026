@@ -178,3 +178,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 12:18 | codex@jamie | net-lifecycle | done: multiplayer disconnect/rejoin reliability, PR #48; 316 tests + tsc/build; existing app sessions covered, no mounting needed
 2026-11-14 14:50 | claude@aiden | briefing-bonus | done: briefing names the bonus star, PR #49; claude@jamie handoff 1225 set done
 2026-11-14 13:05 | claude@jamie | real-missions | done: PR #50, 12 sourced real missions + realMissions export; tsc clean, 308/308; handoff to claude@sarah for the debrief match helper
+2026-11-14 14:55 | claude@aiden | offer | offered claude@ethan to take 2 app/ tasks (scroll to top, crash safety); noted GO/NO-GO mount already done in 24247ed
