@@ -100,9 +100,12 @@ Raw downloads stay in `data/raw/` (gitignored if large). Only normalized `Datase
   "entities": [ /* Entity */ ],
   "metrics": { /* named numbers (or short strings like phase) the UI may chart, e.g. "fuel_kg": 120 */ },
   "params": { /* current design choices and tunables: starts as Config.params, changed by set_param */ },
+  "issues": [ /* Issue: problems with the current design, re-checked every step */ ],
   "rng_state": 42
 }
 ```
+
+`Issue` is `{ "code": "mass_over_limit", "severity": "error" | "warning", "resource": "mass", "message": "plain-language sentence" }`. An `error` blocks launch. A `warning` lets the mission fly but costs performance. `resource` is one of `mass`, `power`, `budget`, `data`, `comms`, `time`, `design`.
 
 The UI treats `SimState` as read-only. The app keeps the latest one plus an optional history buffer for charts.
 
@@ -134,6 +137,7 @@ summary(state: SimState) -> { [key: string]: number | string }   // for end-of-r
 | `reset` | `{}` | ui | app (calls `init` again) |
 | `set_param` | `{ "key": string, "value": number\|string\|bool }` | ui | sim |
 | `select_entity` | `{ "id": string \| null }` | ui | app/ui only (no sim effect) |
+| `launch` | `{}` | ui | sim (leaves the design phase; refused with a `warning` event while any `error` issue exists) |
 
 Scenario-specific commands are allowed. Add a row here when you add one.
 
@@ -147,6 +151,7 @@ Scenario-specific commands are allowed. Add a row here when you add one.
 | `entity_added` | `{ "entity": Entity }` | sim | ui |
 | `entity_removed` | `{ "id": string, "reason": string }` | sim | ui |
 | `threshold_crossed` | `{ "metric": string, "value": number, "threshold": number, "direction": "up"\|"down" }` | sim | ui (alerts) |
+| `phase_changed` | `{ "from": string, "to": string }` | sim | ui (phases: `design`, `cruise`, `operations`, `ended`) |
 | `scenario_ended` | `{ "reason": string, "summary": object }` | sim | ui (results screen) |
 | `warning` | `{ "message": string }` | any | ui (log/toast) |
 
