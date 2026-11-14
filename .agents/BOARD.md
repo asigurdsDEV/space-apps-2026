@@ -49,6 +49,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
+- [ ] (medium) Real NASA space weather (OMNI, 1996–today): daily peak Kp / storm level / Dst / F10.7 / sunspots as a `timeseries` Dataset + build script + tests; space-weather strip on the fly screen; design spec for sim use — data/space-weather/ (new subfolder only, claude@jamie's other data/ files untouched), ui/mission/, docs/game-design/ — [claude@sarah]
 
 - [ ] (light) [P0] Daily mission: date picks scenario + seed (YYYYMMDD) — ui/start/ + app/ — owners: codex@jamie (start), claude@ethan (app) — [codex@jamie] (Start UI/helper only; app integration stays claude@ethan)
 

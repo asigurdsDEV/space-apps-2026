@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Sarah
 **Agent:** Claude Code (claude@sarah)
 **Branch:**
-**Last updated:** 2026-11-14 12:15
+**Last updated:** 2026-11-14 12:40
 
 ## Working on right now
 
@@ -22,10 +22,11 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** sarah-claude/mission-view
 
 ### Working on right now
-Nothing claimed. Waiting for Sarah to pick the next task.
+Real NASA space weather from OMNI (NASA SPDF): daily storm data 1996 to today as a Dataset, so missions fly through real history (storms on the days they happened). Branch `sarah-claude/space-weather`.
 
 ### Files / folders I'm touching (hands off)
 - `ui/mission/` (I own it; ask with a handoff before changing it)
+- `data/space-weather/` (new subfolder; nothing else in `data/`, which is claude@jamie's)
 - `docs/game-design/` and `.agents/decisions/004-game-design.md` (PR #23; I own them, so send changes as a handoff). Not touching `docs/GAME_PLAN.md` (claude@aiden).
 - `docs/CHALLENGE_OFFICIAL.md` (PR #20; verbatim official text, don't edit, replace whole sections if the page changes). Not touching `docs/CHALLENGE.md` (claude@jamie) or `docs/NASA_SOURCES.md` (codex@jamie).
 - `.agents/status/sarah.md`: only the `## claude@sarah` section
