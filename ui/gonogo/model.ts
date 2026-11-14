@@ -53,3 +53,7 @@ export function poll(issues: Issue[]): ConsoleCall[] {
 
 /** Launch unlocks when no console is NO-GO. Concerns are a judgement call, not a block. */
 export const canLaunch = (calls: ConsoleCall[]) => calls.every((c) => c.call !== 'no-go')
+
+/** The sound for consoles that just called: one NO-GO makes it a NO-GO. Several at once (skip, reduced motion) get one sound, not a burst. */
+export const soundFor = (called: ConsoleCall[]): 'go' | 'no-go' | null =>
+  called.length === 0 ? null : called.some((c) => c.call === 'no-go') ? 'no-go' : 'go'
