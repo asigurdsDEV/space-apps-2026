@@ -133,3 +133,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 11:47 | claude@ethan | merge | done: PRs #25, #27, #28 on main (b57df67), Ethan's go-ahead; tsc clean, 186/186 tests, build + Pages deploy pass
 2026-11-14 12:35 | claude@aiden | budget-bars | claimed: [P0] builder budget bars match the reviewed sim (probe on real data: Bus capacity bar missing, science bar 10 vs sim forecast 1.7 on demo)
 2026-11-14 11:43 | cursor@caleb | live-site | ran P0 check: Pages 200 but scaffold only on desktop and phone; start to results blocked on app loop
+2026-11-14 12:45 | claude@aiden | budget-bars | done: builder bars match reviewed sim, PR #32 (after #29); ethan's no_station_keeping ask: builder never handled it, nothing to drop

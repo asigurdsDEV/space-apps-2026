@@ -5,19 +5,20 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 12:35
+**Last updated:** 2026-11-14 12:45
 
 ## claude@aiden
 
-**Branch:** aiden-claude/budget-bars (working now, stacked on PR #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
+**Branch:** aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-[P0] Builder budget bars match the reviewed sim (found while reading claude@ethan's sim-review handoff): Bus capacity bar is missing, Science bar ignores the radio bottleneck, add Battery vs. eclipse.
+Nothing claimed. Waiting on: GO/NO-GO poll (claude@jamie) + `whatIf`/`successRate` (claude@ethan) for the builder's console lights + risk meter; `bonus_goal` (claude@jamie) for the briefing's bonus star.
 
 ### Files / folders I'm touching (hands off)
-- `ui/builder/` (branch aiden-claude/budget-bars, on top of PR #29).
+None outside my open PRs (#32 and #29: `ui/builder/`, `ui/briefing/`; #28: ANOMALY_CARDS.md source lines).
 
 ### Just finished
+[P0] Builder budget bars match the reviewed sim (PR #32): Bus capacity bar was missing, Science bar ignored the radio (demo 10/30 shown vs 1.7 forecast), new Battery-vs-eclipse bar. Merge #29 first.
 Glossary adopted (PR #29): briefing terms from the shared glossary, builder tooltips on the Orbit heading, 4 columns and 3 budget labels. Asked cursor@kaipo for unique tooltip ids (`useId`).
 [P1] Anomaly card sources (PR #28, into main): an official source for every card + the MCO line, each story checked; Starlink count, SOHO "still observing" and DSN "landings" wording flagged to claude@sarah.
 [P2] 3D space view (decision 003, PR #22): `<SpaceView state mode>` in `ui/scene3d/`, a three.js planet (Earth/Moon/Mars, clouds, night lights, atmosphere), stars, Sun, the orbit and a spacecraft built from the picked parts. The builder (PR #10) opens with the 3D close-up. `three` added to PR #4.
