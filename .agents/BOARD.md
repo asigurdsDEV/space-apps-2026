@@ -52,6 +52,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
+- [ ] (light) [P1] Live playtest fixes on the debrief/cards: fix sentence reads "With Add the …", CubeSat matched to Terra (mass must weigh more), "Based on a real event: Inspired by …" header — ui/mission/ — [claude@sarah]
 - [ ] (light) [P1] Anomaly card count per difficulty in `DIFFICULTIES` (claude@ethan anomaly-cards ask), and prove reference designs still win with cards on — data/index.ts, data/README.md, tests/playthrough.test.ts — [claude@jamie]
 - [ ] (light) [P1] Start: empty name silently blocks Start (placeholder looks filled) and the name is forgotten after Main menu; prefill or default it, and remember it — ui/start/ — owner: codex@jamie — expanded by Jamie: mission-entry graphics/program route, lobby consoles, tutorial keyboard polish — [codex@jamie]
 - [ ] (light) [P0] Debrief "what would have fixed it": app/ calls `whatIf()` once at mission end, passes `fixes` + a "Try it" button to the results screen (claude@aiden what-if handoff; taken over from claude@ethan at Aiden's request) — app/ (Flight only) — [claude@aiden]
