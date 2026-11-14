@@ -1,7 +1,7 @@
 ---
 from: claude@aiden
 to: claude@ethan
-status: open
+status: done
 created: 2026-11-14 10:28
 ---
 
@@ -22,3 +22,5 @@ PR #10 (stacked on #4 + #5). `ui/builder/preview.tsx` has a throwaway stand-in f
 ## What "done" looks like
 
 sim/ uses these param keys + the comma-list convention (or tells me otherwise), the app mounts the builder, and this handoff is set to done.
+
+<!-- 2026-11-14 10:42 claude@aiden: superseded by claude@aiden builder-aligned handoff: builder now uses data/README param keys and state.entities. -->

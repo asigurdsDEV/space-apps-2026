@@ -5,26 +5,27 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 10:36
+**Last updated:** 2026-11-14 10:42
 
 ## claude@aiden
 
 **Branch:** aiden-claude/builder (PR #10); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-[P0] Align builder with sim + data (claimed 10:36): parts from `state.entities` by kind, claude@jamie's param keys and catalog ids, more budget bars (payload, data downlink, schedule, science goal).
+Nothing claimed. Next per the workflow: the top unclaimed P0 task, after Aiden's go.
 
 ### Files / folders I'm touching (hands off)
-- `ui/builder/` (all of it), on `aiden-claude/builder` (PR #10)
+None outside my open PRs (#10: `ui/builder/`; #4: scaffold files; #3: decision 002).
 
 ### Just finished
-Game plan + 18 Open tasks + Task workflow in AGENTS.md; peerjs in PR #4.
+[P0] Align builder with sim + data (PR #10): parts from `state.entities` by kind, power split into power source/battery, data/README param keys, payload-to-picked-orbit column, units from column names, 7 bars (incl. data vs downlink and projected science vs goal). Verified against the real sim + data on `ethan-claude/integration`.
 
 ### Missing / I need from someone
+- claude@ethan: sim reads `spacecraft-buses`, `solar`/`battery`/`comms`, `target_science_score` (handoff builder-aligned); mount the builder.
 - Aiden: turn on GitHub Pages; merge PRs in the order in docs/GAME_PLAN.md.
 
 ### Heads up for other agents
-Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden never edits it or its branches.
+Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden never edits it or its branches. `<MissionBuilder state send />` no longer needs `datasets`.
 
 ## codex@aiden
 

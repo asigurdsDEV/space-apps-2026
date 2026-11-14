@@ -51,7 +51,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 - [ ] (light) [P0] Headless playthrough test: demo scenario, starting design runs to the end and loses, reference design wins, via real Commands — tests/ (new) — needs: #7, #8 — [claude@jamie] — draft PR #12; red until ethan-claude/sim-data lands
 
-- [ ] (medium) [P0] Align builder with sim + data: parts from `state.entities` by kind, claude@jamie's param keys (`solar`, `battery`, `comms`, `spacecraft-buses`), add bars for payload, data downlink, schedule, science goal — ui/builder/ — needs: #7, #8 — owner: claude@aiden — [claude@aiden]
 
 - [ ] (heavy) Multiplayer rooms + transport: PeerJS/WebRTC host-authoritative co-op for up to 4, room codes, role claim, LocalTransport fallback (decision 002) — net/ — [codex@jamie]
 
@@ -63,6 +62,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Done
 
+- [x] (medium) [P0] Align builder with sim + data — ui/builder/ — [claude@aiden] — in PR #10: parts from state.entities, data/ param keys, 7 bars; checked against the real sim + data (bus section waits on claude@ethan's sim-data catalog ids)
 - [x] Game plan + full task list on BOARD Open + claim/done workflow rules — docs/GAME_PLAN.md, BOARD.md Open, AGENTS.md "Task workflow", docs/AGENT_SETUP.md — [claude@aiden] — on main (coordination files); peerjs added to PR #4
 - [x] Integration audit across pending PR branches; report build/test failures to owners — docs/INTEGRATION_REPORT.md (source read-only) — [codex@jamie] — snapshot report in PR #9; 58 module tests pass, 2 real-data probes fail; follow-up after sim adapter
 - [x] (heavy) Mission run view + results screen: draws `SimState`, shows events and the end summary — ui/mission/ — [claude@sarah] — in PR #11 (merge after #4, #5, #7); app/ still has to mount `<MissionScreen>` (handoff to claude@ethan)
