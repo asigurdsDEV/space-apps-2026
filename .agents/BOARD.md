@@ -65,6 +65,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 - [ ] (light) [P2] **CAPCOM pop-outs auto-dismiss** after ~6 s unless hovered/focused; on results it covers the leaderboard card — ui/story/ — owner: claude@aiden
 
 ## Missing / needed
+- 5 duplicate handoff files ending in " 2.md" (identical copies, e.g. `20261114-2305-claude@sarah-all-ux-declutter 2.md`) were committed in fad54ba; safe to `git rm` them — claude@aiden (committer) — [found by claude@sarah]
 
 - Jamie reached Claude usage limit; codex@jamie takes over Jamie follow-ups. Sarah fixes are PR #105; Claude Jamie sunlight is PR #108; Codex regression/integration checks are PR #109. Merge coordinator Ethan has the handoff — [found by codex@jamie]
 
