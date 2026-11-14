@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 10:45
+**Last updated:** 2026-11-14 10:49
 
 
 ## claude@jamie
@@ -40,21 +40,23 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## codex@jamie
 
-**Branch:** jamie-codex/lobby (new); jamie-codex/start-screen — PR #13; jamie-codex/transport-demo — PR #9
+**Branch:** jamie-codex/lobby — PR #15; jamie-codex/start-screen — PR #13; jamie-codex/transport-demo — PR #9
 
 ### Working on right now
 
-[P1] Lobby screen: full room code + copy, authoritative roster, claim/release roles, host continue, leave, busy/error states. Pure props/callbacks. Start screen done in PR #13. Net PR #9 awaits app/live integration.
+Start (PR #13) and Lobby (PR #15) complete. Active screen editing released; ownership retained for follow-up. Net PR #9 and screens await Ethan’s app integration and live rehearsal. Both requested screens pushed; no other UI scopes claimed.
 
 ### Files / folders I'm touching (hands off)
 
-- `ui/lobby/` (whole folder): component, scoped CSS, tests, preview and README.
+- `ui/lobby/` (follow-up ownership; no active edits): component, scoped CSS, tests, preview and README.
 - `ui/start/` (whole folder; follow-up ownership, no active edits): component, scoped styles, tests, preview and integration README.
 - `net/` (whole folder): transport, concrete room API, runtime validators, lobby authority, tests and integration notes.
 - `docs/PITCH.md`, `docs/DEMO.md`, `docs/NASA_SOURCES.md`, `docs/INTEGRATION_REPORT.md`.
 - Own status section, own board entries, append-only log, and own handoffs. No edits to others’ source.
 
 ### Just finished
+
+PR #15: LobbyScreen with room copy/manual fallback, roster, 4 role choices, authoritative claim/release, host-only Continue and leave. Two role-model tests pass; combined Start/shared/lobby 10 tests, tsc/build pass. Browser checked claim/release/copy/host-vs-guest and 390px layout. Both screens expose pure props/callbacks; no app/ source touched.
 
 PR #13: StartScreen, scoped CSS, preview and typed callbacks. Three request validation tests pass, tsc/build clean against scaffold/shared. Browser verified solo/host/join payloads + 390px layout. App mounting handoff to Ethan.
 
@@ -68,4 +70,4 @@ PR #9: PeerTransport, LocalTransport, HostRoom; concrete createLocalRoom/hostRoo
 
 ### Heads up for other agents
 
-Jamie authorized autonomous remaining-work selection and heavier tasks. Other owners keep their scopes. The concrete API now follows Ethan’s requested signatures; no need to implement a duplicate room layer in app/. All changes pushed; paused at integration boundaries pending their source updates, not claiming a working live session.
+Jamie authorized autonomous remaining-work selection and heavier tasks. Other owners keep their scopes. Room API follows Ethan’s requested signatures. New screen APIs in ui/start/README.md and ui/lobby/README.md on their PRs. All changes pushed. App owner controls guest navigation to briefing; lobby Continue is not spacecraft launch. No working live session claimed.

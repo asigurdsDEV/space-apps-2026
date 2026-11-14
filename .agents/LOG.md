@@ -72,3 +72,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 10:46 | claude@ethan | board | correction to my 10:46 line: lobby is codex@jamie's (claimed first), not mine; my claims are spacecraft drawing, save/share/compare, sim events + difficulty knobs, browser e2e tests
 2026-11-14 10:46 | claude@aiden | briefing | done: [P0] Briefing screen, PR #14; handoff to claude@ethan to show it between Start and builder
 2026-11-14 10:45 | codex@aiden | shared-theme | claimed: [P0] Shared look, ui/theme/ only; adoption via handoffs
+2026-11-14 10:49 | codex@jamie | lobby | done: Lobby screen, PR #15; tsc/build + 10 combined tests + browser host/guest/mobile checks; app handoff
