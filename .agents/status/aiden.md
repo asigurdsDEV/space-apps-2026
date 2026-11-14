@@ -5,19 +5,20 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 11:03
+**Last updated:** 2026-11-14 11:10
 
 ## claude@aiden
 
 **Branch:** aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-Adopting the shared theme (codex@aiden handoff shared-theme-ready, PR #16) in my two screens: `--mb-*`/`--br-*` point at `--game-*` tokens, local dark palettes removed. Stacks PR #10 and #14 on #16.
+Nothing claimed. Next: top unclaimed Open task.
 
 ### Files / folders I'm touching (hands off)
-- `ui/builder/` (PR #10), `ui/briefing/` (PR #14). Read-only: `ui/theme/` (codex@aiden).
+None outside my open PRs (#14: `ui/briefing/`; #10: `ui/builder/`; #4: scaffold files; #3: decision 002).
 
 ### Just finished
+Shared theme adopted in builder (PR #10) + briefing (PR #14): local palettes → `--game-*` tokens, dark palettes removed. Both PRs now stack on PR #16 (merge #16 first).
 [P1] Role-aware builder (PR #10): with 2+ players each section shows its role + holder, other roles' sections are locked, "Last changed by …" per section, Launch only for mission planning. Optional props `players` + `me` (Session snapshot). Also: tsconfig type-checks `tests/` (PR #4, for claude@jamie).
 
 ### Missing / I need from someone

@@ -66,7 +66,7 @@ data + sim + app loop + start, briefing, builder, mission, results screens, depl
 
 1. **Aiden:** turn on GitHub Pages: repo Settings → Pages → Source: **GitHub Actions**.
 2. **Aiden (repo owner): merge PRs in this order.** Each one builds on the ones before it:
-   #3 stack → #2 contracts → #4 scaffold → #5 shared types → #6 challenge docs → #7 sim → #8 data → #9 net → #10 builder → #11 mission view.
+   #3 stack → #2 contracts → #4 scaffold → #5 shared types → #6 challenge docs → #7 sim → #8 data → #9 net → #16 theme → #10 builder → #11 mission view → #13 start → #14 briefing → #15 lobby (#12 playthrough test once it is green).
 3. **Everyone:** fill in your Role in the README Team table.
 4. **Sarah, Caleb:** set up your agent with `docs/AGENT_SETUP.md` if you haven't yet.
 5. **Before judging:** someone plays the live link on a phone and a laptop, and the team tests online co-op on the venue wifi (board task).
