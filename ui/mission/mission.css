@@ -1,18 +1,20 @@
 /* Mission run view + results screen. Every class starts with .mv so nothing leaks into other screens. */
 
 .mv-root {
-  --mv-bg: #0b1020;
-  --mv-card: #141b33;
-  --mv-line: #26304f;
-  --mv-text: #e8ecf8;
-  --mv-muted: #9aa5c4;
-  --mv-info: #5b8cff;
-  --mv-good: #34c38f;
-  --mv-warn: #f5a524;
-  --mv-bad: #f0506e;
+  /* Krillion-style arcade palette, same as ui/theme */
+  --mv-bg: #070d1a;
+  --mv-card: #0d1830;
+  --mv-line: #3d6e8f;
+  --mv-text: #e8f1ff;
+  --mv-muted: #8fa3c4;
+  --mv-info: #4de3ff;
+  --mv-good: #63e6be;
+  --mv-warn: #ffd166;
+  --mv-bad: #ff6b6b;
   --mv-earth: #3b7dd8;
   --mv-moon: #b9bccb;
   --mv-mars: #c8643b;
+  --mv-display: "VT323", ui-monospace, SFMono-Regular, Consolas, monospace;
 
   background: var(--mv-bg);
   color: var(--mv-text);
@@ -60,7 +62,7 @@
 .mv-card {
   background: var(--mv-card);
   border: 1px solid var(--mv-line);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 14px 16px;
 }
 
@@ -74,7 +76,7 @@
 .mv-speeds {
   display: inline-flex;
   border: 1px solid var(--mv-line);
-  border-radius: 8px;
+  border-radius: 0;
   overflow: hidden;
 }
 .mv button {
@@ -82,7 +84,7 @@
   color: var(--mv-text);
   background: var(--mv-card);
   border: 1px solid var(--mv-line);
-  border-radius: 8px;
+  border-radius: 0;
   padding: 6px 12px;
   cursor: pointer;
   min-height: 36px;
@@ -136,13 +138,13 @@
 }
 .mv-bar__track {
   height: 10px;
-  border-radius: 999px;
+  border-radius: 0;
   background: var(--mv-line);
   overflow: hidden;
 }
 .mv-bar__fill {
   height: 100%;
-  border-radius: inherit;
+  border-radius: 0;
   background: var(--mv-tone, var(--mv-info));
   transition: width 0.25s ease;
 }
@@ -170,7 +172,7 @@
 }
 .mv-stats div {
   background: var(--mv-bg);
-  border-radius: 8px;
+  border-radius: 0;
   padding: 8px 10px;
 }
 .mv-stats dt {
@@ -196,7 +198,7 @@
   flex: none;
   width: 88px;
   height: 88px;
-  border-radius: 20px;
+  border-radius: 0;
   display: grid;
   place-items: center;
   font-size: 3rem;
@@ -222,7 +224,7 @@
 .mv-decision {
   background: var(--mv-card);
   border: 2px solid var(--mv-warn);
-  border-radius: 14px;
+  border-radius: 0;
   padding: 16px 18px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
   display: grid;
@@ -248,7 +250,7 @@
   background: var(--mv-warn);
   color: #1a1200;
   font-weight: 700;
-  border-radius: 999px;
+  border-radius: 0;
   padding: 2px 8px;
 }
 .mv .mv-decision__title {
@@ -278,7 +280,7 @@
   flex: none;
   width: 26px;
   height: 26px;
-  border-radius: 50%;
+  border-radius: 0;
   display: grid;
   place-items: center;
   background: var(--mv-info);
@@ -296,7 +298,7 @@
   border-left: 3px solid var(--mv-info);
   padding: 6px 10px;
   background: var(--mv-bg);
-  border-radius: 0 6px 6px 0;
+  border-radius: 0;
 }
 .mv-decision__story a {
   color: var(--mv-info);
@@ -336,7 +338,7 @@
   align-items: center;
   justify-content: space-between;
   background: var(--mv-bg);
-  border-radius: 8px;
+  border-radius: 0;
   padding: 8px 10px;
 }
 .mv-share pre {
@@ -344,7 +346,7 @@
   white-space: pre-wrap;
   font-size: 0.9rem;
   background: var(--mv-bg);
-  border-radius: 8px;
+  border-radius: 0;
   padding: 10px;
 }
 
@@ -356,7 +358,7 @@
   align-items: baseline;
   margin: 0;
   padding: 8px 12px;
-  border-radius: 10px;
+  border-radius: 0;
   background: var(--mv-card);
   border: 1px solid var(--mv-line);
   border-left: 4px solid var(--mv-tone);
@@ -402,7 +404,7 @@
   position: relative;
   height: min(72vh, 680px);
   min-height: 420px;
-  border-radius: 16px;
+  border-radius: 0;
   overflow: hidden;
   border: 1px solid var(--mv-line);
   background: #02040a;
@@ -429,14 +431,14 @@
   list-style: none;
   margin: 0;
   padding: 4px;
-  border-radius: 999px;
+  border-radius: 0;
   background: rgba(11, 16, 32, 0.72);
   backdrop-filter: blur(6px);
 }
 .mv-phase {
   width: 10px;
   height: 10px;
-  border-radius: 999px;
+  border-radius: 0;
   background: var(--mv-line);
   transition: width 0.3s ease;
 }
@@ -461,7 +463,7 @@
 }
 .mv-day {
   padding: 4px 10px;
-  border-radius: 999px;
+  border-radius: 0;
   background: rgba(11, 16, 32, 0.72);
   font-size: 0.85rem;
   font-variant-numeric: tabular-nums;
@@ -478,7 +480,7 @@
 .mv-speeds {
   display: inline-flex;
   border: 1px solid var(--mv-line);
-  border-radius: 8px;
+  border-radius: 0;
   overflow: hidden;
 }
 
@@ -490,7 +492,7 @@
   z-index: 2;
   margin: 0;
   padding: 6px 12px;
-  border-radius: 999px;
+  border-radius: 0;
   background: rgba(11, 16, 32, 0.8);
   border: 1px solid var(--mv-tone);
   font-size: 0.85rem;
@@ -509,7 +511,7 @@
   max-width: min(560px, calc(100% - 24px));
   margin: 0;
   padding: 8px 14px;
-  border-radius: 10px;
+  border-radius: 0;
   background: rgba(11, 16, 32, 0.85);
   border-left: 4px solid var(--mv-tone);
   animation: mv-toast 4s ease forwards;
@@ -536,7 +538,7 @@
   gap: 10px;
   align-items: center;
   padding: 8px 10px;
-  border-radius: 12px;
+  border-radius: 0;
   background: rgba(11, 16, 32, 0.78);
   backdrop-filter: blur(6px);
 }
@@ -544,7 +546,7 @@
   flex: none;
   width: 46px;
   height: 46px;
-  border-radius: 50%;
+  border-radius: 0;
   display: grid;
   place-items: center;
   font-size: 1.15rem;
@@ -594,7 +596,7 @@
 /* folded extras */
 .mv-more {
   border: 1px solid var(--mv-line);
-  border-radius: 12px;
+  border-radius: 0;
   background: var(--mv-card);
   padding: 10px 14px;
 }
@@ -625,7 +627,7 @@
   padding: 6px 8px 6px 10px;
   border-left: 3px solid var(--mv-tone, var(--mv-line));
   background: var(--mv-bg);
-  border-radius: 0 6px 6px 0;
+  border-radius: 0;
   font-size: 0.9rem;
 }
 .mv-log__when {
@@ -673,7 +675,7 @@
   align-items: center;
   position: relative;
   padding: 18px;
-  border-radius: 16px;
+  border-radius: 0;
   background: var(--mv-card);
   border: 1px solid var(--mv-line);
   overflow: hidden;
@@ -760,3 +762,23 @@
     display: none;
   }
 }
+
+/* ---------- Krillion-style arcade layer ---------- */
+.mv :is(h2, h3, button, summary, .mv-grade, .mv-score, .mv-day, .mv-phase--current, .mv-gauge strong, .mv-decision__badge, .mv-weather) {
+  font-family: var(--mv-display);
+  letter-spacing: 0.08em;
+}
+.mv h2 { text-transform: uppercase; font-size: 2rem; letter-spacing: 0.12em; }
+.mv h3 { font-size: 1.15rem; letter-spacing: 0.18em; }
+.mv button { text-transform: uppercase; font-size: 1.15rem; border-width: 2px; }
+.mv button.mv-primary {
+  background: var(--mv-card);
+  color: var(--mv-text);
+  border: 3px solid var(--mv-info);
+  box-shadow: 0 0 0 3px var(--mv-bg), 0 0 0 5px rgb(77 227 255 / 0.35);
+  letter-spacing: 0.2em;
+}
+.mv-card, .mv-more, .mv-results__head, .mv-decision, .mv-stage { border-width: 2px; }
+.mv-gauge strong { font-size: 1.25rem; }
+.mv-grade { font-family: var(--mv-display); font-size: 4rem; }
+.mv-phase { border-radius: 0; }

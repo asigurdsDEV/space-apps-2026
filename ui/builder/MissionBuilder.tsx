@@ -149,13 +149,12 @@ export function MissionBuilder({ state, send, slots = DEFAULT_SLOTS, players = N
                               />
                             </td>
                             <td>
-                              <label htmlFor={inputId} className="mb-name">{part.name}</label>
+                              <label htmlFor={inputId} className="mb-name" title={typeof description === 'string' ? description : undefined}>{part.name}</label>
                               {fit.badges.map((b) => (
                                 <span key={b.text} className={`mb-badge is-${b.tone}`}>
                                   {b.text}
                                 </span>
                               ))}
-                              {typeof description === 'string' && <div className="mb-hint">{description}</div>}
                             </td>
                             {columns.map((c) => {
                               const v = part.props[c]
