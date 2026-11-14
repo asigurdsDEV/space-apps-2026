@@ -9,7 +9,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 ## Open
 
 ### Playtest 14:15 (claude@aiden played main start → results; details in handoff 20261114-1420 playtest)
-- [ ] (light) [P1] Start: empty name silently blocks Start (placeholder looks filled) and the name is forgotten after Main menu; prefill or default it, and remember it — ui/start/ — owner: codex@jamie
 
 ### Improvements (added by claude@aiden 12:55, ideas from playing the builder + the game design)
 
@@ -24,7 +23,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 ### P2 — nice-to-haves from the brief
 
 ### Game design (decision 004, proposed, see docs/game-design/GAME_DESIGN.md §8)
-- [ ] (heavy) [P0] Anomaly cards in the sim: `decision_required` event + `resolve_decision` command, seeded draws, effects vocabulary, encode the deck from docs/game-design/ANOMALY_CARDS.md — sim/, shared/, CONTRACTS.md — owner: claude@ethan
 
 ## Missing / needed
 
@@ -44,7 +42,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 <!-- anything an agent noticed is missing, broken, or needed by someone else -->
 <!-- - thing — who needs it — [found by agent@human] -->
 - GitHub Pages not enabled yet (Settings → Pages → Source: GitHub Actions) — deploy in PR #4 needs it — repo owner (Aiden) — [found by claude@aiden]
-- Live-site check 12:26 passed start → results on the then-deployed Pages build (desktop and 390px phone, solo First Light Normal, starting design, 60×, F / 26 pts). That build still opened the phone briefing, builder, and results mid-page. PR #53 claims the scroll-to-top fix and landed on main after this check — re-check the live link after the next deploy — [found by cursor@caleb]
+- ~~Live-site phone screens opened mid-page~~ resolved 12:45: after scrolling the start page to the bottom, briefing and builder on a 390px view both open at scrollY 0 (h1 on screen). https://asigurdsdev.github.io/space-apps-2026/ — [found by cursor@caleb]
 - ~~Challenge + engine/stack not picked yet~~ resolved 10:07: Space Mission Design Game, TS + Vite + React (decision 002) — [found by claude@ethan]
 - ~~Open PRs need a human review + merge~~ resolved 11:28: 21 PRs merged, `main` is c1b8d30 and the site is live — [found by claude@ethan]
 - PR #1 (jamie/setup) conflicts with main and is out of date — Jamie — [found by claude@ethan]
@@ -54,8 +52,9 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
-- [ ] (light) [P0] Debrief "what would have fixed it": app/ calls `whatIf()` once at mission end, passes `fixes` + a "Try it" button to the results screen (claude@aiden what-if handoff; taken over from claude@ethan at Aiden's request) — app/ (Flight only) — [claude@aiden]
-- [ ] (light) [P2] GO / NO-GO poll sounds: `playSound` go / no-go as each console calls (claude@aiden handoff sound) — ui/gonogo/ — [claude@jamie]
+- [ ] (light) [P1] Live playtest fixes on the debrief/cards: fix sentence reads "With Add the …", CubeSat matched to Terra (mass must weigh more), "Based on a real event: Inspired by …" header — ui/mission/ — [claude@sarah]
+- [ ] (light) [P1] Anomaly card count per difficulty in `DIFFICULTIES` (claude@ethan anomaly-cards ask), and prove reference designs still win with cards on — data/index.ts, data/README.md, tests/playthrough.test.ts — [claude@jamie]
+- [ ] (light) [P1] Start: empty name silently blocks Start (placeholder looks filled) and the name is forgotten after Main menu; prefill or default it, and remember it — ui/start/ — owner: codex@jamie — expanded by Jamie: mission-entry graphics/program route, lobby consoles, tutorial keyboard polish — [codex@jamie]
 
 
 
@@ -80,6 +79,10 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 
 ## Done
+
+- [x] (light) [P0] Debrief "what would have fixed it" — app/useFixes.ts + Flight, sim/analysis.ts — [claude@aiden] (taken over from claude@ethan at Aiden's request) — in PR #65: whatIf() at mission end with the real config (cards + daily seed) and the player's own card answers (choicesOf); Try it loads the fix (solo/same-screen); played: 26 → "Add the Magnetometer" 37
+- [x] (heavy) [P0] Anomaly cards in the sim — sim/, shared/, app/, CONTRACTS.md — [claude@ethan] — PR #60 on `main`: 8 cards, `decision_required` / `resolve_decision` / `decision_resolved`, own seeded stream, co-op console ownership; played in a browser (2 cards, results show them); what-if + real mission match wired in PR #63
+- [x] (light) [P2] GO / NO-GO poll sounds: `playSound` go / no-go as each console calls (claude@aiden handoff sound) — ui/gonogo/ — [claude@jamie] — in PR #61: one sound per console call, one for Skip / reduced motion; checked in the browser preview
 
 - [x] (light) [P2] Accessibility pass — docs/A11Y_REPORT.md — [cursor@caleb] — in PR #59: keyboard and accessibility-tree pass of the live game; handoff to codex@jamie for the builder tour dialog. Not an NVDA/VoiceOver run.
 - [x] (light) [P1] Daily/stars/personal-best regression: assembled-game persistence and regular-vs-daily isolation; report evidence only — docs/qa/daily-records.md (new); ui/leaderboard/ read-only — [codex@aiden] — PR #56 merged (ddfb083): live Daily 100/3 stars retained through two reloads, regular 69/0 and lower Daily 69/0; saved winning design kept; 316 tests/build pass

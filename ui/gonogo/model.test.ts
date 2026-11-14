@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import type { Issue } from '../../shared'
-import { canLaunch, consoleFor, poll } from './model'
+import { canLaunch, consoleFor, poll, soundFor } from './model'
 
 const issue = (code: string, severity: Issue['severity'], resource = 'design'): Issue => ({ code, severity, resource, message: code })
 
@@ -32,5 +32,15 @@ describe('GO / NO-GO poll', () => {
     expect(comms.call).toBe('no-go')
     expect(comms.reasons.map((r) => r.code)).toEqual(['downlink_short', 'over_budget'])
     expect(canLaunch(blocked)).toBe(false)
+  })
+
+  it('picks one sound for the consoles that just called', () => {
+    const calls = poll([issue('power_negative', 'error', 'power'), issue('link_weak', 'warning', 'data')])
+    const call = (c: string) => calls.filter((x) => x.call === c)
+    expect(soundFor([])).toBeNull()
+    expect(soundFor(call('go'))).toBe('go')
+    expect(soundFor(call('go-concerns'))).toBe('go') // concerns still say GO
+    expect(soundFor(call('no-go'))).toBe('no-go')
+    expect(soundFor(calls)).toBe('no-go') // skip: all at once, any NO-GO wins
   })
 })

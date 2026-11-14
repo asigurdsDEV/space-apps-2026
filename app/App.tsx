@@ -4,18 +4,18 @@
 // so solo, same-screen, host and guest play all use the same screens.
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ComponentType, type FormEvent } from 'react'
-import { DIFFICULTIES, getDatasets, getScenario, scenarios, withDifficulty, type Difficulty } from '../data'
+import { DIFFICULTIES, getDatasets, getScenario, realMissions, rowsAsObjects, scenarios, withDifficulty, type Difficulty } from '../data'
 import { LocalTransport } from '../net'
 import type { Config, NetMessage, SimEvent, SimState, Summary } from '../shared'
 import { canSend, ROLES } from '../shared'
-import { catalogEntities, pendingDecision, simCore } from '../sim'
+import { catalogEntities, choicesOf, pendingDecision, simCore, whatIf } from '../sim'
 import { playSound, SoundToggle } from '../ui/audio'
 import { Briefing } from '../ui/briefing'
 import { MissionBuilder } from '../ui/builder'
 import { GoNoGoPoll } from '../ui/gonogo'
 import { LocalLeaderboard } from '../ui/leaderboard'
 import { LobbyScreen } from '../ui/lobby'
-import { MissionScreen, stars, type WhatIfFix } from '../ui/mission'
+import { MissionScreen, stars } from '../ui/mission'
 import { designFromHash, SharePanel } from '../ui/share'
 import { dailyMissionForDate, StartScreen, type DailyMission, type DailyMissionRequest, type StartRequest } from '../ui/start'
 import { BuilderTutorial } from '../ui/tutorial'
@@ -23,7 +23,6 @@ import '../ui/theme/theme.css'
 import '../ui/learn/learn.css'
 import { Crew, Notice, RoomCode } from './Crew'
 import { ErrorBoundary } from './ErrorBoundary'
-import { useFixes } from './useFixes'
 import { startDriver, timerClock } from './driver'
 import { createGame, type Game } from './game'
 import { cleanRoomCode, openRoom } from './room'
@@ -45,6 +44,9 @@ export const SCENARIOS: Config[] = scenarios.flatMap((scenario) => LEVELS.map((l
  * leaves them out of its `state` messages (see app/session.ts) and guests put them back.
  */
 export const BASELINE = catalogEntities(getDatasets())
+
+/** Real missions for the debrief's "your mission is most like…" line. */
+const REAL_MISSIONS = rowsAsObjects(realMissions)
 
 /** Anomaly cards per mission (GAME_DESIGN.md §4.2): easy 1, normal 2, hard 3. A scenario's own `anomaly_cards` wins. */
 export const withCards = (config: Config): Config => ({
@@ -324,7 +326,7 @@ export function GameScreen({ session, config, onExit, roomCode, daily }: GameScr
           <Design session={session} config={config} />
         ) : (
           // Unmounts on reset, so every launch starts it fresh.
-          <Flight session={session} config={config} daily={daily} online={roomCode !== null} />
+          <Flight session={session} config={config} daily={daily} />
         )}
       </ErrorBoundary>
     </div>
@@ -412,17 +414,8 @@ export function weatherStart(config: Config, seed: number): string {
 type SpaceWeatherData = typeof import('../data/space-weather')
 
 /** Everything after launch: (the launch sequence,) cruise and operations, then the results with the personal best. */
-function Flight({ session, config, daily, online }: { session: Session; config: Config; daily?: DailyMission; online?: boolean }) {
+function Flight({ session, config, daily }: { session: Session; config: Config; daily?: DailyMission }) {
   const { state, events, paused, speed, players, me } = useSession(session)
-  // The what-if reruns fly the game as it was flown: its anomaly cards and seed (the daily's, if it is the daily).
-  const flown = useMemo(() => withCards(daily ? { ...config, seed: daily.seed } : config), [config, daily])
-  const fixes = useFixes(flown, state.params, events, state.status === 'ended')
-  // "Try it" loads the fixed design into the builder. Online each role owns its own parts, so it is solo/same-screen only.
-  const tryFix = ({ params }: WhatIfFix) => {
-    if (!params) return
-    session.send({ type: 'reset', payload: {} })
-    for (const [key, value] of Object.entries(params)) session.send({ type: 'set_param', payload: { key, value } })
-  }
   const [launchDone, setLaunchDone] = useState(false)
   // 340 kB of real NASA data, so it is loaded only once a mission flies.
   const [weather, setWeather] = useState<SpaceWeatherData | null>(null)
@@ -432,6 +425,13 @@ function Flight({ session, config, daily, online }: { session: Session; config: 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   const ended = state.status === 'ended'
+  // "What would have fixed it": the flown mission rerun with every single change, once, when it ends,
+  // answering each anomaly card the way the player did.
+  const fixes = useMemo(
+    () => (ended ? whatIf({ ...withCards(config), seed: daily?.seed ?? config.seed }, getDatasets(config.datasets), state.params, choicesOf(events)) : undefined),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [ended],
+  )
 
   if (LaunchView && !launchDone && !ended) return <LaunchView state={state} onDone={() => setLaunchDone(true)} />
 
@@ -441,6 +441,10 @@ function Flight({ session, config, daily, online }: { session: Session; config: 
   // The anomaly card waiting for an answer, read from the state so a late joiner or a reload still sees it.
   const decision = pendingDecision(state)
   const console = ROLES.find((role) => role === decision?.console) ?? null
+  const tryFix = (fix: { params?: SimState['params'] }) => {
+    session.send({ type: 'reset', payload: {} })
+    for (const [key, value] of Object.entries(fix.params ?? {})) session.send({ type: 'set_param', payload: { key, value } })
+  }
   const decide = (decision_id: string, option_id: string) => session.send({ type: 'resolve_decision', payload: { decision_id, option_id } })
   return (
     <>
@@ -453,10 +457,11 @@ function Flight({ session, config, daily, online }: { session: Session; config: 
         title={config.title}
         summary={summary}
         bonusGoal={bonusGoal}
-        fixes={fixes}
-        onTryFix={online ? undefined : tryFix}
         share={{ daily: daily?.date, anomalies: String(state.metrics.cards_drawn ?? '').split(',').filter(Boolean).length }}
         decision={decision}
+        fixes={fixes}
+        onTryFix={tryFix}
+        realMissions={REAL_MISSIONS}
         onDecide={decide}
         canDecide={canSend(me.role, { type: 'resolve_decision', payload: { decision_id: '', option_id: '' } }, players.map((p) => p.role), console)}
         spaceWeather={weather && typeof day === 'number' ? weather.weatherForMissionDay(weatherStart(config, daily?.seed ?? config.seed), day) : null}

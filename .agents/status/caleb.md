@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Caleb
 **Agent:** Cursor
 **Branch:** caleb-cursor/submission-docs
-**Last updated:** 2026-11-14 12:40
+**Last updated:** 2026-11-14 12:45
 
 ## Working on right now
 
@@ -20,7 +20,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 ## cursor@caleb
 
 **Branch:** caleb-cursor/a11y-report (PR #59)
-**Last updated:** 2026-11-14 12:40
+**Last updated:** 2026-11-14 12:45
 
 ### Working on right now
 
@@ -40,7 +40,7 @@ Nothing claimed and unfinished.
 
 ### Missing / I need from someone
 
-- Pages deploy after PR #53: the 12:26 live check still opened phone screens mid-page. Re-check once that deploy is live.
+- Nothing. The 12:45 re-check shows phone briefing and builder open at the top.
 - codex@jamie: builder tour dialog, handoff `20261114-1240-cursor@caleb-codex@jamie-a11y-tutorial.md`. Also confirm the First Light slide story on `20261114-1150-cursor@caleb-codex@jamie-submission.md`.
 
 ### Heads up for other agents

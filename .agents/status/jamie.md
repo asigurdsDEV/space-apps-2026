@@ -5,18 +5,19 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 13:20
+**Last updated:** 2026-11-14 13:50
 
 
 ## claude@jamie
 
-**Branch:** jamie-claude/real-missions (PR #50 open); jamie-claude/bonus-goal (PR #41 open); jamie-claude/hard-mode (PR #36 open); jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
+**Branch:** jamie-claude/gonogo-sound (PR #61 open); jamie-claude/real-missions (PR #50 open); jamie-claude/bonus-goal (PR #41 open); jamie-claude/hard-mode (PR #36 open); jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
 
 ### Working on right now
-[P2] GO / NO-GO poll sounds (claimed 2026-11-14 13:20): play go / no-go from `ui/audio` as each console calls.
+[P1] Anomaly card count per difficulty (claimed 2026-11-14 13:50): `anomaly_cards` in `DIFFICULTIES`, plus a test that reference designs still win with cards on.
 
 ### Files / folders I'm touching (hands off)
-- `ui/gonogo/` (sounds)
+- `data/index.ts`, `data/README.md`, `tests/playthrough.test.ts` (card counts)
+- `ui/gonogo/` until PR #61 merges
 - `data/real-missions.json` + `realMissions` in `data/index.ts` until PR #50 merges
 - `ui/gonogo/` until PR #33 merges
 - `data/`, `tests/playthrough.test.ts` until PR #36 merges; PR #41 also edits `data/scenarios/`, `data/index.ts`, `data/README.md`
@@ -25,6 +26,8 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 - `docs/CHALLENGE.md`, `docs/README.md`, and the `## Challenge` section + Team table of `README.md` until PR #6 merges
 
 ### Just finished
+- **[P2] GO / NO-GO sounds (PR #61):** `soundFor()` + `playSound` in the poll: one sound per console call, one for Skip / reduced motion. tsc clean, 332/332; browser preview played NO-GO, GO, GO, NO-GO in order. Answers claude@aiden's sound handoff.
+- PR #50: merged main in (kept PROGRAM + realMissions), mergeable again.
 - **[P1] Real missions table (PR #50):** 12 missions (IceCube, Terra, GOES-16, Lunar Prospector, LRO, LADEE, GRAIL, CAPSTONE, MAVEN, MRO, Odyssey, MarCO), launch mass + year each from a cited NASA/NOAA page; tests require an https source on every row. tsc clean, 308/308. Match helper → claude@sarah (handoff).
 - **[P1] Bonus star goal + program order (PR #41):** `params.bonus_goal` per scenario (demo/mars `no_data_lost`, moon `budget_left_20`, codes from ui/mission `BONUS_GOALS`), `PROGRAM` export. Each reference win earns its bonus on Normal (tested). tsc clean, 222/222. Handoffs: app passes bonusGoal (claude@ethan), briefing shows it (claude@aiden), program map (codex@jamie).
 - **[P0] Hard mode fix (PR #36):** demo seed 42 → 1 (42 lost every demo design to a day-193 bus failure; reference survives ~92/100 seeds). Normal's `random_failures` now false, README row fixed. New test: each reference win survives Hard with failures on. tsc clean, 189/189.
@@ -49,28 +52,28 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## codex@jamie
 
-**Branch:** main; jamie-codex/net-lifecycle — PR #48 merged
-**Last updated:** 2026-11-14 12:18
+**Branch:** jamie-codex/mission-entry
+**Last updated:** 2026-11-14 12:48
 
 ### Working on right now
 
-Completed multiplayer disconnect/rejoin reliability in PR #48. No active source edits; existing app uses the fixed transport directly, with no wiring dependency.
+Jamie requested substantial independent work + better graphics. Claimed mission-entry polish: remembered/default names, SVG mission artwork and PROGRAM route, lobby console visuals, accessible first-visit tutorial. Full implementation/testing/PR stays with Codex; no delegated coding.
 
 ### Files / folders I'm touching (hands off)
 
-- No active edits. `net/` follow-up ownership; PR #48 changes peer-transport.ts, transport.test.ts, lifecycle.test.ts and README.md.
-- Own status, BOARD line, append-only LOG and outgoing handoffs. No app/, shared/, sim/, data/ or other agent's UI source edits.
+- `ui/start/` (StartScreen, styles, model/name persistence, SVG artwork, tests, preview, README).
+- `ui/lobby/` (LobbyScreen, styles, role artwork, preview/README).
+- `ui/tutorial/` (BuilderTutorial, styles, preview, README/tests).
+- Own BOARD/status/LOG/handoffs. No app/, data/, sim/, shared/, theme/, scene3d/ or another agent’s source.
 
 ### Just finished
 
-PR #48: corrected roster ordering when a guest drops during broadcast, immediate failed-connect cleanup, stale-channel open guard. Reproduced failures before fixing; real app-session integration covers thrown send and synchronous close, role reuse, rejoin, stale close and game start. 316/316 tests + tsc/build pass after syncing main. No UI/app wiring required.
-
-PR #44 builder tips; #31 daily Start; #30 difficulty/theme; original #9 transport, #13 Start and #15 Lobby merged. Prior evidence remains in LOG and PRs.
+PR #48 merged: transport disconnect/rejoin reliability; 316 tests/build at completion. Prior Start/Lobby/daily/tutorial PRs merged and mounted.
 
 ### Missing / I need from someone
 
-PR #48 merged by Ethan and confirmed on GitHub. No remaining implementation or mounting dependency. Venue four-device rehearsal stays with Kaipo; deterministic transport tests do not certify venue wifi.
+No app integration needed for this chunk: existing exported components retain props. One-screen strip remains app-owned. Real-device four-person venue rehearsal stays Kaipo’s. Start join-stall observation remains unconfirmed; not treating new visuals as a networking fix.
 
 ### Heads up for other agents
 
-This work changes existing PeerTransport internals without changing its API. Claude Jamie can continue real-mission data independently. ui/start/, ui/lobby/, ui/tutorial/ and pitch/demo/source docs remain my follow-up areas with no active edits in this chunk.
+Claude Jamie: PROGRAM is used as static metadata; no data edits. Caleb: handling tutorial keyboard note in owned ui/tutorial/. Ethan/Aiden: leave these folders to me; app/ and 3D stay yours. Graphics use local SVG/CSS, no new dependency or remote image downloads.

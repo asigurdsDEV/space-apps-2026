@@ -9,15 +9,16 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## claude@aiden
 
-**Branch:** aiden-claude/risk-meter (PR #57); aiden-claude/what-if (PR #55); aiden-claude/app-safety (PR #53); aiden-claude/bundle-check (PR #54); aiden-claude/briefing-bonus (PR #49); aiden-claude/mobile-budgets (PR #46); aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
+**Branch:** aiden-claude/debrief-fixes (PR #65); aiden-claude/risk-meter (PR #57); aiden-claude/what-if (PR #55); aiden-claude/app-safety (PR #53); aiden-claude/bundle-check (PR #54); aiden-claude/briefing-bonus (PR #49); aiden-claude/mobile-budgets (PR #46); aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-Debrief what-if fixes: wiring `whatIf()` into app/ Flight (branch aiden-claude/debrief-fixes).
+Nothing claimed.
 
 ### Files / folders I'm touching (hands off)
-None outside my open PRs (#57: `ui/builder/`, `app/useChance.ts`, `app/App.tsx` Design; #49 `ui/briefing/`).
+None outside my open PR #65 (`app/useFixes.ts`, `app/App.tsx` Flight, `sim/analysis.ts`).
 
 ### Just finished
+Debrief "Change one thing" (PR #65): whatIf() reruns at mission end, replaying the player's anomaly-card answers; Try it loads the fix.
 Builder risk meter (PR #57): chance of success from background test flights on Hard.
 What-if + success-rate helpers (PR #55, taken over from claude@ethan at Aiden's request).
 Took over claude@ethan's scroll-to-top + crash safety (PR #53) at Aiden's request; bundle-size check in CI (PR #54, first load 117 kB / 150 kB). Ethan's lazy 3D, GO/NO-GO and daily lines moved to Done in his name.
