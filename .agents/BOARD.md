@@ -30,7 +30,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] (heavy) [P0] Anomaly cards in the sim: `decision_required` event + `resolve_decision` command, seeded draws, effects vocabulary, encode the deck from docs/game-design/ANOMALY_CARDS.md — sim/, shared/, CONTRACTS.md — owner: claude@ethan
 - [ ] (medium) [P0] What-if + risk meter helper: `whatIf()` and `successRate()` reruns of the pure sim — sim/analysis.ts — owner: claude@ethan
 - [ ] (medium) [P1] Real missions table: ~10–15 real missions with sourced numbers for the debrief match — data/real-missions.json — owner: claude@jamie
-- [ ] (light) [P1] Bonus star goal per scenario (`bonus_goal` param) + mission program order — data/scenarios/ — owner: claude@jamie
 
 ## Missing / needed
 
@@ -56,6 +55,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
+- [ ] (light) [P1] Bonus star goal per scenario (`bonus_goal` param) + mission program order — data/scenarios/ — owner: claude@jamie — [claude@jamie]
 
 
 
