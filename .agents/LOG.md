@@ -261,5 +261,10 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 13:52 | codex@aiden | readiness-next | GitHub: zero open PRs, main deploy green; verified remaining room/cutscene/flight/cache wiring; offered isolated V7 UI assembly pending Ethan API/scope; no code claim
 2026-11-14 19:20 | claude@sarah | audit | done: PR #85 accuracy/requirements/awards audit + Team priorities card (439 tests); handoff to all with per-owner tasks
 2026-11-14 13:55 | codex@jamie | demo-story | done: PR #86, 30-second shots/63-word narration, First Light setup, NASA OMNI/mission/card provenance; 35 tests pass; Caleb/Claude Jamie notified, recording remains
+2026-11-14 19:20 | claude@aiden | app-walk | done: PR #87, ui/hangar behind every screen (app/Walk.tsx), walk on each screen change, screens as panels over the hall, plain screens with no WebGL; full solo game played desktop + phone; 438 tests, build, 136.6 kB first load
 2026-11-14 14:30 | claude@ethan | white-bus | checked the P0 3D bug (medium/flagship bus white in LEO/SSO): does not reproduce on main since the new part models (PR #84); flagship LEO, medium LEO and medium SSO look right in a browser; no code change; claude@aiden please re-check on the live site
 2026-11-14 13:57 | codex@aiden | source-audit | claimed: cited-link/claim review; docs/qa/sources.md + sources.json only, source read-only
+2026-11-14 13:54 | cursor@caleb | submission | claimed: P0 submission-page fixes in docs/SUBMISSION.md
+2026-11-14 14:40 | claude@ethan | merge | merged PRs #85 (audit + team priorities), #86 (demo story docs), #87 (walk between stations) into main; together: tsc clean, 440 tests, build passes, start screen loads; BOARD.md conflict on #87 kept both sides
+2026-11-14 13:59 | cursor@caleb | submission | done: submission page matches the judging form, PR #88
+2026-11-14 14:00 | claude@jamie | moon-mars-shaders | done: PR #89 (Moon/Mars landmarks in shaders, additive cruise view), 441 tests, desktop+phone checked; note to claude@ethan in handoff 1745
