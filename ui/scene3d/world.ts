@@ -11,6 +11,7 @@ import { buildCraft, disposeObject } from './craft'
 import { cruiseLayout, transferArc, transferPoint } from './cruise'
 import { lapSeconds, orbitRadius, type Body, type SceneSpec } from './model'
 import { atmosphereShader, cloudShader, planetShader } from './shaders'
+import { COMPANIONS, companionPosition, type Companion } from './sky'
 
 /** "cruise" shows Earth → the Moon or Mars on the transfer arc; with an Earth orbit it shows "orbit". */
 export type ViewMode = 'spacecraft' | 'orbit' | 'cruise'
@@ -150,6 +151,46 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
   )
   scene.add(home, arc)
 
+  // The rest of the sky, to scale (sky.ts): the Moon from Earth orbit, Earth from lunar orbit, Phobos and Deimos at Mars.
+  // It hangs off the globe so it tilts with the planet in the close-up.
+  const sky = new THREE.Group()
+  globe.add(sky)
+  // Phobos and Deimos are dark, lumpy rocks. Phobos carries Stickney, a crater almost half its own width.
+  const rockGeometry = new THREE.SphereGeometry(1, 32, 20)
+  const rockAt = rockGeometry.getAttribute('position')
+  const stickney = new THREE.Vector3(0.5, 0.25, 0.83).normalize()
+  for (let i = 0, v = new THREE.Vector3(); i < rockAt.count; i++) {
+    v.fromBufferAttribute(rockAt, i)
+    const lumps = 0.09 * Math.sin(3.1 * v.x + 1.3) * Math.sin(2.7 * v.y + 0.4) + 0.05 * Math.sin(7 * v.x + 5 * v.y + 3 * v.z)
+    v.multiplyScalar(1 + lumps - 0.2 * THREE.MathUtils.smoothstep(v.dot(stickney), 0.78, 0.97))
+    rockAt.setXYZ(i, v.x, v.y, v.z)
+  }
+  rockGeometry.computeVertexNormals()
+  const rockMaterial = new THREE.ShaderMaterial({
+    uniforms: { uSun },
+    vertexShader: 'varying vec3 vN; void main() { vN = mat3(modelMatrix) * normal; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+    // Both moons reflect about 7% of the sunlight that reaches them: among the darkest bodies in the solar system.
+    fragmentShader: 'uniform vec3 uSun; varying vec3 vN; void main() { gl_FragColor = vec4(vec3(0.34, 0.31, 0.29) * max(dot(normalize(vN), uSun), 0.0), 1.0); }',
+  })
+  const companions = (Object.entries(COMPANIONS) as [Body, Companion[]][]).flatMap(([around, list]) =>
+    list.map((c) => {
+      const material = c.look === 'rock' ? rockMaterial : new THREE.ShaderMaterial({ ...planetShader, uniforms: { uSun, uBody: { value: BODY_INDEX[c.look] } } })
+      const mesh = new THREE.Mesh(c.look === 'rock' ? rockGeometry : planet.geometry, material)
+      mesh.scale.set(...c.size)
+      sky.add(mesh)
+      return { around, c, mesh }
+    }),
+  )
+  const sunXYZ = SUN.toArray()
+  function placeSky() {
+    for (const { c, mesh } of companions) {
+      if (!mesh.visible) continue
+      mesh.position.set(...companionPosition(c, planet.rotation.y, sunXYZ))
+      if (c.turnsPerSpin) mesh.rotation.y = planet.rotation.y * c.turnsPerSpin
+      else mesh.lookAt(sky.getWorldPosition(pos)) // one face always towards the planet
+    }
+  }
+
   // Orbit ring, tilted by the inclination.
   const orbitPivot = new THREE.Group()
   const ringPoints: THREE.Vector3[] = []
@@ -224,6 +265,7 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
     radius = orbitRadius(spec)
     uBody.value = BODY_INDEX[spec.body]
     clouds.visible = spec.body === 'earth'
+    for (const { around, mesh } of companions) mesh.visible = around === spec.body
     const air = ATMOSPHERE[spec.body]
     atmosphere.visible = !!air
     if (air) uAtmo.value.copy(air)
@@ -245,6 +287,7 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
     ring.visible = shown === 'orbit'
     marker.visible = shown !== 'spacecraft'
     home.visible = arc.visible = shown === 'cruise'
+    sky.visible = shown !== 'cruise' // cruise is a diagram, not to scale
     const target = shown === 'spacecraft' ? new THREE.Vector3(0, closeRadius(), 0) : new THREE.Vector3()
     if (shown === 'cruise' && spec.body !== 'earth') {
       const { earthRadius, distance } = cruiseLayout(spec.body)
@@ -326,6 +369,7 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
     }
     if (shown === 'orbit') angle += ((dt * Math.PI * 2) / lapSeconds(spec.period_s)) * motion
     placeCraft()
+    placeSky()
     controls.update(dt)
     composer.render(dt)
   }
@@ -353,6 +397,7 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
 
   applySpec(initial)
   placeCraft()
+  placeSky()
   composer.render()
 
   return {
