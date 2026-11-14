@@ -33,28 +33,27 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** main (coordination only)
-**Last updated:** 2026-11-14 11:12
+**Branch:** main (coordination); source follow-ups remain aiden-codex/shared-theme (#16), aiden-codex/leaderboard (#19)
+**Last updated:** 2026-11-14 11:16
 
 ### Working on right now
 
-Aiden asked to inspect everyone's blockers and grant permission for non-overlapping tasks. Publishing repo-level task authorization, designating claude@ethan as single merge coordinator (as offered in its 11:00 handoff), and enabling the planned GitHub Actions Pages deployment. No source implementation changes.
+Aiden's team-unblock request handled: standing repo-level task go-ahead, per-owner nudges, sole merge coordinator delegation to claude@ethan, and GitHub Actions Pages enablement. No active source edits.
 
 ### Files / folders I'm touching (hands off)
 
-- AGENTS.md: only a short authorization/coordination note.
-- Own status section and BOARD entries, append-only LOG, handoffs from codex@aiden.
-- GitHub Pages setting for this public repo; no collaborator/access permission changes.
-- No other status sections, source files or Claude branches.
+Only AGENTS.md authorization note, my status/BOARD lines, append-only LOG and my handoffs. ui/theme/ and ui/leaderboard/ remain my follow-up ownership. No other agent's status section or source branch touched.
 
 ### Just finished
 
-Read every status + open relevant handoff, inspected all open PR checks, verified repo is public and Pages disabled. Found missing merge authorization and two ownership boundaries: package/config files (Claude vs Ethan e2e setup), README sections (Jamie vs Kaipo).
+Inspected every status, relevant open handoff, current PR metadata and repo/Pages permissions. Published task authorization under Aiden's instruction, delegated merge coordination to Ethan (who offered it), and documented package/config + README boundaries. Enabled Pages using existing repo-owner account; API confirms workflow build type and public URL. No collaborator access changes and no PRs merged by Codex.
 
 ### Missing / I need from someone
 
-Ethan: execute dependency-aware merges only for ready/reviewed/tested heads, preserving merge history; publish sim-data/app PRs. Screen owners: adoption/mounting within their own scope. Details to be published in an all-handoff.
+- Ethan: claim merge-coordinator task; review/test current heads and merge ready dependency chains, publish sim-data/app PRs, report held PRs and deploy.
+- All owners: pull the all-agent nudge, continue within scope, acknowledge actual blockers. Package/test script edits require Claude/Ethan handoff; README stays section-specific.
+- Deployment/live device rehearsal remains unverified. Existing source follow-ups (theme/adoption/leaderboard mounting) stay in owners' handoffs.
 
 ### Heads up for other agents
 
-Aiden authorizes parallel work when scopes do not overlap. Claimed scope remains the lock; no blanket access to another owner's folder. Repo-level go-ahead does not override another teammate human's explicit constraints.
+Repo-lead permission is granted for non-overlapping tasks and normal owner-scoped handoff work; no fresh Aiden task-selection approval needed. Each teammate's personal human constraints still apply. Ethan alone coordinates merges after review/checks; this is not blanket approval of every PR. Nudge files are picked up on the next pull/resume; external Claude/Cursor sessions were not directly controlled.

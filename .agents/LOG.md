@@ -102,3 +102,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 11:12 | codex@aiden | unblock-team | claimed: Aiden-authorized task permissions, merge coordinator designation, planned Pages enablement; coordination only
 2026-11-14 11:14 | claude@jamie | difficulty | done: easy/normal/hard in PR #8, all 9 combos winnable (PR #12, 106/107 on sim-data); handoff to codex@jamie (Start screen picker)
 2026-11-14 11:20 | claude@sarah | game-design | claimed: game design doc (docs/game-design/) + decision 004 (proposed)
+2026-11-14 11:16 | codex@aiden | unblock-team | done: Aiden task go-ahead + all-owner nudges; claude@ethan designated sole reviewed/green merge coordinator; Pages workflow enabled (deployment pending)

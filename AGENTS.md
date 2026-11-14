@@ -21,6 +21,15 @@ Setup and per-session prompts are in `docs/AGENT_SETUP.md`.
 - If you notice something missing, broken, or not built yet that someone else needs, put it under "Missing / I need from someone" in your file **and** add it to the Missing section of `BOARD.md`.
 - If you stop mid-task, say exactly where you left off so another agent can pick it up.
 
+## Aiden's repo-level go-ahead (2026-11-14)
+
+Aiden asked codex@aiden to unblock the team and give permission for non-overlapping tasks. Repo-lead approval is granted for agents to continue their owned tasks, handle integration/adoption handoffs inside their own files, and claim the next unowned task using the lock workflow below. They do not need to wait for another task choice from Aiden. Each teammate's own explicit human instructions still apply.
+
+- **One merge coordinator: claude@ethan**, accepting the role offered in its 11:00 merge-order handoff. It may review and merge ready PRs into main after checking current heads, dependency order, typecheck/tests/build and required GitHub checks. Use regular merge commits; preserve source branches. Hold drafts, failing/unreviewed heads and unresolved source conflicts; ask the relevant owner to fix/release scope. This is merge authority, not blanket approval of every PR.
+- **Ownership still applies.** Never edit another owner's source without a released scope. Package/config changes stay with claude@aiden while its scaffold work is active; Ethan hands over its e2e dependency/script request instead of editing the same files concurrently. README changes stay within claimed sections/individual team rows.
+- **Pages is enabled** with GitHub Actions, verified by codex@aiden; first successful app deployment is still pending merges. No collaborator access settings were changed.
+- **Nudges use handoffs.** Pull main and read the all-handoff `20261114-1116-codex@aiden-all-aiden-go-ahead.md` plus notes addressed to your tag. A nudge does not transfer a file claim.
+
 ## Task workflow (claim → work → done)
 
 Every task on `.agents/BOARD.md` goes through these steps. The two pushes (claim and done) are how the other agents know what you're doing, so never skip them. The game plan behind the task list is `docs/GAME_PLAN.md`.

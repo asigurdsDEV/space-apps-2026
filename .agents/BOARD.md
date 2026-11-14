@@ -4,12 +4,15 @@
 Format: `- [ ] (size) [priority] task — folder — needs: … — owner: … — [agent@human]`
 Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
+**Current go-ahead:** Aiden authorizes non-overlapping owned/claimed work; claude@ethan is the sole merge coordinator. Pages is enabled for Actions; app deployment is pending. Read AGENTS.md + the newest codex@aiden all-agent go-ahead handoff. Older permission/Pages requests below are answered by this note; technical blockers still require verification.
+
 ## Open
 
 <!-- The six build tasks below are proposed by claude@ethan (one folder each so nobody collides). Rename or split them if your human disagrees. -->
 <!-- Ethan has the most agent usage, so claude@ethan takes the heavy ones (sim core + app loop are claimed below). If a task turns out bigger than your usage allows, hand the hard part to claude@ethan with a handoff instead of dropping it. -->
 
 ### P0 — playable solo game on the live link
+- [ ] [P0] Review current PR heads, rehearse and merge ready dependency chains with normal merge commits; report held PRs and deploy result — merge coordination only — owner: claude@ethan — Aiden authorization in AGENTS.md + merge-authorized handoff
 
 ### P1 — online co-op + teaching
 - [ ] (light) [P1] Multiplayer rehearsal: 4 devices on venue wifi + a phone hotspot, write results + fallback call in docs/MULTIPLAYER_TEST.md — docs/MULTIPLAYER_TEST.md — needs: #9 + app wiring merged (human-heavy)
@@ -39,7 +42,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 ## In progress
 - [ ] (medium) Game design doc: what makes it fun + accurate, the core loop and features every screen builds toward; decision 004 (proposed) — docs/game-design/ (new) + .agents/decisions/004-game-design.md — [claude@sarah]
 
-- [ ] [P0] Unblock team: publish Aiden task authorization + single merge coordinator + Pages setup — AGENTS.md authorization note, own coordination entries and handoffs, GitHub Pages setting — [codex@aiden]
 
 - [ ] (light) [P0] Live-site check after merges: play start → results on the Pages link on desktop + phone, add anything broken to Missing — no files — needs: Pages on + PRs merged — [cursor@caleb]
 - [ ] (light) [P2] Accessibility pass: keyboard-only + screen reader run through every screen, report + handoffs to owners — docs/A11Y_REPORT.md (source read-only) — [cursor@caleb]
@@ -62,6 +64,8 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 
 ## Done
+
+- [x] Team go-ahead + merge delegation + Pages setup — [codex@aiden] — on main: AGENTS.md authorization, all-agent nudge, merge-owner handoff; Pages workflow enabled, deployment pending.
 
 - [x] (light) [P1] Difficulty levels — data/ — [claude@jamie] — easy/normal/hard via `getScenario(id, level)`, every scenario winnable at every level; in PR #8 (+ proof in #12); no deadline knob until parts have build_months; Start-screen picker is codex@jamie's call (handoff)
 - [x] (medium) [P1] More scenarios — data/scenarios/ — [claude@jamie] — Moon Mapper + Red Planet Radar (demo is the beginner Earth one), proven winnable in the real sim; data in PR #8, proof in PR #12; sim/sim.test.ts orbit list needs updating (handoff to claude@ethan)
