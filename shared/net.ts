@@ -70,3 +70,150 @@ export function canSend(role: Role | null, command: Command, claimedRoles: reado
   if (owner === null) return true
   return role === owner || !claimedRoles.includes(owner)
 }
+
+// ------------------------------------------------------------ Runtime validators
+// Everything that arrives over net/ is untrusted. These check the whole shape and never throw.
+
+const MAX_NAME_LENGTH = 80
+const MAX_KEY_LENGTH = 64
+const MAX_TEXT_LENGTH = 2000
+
+type Obj = Record<string, unknown>
+
+const isObj = (v: unknown): v is Obj => typeof v === 'object' && v !== null && !Array.isArray(v)
+const isNum = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v)
+const isStr = (v: unknown, max = MAX_TEXT_LENGTH): v is string => typeof v === 'string' && v.length <= max
+const isEmpty = (v: unknown): boolean => isObj(v) && Object.keys(v).length === 0
+const isParamValue = (v: unknown): boolean => isNum(v) || isStr(v) || typeof v === 'boolean'
+const isRole = (v: unknown): v is Role => (ROLES as readonly unknown[]).includes(v)
+const isList = (v: unknown, item: (x: unknown) => boolean): boolean => Array.isArray(v) && v.every((x) => item(x))
+const isRecord = (v: unknown, value: (x: unknown) => boolean): boolean =>
+  isObj(v) && Object.values(v).every((x) => value(x))
+const isVec3 = (v: unknown): boolean => Array.isArray(v) && v.length === 3 && v.every(isNum)
+/** A missing optional field is `undefined` before JSON and absent after it. */
+const optional = (v: unknown, check: (x: unknown) => boolean): boolean => v === undefined || check(v)
+
+function commandOk(v: unknown): boolean {
+  if (!isObj(v)) return false
+  const p = v.payload
+  switch (v.type) {
+    case 'pause':
+    case 'resume':
+    case 'reset':
+    case 'launch':
+      return isEmpty(p)
+    case 'set_speed':
+      return isObj(p) && isNum(p.multiplier)
+    case 'set_param':
+      return isObj(p) && isStr(p.key, MAX_KEY_LENGTH) && p.key !== '' && isParamValue(p.value)
+    case 'select_entity':
+      return isObj(p) && (p.id === null || isStr(p.id, MAX_KEY_LENGTH))
+    default:
+      return false
+  }
+}
+
+const entityOk = (v: unknown): boolean =>
+  isObj(v) &&
+  isStr(v.id) &&
+  isStr(v.kind) &&
+  isStr(v.name) &&
+  optional(v.position, isVec3) &&
+  optional(v.velocity, isVec3) &&
+  isRecord(v.props, isParamValue)
+
+const issueOk = (v: unknown): boolean =>
+  isObj(v) &&
+  isStr(v.code) &&
+  (v.severity === 'error' || v.severity === 'warning') &&
+  isStr(v.resource) &&
+  isStr(v.message)
+
+const stateOk = (v: unknown): boolean =>
+  isObj(v) &&
+  isStr(v.contract_version) &&
+  isStr(v.scenario_id) &&
+  isNum(v.tick) &&
+  isNum(v.t_s) &&
+  isStr(v.utc) &&
+  isStr(v.frame) &&
+  (v.status === 'running' || v.status === 'paused' || v.status === 'ended') &&
+  isList(v.entities, entityOk) &&
+  isRecord(v.metrics, (m) => m === undefined || isNum(m) || isStr(m)) &&
+  isRecord(v.params, isParamValue) &&
+  isList(v.issues, issueOk) &&
+  isNum(v.rng_state)
+
+function eventPayloadOk(type: unknown, p: Obj): boolean {
+  switch (type) {
+    case 'scenario_started':
+      return isStr(p.scenario_id)
+    case 'entity_added':
+      return entityOk(p.entity)
+    case 'entity_removed':
+      return isStr(p.id) && isStr(p.reason)
+    case 'threshold_crossed':
+      return isStr(p.metric) && isNum(p.value) && isNum(p.threshold) && (p.direction === 'up' || p.direction === 'down')
+    case 'phase_changed':
+      return isStr(p.from) && isStr(p.to)
+    case 'scenario_ended':
+      return isStr(p.reason) && isRecord(p.summary, (s) => isNum(s) || isStr(s))
+    case 'warning':
+      return isStr(p.message)
+    default:
+      return false
+  }
+}
+
+const eventOk = (v: unknown): boolean =>
+  isObj(v) && isNum(v.tick) && isNum(v.t_s) && isObj(v.payload) && eventPayloadOk(v.type, v.payload)
+
+const playerOk = (v: unknown): boolean =>
+  isObj(v) &&
+  isStr(v.player_id, MAX_NAME_LENGTH) &&
+  v.player_id !== '' &&
+  isStr(v.name, MAX_NAME_LENGTH) &&
+  (v.role === null || isRole(v.role)) &&
+  typeof v.is_host === 'boolean'
+
+function messageOk(v: unknown): boolean {
+  if (!isObj(v)) return false
+  const p = v.payload
+  switch (v.type) {
+    case 'join':
+      return isObj(p) && isStr(p.name, MAX_NAME_LENGTH)
+    case 'claim_role':
+      return isObj(p) && (p.role === null || isRole(p.role))
+    case 'command':
+      return isObj(p) && commandOk(p.command)
+    case 'leave':
+    case 'ended':
+      return isEmpty(p)
+    case 'roster':
+      return isObj(p) && isList(p.players, playerOk) && (p.players as unknown[]).length <= MAX_PLAYERS
+    case 'state':
+      return isObj(p) && stateOk(p.state) && isList(p.events, eventOk)
+    case 'rejected':
+      return isObj(p) && isStr(p.player_id, MAX_NAME_LENGTH) && isStr(p.reason) && optional(p.command, commandOk)
+    default:
+      return false
+  }
+}
+
+/** Is `value` a well-formed Command? Unknown types, wrong payloads and non-finite numbers are refused. Never throws. */
+export function isCommand(value: unknown): value is Command {
+  try {
+    return commandOk(value)
+  } catch {
+    return false
+  }
+}
+
+/** Is `value` a well-formed NetMessage? Never throws. Pass it to net/'s PeerTransport as `validate`. */
+export function isNetMessage(value: unknown): value is NetMessage {
+  try {
+    return messageOk(value)
+  } catch {
+    return false
+  }
+}
