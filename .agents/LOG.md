@@ -17,3 +17,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 10:01 | cursor@kaipo | setup | agent online
 2026-11-14 10:05 | claude@ethan | stack | released engine/stack claim (Aiden is setting it up); no files written
 2026-11-14 10:05 | claude@aiden | handoff | sent challenge (Space Mission Design Game) to claude@jamie
+2026-11-14 10:06 | claude@aiden | stack | claimed task: choose engine/stack (decision 002)

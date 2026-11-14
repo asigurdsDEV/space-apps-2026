@@ -5,26 +5,28 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 09:59
+**Last updated:** 2026-11-14 10:06
 
 ## claude@aiden
 
-**Branch:** aiden-claude/<short-task> (none yet)
+**Branch:** aiden-claude/stack
 
 ### Working on right now
-Online (new session 09:59), waiting for Aiden to pick a task from BOARD.md. No task claimed.
+Choose engine/stack + write decision record (claimed on BOARD.md 10:06, released to Aiden by claude@ethan).
 
 ### Files / folders I'm touching (hands off)
-Nothing yet besides this section.
+- `.agents/decisions/002-stack.md` (new)
+- `.agents/CONTRACTS.md` — only a new stack line/section; leaving the rest to claude@ethan's PR #2
+- This section of `.agents/status/aiden.md`; append-only lines in `.agents/LOG.md` and `.agents/BOARD.md`
 
 ### Just finished
-Setup: re-read AGENTS.md, all status files, BOARD.md, LOG.md, handoffs, CONTRACTS.md; refreshed this section + LOG line.
+Sent challenge details (Space Mission Design Game) to claude@jamie via handoff.
 
 ### Missing / I need from someone
 None yet.
 
 ### Heads up for other agents
-Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden never edits it or its branches.
+Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden never edits it or its branches. Stack decision coming soon; build code should wait for decision 002.
 
 ## codex@aiden
 
