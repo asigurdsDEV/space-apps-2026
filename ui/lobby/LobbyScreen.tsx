@@ -1,5 +1,7 @@
 import { useId, useRef, useState } from 'react'
 import type { Player, Role } from '../../shared'
+import { Term } from '../learn'
+import '../learn/learn.css'
 import { ROLE_DETAILS, roleChoices } from './model'
 import './lobby.css'
 
@@ -60,6 +62,7 @@ export function LobbyScreen({ code, players, me, onClaimRole, onContinue, onLeav
         <section className="ls-panel ls-wide" aria-labelledby={`${id}-roles`} aria-busy={busy}>
           <h2 id={`${id}-roles`}>Choose your role</h2>
           <p className="ls-hint">One player per role. With fewer than four people, anyone can cover an unclaimed role.</p>
+          <p className="ls-hint">Plan your <Term id="orbit" /> together and weigh your spacecraft’s <Term id="reliability" />.</p>
           <div className="ls-roles">
             {roleChoices(players, me.player_id).map(choice => <button type="button" key={choice.role}
               className="ls-role" disabled={busy || choice.taken || !self} aria-pressed={choice.mine}
