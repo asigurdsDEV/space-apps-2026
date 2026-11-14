@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import { AnomalyScene, ArrivalScene, EndingScene, OrbitArrivalScene, type CutsceneSceneId } from './index'
+import { AnomalyScene, ArrivalScene, EndingScene, EnterCraftScene, OrbitArrivalScene, ReturnControlScene, type CutsceneSceneId } from './index'
 
 const ORDER: Array<{ id: string; scene: CutsceneSceneId; body?: 'moon' | 'mars' }> = [
   { id: 'arrival', scene: 'arrival' },
@@ -9,6 +9,8 @@ const ORDER: Array<{ id: string; scene: CutsceneSceneId; body?: 'moon' | 'mars' 
   { id: 'anomaly', scene: 'anomaly' },
   { id: 'ending success', scene: 'ending-success' },
   { id: 'ending loss', scene: 'ending-loss' },
+  { id: 'into spacecraft', scene: 'enter-craft' },
+  { id: 'back to control', scene: 'return-control' },
 ]
 
 function Preview() {
@@ -26,6 +28,8 @@ function Preview() {
         {pick.scene === 'anomaly' && <AnomalyScene key={run} />}
         {pick.scene === 'ending-success' && <EndingScene key={run} outcome="success" />}
         {pick.scene === 'ending-loss' && <EndingScene key={run} outcome="loss" />}
+        {pick.scene === 'enter-craft' && <EnterCraftScene key={run} />}
+        {pick.scene === 'return-control' && <ReturnControlScene key={run} />}
       </div>
       <nav style={{ position: 'fixed', left: 12, bottom: 12, display: 'flex', flexWrap: 'wrap', gap: 8, zIndex: 2 }}>
         {ORDER.map((scene) => (
