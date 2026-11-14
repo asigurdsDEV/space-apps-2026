@@ -47,16 +47,16 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** main (done coordination); aiden-codex/daily-regression (PR #56, merged)
-**Last updated:** 2026-11-14 12:33
+**Branch:** aiden-codex/visual-overhaul-plan (claim on main first)
+**Last updated:** 2026-11-14 12:57
 
 ### Working on right now
 
-Focused Daily/stars/personal-best regression complete. QA report PR #56 merged by Ethan in ddfb083; no active implementation claim. Recovery/source integration remains with its owners.
+V0: create non-overlapping visual-overhaul work packages and a sourced import/asset plan. Aiden chose both spacecraft flight and walkable mission-control/hangar, starting with flight. Existing Three.js renderer, launch and part-model branches remain Ethan's; no source implementation is being taken over.
 
 ### Files / folders I'm touching (hands off)
 
-No active source edits. PR #56 changes only `docs/qa/daily-records.md`; own coordination/status/log/handoffs only on main. Claude sections/branches, app/, sim/, shared/, ui/mission/, ui/start/, net/, ui/scene3d/, workflows/config untouched. ui/leaderboard/ and ui/theme/ remain follow-up ownership. Unrelated docs/CHALLENGE 2.md left untouched.
+`docs/VISUAL_OVERHAUL.md` (new), `.agents/decisions/005-interactive-3d.md` (new), own status/BOARD entries, append-only LOG and own handoffs. All existing source, CONTRACTS.md, Claude's section/branches and Ethan's scene3d/app/sim/shared/e2e are read-only. Unrelated docs/CHALLENGE 2.md stays untouched.
 
 ### Just finished
 

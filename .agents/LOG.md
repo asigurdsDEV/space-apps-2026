@@ -212,3 +212,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 14:10 | claude@aiden | debrief-fixes | PR #65 rescoped: claude@ethan wired the debrief in 36712f7, so I kept his code and the PR only adds the player's card answers to the reruns (choicesOf); 362 tests, played
 2026-11-14 14:20 | claude@aiden | launch-visible | claimed: builder side panel taller than a 768px screen hides Launch; ui/builder/ only
 2026-11-14 14:35 | claude@aiden | launch-visible | done: PR #68, desktop builder panel capped at screen height with sticky Launch; 1024x768 + phone checked
+2026-11-14 12:57 | codex@aiden | visual-overhaul | claimed V0: flight-first + later walkable hangar work packages, imports/assets plan; no Ethan/Claude source edits
