@@ -10,6 +10,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { buildCraft, disposeObject } from './craft'
 import { cruiseLayout, transferArc, transferPoint } from './cruise'
 import { lapSeconds, orbitRadius, type Body, type SceneSpec } from './model'
+import { planetMaps } from './maps'
 import { atmosphereShader, cloudShader, planetShader } from './shaders'
 import { COMPANIONS, companionPosition, type Companion } from './sky'
 
@@ -37,7 +38,7 @@ export interface World {
 const SUN = new THREE.Vector3(1, 0.35, 0.55).normalize()
 const ATMOSPHERE_R = 1.06
 const BODY_INDEX: Record<Body, number> = { earth: 0, moon: 1, mars: 2 }
-const ATMOSPHERE: Record<Body, THREE.Color | null> = { earth: new THREE.Color(0.28, 0.55, 1.0), mars: new THREE.Color(0.85, 0.48, 0.3), moon: null }
+const ATMOSPHERE: Record<Body, THREE.Color | null> = { earth: new THREE.Color(0.28, 0.55, 1.0), mars: new THREE.Color(0.4, 0.23, 0.14), moon: null }
 const SPIN_S: Record<Body, number> = { earth: 80, moon: 400, mars: 90 }
 const CRAFT_SIZE: Record<ViewMode, number> = { spacecraft: 0.05, orbit: 0.04, cruise: 0.08 }
 const CRUISE_LOOP_S = 18
@@ -121,7 +122,10 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
   const uSun = { value: SUN.clone() }
   const uTime = { value: 0 }
   const uBody = { value: 0 }
-  const planet = new THREE.Mesh(new THREE.SphereGeometry(1, 160, 120), new THREE.ShaderMaterial({ ...planetShader, uniforms: { uSun, uBody } }))
+  // Real NASA maps (maps/README.md), one shared set of uniforms per body; procedural until they load.
+  const bodyMaps = planetMaps(renderer.capabilities.getMaxAnisotropy())
+  const planetMaterial = new THREE.ShaderMaterial({ ...planetShader, uniforms: { uSun, uBody, ...bodyMaps.maps.earth } })
+  const planet = new THREE.Mesh(new THREE.SphereGeometry(1, 160, 120), planetMaterial)
   const clouds = new THREE.Mesh(
     new THREE.SphereGeometry(1.012, 128, 96),
     new THREE.ShaderMaterial({ ...cloudShader, uniforms: { uSun, uTime }, transparent: true, depthWrite: false }),
@@ -144,7 +148,7 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
   scene.add(globe, atmosphere)
 
   // Cruise mode: Earth behind us and the transfer arc to the destination (the globe above).
-  const home = new THREE.Mesh(planet.geometry, new THREE.ShaderMaterial({ ...planetShader, uniforms: { uSun, uBody: { value: 0 } } }))
+  const home = new THREE.Mesh(planet.geometry, new THREE.ShaderMaterial({ ...planetShader, uniforms: { uSun, uBody: { value: 0 }, ...bodyMaps.maps.earth } }))
   const arc = new THREE.Line(
     new THREE.BufferGeometry(),
     new THREE.LineDashedMaterial({ color: 0xbcd2ff, dashSize: 0.22, gapSize: 0.12, transparent: true, opacity: 0.95, depthWrite: false }),
@@ -264,6 +268,7 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
     spec = next
     radius = orbitRadius(spec)
     uBody.value = BODY_INDEX[spec.body]
+    Object.assign(planetMaterial.uniforms, bodyMaps.maps[spec.body])
     clouds.visible = spec.body === 'earth'
     for (const { around, mesh } of companions) mesh.visible = around === spec.body
     const air = ATMOSPHERE[spec.body]
@@ -417,6 +422,7 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
       controls.dispose()
       disposeObject(scene)
       environment.dispose()
+      bodyMaps.dispose()
       pmrem.dispose()
       composer.dispose()
       renderer.dispose()
