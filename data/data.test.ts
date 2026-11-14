@@ -71,20 +71,30 @@ describe('catalogs', () => {
 describe('demo scenario', () => {
   const demo = getScenario('demo')!
 
-  it('is a valid Config that lists only real datasets', () => {
-    expect(scenarios).toHaveLength(1)
-    expect(demo.contract_version).toBe(CONTRACT_VERSION)
-    expect(demo.scenario_id).toMatch(KEBAB)
-    expect(demo.duration_s / demo.dt_s).toBe(Math.round(demo.duration_s / demo.dt_s))
-    expect(getDatasets(demo.datasets).map((d) => d.id).sort()).toEqual([...demo.datasets].sort())
-    for (const e of demo.entities) expect(e.id).toMatch(KEBAB)
+  it('every scenario is a valid Config that lists only real datasets', () => {
+    expect(scenarios.map((c) => c.scenario_id)).toEqual(['demo', 'moon', 'mars'])
+    for (const c of scenarios) {
+      expect(c.contract_version).toBe(CONTRACT_VERSION)
+      expect(c.scenario_id).toMatch(KEBAB)
+      expect(c.duration_s / c.dt_s).toBe(Math.round(c.duration_s / c.dt_s))
+      expect(getDatasets(c.datasets).map((d) => d.id).sort()).toEqual([...c.datasets].sort())
+      for (const e of c.entities) expect(e.id).toMatch(KEBAB)
+    }
   })
 
-  it('starts with a design whose parts all exist in the catalogs', () => {
-    for (const [param, catalogId] of Object.entries(PARAM_CATALOG)) {
-      const ids = param === 'instruments' ? parseIdList(demo.params[param]) : [String(demo.params[param])]
-      expect(ids.length, param).toBeGreaterThan(0)
-      for (const id of ids) expect(getPart(catalogId, id), `${param}=${id}`).toBeDefined()
+  // The sim turns every part into an entity, so a scenario entity with a part's id replaces that part.
+  it('scenario entity ids never collide with part ids', () => {
+    const partIds = new Set(catalogs.flatMap((d) => d.data.rows.map((r) => r[0])))
+    for (const c of scenarios) for (const e of c.entities) expect(partIds.has(e.id), `${c.scenario_id}/${e.id}`).toBe(false)
+  })
+
+  it('every scenario starts with parts that all exist', () => {
+    for (const c of scenarios) {
+      for (const [param, catalogId] of Object.entries(PARAM_CATALOG)) {
+        for (const id of param === 'instruments' ? parseIdList(c.params[param]) : [String(c.params[param])]) {
+          expect(getPart(catalogId, id), `${c.scenario_id}: ${param}=${id}`).toBeDefined()
+        }
+      }
     }
   })
 

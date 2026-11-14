@@ -21,7 +21,7 @@
       ["cubesat-3u", "3U CubeSat", "cubesat", 3, 1.5, 1, 3, 0, 500000, 31557600, 0.8, "The size of a loaf of bread. Very cheap, very limited."],
       ["cubesat-6u", "6U CubeSat", "cubesat", 7, 4, 2, 5, 0, 1000000, 63115200, 0.85, "A shoebox-sized satellite with room for two small instruments."],
       ["cubesat-12u", "12U CubeSat", "cubesat", 14, 9, 3, 8, 60, 2500000, 94672800, 0.87, "The biggest standard CubeSat. Has a small thruster."],
-      ["smallsat", "Small satellite (ESPA-class)", "smallsat", 120, 60, 4, 60, 250, 25000000, 157788000, 0.92, "Mini-fridge sized. Real engines, room for serious instruments."],
+      ["smallsat", "Small satellite (ESPA-class)", "smallsat", 120, 80, 4, 60, 250, 25000000, 157788000, 0.92, "Mini-fridge sized. Real engines, room for serious instruments."],
       ["medium-bus", "Medium spacecraft", "medium", 800, 400, 6, 300, 1200, 150000000, 315576000, 0.95, "Car-sized science spacecraft with a strong propulsion system."],
       ["flagship-bus", "Flagship spacecraft", "flagship", 3000, 1500, 10, 800, 2500, 800000000, 473364000, 0.97, "Bus-sized, the kind NASA builds once a decade. Can do almost anything, if you can pay for it."]
     ]

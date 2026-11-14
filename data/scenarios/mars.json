@@ -1,0 +1,28 @@
+{
+  "contract_version": "0.1",
+  "scenario_id": "mars",
+  "title": "Red Planet Radar: hunt for buried ice on Mars",
+  "seed": 11,
+  "dt_s": 86400,
+  "duration_s": 94608000,
+  "start_utc": "2028-10-01T00:00:00Z",
+  "datasets": ["launch-vehicles", "orbits", "spacecraft-buses", "instruments", "power-systems", "comms-systems"],
+  "entities": [
+    { "id": "mars", "kind": "body", "name": "Mars", "props": { "radius_m": 3389500 } },
+    { "id": "spacecraft", "kind": "spacecraft", "name": "Your spacecraft", "props": {} }
+  ],
+  "params": {
+    "objective": "mars-ice",
+    "objective_text": "Fly to Mars (about 7 months), get into orbit, and send home enough data to earn 65 science points within three years of launch, within budget. Hint: Mars is so far away that your radio may be the hardest part.",
+    "budget_usd": 500000000,
+    "target_science_score": 65,
+    "mission_duration_s": 94608000,
+    "launch_vehicle": "falcon-9",
+    "orbit": "low-mars-orbit",
+    "bus": "medium-bus",
+    "instruments": "subsurface-radar",
+    "solar": "solar-array-medium",
+    "battery": "battery-medium",
+    "comms": "deep-space-transponder"
+  }
+}

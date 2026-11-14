@@ -24,7 +24,7 @@ const falcon = getPart(CATALOG_IDS.launchVehicles, 'falcon-9') // { id, name, pa
 | `catalogs/instruments.json` | `instruments` | science instrument |
 | `catalogs/power-systems.json` | `power-systems` | solar array, battery or RTG |
 | `catalogs/comms-systems.json` | `comms-systems` | radio + antenna |
-| `scenarios/demo.json` | (a `Config`) | the first playable mission |
+| `scenarios/demo.json`, `moon.json`, `mars.json` | (each a `Config`) | a playable mission |
 
 All are `kind: "table"` with `id` as the first column. Each row also has a `name` and a one-sentence, student-friendly `description` for the UI.
 
@@ -59,12 +59,21 @@ These are suggestions for the sim, matching what `data.test.ts` uses to prove th
 - **Science:** Σ instrument `science_value`, scaled by the fraction of data returned, reduced outside `best_orbit` (`"any"` = no penalty).
 - **Lifetime:** mission ends at the earliest of `mission_duration_s`, bus `design_life_s` and orbit `max_lifetime_s`. Solar output drops by `degradation_per_year`. `reliability` and orbit `radiation_factor` are there for random failure events.
 
-## The demo scenario
+## Scenarios
 
-*First Light:* earn 30 science points from a one-year Earth-observing mission on an $8M budget. One step = one day (`dt_s` 86400 × 365 steps).
+Each one is proven winnable in the real sim by `tests/playthrough.test.ts` (PR #12). That file holds one reference win per scenario. One step = one day.
 
-- **Starting design:** 6U CubeSat, basic camera, small solar wings, S-band radio, rideshare to sun-synchronous orbit. It fits mass, power and budget, but it earns only 10 points, and the camera makes more data than the S-band radio can send home. That's the first lesson.
-- **A winning design exists** (tested): 12U CubeSat + basic camera + IR spectrometer + large deployable wings + X-band transmitter, about $7.3M. There are other wins too.
+| id | Title | Goal | Starting design teaches | A tested win |
+|---|---|---|---|---|
+| `demo` | *First Light* | 30 pts, 1 year, $8M, Earth orbit (SSO) | Flies, but earns 10 pts: the S-band radio can't send home what the camera makes | 12U + camera + IR spectrometer + large wings + X-band, about $7.3M |
+| `moon` | *Moon Mapper* | 75 pts, 2 years, $300M, low lunar orbit | Refused at launch: a smallsat can't brake into lunar orbit (`delta_v_short`) | medium bus + laser altimeter + radiation detector + IR spectrometer + high-gain dish, about $238M |
+| `mars` | *Red Planet Radar* | 65 pts, 3 years incl. a 210-day cruise, $500M, low Mars orbit | Flies, but earns ~0: the deep-space transponder is far too slow at Mars range | add IR spectrometer, swap to the Mars high-gain dish, about $272M |
+
+**Ids:** a scenario entity's id must never equal a part id (`data.test.ts` checks it). The sim turns every part into an entity, so a clash replaces the part. That's why the Mars orbit is `low-mars-orbit`, not `mars`.
+
+**Columns added for Moon/Mars**, appended last so rows built by position elsewhere stay valid:
+- `launch-vehicles.payload_tmi_kg`: mass to a Mars transfer.
+- `orbits.cruise_days`: trip time, which the sim spends before operations start.
 
 ## Adding to the catalogs
 

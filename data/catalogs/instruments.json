@@ -23,6 +23,7 @@
       ["microwave-sounder", "Microwave sounder", "radiometer", 15, 30, 4000000, 500000, 1, 25, "sso", "smallsat", "Measures temperature and moisture through the atmosphere. Weather forecasters love these."],
       ["laser-altimeter", "Laser altimeter", "altimeter", 12, 25, 6000000, 1000000, 0.5, 45, "lunar", "smallsat", "Fires laser pulses at the ground to map its height, perfect for mapping the Moon."],
       ["multispectral-imager", "Multispectral imager", "imager", 25, 60, 8000000, 50000000, 0.15, 40, "sso", "smallsat", "A high-resolution camera that sees colors humans can't, used for crops, forests and water."],
+      ["subsurface-radar", "Subsurface sounding radar", "radar", 15, 120, 30000000, 1000000, 0.3, 60, "low-mars-orbit", "smallsat", "Sends radio pulses deep into the ground to find buried ice. Works best on Mars."],
       ["weather-imager", "Geostationary weather imager", "imager", 100, 200, 40000000, 30000000, 1, 50, "geo", "medium", "Watches one whole side of Earth nonstop. Tracks storms as they form."],
       ["uv-telescope", "Ultraviolet space telescope", "telescope", 150, 120, 60000000, 20000000, 0.5, 70, "any", "medium", "Looks at hot young stars and galaxies in light our atmosphere blocks."],
       ["synthetic-aperture-radar", "Synthetic aperture radar", "radar", 300, 1500, 80000000, 200000000, 0.1, 80, "sso", "medium", "Sees through clouds and darkness by bouncing radio waves off the ground. Power hungry!"]

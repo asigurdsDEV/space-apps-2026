@@ -10,6 +10,8 @@ import instruments from './catalogs/instruments.json'
 import powerSystems from './catalogs/power-systems.json'
 import commsSystems from './catalogs/comms-systems.json'
 import demo from './scenarios/demo.json'
+import moon from './scenarios/moon.json'
+import mars from './scenarios/mars.json'
 
 /** Ids of the catalog Datasets, so callers don't hard-code strings. */
 export const CATALOG_IDS = {
@@ -59,7 +61,7 @@ export const catalogs: TableDataset[] = [
   commsSystems,
 ].map(asTable)
 
-export const scenarios: Config[] = [demo as Config]
+export const scenarios: Config[] = [demo, moon, mars] as Config[]
 
 /** All Datasets, for handing to `sim.init(config, datasets)`. */
 export function getDatasets(ids?: Id[]): Dataset[] {

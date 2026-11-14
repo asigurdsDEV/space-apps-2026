@@ -19,7 +19,8 @@
       ["s-band-patch", "S-band patch antenna", "S", 0.4, 8, 100000, 1000000, 1500000, "cubesat", "A flat antenna and radio. The usual choice for small satellites."],
       ["x-band-transmitter", "X-band transmitter", "X", 2, 30, 800000, 50000000, 2000000, "cubesat", "Fast downlink for imaging satellites in low orbit."],
       ["high-gain-dish", "High-gain dish antenna", "Ka", 20, 120, 5000000, 300000000, 40000000, "smallsat", "A pointed dish for big data from high orbits."],
-      ["deep-space-transponder", "Deep-space transponder + dish", "X (DSN)", 15, 60, 10000000, 2000000, 400000000, "smallsat", "Talks to NASA's Deep Space Network giant dishes. Slow but reaches the Moon and beyond."]
+      ["deep-space-transponder", "Deep-space transponder + dish", "X (DSN)", 15, 60, 10000000, 2000000, 400000000, "smallsat", "Talks to NASA's Deep Space Network giant dishes. Slow but reaches the Moon and beyond."],
+      ["mars-hga", "Mars high-gain dish (DSN)", "X/Ka (DSN)", 30, 150, 15000000, 20000000, 100000000000, "medium", "A big pointed dish that can talk to NASA's Deep Space Network from as far as Mars."]
     ]
   }
 }
