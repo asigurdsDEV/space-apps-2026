@@ -18,6 +18,17 @@ export interface CraftSpec {
   /** Dish diameter in multiples of the bus's largest side. */
   dishSize: number
   instruments: InstrumentShape[]
+  /** The picked catalog rows. ui/scene3d/parts turns each into its own model, by id, then by kind and props. */
+  parts?: CraftParts
+}
+
+export interface CraftParts {
+  bus?: Entity
+  /** The `solar` pick: a solar array or an RTG. */
+  solar?: Entity
+  battery?: Entity
+  comms?: Entity
+  instruments: Entity[]
 }
 
 export interface SceneSpec {
@@ -27,14 +38,14 @@ export interface SceneSpec {
   period_s: number
   craft: CraftSpec
   /** Display names, for the caption and the screen-reader description. */
-  names: { orbit?: string; bus?: string; power?: string; comms?: string; instruments: string[] }
+  names: { orbit?: string; bus?: string; power?: string; battery?: string; comms?: string; instruments: string[] }
 }
 
 export const BODY_RADIUS_M: Record<Body, number> = { earth: 6_371_000, moon: 1_737_400, mars: 3_389_500 }
 export const BODY_NAMES: Record<Body, string> = { earth: 'Earth', moon: 'the Moon', mars: 'Mars' }
 
-const num = (v: ParamValue | undefined, fallback: number) => (typeof v === 'number' && Number.isFinite(v) ? v : fallback)
-const str = (v: ParamValue | undefined) => (typeof v === 'string' ? v : '')
+export const num = (v: ParamValue | undefined, fallback: number) => (typeof v === 'number' && Number.isFinite(v) ? v : fallback)
+export const str = (v: ParamValue | undefined) => (typeof v === 'string' ? v : '')
 const ids = (v: ParamValue | undefined) => str(v).split(',').map((s) => s.trim()).filter(Boolean)
 
 function picked(state: Pick<SimState, 'entities' | 'params'>, key: string, kind: string): Entity | undefined {
@@ -90,6 +101,7 @@ export function sceneSpec(state: Pick<SimState, 'entities' | 'params'>): SceneSp
   const orbit = picked(state, 'orbit', 'orbit')
   const bus = picked(state, 'bus', 'bus')
   const solar = picked(state, 'solar', 'power_system')
+  const battery = picked(state, 'battery', 'power_system')
   const comms = picked(state, 'comms', 'comms_system')
   const instruments = ids(state.params.instruments)
     .map((id) => state.entities.find((e) => e.kind === 'instrument' && e.id === id))
@@ -108,8 +120,9 @@ export function sceneSpec(state: Pick<SimState, 'entities' | 'params'>): SceneSp
       wingSpan: wingSpan(num(solar?.props.power_w, 20)),
       ...antennaOf(comms),
       instruments: instruments.slice(0, 6).map((i) => instrumentShape(i.props.category)),
+      parts: { bus, solar, battery, comms, instruments },
     },
-    names: { orbit: orbit?.name, bus: bus?.name, power: solar?.name, comms: comms?.name, instruments: instruments.map((i) => i.name) },
+    names: { orbit: orbit?.name, bus: bus?.name, power: solar?.name, battery: battery?.name, comms: comms?.name, instruments: instruments.map((i) => i.name) },
   }
 }
 
