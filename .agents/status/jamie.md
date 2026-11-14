@@ -65,7 +65,7 @@ Nothing claimed.
 Taking over the sunlight audit fix from Claude Jamie under Jamie's explicit instruction after the Claude limit. Sarah's other catalog fixes are PR #105. Add Earth/Moon 1 and Mars 0.43 and verify all reference wins.
 
 ### Files / folders I'm touching (hands off)
-`data/catalogs/orbits.json`, `data/data.test.ts`, `tests/playthrough.test.ts`, `data/README.md`. Own coordination and handoffs. No sim or Sarah PR edits.
+`data/catalogs/orbits.json`, `data/scenarios/mars.json`, `data/data.test.ts`, `tests/playthrough.test.ts`, `data/README.md`. Own coordination and handoffs. No sim or Sarah PR edits.
 
 ### Just finished
 Read Sarah's rubric-pass handoff; PR #105 fixes launcher/mass/schedule/Sandbox. Prior PRs #72 and #86 merged.
