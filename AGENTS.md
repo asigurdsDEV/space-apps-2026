@@ -21,15 +21,26 @@ Setup and per-session prompts are in `docs/AGENT_SETUP.md`.
 - If you notice something missing, broken, or not built yet that someone else needs, put it under "Missing / I need from someone" in your file **and** add it to the Missing section of `BOARD.md`.
 - If you stop mid-task, say exactly where you left off so another agent can pick it up.
 
-## Claiming work
+## Task workflow (claim → work → done)
 
-- Move a task to **In progress** on the board with your tag, e.g. `[claude@aiden]`, commit and push that change *by itself* before writing code. That's the lock.
-- If someone else already claimed it, don't touch it. Pick something else or leave a handoff asking.
-- Only edit files inside the area your task owns. If you need to change something outside it, write a handoff to whoever owns it.
+Every task on `.agents/BOARD.md` goes through these steps. The two pushes (claim and done) are how the other agents know what you're doing, so never skip them. The game plan behind the task list is `docs/GAME_PLAN.md`.
+
+1. **Pick.** `git pull` on `main`. In BOARD.md → Open, take the highest-priority task (P0 before P1 before P2) that has **no agent tag** and whose `needs:` are merged or can be built against their branches. Skip tasks marked `owner: X` unless you are X, or X released it in a handoff.
+2. **Claim push (before any code).** Move that one line from Open to **In progress** and add your tag at the end, e.g. `— [claude@aiden]`. In your status section, list the exact files/folders under "Files / folders I'm touching". Add a LOG line (`claimed: <task>`). Commit **only those changes** as `[agent@human] board: claim <task>`, `git pull --rebase`, `git push`. That push is the lock.
+3. **Check the lock.** `git pull` again and look at the line. If another agent's tag is on that task, or they claimed it in an earlier commit, **they have it**. Undo your claim with `git revert` (never edit or delete their tag), log it, and go back to step 1.
+4. **Work** on your branch (`<human>-<tool>/<short-task>`, e.g. `aiden-claude/builder`). Touch only the files you listed. Need a change somewhere else? Write a handoff to that owner.
+5. **Done push.** Open a PR into `main` (PR template). Then on `main`, move the line to **Done** with `— in PR #N` and anything still missing. Update your status (Just finished, files released, what's left), add a LOG line (`done: <task>, PR #N`) and handoffs for anyone waiting. Commit as `[agent@human] board: <task> done, PR #N`, then pull --rebase and push.
+6. **Next.** Go back to step 1 and take the next Open task, unless your human told you to wait for them to pick. If nothing in Open fits, tell your human and add what you think is missing to Open or Missing.
+
+**Stopping mid-task:** write exactly where you stopped in your status and leave the line In progress. If you're giving it up, move it back to Open with a note (`— released by agent@human: where it stands`) and push.
+
+**Adding tasks:** anyone may add a line to Open (size, priority, folder, `needs:`, `owner:` if the folder is owned). Never edit another agent's line except to move your own claim.
+
+**Folder ownership:** only edit files inside the area your task owns. If you need to change something outside it, write a handoff to whoever owns it.
 
 ## While working
 
-- Branch name: `<human>/<short-task>`.
+- Branch name: `<human>-<tool>/<short-task>`, e.g. `jamie-codex/transport-demo`.
 - Small commits. Commit message format: `[agent@human] area: what changed`.
 - Append one line to `.agents/LOG.md` for each meaningful step:
   `YYYY-MM-DD HH:MM | agent@human | task | what you did`
@@ -47,10 +58,7 @@ Anything that changes how parts fit together (data formats, engine choice, folde
 
 ## When you finish a task
 
-1. Move it to **Done** on the board.
-2. Log it and update your status file (finished + anything still missing).
-3. Open a PR into `main` using the PR template.
-4. If someone is waiting on you, leave a handoff.
+Follow steps 5 and 6 of the Task workflow above: PR, then the done push (Done + PR #, status, LOG, handoffs), then take the next Open task.
 
 ## Don'ts
 
