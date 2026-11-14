@@ -66,3 +66,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 10:42 | claude@aiden | builder-align | done: builder reads state.entities + data/ param keys, 7 bars; verified on real sim+data; PR #10 updated; handoff to claude@ethan (3 sim mismatches)
 2026-11-14 10:44 | claude@aiden | briefing | claimed: [P0] Briefing screen (ui/briefing/)
 2026-11-14 10:45 | codex@jamie | start-screen | done: Start screen, PR #13; tests/build/browser verified; app mounting handoff
+2026-11-14 10:44 | codex@aiden | progress | checked PR/status progress; closed obsolete mission split after Sarah completed #11; Aiden selected shared theme next

@@ -29,27 +29,25 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** main (coordination only); future task branch aiden-codex/mission-run if Sarah releases a scope
-**Last updated:** 2026-11-14 10:26
+**Branch:** main (coordination); next aiden-codex/shared-theme
+**Last updated:** 2026-11-14 10:44
 
 ### Working on right now
 
-Coordinating parallel work. Aiden chose mission run/results alongside Claude's builder. During the required pre-push pull, claude@sarah's whole ui/mission/ claim landed first. My claim did not push and I have written no application code. Requested a run/results split through a handoff; awaiting Sarah's release before claiming any files.
+Progress check complete. Aiden selected the unclaimed [P0] Shared look task. Preparing the separate claim push before implementation.
 
 ### Files / folders I'm touching (hands off)
 
-- `.agents/status/aiden.md`: only this codex@aiden section.
-- My BOARD.md coordination note, append-only LOG.md, and handoffs from codex@aiden.
-- No application files claimed. `ui/mission/` remains claude@sarah's; `ui/builder/` remains claude@aiden's. No Claude branches touched.
+Only this section, my board entries, append-only log and addressed/own handoffs until the claim push. No application files claimed yet.
 
 ### Just finished
 
-Read current coordination files; detected the competing claim during rebase before any code or lock push. Preserved Sarah's whole-folder claim and both agents' log lines, with a correction explaining the unpushed attempt.
+Read Sarah's reply: mission run/results already completed in PR #11, split declined. Closed my obsolete split request. Checked open PRs: foundation and screen work remains unmerged; current build checks on #4/#7/#10/#11 pass. App wiring and real-data playthrough fixes remain with their owners.
 
 ### Missing / I need from someone
 
-claude@sarah: confirm whether you will release a separate mission run or results scope to Codex, or keep the whole task. Until then the proposed split is explicitly NOT CLAIMED under BOARD Blocked.
+Existing merge, Pages and sim/data integration blockers remain on BOARD. No mission-folder release needed.
 
 ### Heads up for other agents
 
-Aiden wants Claude and Codex working in parallel. I will only claim a released/unowned scope and push that lock before coding, on `aiden-codex/<short-task>` branches. Please do not infer ownership from the superseded claim-attempt log line.
+Aiden chose shared theme. I will claim only `ui/theme/`; adoption changes in other owners' screen/app files go through handoffs. Claude's section and branches remain untouched.

@@ -57,11 +57,11 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Blocked
 
-- [ ] Proposed mission-run/results split — ui/mission/ — [codex@aiden] — NOT CLAIMED: claude@sarah pushed the whole-folder lock first; awaiting her scope release.
 
 ## Done
 
 - [x] (medium) [P0] Start screen: game title, pick scenario, Solo / Host online / Join with code buttons — ui/start/ — needs: `useGame()` from app/ (build against props until then) — [codex@jamie] — in PR #13; app mounting pending
+- [x] Mission split coordination closed — [codex@aiden] — Sarah completed both views in PR #11; her folder ownership preserved.
 
 - [x] (medium) [P0] Align builder with sim + data — ui/builder/ — [claude@aiden] — in PR #10: parts from state.entities, data/ param keys, 7 bars; checked against the real sim + data (bus section waits on claude@ethan's sim-data catalog ids)
 - [x] Game plan + full task list on BOARD Open + claim/done workflow rules — docs/GAME_PLAN.md, BOARD.md Open, AGENTS.md "Task workflow", docs/AGENT_SETUP.md — [claude@aiden] — on main (coordination files); peerjs added to PR #4

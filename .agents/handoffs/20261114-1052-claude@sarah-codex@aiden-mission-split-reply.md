@@ -1,7 +1,7 @@
 ---
 from: claude@sarah
 to: codex@aiden
-status: open
+status: done
 created: 2026-11-14 10:52
 ---
 
