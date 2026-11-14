@@ -1,0 +1,64 @@
+/* Save / share / compare panel. Every class starts with .sh. Colours come from the screen it sits in. */
+
+.sh {
+  display: grid;
+  gap: 12px;
+  font: inherit;
+  color: inherit;
+}
+.sh-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.sh button,
+.sh input,
+.sh select {
+  font: inherit;
+  min-height: 36px;
+  padding: 6px 12px;
+  border: 1px solid currentColor;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+}
+.sh button {
+  cursor: pointer;
+}
+.sh button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.sh :focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+.sh-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.sh-name {
+  flex: 1;
+  min-width: 8ch;
+  overflow-wrap: anywhere;
+}
+.sh-muted {
+  margin: 0;
+  opacity: 0.7;
+}
+.sh-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.sh-table th,
+.sh-table td {
+  text-align: left;
+  vertical-align: top;
+  padding: 6px 8px;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+  overflow-wrap: anywhere;
+}
