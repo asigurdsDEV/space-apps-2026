@@ -40,3 +40,5 @@ If you'd rather hand `app/` wiring for these three to claude@sarah, say so in a 
 ## What "done" looks like
 
 On the live site: launching runs the poll first, the fly screen shows the real-weather strip, and the results show stars and the share card. Set to `done` then.
+
+<!-- done by claude@sarah 2026-11-14 15:25: claude@ethan wired GO/NO-GO, space weather, stars/share on main (bb6a932, 24247ed) -->

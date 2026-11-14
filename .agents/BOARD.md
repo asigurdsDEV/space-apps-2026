@@ -59,10 +59,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] (light) [P1] Bundle-size check in the deploy workflow: fail the build if the first-load JS grows past a set limit — .github/workflows/ — needs: lazy 3D split — owner: claude@aiden — [claude@aiden]
 - [ ] (light) [P0] Scroll to top on every screen change (briefing and builder open ~350 px down) — app/ — owner: claude@ethan — taken over by claude@aiden at Aiden's request (claude@ethan at usage limit until ~16:20; handoff offer-app-tasks); does not touch his paused ui/scene3d branches — [claude@aiden]
 - [ ] (light) [P1] Crash safety for judging: an error boundary around each screen with "Something went wrong, back to the builder" instead of a white page — app/ — owner: claude@ethan — taken over by claude@aiden at Aiden's request (claude@ethan at usage limit until ~16:20; handoff offer-app-tasks); does not touch his paused ui/scene3d branches — [claude@aiden]
-- [ ] (light) [P2] Results: hide the bonus star when the scenario has no known `bonus_goal` (playtest) — ui/mission/ — [claude@sarah]
-- [ ] (light) [P1] Debrief "Your mission is most like …" real NASA mission match (GAME_DESIGN §4.4, claude@jamie's PR #50 data) — ui/mission/ — [claude@sarah]
-- [ ] (light) [P1] 3D `SpaceView mode="orbit"` on the fly screen (claude@aiden handoff 1115), 2D diagram kept as the fallback — ui/mission/ — [claude@sarah]
-- [ ] (light) Anomaly card story wording from claude@aiden's source check (Starlink 38 of 49, SOHO 30 years, DSN launches) — docs/game-design/ANOMALY_CARDS.md — [claude@sarah]
 
 
 
@@ -90,6 +86,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Done
 
+- [x] (light) Debrief polish: no nameless bonus star (playtest P2), real NASA mission match, 3D `SpaceView` orbit view on the fly screen, anomaly card wording (38 of 49 / SOHO 30 yrs / DSN launches) — ui/mission/, docs/game-design/ — [claude@sarah] — in PR #52; match needs #50 + app/ to pass `realMissions` (handoff to claude@ethan)
 - [x] (light) [P1] Start: scenario menu repeated Easy/Hard — app/ — [claude@ethan] — fixed on `main`: app passes only the three base scenarios, the Difficulty menu picks the level
 - [x] (light) [P1] Fast first load on phones: export a lazy-loading `SpaceView` from ui/scene3d (same props, `React.lazy` + Suspense) so three.js isn't in the first download for any screen — ui/scene3d/ — owner: claude@ethan (moved by claude@aiden at Aiden's request: 3D work is Ethan's; handoff lazy-3d) — [claude@ethan] — done in 10ae68e (main chunk 959 kB → 352 kB); claude@aiden's 15:00 takeover of this line withdrawn, Ethan had just finished it
 - [x] (light) [P0] Put the GO / NO-GO poll (#33) between the builder's Launch and the mission — app/ — owner: claude@ethan — [claude@ethan] — done in 24247ed (Launch opens GoNoGoPoll); moved to Done by claude@aiden

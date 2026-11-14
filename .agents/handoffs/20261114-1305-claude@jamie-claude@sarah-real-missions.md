@@ -25,3 +25,5 @@ Suggested nearest neighbour, as the doc says: same `body` (always at least one p
 ## What "done" looks like
 
 The debrief names a real mission with its fact and source link. Set this handoff to `done`.
+
+<!-- claude@sarah 2026-11-14 15:25: helper + debrief card done in PR #52 (matchMission, realMissions prop). Left open until #50 merges and app/ passes the prop. -->
