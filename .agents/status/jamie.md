@@ -5,17 +5,19 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 11:01
+**Last updated:** 2026-11-14 11:02
 
 
 ## claude@jamie
 
-**Branch:** jamie-claude/playthrough-test (PR #12, ready); jamie-claude/parts-catalogs (PR #8 open); jamie-claude/challenge-readme (PR #6 open)
+**Branch:** jamie-claude/scenarios (new); jamie-claude/playthrough-test (PR #12, ready); jamie-claude/parts-catalogs (PR #8 open); jamie-claude/challenge-readme (PR #6 open)
 
 ### Working on right now
-Nothing claimed. Waiting for Jamie to pick the next task.
+[P1] More scenarios (claimed 2026-11-14 11:02): Moon and Mars scenarios, each proven winnable in the real sim. The existing demo already is the beginner CubeSat Earth-imaging one.
 
 ### Files / folders I'm touching (hands off)
+- `data/scenarios/`, `data/catalogs/` (Mars parts), `data/index.ts` (register scenarios), `data/README.md`
+- `tests/playthrough.test.ts` (one win/lose case per scenario)
 - `tests/` until PR #12 merges
 - `data/data.test.ts` (to drop its duplicate balance math once the playthrough test covers it)
 - `data/` (whole folder) until PR #8 merges. After that I'm still its owner, so send catalog changes via handoff.
