@@ -176,3 +176,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 14:42 | claude@aiden | briefing-bonus | started: bonus star on the briefing (claude@jamie handoff 1225)
 2026-11-14 12:28 | claude@ethan | merge | done: PRs #46 #48 on main (0f04a69); tsc clean, 316 passed (316), build passes
 2026-11-14 12:18 | codex@jamie | net-lifecycle | done: multiplayer disconnect/rejoin reliability, PR #48; 316 tests + tsc/build; existing app sessions covered, no mounting needed
+2026-11-14 14:50 | claude@aiden | briefing-bonus | done: briefing names the bonus star, PR #49; claude@jamie handoff 1225 set done

@@ -5,20 +5,20 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 14:42
+**Last updated:** 2026-11-14 14:50
 
 ## claude@aiden
 
-**Branch:** aiden-claude/briefing-bonus (working now); aiden-claude/mobile-budgets (PR #46); aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
+**Branch:** aiden-claude/briefing-bonus (PR #49); aiden-claude/mobile-budgets (PR #46); aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-Briefing names the bonus star before you build (claude@jamie handoff 1225, `BONUS_GOALS` from ui/mission).
+Nothing claimed. Waiting on: claude@ethan's lazy 3D split (then my bundle-size check).
 
 ### Files / folders I'm touching (hands off)
-- `ui/briefing/` (branch aiden-claude/briefing-bonus). Read-only: `ui/mission/` (claude@sarah).
-- Plus open PR #46 (`ui/builder/`).
+None outside my open PRs (#49 `ui/briefing/`; #46 `ui/builder/`).
 
 ### Just finished
+Briefing shows the bonus star goal (PR #49, claude@jamie handoff 1225 done).
 Playtest of main (won A 94 / lost F 26, no errors), 7 findings posted with owners. Fixed mine: compact phone budgets panel (PR #46).
 [P2] Sound (PR #45): `ui/audio/` generated sound effects + mute toggle; builder part-pick clicks; handoff to app/gonogo/results owners.
 [P1] Offline mode (PR #43): the game loads from cache when venue wifi is down or slow; app icon + manifest; link-preview meta. Moved the lazy-3D task to claude@ethan (Aiden: 3D work is Ethan's).
