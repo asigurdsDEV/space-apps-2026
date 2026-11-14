@@ -54,20 +54,20 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** main (completion coordination); aiden-codex/desktop-world-qa (PR #118)
-**Last updated:** 2026-11-14 15:29
+**Branch:** aiden-codex/desktop-polish (based on #124)
+**Last updated:** 2026-11-14 15:54
 
 ### Working on right now
-Desktop acceptance complete; findings handed to Claude Aiden, who now owns ui/interior + World wiring. No active source claim. Desktop remains priority; no further mobile work.
+Aiden authorized finishing Claude's first-person optimization and overlapping-menu fixes after Claude usage limit. Preserve #124 default/preload/render improvements, consolidate utility UI in one game menu, keep radio/prompt clear, suspend covered rooms, repair input recovery and verify a full desktop run. No edits to Claude branches or section.
 
 ### Files / folders I'm touching (hands off)
-PR #118 docs/qa/desktop-world.md only, released on merge. Own coordination only. Claude section/branches, deployment/racks/FPS/interior/app/scene3d, Caleb QA plan and docs/CHALLENGE 2.md untouched.
+`app/World.tsx`, new `app/WorldMenu.tsx` + `app/WorldMenu.test.tsx` and `app/World.test.tsx`, `app/StoryLayer.tsx` + test, `app/app.css`; `ui/fps/controller.ts`, `Prompt.tsx`, `fps.css`, new controller tests; `ui/hangar/control.ts`, `MissionControl.tsx`; `ui/interior/control.ts`, `SpacecraftRoom.tsx`; `docs/qa/desktop-world.md`. May add a focused render-loop helper/test under ui/fps if shared by both rooms. #124 inherited changes retained. Ethan scene3d, V7 App.tsx work, Caleb cutscenes and other owners' UI untouched.
 
 ### Just finished
-PR #118: exported published #114 head 1804d2b, real Chrome keyboard/mouse at 1280x800. Design→launch→existing flight→3D debrief F/26→Try the fix pass. Movement/sprint, mouse lock/drag/relock, reach/cabinet collision, invalid launch block and UI role fixture pass. 18 focused tests, build, size 140.9/150 kB pass; full suite initially one known cards timeout, then focused 13/13 and full 477/477 pass with browser stopped. Optional touch PR #110 remains complete.
+Desktop QA PR #118 merged: initial design→flight→debrief→fix passed, findings recorded. #120 now merged; #124 green but not merged at claim.
 
 ### Missing / I need from someone
-Claude World owner: completed 3D mission does not save personal best (only player-name localStorage key); reuse existing leaderboard saving and preserve stars/design + Daily separation before default flip. Follow-up is on BOARD; report/handoff include smaller prompt/Escape observations. Physical native Escape, public deployment, network co-op and new interior not checked. Earlier offline report stays with PWA owner.
+Ethan remains merge coordinator: review/merge green #124, then Codex follow-up when ready. Actual low-end laptop/native Escape still require real hardware checks. Personal-best saving and radio rendering will be considered within the World integration scope.
 
 ### Heads up for other agents
-Test evidence is pinned to 1804d2b before newer real-model rack changes, not acceptance of those later heads or a fully 3D flight run. Caleb retains first-person plan; Ethan sole merge coordinator. No new dependencies/assets/model work; Sol remains suitable.
+This is a user-authorized takeover of Claude Aiden's unfinished desktop polish, not a takeover of scene3d/V7/other screens. No model creation; Sol is suitable. Desktop only, no new mobile development.
