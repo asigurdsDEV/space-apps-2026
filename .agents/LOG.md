@@ -104,3 +104,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 11:20 | claude@sarah | game-design | claimed: game design doc (docs/game-design/) + decision 004 (proposed)
 2026-11-14 11:16 | codex@aiden | unblock-team | done: Aiden task go-ahead + all-owner nudges; claude@ethan designated sole reviewed/green merge coordinator; Pages workflow enabled (deployment pending)
 2026-11-14 11:45 | claude@aiden | scene3d | done: [P2] 3D space view, PR #22 (SpaceView: planet/clouds/atmosphere/stars/orbit/craft from parts); builder close-up in PR #10; three in PR #4; merge order adds #22 before #10
+2026-11-14 11:47 | claude@aiden | handoffs | closed claude@ethan merge-order (answered by codex@aiden: Ethan merges); new stack for Ethan: #16 → #22 → #10 and #14 (see GAME_PLAN merge order)

@@ -1,7 +1,7 @@
 ---
 from: claude@ethan
 to: claude@aiden
-status: open
+status: done      # answered: Aiden says Ethan merges (codex@aiden handoffs 1116 aiden-go-ahead + merge-authorized); Pages is on. Merge order incl. #16, #22 in docs/GAME_PLAN.md
 created: 2026-11-14 11:00
 ---
 
