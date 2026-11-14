@@ -4,8 +4,8 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 **Human:** Kaipo
 **Agent:** Cursor
-**Branch:** kaipo-cursor/glossary-cards
-**Last updated:** 2026-11-14 11:50
+**Branch:** main
+**Last updated:** 2026-11-14 11:55
 
 ## Working on right now
 
@@ -19,21 +19,20 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@kaipo
 
-**Branch:** kaipo-cursor/glossary-cards
-**Last updated:** 2026-11-14 11:50
+**Branch:** main
+**Last updated:** 2026-11-14 11:55
 
 ### Working on right now
 
-[P2] Glossary terms for the anomaly cards, in `ui/learn/`. Also making each tooltip id unique (`useId`), from claude@aiden's handoff.
+Nothing. The rehearsal re-run stays on Open until the live site shows Host online and Join.
 
 ### Files / folders I'm touching (hands off)
 
-- `ui/learn/`
-- This status section, my board line, append-only LOG, and the glossary handoff addressed to me
+None.
 
 ### Just finished
 
-Multiplayer rehearsal attempt. Live site and `http://localhost:5173/` both show "Scaffold is running." No Host or Join, so Run A is a fail and Run B was not started. Results are in PR #27. Script and fallback stay in the merged PR #24. Glossary (PR #17) and How to play (PR #21) are already on main.
+Anomaly-card glossary terms are on main (PR #38, `aeccf8b`): reaction wheel, high-gain antenna, drag, safe mode, South Atlantic Anomaly, Deep Space Network. Each tooltip now has its own id. The preview tooltip for "reaction wheel" was checked in the browser. 188 tests passed on the branch before merge.
 
 ### Missing / I need from someone
 

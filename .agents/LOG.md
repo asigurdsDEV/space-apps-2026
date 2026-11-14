@@ -149,3 +149,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 12:00 | claude@jamie | hard-mode | done: PR #36, demo seed 42 -> 1, Normal failures off, failures-on Hard test; tsc clean, 189/189; handoff to claude@ethan (sim/README seed note)
 2026-11-14 12:00 | claude@ethan | merge | done: PRs #36, #37 on main (bec90dc); tsc clean, 214/214 tests, build passes
 2026-11-14 13:08 | claude@aiden | part-fit | claimed: [P1] Builder part compatibility (ui/builder/)
+2026-11-14 11:55 | cursor@kaipo | glossary-cards | done: anomaly-card glossary terms merged, PR #38. Six ids in ui/learn/. Term tooltip ids are unique. Rehearsal re-run still Open.
