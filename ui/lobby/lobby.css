@@ -1,4 +1,4 @@
-.ls-root { color: var(--game-text); background: var(--game-bg); min-height: 100dvh; padding: clamp(20px, 4vw, 56px); font: 16px/1.5 var(--game-font); }
+.ls-root { color: var(--game-text); background: radial-gradient(ellipse at 90% 0%, var(--game-selected), transparent 55%), var(--game-bg); min-height: 100dvh; padding: clamp(20px, 4vw, 56px); font: 16px/1.5 var(--game-font); }
 .ls-root *, .ls-root *::before, .ls-root *::after { box-sizing: border-box; }
 .ls-layout { max-width: 1040px; margin: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 .ls-header, .ls-wide { grid-column: 1 / -1; }
@@ -9,7 +9,7 @@
 .ls-panel h2 { margin: 0 0 12px; font-size: 1.2rem; }
 .ls-panel label { display: block; font-size: .85rem; margin: 12px 0 6px; }
 .ls-panel button, .ls-panel input { font: inherit; color: inherit; }
-.ls-panel button:not(.learn-term-trigger) { min-height: 48px; border: 1px solid var(--game-border); border-radius: 8px; background: var(--game-selected); padding: 10px 14px; cursor: pointer; }
+.ls-panel :where(button:not(.learn-term-trigger)) { min-height: 48px; border: 1px solid var(--game-border); border-radius: 8px; background: var(--game-selected); padding: 10px 14px; cursor: pointer; }
 .ls-code-row { display: flex; gap: 8px; }
 .ls-code-row input { min-width: 0; width: 100%; background: var(--game-bg); border: 1px solid var(--game-border); border-radius: 8px; padding: 12px; font-family: var(--game-font-mono); }
 .ls-code-row button { flex-shrink: 0; }
@@ -18,7 +18,7 @@
 .ls-crew li { padding: 10px 0; border-top: 1px solid var(--game-border); overflow-wrap: anywhere; }
 .ls-badge { display: inline-block; padding: 2px 7px; margin-left: 8px; border: 1px solid var(--game-border); border-radius: 4px; font-size: .7rem; color: var(--game-accent); }
 .ls-roles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
-.ls-panel .ls-role { text-align: left; background: var(--game-bg); padding: 18px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.ls-panel .ls-role { text-align: left; background: var(--game-bg); padding: 18px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; position: relative; padding-right: 86px; }
 .ls-role strong { font-size: 1.02rem; }
 .ls-role span { color: var(--game-muted); font-size: .85rem; }
 .ls-role .ls-owner { color: var(--game-accent); margin-top: auto; padding-top: 8px; }
@@ -33,3 +33,17 @@
 .ls-hint { position: relative; }
 .ls-hint .learn-term { position: static; }
 .ls-hint .learn-term-tip { width: min(22rem, 100%); }
+
+.ls-sequence { display: flex; gap: 8px; flex-wrap: wrap; margin: 24px 0; }
+.ls-sequence span { flex: 1; min-width: 100px; padding: 10px 0; border-top: 2px solid var(--game-border); color: var(--game-muted); font: .7rem var(--game-font-mono); }
+.ls-sequence [aria-current] { color: var(--game-accent); border-color: var(--game-accent); }
+.ls-seats { display: flex; gap: 10px; margin: 18px 0; }
+.ls-seat { display: grid; place-items: center; width: 42px; height: 42px; border: 1px dashed var(--game-border); border-radius: 50%; font: .85rem var(--game-font-mono); color: var(--game-muted); }
+.ls-seat-filled { color: var(--game-on-accent); background: var(--game-accent); border-style: solid; }
+.ls-console-art { position: absolute; right: 16px; top: 16px; width: 58px; height: 58px; color: var(--game-accent); }
+.ls-panel .ls-role:not(:disabled):hover { border-color: var(--game-accent); }
+.ls-panel .ls-role:disabled { opacity: 1; border-style: dashed; cursor: not-allowed; }
+.ls-role:disabled .ls-console-art { color: var(--game-muted); }
+.ls-header { padding-bottom: 12px; }
+.ls-code-row input { font-size: 1.15rem; letter-spacing: .08em; }
+@media (max-width: 640px) { .ls-sequence span { min-width: 0; font-size: .6rem; } }

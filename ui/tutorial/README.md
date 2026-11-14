@@ -1,21 +1,11 @@
-# First-time builder tips
+# Builder quick tour
 
-`BuilderTutorial` is a non-modal coach-mark panel with four steps: orbit, resource bars, blocking issues, launch. It has Back/Next, final Got it, and Skip tips from every step. No overlay blocks the builder. No sim, data or app imports and no new dependency.
+`<BuilderTutorial />` opens a four-step native modal dialog on the first visit. The app already mounts it beside MissionBuilder. It teaches orbit, resource bars, blocking issues and launch without changing simulation state.
 
-## Mounting (builder/app owner)
+Focus moves to the heading on open. Tab and Shift+Tab wrap through the enabled buttons; the browser makes the builder inert behind the dialog. Escape, Skip tips and Got it close it. Focus returns to the previous connected control, or to the permanent Builder tips button if entry came from a removed screen/body. That button can reopen the tour at step one without clearing any stored game data.
 
-```tsx
-import { BuilderTutorial } from '../ui/tutorial' // from app/; ../tutorial from builder/
+Completion or skip is saved under `space-apps-2026:builder-tips:v1`. Storage failures cannot block dismissal but can make it appear again after remount. Existing dismissal preferences remain valid.
 
-<BuilderTutorial onShowStep={step => {
-  // Optional: scroll/focus your own orbit, budgets, issues or launch section.
-  // The component never queries another owner's DOM.
-}} />
-<MissionBuilder /* existing props */ />
-```
+Optional `onShowStep(id)` receives `orbit | budgets | issues | launch`. The Show me in builder button closes/skips the tour first, then invokes the callback so the owner can focus its own section. Without the callback that button is absent. Source does not query another owner's DOM.
 
-Mount once, while designing, above/beside the builder. Optional `onShowStep` exposes `orbit | budgets | issues | launch`; without it, the Show me button is omitted and the tips still work. Screen owner can position the panel by its associated section if desired. Import theme CSS once in app/; all layout/palette selectors here are scoped `.bt-*`. Each step change is announced through an atomic polite live region. Controls are native buttons, keyboard focus stays visible, there is no focus trap or animation.
-
-Completion and Skip are saved under `space-apps-2026:builder-tips:v1` as `completed` / `skipped`. It is a local preference, not a mission state or score. Saved dismissal hides the panel on subsequent mounts/reloads. Unknown values show the tutorial again. Blocked storage never crashes: dismissal still works for the current mount; it may reappear next visit. No other keys are read/changed.
-
-Preview: `/ui/tutorial/preview.html`. It demonstrates Show me focus/scroll against preview-only targets and has a Replay button that clears only this tutorial preference. It does not mount into the real builder automatically; that source remains with its owner. No automatic progress based on guessed issue/param states.
+Preview: `/ui/tutorial/preview.html`. Its Replay control resets only the tutorial preference so first-visit behavior can be checked. Shared theme must be loaded once by the app. Dialog is responsive, scrolls within short viewports, and has no animation.

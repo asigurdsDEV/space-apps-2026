@@ -4,6 +4,7 @@ import { Term } from '../learn'
 import '../learn/learn.css'
 import { ROLE_DETAILS, roleChoices } from './model'
 import './lobby.css'
+import { ConsoleArt } from './ConsoleArt'
 
 export interface LobbyScreenProps {
   code: string | null
@@ -35,8 +36,9 @@ export function LobbyScreen({ code, players, me, onClaimRole, onContinue, onLeav
     <main className="ls-root">
       <div className="ls-layout">
         <header className="ls-header">
-          <p className="ls-eyebrow">Mission control · Team assembly</p>
+          <p className="ls-eyebrow">GO / NO-GO · Mission control</p>
           <h1>Your crew. One mission.</h1>
+          <div className="ls-sequence" aria-label="Mission stages"><span aria-current="step">01 / Assemble</span><span>02 / Brief</span><span>03 / Build</span><span>04 / Fly</span></div>
           <p>Pick a role and plan together. Every choice shares the same mission resources.</p>
         </header>
         <section className="ls-panel" aria-labelledby={`${id}-room`}>
@@ -51,6 +53,7 @@ export function LobbyScreen({ code, players, me, onClaimRole, onContinue, onLeav
         </section>
         <section className="ls-panel" aria-labelledby={`${id}-crew`}>
           <h2 id={`${id}-crew`}>Crew <span className="ls-muted">{players.length} / 4</span></h2>
+          <div className="ls-seats" aria-hidden="true">{Array.from({ length: 4 }, (_, index) => <span key={index} className={players[index] ? 'ls-seat ls-seat-filled' : 'ls-seat'}>{players[index] ? players[index].name.trim().slice(0, 1).toUpperCase() : '＋'}</span>)}</div>
           <ul className="ls-crew">
             {players.map(player => <li key={player.player_id}>
               <div><strong>{player.name}</strong>{player.player_id === me.player_id && ' (you)'}{player.is_host && <span className="ls-badge">Host</span>}</div>
@@ -67,7 +70,7 @@ export function LobbyScreen({ code, players, me, onClaimRole, onContinue, onLeav
             {roleChoices(players, me.player_id).map(choice => <button type="button" key={choice.role}
               className="ls-role" disabled={busy || choice.taken || !self} aria-pressed={choice.mine}
               onClick={() => onClaimRole(choice.mine ? null : choice.role)}>
-              <strong>{choice.title}</strong><span>{choice.description}</span>
+              <strong>{choice.title}</strong><ConsoleArt role={choice.role} /><span>{choice.description}</span>
               <span className="ls-owner">{choice.mine ? 'Your role · select to release' : choice.owner ? `Taken by ${choice.owner.name}` : 'Available · select to claim'}</span>
             </button>)}
           </div>
