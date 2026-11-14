@@ -150,19 +150,26 @@ function arrival(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Shot {
   const wall = new THREE.Mesh(new THREE.BoxGeometry(16, 6, 0.2), new THREE.MeshStandardMaterial({ color: 0x101622, roughness: 0.8 }))
   wall.position.set(0, 2.4, -4.2)
   scene.add(wall)
-  const screens: THREE.Mesh[] = []
-  const colors = [0x1a6bff, 0x3ec6c6, 0x2450c8, 0x7fd0ff, 0x163a8a, 0x49e0a8]
-  colors.forEach((color, i) => {
-    const screen = new THREE.Mesh(
-      new THREE.PlaneGeometry(1.7, 0.95),
-      new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.55, roughness: 0.4 }),
-    )
-    const col = i % 3
-    const row = Math.floor(i / 3)
-    screen.position.set(-2.1 + col * 2.1, 3.15 - row * 1.25, -4.05)
-    scene.add(screen)
-    screens.push(screen)
+  const screens = SCREENS.map((draw, i) => {
+    const canvas = document.createElement('canvas')
+    canvas.width = 512
+    canvas.height = 288
+    const texture = new THREE.CanvasTexture(canvas)
+    texture.colorSpace = THREE.SRGBColorSpace
+    texture.anisotropy = 4
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1.7, 0.95), new THREE.MeshBasicMaterial({ map: texture, toneMapped: false }))
+    mesh.position.set(-2.1 + (i % 3) * 2.1, 3.15 - Math.floor(i / 3) * 1.25, -4.05)
+    scene.add(mesh)
+    const ctx = canvas.getContext('2d')
+    const paint = (t: number) => {
+      if (!ctx) return
+      draw(ctx, t)
+      texture.needsUpdate = true
+    }
+    paint(0)
+    return { mesh, paint, live: draw !== status && draw !== goNoGo }
   })
+  let painted = 0
   for (const x of [-2.2, 0, 2.2]) {
     const desk = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.72, 0.7), new THREE.MeshStandardMaterial({ color: 0x1c2436, metalness: 0.2, roughness: 0.6 }))
     desk.position.set(x, 0.36, 1.15)
@@ -172,14 +179,193 @@ function arrival(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Shot {
     update(progress, _elapsed, aspect) {
       camera.position.set(0, lerp(1.7, 1.55, progress), lerp(distance(aspect, 5.4), distance(aspect, 2.7), progress))
       camera.lookAt(0, 1.7, -4)
-      screens.forEach((screen, i) => {
-        const mat = screen.material as THREE.MeshStandardMaterial
-        mat.emissiveIntensity = 0.35 + 0.35 * (0.5 + 0.5 * Math.sin(progress * 8 + i))
+      // Redraw the moving screens about 12 times a second; uploading a canvas every frame is wasted work on phones.
+      const t = _elapsed / 1000
+      const repaint = t - painted > 0.08
+      if (repaint) painted = t
+      screens.forEach(({ mesh, paint, live }, i) => {
+        if (repaint && live) paint(t)
+        ;(mesh.material as THREE.MeshBasicMaterial).color.setScalar(0.82 + 0.18 * (0.5 + 0.5 * Math.sin(progress * 8 + i)))
       })
     },
     dispose() {},
   }
 }
+
+// ---- Mission-control screens for the arrival wall: drawn in 2D, no image files.
+type Ctx = CanvasRenderingContext2D
+const INK = '#cfe3ff'
+const DIM = '#5f7aa3'
+const GO = '#49e0a8'
+const MONO = 'ui-monospace, Menlo, Consolas, monospace'
+
+/** Dark panel with a title bar, like a real console display. */
+function frame(ctx: Ctx, title: string, accent: string) {
+  ctx.fillStyle = '#050c18'
+  ctx.fillRect(0, 0, 512, 288)
+  ctx.fillStyle = accent
+  ctx.fillRect(0, 0, 512, 34)
+  ctx.fillStyle = '#04101e'
+  ctx.font = `700 20px ${MONO}`
+  ctx.textBaseline = 'middle'
+  ctx.fillText(title, 14, 18)
+  ctx.strokeStyle = accent
+  ctx.lineWidth = 3
+  ctx.strokeRect(1.5, 1.5, 509, 285)
+}
+
+function groundTrack(ctx: Ctx, t = 0) {
+  frame(ctx, 'GROUND TRACK', '#1a6bff')
+  const [x0, y0, w, h] = [16, 46, 480, 228]
+  ctx.strokeStyle = '#13284a'
+  ctx.lineWidth = 1
+  for (let i = 0; i <= 12; i++) line(ctx, x0 + (w * i) / 12, y0, x0 + (w * i) / 12, y0 + h)
+  for (let i = 0; i <= 6; i++) line(ctx, x0, y0 + (h * i) / 6, x0 + w, y0 + (h * i) / 6)
+  // Rough continents, so the map reads as Earth at a glance.
+  ctx.fillStyle = '#1d4a3c'
+  for (const [cx, cy, rx, ry] of [[110, 110, 55, 38], [150, 200, 28, 45], [262, 105, 30, 22], [270, 175, 30, 48], [360, 110, 75, 35], [420, 220, 28, 16]])
+    ellipse(ctx, x0 + (cx / 512) * w * 1.05, y0 + ((cy - 40) / 248) * h, rx, ry)
+  // An inclined orbit traced on a flat map is a sine wave; Earth turns under it, so each pass shifts west.
+  const track = (s: number) => [x0 + (((s * w) % w) + w) % w, y0 + h / 2 - Math.sin(s * Math.PI * 2) * h * 0.38] as const
+  ctx.fillStyle = '#ffd36b'
+  for (let s = 0; s < 1; s += 0.004) {
+    const [x, y] = track(s)
+    ctx.fillRect(x, y, 2, 2)
+  }
+  const [sx, sy] = track(0.18 + t * 0.05)
+  ctx.fillStyle = '#ffffff'
+  ellipse(ctx, sx, sy, 7, 7)
+  ctx.strokeStyle = '#ffd36b'
+  ctx.lineWidth = 2
+  ctx.beginPath()
+  ctx.arc(sx, sy, 22, 0, Math.PI * 2)
+  ctx.stroke()
+}
+
+function telemetry(ctx: Ctx, t = 0) {
+  frame(ctx, 'TELEMETRY', '#3ec6c6')
+  const rows: [string, string, number, (x: number) => number][] = [
+    ['POWER', '28.4 W', 0, (x) => 0.55 + 0.25 * Math.sin(x * 0.9)],
+    ['TEMP', '21.6 C', 1, (x) => 0.5 + 0.12 * Math.sin(x * 0.35) + 0.05 * Math.sin(x * 2.1)],
+    ['SIGNAL', '-92 dBm', 2, (x) => 0.45 + 0.3 * Math.abs(Math.sin(x * 0.5)) - 0.08 * Math.sin(x * 3.3)],
+  ]
+  for (const [name, value, r, f] of rows) {
+    const top = 48 + r * 78
+    ctx.fillStyle = DIM
+    ctx.font = `600 16px ${MONO}`
+    ctx.fillText(name, 16, top + 10)
+    ctx.fillStyle = INK
+    ctx.fillText(value, 16, top + 34)
+    ctx.strokeStyle = '#13284a'
+    ctx.lineWidth = 1
+    ctx.strokeRect(150, top, 346, 62)
+    ctx.strokeStyle = GO
+    ctx.lineWidth = 2.5
+    ctx.beginPath()
+    for (let x = 0; x <= 346; x += 4) {
+      const y = top + 58 - f(x / 20 + t * 3) * 54
+      if (x === 0) ctx.moveTo(150 + x, y)
+      else ctx.lineTo(150 + x, y)
+    }
+    ctx.stroke()
+  }
+}
+
+function clock(ctx: Ctx, t = 0) {
+  frame(ctx, 'MISSION CLOCK', '#2450c8')
+  const s = Math.floor(t)
+  const pad = (n: number) => String(n).padStart(2, '0')
+  ctx.textAlign = 'center'
+  ctx.fillStyle = DIM
+  ctx.font = `600 20px ${MONO}`
+  ctx.fillText('MISSION ELAPSED TIME', 256, 82)
+  ctx.fillStyle = INK
+  ctx.font = `700 64px ${MONO}`
+  ctx.fillText(`T+ 00:${pad(Math.floor(s / 60))}:${pad(s % 60)}`, 256, 146)
+  ctx.fillStyle = DIM
+  ctx.font = `600 20px ${MONO}`
+  ctx.fillText('SHIFT 1  ·  FLIGHT DIRECTOR ON CONSOLE', 256, 218)
+  ctx.fillStyle = t % 1 < 0.5 ? GO : '#1c5c48'
+  ctx.fillText('● LIVE', 256, 252)
+  ctx.textAlign = 'left'
+}
+
+function status(ctx: Ctx) {
+  frame(ctx, 'SPACECRAFT', '#7fd0ff')
+  ;['POWER', 'ATTITUDE', 'COMMS', 'THERMAL', 'PAYLOAD'].forEach((name, i) => {
+    const y = 66 + i * 44
+    ctx.fillStyle = GO
+    ellipse(ctx, 30, y, 8, 8)
+    ctx.fillStyle = INK
+    ctx.font = `600 22px ${MONO}`
+    ctx.fillText(name, 52, y)
+    ctx.fillStyle = GO
+    ctx.textAlign = 'right'
+    ctx.fillText('NOMINAL', 494, y)
+    ctx.textAlign = 'left'
+  })
+}
+
+function earthFeed(ctx: Ctx, t = 0) {
+  frame(ctx, 'CAM 1  ·  EARTH', '#163a8a')
+  const g = ctx.createRadialGradient(220, 130, 10, 256, 168, 120)
+  g.addColorStop(0, '#5aa0ff')
+  g.addColorStop(0.75, '#1a4fa8')
+  g.addColorStop(1, '#0a1f4a')
+  ctx.fillStyle = g
+  ellipse(ctx, 256, 166, 112, 112)
+  ctx.save()
+  ctx.beginPath()
+  ctx.arc(256, 166, 112, 0, Math.PI * 2)
+  ctx.clip()
+  ctx.fillStyle = '#2f7a4e'
+  const drift = (t * 6) % 224
+  for (const [x, y, rx, ry] of [[200, 130, 40, 26], [270, 200, 30, 40], [330, 120, 34, 22]]) ellipse(ctx, x + drift - 112, y, rx, ry)
+  ctx.fillStyle = 'rgba(255,255,255,0.55)'
+  for (const [x, y, rx, ry] of [[230, 100, 50, 8], [300, 160, 60, 7], [210, 220, 45, 6]]) ellipse(ctx, x + drift * 1.3 - 140, y, rx, ry)
+  ctx.restore()
+  // Thin blue air on the limb.
+  ctx.strokeStyle = 'rgba(120,190,255,0.7)'
+  ctx.lineWidth = 4
+  ctx.beginPath()
+  ctx.arc(256, 166, 114, 0, Math.PI * 2)
+  ctx.stroke()
+  ctx.fillStyle = t % 1 < 0.5 ? '#ff4a5a' : '#5a1820'
+  ctx.font = `700 18px ${MONO}`
+  ctx.fillText('● REC', 420, 264)
+}
+
+function goNoGo(ctx: Ctx) {
+  frame(ctx, 'GO / NO-GO', '#49e0a8')
+  ;['FLIGHT', 'BUDGET', 'SCIENCE', 'SPACECRAFT', 'COMMS'].forEach((name, i) => {
+    const y = 66 + i * 44
+    ctx.fillStyle = INK
+    ctx.font = `600 22px ${MONO}`
+    ctx.fillText(name, 22, y)
+    ctx.fillStyle = '#123a2e'
+    ctx.fillRect(388, y - 16, 104, 32)
+    ctx.fillStyle = GO
+    ctx.textAlign = 'center'
+    ctx.fillText('GO', 440, y + 1)
+    ctx.textAlign = 'left'
+  })
+}
+
+function line(ctx: Ctx, x1: number, y1: number, x2: number, y2: number) {
+  ctx.beginPath()
+  ctx.moveTo(x1, y1)
+  ctx.lineTo(x2, y2)
+  ctx.stroke()
+}
+
+function ellipse(ctx: Ctx, x: number, y: number, rx: number, ry: number) {
+  ctx.beginPath()
+  ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2)
+  ctx.fill()
+}
+
+/** Wall order, left to right, top row first. All but the status and GO / NO-GO boards animate. */
+const SCREENS: ((ctx: Ctx, t?: number) => void)[] = [groundTrack, clock, telemetry, earthFeed, status, goNoGo]
 
 function orbit(scene: THREE.Scene, camera: THREE.PerspectiveCamera, body: 'moon' | 'mars'): Shot {
   scene.background = new THREE.Color(0x000002)
