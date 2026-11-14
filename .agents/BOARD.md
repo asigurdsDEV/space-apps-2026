@@ -11,7 +11,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 ### Interactive 3D overhaul (Aiden: both modes, spacecraft flight first; plan PR #69)
 These are new work packages, not active claims. Suggested owners claim only their isolated scope with the normal lock push. Ethan keeps ui/scene3d/, part models, launch/fly branches, app/sim/shared/e2e. No immediate change or response is needed from him; V7 is a later integration checkpoint. Existing Start/Lobby/Tutorial graphics remain codex@jamie's current task.
 
-- [ ] (medium) [P1] V3 Flight prop/target asset pack: actual optimized GLB geometry + credited sources/axes/size manifest; reuse Ethan's craft/planets — public/visual-assets/flight/, art/flight/, docs/visual-assets/flight.md (new) — needs: plan PR #69; coordinate venue-rehearsal priority — owner: cursor@kaipo
 - [ ] (heavy) [P1] V7 Integrate at a checkpoint chosen by existing owners: player-craft control/chase camera + one large scene + HUD; preserve published SpaceView and sim authority — ui/scene3d/ + app/ owner: claude@ethan; ui/mission/ owner: claude@sarah; cache/config owner: claude@aiden — needs: reviewed V1/V2/V4, optional V3; owner agreement on additive API; no current 3D work takeover
 
 
@@ -72,6 +71,7 @@ These are new work packages, not active claims. Suggested owners claim only thei
 ## In progress
 - [ ] (heavy) [P2] V6 Walkable hangar/mission-control room: bounded movement, clickable build/briefing/launch stations, standalone preview and callback navigation — ui/hangar/, public/visual-assets/hangar/, art/hangar/ (new) — also decision 005's rooms (wall screen, assembly bay, 4 consoles, launch pad, ops room, debrief) with the guided walk; Aiden 15:50: start now, in parallel with the flight slice; no Ethan source edits — owner: claude@aiden — [claude@aiden]
 - [ ] (medium) [P1] V1 Flight input kit: focused keyboard + touch movement intent, brake/interact, Escape/blur release; isolated preview + tests — ui/pilot-input/ (new) — needs: plan PR #69 — owner: codex@aiden — [codex@aiden]
+- [ ] (medium) [P1] V3 Flight prop/target asset pack: actual optimized GLB geometry + credited sources/axes/size manifest; reuse Ethan's craft/planets — public/visual-assets/flight/, art/flight/, docs/visual-assets/flight.md (new) — needs: plan PR #69; coordinate venue-rehearsal priority — owner: cursor@kaipo — [cursor@kaipo]
 
 
 

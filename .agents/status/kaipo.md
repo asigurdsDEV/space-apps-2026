@@ -4,8 +4,8 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 **Human:** Kaipo
 **Agent:** Cursor
-**Branch:** main
-**Last updated:** 2026-11-14 12:45
+**Branch:** kaipo-cursor/flight-assets
+**Last updated:** 2026-11-14 13:15
 
 ## Working on right now
 
@@ -19,16 +19,18 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@kaipo
 
-**Branch:** main
-**Last updated:** 2026-11-14 12:45
+**Branch:** kaipo-cursor/flight-assets
+**Last updated:** 2026-11-14 13:15
 
 ### Working on right now
 
-Nothing.
+V3 flight prop/target GLB pack (plan PR #69). Venue rehearsal stays Open until we have four devices.
 
 ### Files / folders I'm touching (hands off)
 
-None.
+- public/visual-assets/flight/
+- art/flight/
+- docs/visual-assets/flight.md
 
 ### Just finished
 
