@@ -169,8 +169,15 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
   globe.add(planet, clouds)
   high.add(spaceSky, stars, globe)
   scene.add(high)
-  // Which part of the Earth is below: picked for a mix of sea, coast and cloud.
-  const globeStart = new THREE.Quaternion().setFromEuler(new THREE.Euler(0.55, 2.2, 0))
+  // Which part of the Earth is below: lift-off from Cape Canaveral (28.5 N, 80.6 W), flying north-east up the coast,
+  // so the camera on the seaward side looks back at the land. Every vehicle gets this one ground track.
+  // On the map a point is (cos lat cos lon, sin lat, -cos lat sin lon); the scene has +y up and +x downrange.
+  const lat = 28.5 * (Math.PI / 180)
+  const lon = -80.6 * (Math.PI / 180)
+  const up = new THREE.Vector3(Math.cos(lat) * Math.cos(lon), Math.sin(lat), -Math.cos(lat) * Math.sin(lon))
+  const east = new THREE.Vector3(-Math.sin(lon), 0, -Math.cos(lon))
+  const heading = up.clone().cross(east).add(east).normalize()
+  const globeStart = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(heading, up, heading.clone().cross(up))).invert()
   const spin = new THREE.Quaternion()
   const Z = new THREE.Vector3(0, 0, 1)
 
@@ -619,6 +626,7 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
 
   // ---- Clock.
   // The real map arrives a moment after the first frame: a frozen scene draws again once it has.
+  // Checked in a frame callback: drawing from a timer hangs headless Chrome when it runs on virtual time.
   let waits = 0
   let mapWait = requestAnimationFrame(function check() {
     if (maps.maps.earth.uHasMap.value > 0) draw(time)

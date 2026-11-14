@@ -99,6 +99,30 @@ All of these are **eye** unless a source is given: they were chosen to look righ
 | SLS | feed lines | two 0.6 pipes down the hydrogen tank, plus the systems tunnel |
 | SLS | Orion | 5.6 of panels, abort-system cover 5.2 tall, tower to 13.4 [21] |
 
+## Surface detail and effects: by eye
+
+The rendering pass (weld rings, fasteners, doors, markings, engine detail, pad and flight effects) was added from memory of
+launch photos and broadcasts. **Nothing in this section was read from a source in that pass**: every row is **eye**. No company
+logo, wordmark or NASA insignia is drawn anywhere.
+
+| Where | What was added | What is known to be simplified or uncertain |
+|---|---|---|
+| Every vehicle | Weld rings between tank barrels, lengthwise panel welds, fastener rows at the joints, access doors, vent slots | Counts, spacing and positions are not from drawings |
+| Every vehicle | Light frost on the liquid-oxygen tanks, vapour drifting from two vents before lift-off, frost shedding as it climbs | Vent positions are placeholders: one near the top of each stage |
+| Every vehicle | A flickering vapour skirt at the fairing shoulder early in the Max-Q shot | Real vapour cones form near Mach 1, some seconds before Max-Q, and not on every flight |
+| Every liquid engine | Bells drawn as a wall of cooling tubes with stiffening bands and heat tint; a glowing throat; on upper-stage engines a chamber, two turbopumps, a duct ring and a gimbal block | One generic powerhead for every engine type. Rutherford (electric pumps) and the RL10 (expander cycle) do not look like this up close |
+| Plumes | One narrow jet with shock diamonds per engine inside the cluster's flame; kerosene and solid flames opaque, hydrogen and methane thin; smoke trail by propellant (solid heaviest, hydrogen least) | Diamond spacing and flame lengths are not measured |
+| Falcon 9, Falcon Heavy | United States flag near the top of each first stage and on the fairing; cold-gas thruster pods on the interstage; fairing vents; doors above the legs | Flag size and position. The vertical company wordmark the real booster carries is left off on purpose |
+| Electron | Section joints, fastener rows, interstage vents | No markings drawn: the real vehicle carries its maker's wordmark and flags, positions not checked |
+| Pegasus XL | Fastener rows at the motor joints, a cable duct along the body, doors | No markings drawn: the real lettering runs along the body, which the skin painter does not do |
+| Vulcan Centaur | Flag on the booster and on the fairing; welded bands, panel welds and light frost on the bare-steel Centaur V; attach fittings and a cable strip on each GEM 63XL; interstage vents | Flag positions; the Centaur V weld pattern |
+| Atlas V | Panel welds on the bronze booster; fastener rows, vents and joints on the interstage; stringers on the Centaur forward adapter; foam grain; flag on the fairing | The two equipment pods at the base of the real booster are not modelled. Flag position |
+| Delta IV Heavy | Stringers on the centerbody between the tanks; foam spray passes and closeout seams; fastener rows on the engine section and interstage; flag on the fairing | Whether the centerbody shows ribs through its insulation. The foam charring at ignition that the real vehicle is known for is not drawn |
+| SLS Block 1 | Intertank stringers in relief; five hydrogen-tank and two oxygen-tank barrels; doors on the engine section, intertank and forward skirt; on each booster stiffener rings on the aft segment, fastener rows at the field joints, a systems tunnel and black-and-white tracking targets | Target positions and size. The boosters' red lettering and the insignia on Orion's panels are left off on purpose; no flag is drawn because its position was not checked |
+| Pad | Lift shaft and work platforms in the tower, umbilical plates and lines on the swing arms, flame-trench walls and deflector, a water tower | A generic pad, sized to the rocket: not SLC-40, SLC-41, SLC-37, LC-39B or LC-1 |
+| Light | The Sun stands 20 degrees up so that shadows read; the scene is still dressed as dawn | A dawn Sun would be lower |
+| Earth below | The real Blue Marble map (`../maps`). Every vehicle is shown leaving Cape Canaveral (28.5 N, 80.6 W) heading north-east | Electron, Pegasus and others launch from elsewhere, and headings differ by mission |
+
 ## Sources
 
 1. SpaceX, Falcon 9: https://www.spacex.com/vehicles/falcon-9/ (script-only page)

@@ -2,7 +2,7 @@
 // plain daylight, for checking shapes and paint against photos of the real vehicles.
 import * as THREE from 'three'
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js'
-import { triangles } from './kit'
+import { skinBytes, triangles } from './kit'
 import { buildRocket } from './rocket'
 import type { RocketSpec } from './vehicles'
 
@@ -48,10 +48,14 @@ export function showHangar(host: HTMLElement, specs: RocketSpec[], view: HangarV
   let x = 0
   let tallest = 0
   for (const spec of specs) {
+    const before = skinBytes()
     const model = buildRocket(spec)
+    // Skins shared with a rocket built earlier in the line-up are not counted again.
+    const stats = `${spec.id}  ${model.height.toFixed(1)} m  ${Math.round(triangles(model.root) / 100) / 10}k tris  ${((skinBytes() - before) / 1e6).toFixed(1)} MB skins`
+    console.info(stats)
     x += model.footprint + 3
     model.root.position.x = x
-    scene.add(model.root, label(`${spec.id}  ${model.height.toFixed(1)} m  ${Math.round(triangles(model.root) / 100) / 10}k tris`, specs.length > 4 ? 1.7 : 1.2).translateX(x).translateY(-9 - (specs.indexOf(spec) % 2) * 2))
+    scene.add(model.root, label(stats, specs.length > 4 ? 1.7 : 1.2).translateX(x).translateY(-9 - (specs.indexOf(spec) % 2) * 2))
     x += model.footprint + 3
     tallest = Math.max(tallest, model.height)
   }
