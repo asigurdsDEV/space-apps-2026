@@ -58,6 +58,7 @@ const FALCON: Shape = {
   events: { maxq: 72, staging: 145, fairing: 195, seco: 518, deploy: 780 },
 }
 
+// shortcut: event times of the three rockets without a catalog row are rounded from memory of typical flights, check them against the operators' press kits when the rows are added.
 /** Keyed by catalog id. Ids without a catalog row yet (atlas-v, delta-iv-heavy, falcon-heavy) work the moment a row is added. */
 export const KNOWN: Record<string, Shape> = {
   // Electron: 18 m tall, 1.2 m carbon-composite body, 9 + 1 Rutherford engines, Curie kick stage.
@@ -88,6 +89,7 @@ export const KNOWN: Record<string, Shape> = {
     boosters: { count: 6, radius: 0.8, length: 21.9 },
     events: { maxq: 76, boosters: 110, staging: 299, fairing: 323, seco: 945, deploy: 3000 },
   },
+  // shortcut: only the 401 is modelled, add solids and the 5 m fairing when the catalog gets a 411/541/551 row.
   // Atlas V 401 (MAVEN, LRO): 58.3 m tall, 3.81 m x 32.5 m booster with one twin-nozzle RD-180, 3.05 m Centaur, 4.2 m x 12.9 m fairing.
   'atlas-v': {
     ...BASE, model: 'atlas-v',
