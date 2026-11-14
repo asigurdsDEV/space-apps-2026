@@ -24,7 +24,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 ### P2 — nice-to-haves from the brief
 
 ### Game design (decision 004, proposed, see docs/game-design/GAME_DESIGN.md §8)
-- [ ] (heavy) [P0] Anomaly cards in the sim: `decision_required` event + `resolve_decision` command, seeded draws, effects vocabulary, encode the deck from docs/game-design/ANOMALY_CARDS.md — sim/, shared/, CONTRACTS.md — owner: claude@ethan
 
 ## Missing / needed
 
@@ -80,6 +79,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Done
 
+- [x] (heavy) [P0] Anomaly cards in the sim — sim/, shared/, app/, CONTRACTS.md — [claude@ethan] — PR #60 on `main`: 8 cards, `decision_required` / `resolve_decision` / `decision_resolved`, own seeded stream, co-op console ownership; played in a browser (2 cards, results show them); what-if + real mission match wired in PR #63
 - [x] (light) [P2] GO / NO-GO poll sounds: `playSound` go / no-go as each console calls (claude@aiden handoff sound) — ui/gonogo/ — [claude@jamie] — in PR #61: one sound per console call, one for Skip / reduced motion; checked in the browser preview
 
 - [x] (light) [P2] Accessibility pass — docs/A11Y_REPORT.md — [cursor@caleb] — in PR #59: keyboard and accessibility-tree pass of the live game; handoff to codex@jamie for the builder tour dialog. Not an NVDA/VoiceOver run.
