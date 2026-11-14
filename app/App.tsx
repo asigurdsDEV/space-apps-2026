@@ -7,7 +7,8 @@ import { useEffect, useLayoutEffect, useRef, useState, type ComponentType, type 
 import { DIFFICULTIES, getDatasets, getScenario, scenarios, withDifficulty, type Difficulty } from '../data'
 import { LocalTransport } from '../net'
 import type { Config, NetMessage, SimEvent, SimState, Summary } from '../shared'
-import { catalogEntities, simCore } from '../sim'
+import { canSend, ROLES } from '../shared'
+import { catalogEntities, pendingDecision, simCore } from '../sim'
 import { playSound, SoundToggle } from '../ui/audio'
 import { Briefing } from '../ui/briefing'
 import { MissionBuilder } from '../ui/builder'
@@ -42,6 +43,12 @@ export const SCENARIOS: Config[] = scenarios.flatMap((scenario) => LEVELS.map((l
  * leaves them out of its `state` messages (see app/session.ts) and guests put them back.
  */
 export const BASELINE = catalogEntities(getDatasets())
+
+/** Anomaly cards per mission (GAME_DESIGN.md §4.2): easy 1, normal 2, hard 3. A scenario's own `anomaly_cards` wins. */
+export const withCards = (config: Config): Config => ({
+  ...config,
+  params: { anomaly_cards: config.params.difficulty === 'easy' ? 1 : config.params.difficulty === 'hard' ? 3 : 2, ...config.params },
+})
 
 /**
  * ui/mission only has a dark palette so far, so the theme is pinned to dark around the flight
@@ -95,7 +102,7 @@ export function App() {
   }, [active])
 
   const newGame = (config: Config): Game => {
-    const game = createGame({ config, datasets: getDatasets(config.datasets), sim: simCore })
+    const game = createGame({ config: withCards(config), datasets: getDatasets(config.datasets), sim: simCore })
     designFromHash(link.current).forEach(game.send)
     link.current = ''
     return game
@@ -402,7 +409,7 @@ type SpaceWeatherData = typeof import('../data/space-weather')
 
 /** Everything after launch: (the launch sequence,) cruise and operations, then the results with the personal best. */
 function Flight({ session, config, daily }: { session: Session; config: Config; daily?: DailyMission }) {
-  const { state, events, paused, speed } = useSession(session)
+  const { state, events, paused, speed, players, me } = useSession(session)
   const [launchDone, setLaunchDone] = useState(false)
   // 340 kB of real NASA data, so it is loaded only once a mission flies.
   const [weather, setWeather] = useState<SpaceWeatherData | null>(null)
@@ -418,6 +425,10 @@ function Flight({ session, config, daily }: { session: Session; config: Config; 
   const summary = ended ? finalSummary(events) : undefined
   const bonusGoal = typeof config.params.bonus_goal === 'string' ? config.params.bonus_goal : undefined
   const day = state.metrics.mission_day
+  // The anomaly card waiting for an answer, read from the state so a late joiner or a reload still sees it.
+  const decision = pendingDecision(state)
+  const console = ROLES.find((role) => role === decision?.console) ?? null
+  const decide = (decision_id: string, option_id: string) => session.send({ type: 'resolve_decision', payload: { decision_id, option_id } })
   return (
     <>
       <MissionScreen
@@ -429,7 +440,10 @@ function Flight({ session, config, daily }: { session: Session; config: Config; 
         title={config.title}
         summary={summary}
         bonusGoal={bonusGoal}
-        share={{ daily: daily?.date }}
+        share={{ daily: daily?.date, anomalies: String(state.metrics.cards_drawn ?? '').split(',').filter(Boolean).length }}
+        decision={decision}
+        onDecide={decide}
+        canDecide={canSend(me.role, { type: 'resolve_decision', payload: { decision_id: '', option_id: '' } }, players.map((p) => p.role), console)}
         spaceWeather={weather && typeof day === 'number' ? weather.weatherForMissionDay(weatherStart(config, daily?.seed ?? config.seed), day) : null}
       />
       {summary && typeof summary.score === 'number' && (

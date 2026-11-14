@@ -116,6 +116,20 @@ The constants are in `sim/design.ts`: `OFF_ORBIT_SCIENCE_FACTOR` 0.5, `CAPTURE_D
 
 **Time is not a trade-off in the demo.** Of the six resources (mass, power, budget, data, comms, time), the demo exercises five. The Schedule rule is off because the catalogs have no `build_months` column and the scenario has no `deadline_months`; cruise takes no time; and the Lifetime rule cannot bind, because every bus and every orbit outlasts the one-year mission. The sim already reads all of these, so time becomes a real trade-off as soon as data/ adds `build_months` columns and a `deadline_months` key (and, for lifetime, a mission longer than the shortest bus or orbit life).
 
+## Anomaly cards (decision 004)
+
+Off unless the scenario sets `anomaly_cards` (how many to draw; the app sets 1 / 2 / 3 for easy / normal / hard). Rules:
+
+- **When:** one card per equal slice of the operations phase, at least a week apart. Each card is drawn at most once, and only if it fits the mission (a Mars mission never gets the Earth-storm card).
+- **Waiting:** the sim emits `decision_required` and stops the clock. `step` changes nothing until `resolve_decision` arrives with the right `decision_id` and option `a` or `b`. `pendingDecision(state)` rebuilds the card from the state, so a late joiner or a reload still sees it.
+- **Answering:** the option's effects are applied and `decision_resolved` says what happened. Effects: safe-mode days (no observations), science, downlink and storage multipliers (lasting, or for some days), losing stored data, a cost, a dice roll, or the end of the mission.
+- **Design matters:** a more reliable bus, a bigger battery and a higher orbit improve the odds on the gambles. The numbers are game balance; the stories are real.
+- **Random stream:** cards use their own seeded stream, so the same seed and answers replay exactly and the failure rolls are untouched.
+- **Cost:** money a card costs is in `metrics.card_cost_usd` and is added to the summary's `cost_usd`.
+- **Reruns:** `flyMission` (what-if, success rate) takes option `a` of every card.
+
+Card state lives in flat metrics: `card_days`, `cards_drawn`, `card_rng`, `decision_id`, `decision_card`, `decision_console`, `end_reason`, `card_cost_usd` and the `fx_*` multipliers.
+
 ## state.metrics
 
 Budgets, refreshed every step:

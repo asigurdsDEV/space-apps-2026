@@ -108,6 +108,7 @@ const NUMERIC_KEYS = new Set([
   'ground_station_cost_usd_per_day',
   'integration_months_per_instrument',
   'event_rate_per_day',
+  'anomaly_cards',
 ])
 
 /**

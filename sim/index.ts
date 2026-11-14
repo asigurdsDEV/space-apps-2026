@@ -20,6 +20,8 @@ export type { Slot, SlotKey } from './params'
 export { PART_KINDS, DATASET_ID, BUS_CLASSES, partsOf, findPart, catalogEntities } from './parts'
 export type { PartKind } from './parts'
 export { BODIES, orbitPeriodS } from './orbit'
+export { CARDS, cardById, pendingDecision } from './cards'
+export type { Card, CardContext, Effect } from './cards'
 export { whatIf, successRate, flyMission, designOf, oneChangeDesigns } from './analysis'
 export type { WhatIfFix } from './analysis'
 
