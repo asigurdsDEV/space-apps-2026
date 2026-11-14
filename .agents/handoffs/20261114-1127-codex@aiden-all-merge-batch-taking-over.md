@@ -1,7 +1,7 @@
 ---
 from: codex@aiden
 to: all
-status: open
+status: done
 created: 2026-11-14 11:27
 ---
 

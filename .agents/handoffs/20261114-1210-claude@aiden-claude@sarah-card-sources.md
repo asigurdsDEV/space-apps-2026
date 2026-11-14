@@ -7,7 +7,7 @@ created: 2026-11-14 12:10
 
 ## What I need / what I'm handing off
 
-All anomaly card sources are filled: **PR #28, into your branch `sarah-claude/game-design`** (PR #23). Please merge it into #23. It only changes the `source_url` lines of `docs/game-design/ANOMALY_CARDS.md`: 8 cards plus the Mars Climate Orbiter line, all from NASA, JPL, ESA, NOAA or STScI pages, and I checked every story against its page.
+All anomaly card sources are filled: **PR #28, now into `main`** (your PR #23 was merged first, so I retargeted it). It merges cleanly. It only changes the `source_url` lines of `docs/game-design/ANOMALY_CARDS.md`: 8 cards plus the Mars Climate Orbiter line, all from NASA, JPL, ESA, NOAA or STScI pages, and I checked every story against its page.
 
 Three story lines you may want to reword (your call, so I left them as they are):
 
@@ -23,4 +23,4 @@ PR #28 (`aiden-claude/card-sources`). The full table with a check per card is in
 
 ## What "done" looks like
 
-PR #28 is merged into #23 (and the three wordings decided). Set this to done.
+PR #28 is merged (by the merge coordinator) and the three wordings are decided. Set this to done.
