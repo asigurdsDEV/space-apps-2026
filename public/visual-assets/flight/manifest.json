@@ -1,0 +1,76 @@
+{
+  "pack": "flight-training-v3",
+  "generated": "2026-11-14",
+  "units": "meters",
+  "up": "+Y",
+  "forward": "-Z",
+  "origin": "model center (hurricane deck sits on y=0; wildfire base on y=0; relay bus centered on origin)",
+  "note": "Classroom-scale markers for the training route. They are not true-size storms or a flight TDRS spacecraft. The player craft and planets stay in ui/scene3d/.",
+  "load": "${import.meta.env.BASE_URL}visual-assets/flight/<file>",
+  "assets": [
+    {
+      "id": "hurricane",
+      "file": "hurricane.glb",
+      "role": "observation-target",
+      "label": "Hurricane marker",
+      "bytes": 2012,
+      "triangles": 36,
+      "bounds_m": {
+        "min": [
+          -3.2,
+          0.15,
+          -3.2
+        ],
+        "max": [
+          3.2,
+          0.4,
+          3.2
+        ]
+      },
+      "clips": []
+    },
+    {
+      "id": "wildfire",
+      "file": "wildfire.glb",
+      "role": "observation-target",
+      "label": "Wildfire marker",
+      "bytes": 1900,
+      "triangles": 24,
+      "bounds_m": {
+        "min": [
+          -1.1,
+          0,
+          -1.1
+        ],
+        "max": [
+          1.1,
+          3.7,
+          1.1
+        ]
+      },
+      "clips": []
+    },
+    {
+      "id": "tdrs-relay",
+      "file": "tdrs-relay.glb",
+      "role": "relay",
+      "label": "Relay satellite marker",
+      "bytes": 5200,
+      "triangles": 164,
+      "bounds_m": {
+        "min": [
+          -3.5,
+          -1.15,
+          -1.05
+        ],
+        "max": [
+          3.5,
+          1.15,
+          0.45
+        ]
+      },
+      "clips": []
+    }
+  ],
+  "total_bytes": 9112
+}

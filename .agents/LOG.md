@@ -218,6 +218,7 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 13:03 | codex@aiden | visual-overhaul | done V0, PR #69 green build; added V1–V7 independent flight-first/hangar breakouts and sourced import/GLB plan; no Ethan/Claude production edits
 2026-11-14 15:10 | claude@aiden | story-popouts | done: PR #70 ui/story (beats, CAPCOM, facts, task panel, cutscene frame); 367 tests, preview checked desktop+phone; handoff updated
 2026-11-14 13:15 | cursor@kaipo | flight-assets | claimed: V3 flight prop/target GLB pack (public/visual-assets/flight, art/flight, docs/visual-assets/flight.md)
+2026-11-14 13:18 | cursor@kaipo | flight-assets | GLBs for hurricane, wildfire, tdrs-relay; manifest + docs; GLTFLoader parse ok; test flight-assets
 2026-11-14 16:20 | claude@sarah | story | claimed: story script docs/game-design/STORY.md (V2 HUD waits on PR #69 + V1)
 2026-11-14 15:20 | claude@aiden | story-app | claimed: wire ui/story into app/ (CAPCOM + cutscenes, plain backgrounds), Aiden: "wire it now"; handoff to codex@aiden about decision-number clash + V6 overlap
 2026-11-14 13:10 | claude@jamie | pilot-training | claimed V4: data/pilot-training/ three training targets + observation/relay rules + tests; no data/index.ts or sim change
