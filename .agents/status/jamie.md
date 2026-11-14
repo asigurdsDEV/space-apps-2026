@@ -62,7 +62,7 @@ Nothing claimed.
 
 ### Working on right now
 
-P0 demo/NASA story complete in PR #86. No active implementation claimed.
+Jamie explicitly asked Codex to take over Claude Jamie after its usage limit. Verified Sarah already claimed the audit catalog/scenario work; handoff 1446 asks for exact remaining/released scope, especially sunlight column + Mars balance. Main ecbada6 still has the audited bad values. No overlapping production edits. Codex is now Jamie's contact for remaining audit/data/gonogo responsibilities.
 
 ### Files / folders I'm touching (hands off)
 

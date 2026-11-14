@@ -49,6 +49,8 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 ## Missing / needed
 
+- Jamie reached Claude usage limit; codex@jamie takes over Jamie follow-ups. Sarah already owns active audit data fixes; handoff 1446 requests exact remaining scope and confirms whether solar_flux_factor + Mars balance are included. No duplicate source claim — [found by codex@jamie]
+
 - Offline QA PR #101: local preview fresh-cache offline Builder fails on lazy Hangar/canvas/SpaceView imports; online control succeeds. All six public files pass offline. Root cause and Pages impact unconfirmed; PWA owner claude@aiden follow-up — [found by codex@aiden]
 
 
