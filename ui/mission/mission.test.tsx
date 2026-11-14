@@ -225,12 +225,13 @@ describe('debrief', () => {
     const { state } = fly({ toEnd: true, sandbox: true })
     const report = summary(state)
     const tried: string[] = []
-    const fixes = [{ change: '3 ground stations instead of 1', score: 99, grade: 'A' }]
+    const fixes = [{ change: '3 ground stations instead of 1', score: 99, grade: 'A' }, { change: 'Add the Magnetometer', score: 97 }]
     const element = ResultsScreen({ summary: report, onCommand: noop, bonusGoal: 'no_data_lost', fixes, onTryFix: (f) => tried.push(f.change) })
     const html = renderToStaticMarkup(element)
     expect(html).toContain('3 stars')
     expect(html).toContain('Even better')
-    expect(html).toContain('<strong>3 ground stations instead of 1</strong>')
+    expect(html).toContain('<strong>3 ground stations instead of 1</strong>: this exact mission scores')
+    expect(html).toContain('<strong>Add the Magnetometer</strong>: this exact mission scores')
     expect(renderToStaticMarkup(<MissionScreen state={state} events={[]} summary={report} onCommand={noop} />)).toContain('Share your result')
     findButton(element, 'Try it').props.onClick()
     expect(tried).toEqual(['3 ground stations instead of 1'])
@@ -257,10 +258,11 @@ describe('real mission match', () => {
     { id: 'lro', name: 'LRO', agency: 'NASA', year: 2009, body: 'moon', orbit_class: 'lunar', mass_kg: 1916, objective: 'lunar-mapping', fact: 'Moon.', source_url: 'https://d' },
   ]
 
-  it('prefers same body, then orbit, then objective, then closest mass', () => {
+  it('needs the same body, then weighs size class over orbit and objective', () => {
     expect(matchMission(missions, { body: 'earth', orbit: 'sso', objective: 'earth-observation', mass_kg: 12 })?.id).toBe('small-sso')
     expect(matchMission(missions, { body: 'earth', orbit: 'sso', objective: 'earth-observation', mass_kg: 2000 })?.id).toBe('landsat-9')
-    expect(matchMission(missions, { body: 'earth', orbit: 'leo-iss', mass_kg: 3000 })?.id).toBe('icecube') // orbit beats mass
+    // Live playtest: a ~6 kg CubeSat in SSO was matched to a 5-tonne flagship. Size now wins over orbit.
+    expect(matchMission(missions.filter((m) => m.id !== 'small-sso'), { body: 'earth', orbit: 'sso', objective: 'earth-observation', mass_kg: 6 })?.id).toBe('icecube')
     expect(matchMission(missions, { body: 'moon', mass_kg: 5 })?.id).toBe('lro')
     expect(matchMission(missions, { body: 'mars', mass_kg: 5 })).toBeNull()
   })
@@ -271,5 +273,15 @@ describe('real mission match', () => {
     expect(html).toContain('Your mission is most like')
     expect(html).toMatch(/<strong>(IceCube|Landsat 9|Small SSO)<\/strong>/)
     expect(html).toContain('>Source</a>')
+  })
+})
+
+describe('card story header', () => {
+  it('does not say "Based on a real event: Inspired by …"', () => {
+    const inspired = { ...card, story: { mission: 'Inspired by the Deep Space Network', year: 'ongoing', text: 'Shared antennas.' } }
+    const html = renderToStaticMarkup(<DecisionCard decision={inspired} onDecide={noop} />)
+    expect(html).toContain('<strong>Inspired by the Deep Space Network</strong>')
+    expect(html).not.toContain('Based on a real event')
+    expect(renderToStaticMarkup(<DecisionCard decision={card} onDecide={noop} />)).toContain('Based on a real event: Kepler (2013)')
   })
 })

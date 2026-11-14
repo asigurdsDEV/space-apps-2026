@@ -69,7 +69,9 @@ export function DecisionCardBody({
       {decision.story && (
         <aside className="mv-decision__story">
           <strong>
-            Based on a real event: {decision.story.mission} ({decision.story.year})
+            {/^inspired by/i.test(decision.story.mission)
+              ? decision.story.mission
+              : `Based on a real event: ${decision.story.mission} (${decision.story.year})`}
           </strong>
           <span> {decision.story.text}</span>
           {decision.story.source_url && (
