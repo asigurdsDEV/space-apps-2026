@@ -23,6 +23,11 @@
   background: transparent;
   color: inherit;
 }
+/* Some browsers draw the option list themselves on white: do not inherit a light text colour there. */
+.sh option {
+  color: CanvasText;
+  background: Canvas;
+}
 .sh button {
   cursor: pointer;
 }

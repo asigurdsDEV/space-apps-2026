@@ -16,7 +16,9 @@ export interface SavedDesign {
   has_error: boolean
 }
 
-const PART_IDS = /^[a-z0-9,-]*$/
+// "" means the slot is not picked. Only instruments may be a comma list.
+const ONE_ID = /^([a-z0-9]+(-[a-z0-9]+)*)?$/
+const ID_LIST = /^([a-z0-9]+(-[a-z0-9]+)*(,[a-z0-9]+(-[a-z0-9]+)*)*)?$/
 // Every instrument in the catalog picked at once is about 170 characters.
 const MAX_VALUE = 256
 // Fits seven full-length values, so anything encodeDesign makes decodes again.
@@ -24,19 +26,24 @@ const MAX_HASH = 2048
 const MAX_NAME = 40
 const STORAGE_KEY = 'space-apps-2026.designs'
 
-/** The only way a Design is made: links and storage are both untrusted. */
-function pickDesign(source: Record<string, unknown>): Design {
+/**
+ * The only way a Design is made: links and storage are both untrusted.
+ * With `fill`, a missing or bad choice becomes "" so all seven keys are present and Load clears that slot.
+ */
+function pickDesign(source: Record<string, unknown>, fill = false): Design {
   const design: Design = {}
   for (const key of DESIGN_KEYS) {
     const value = source[key]
-    if (typeof value === 'string' && value.length <= MAX_VALUE && PART_IDS.test(value)) design[key] = value
+    const pattern = key === 'instruments' ? ID_LIST : ONE_ID
+    if (typeof value === 'string' && value.length <= MAX_VALUE && pattern.test(value)) design[key] = value
+    else if (fill) design[key] = ''
   }
   return design
 }
 
-/** Text for the URL hash (no leading "#"), e.g. "orbit=leo&instruments=camera,radar". */
+/** Text for the URL hash (no leading "#"): all seven keys, e.g. "launch_vehicle=falcon-9&orbit=leo&...&instruments=camera,radar". */
 export function encodeDesign(params: Record<string, unknown>): string {
-  return Object.entries(pickDesign(params))
+  return Object.entries(pickDesign(params, true))
     .map(([key, value]) => `${key}=${value}`)
     .join('&')
 }
@@ -69,7 +76,7 @@ function clean(entry: unknown): SavedDesign[] {
   return [
     {
       name: e.name.slice(0, MAX_NAME),
-      design: pickDesign(typeof e.design === 'object' && e.design !== null ? (e.design as Record<string, unknown>) : {}),
+      design: pickDesign(typeof e.design === 'object' && e.design !== null ? (e.design as Record<string, unknown>) : {}, true),
       mass_kg: finite(e.mass_kg),
       cost_usd: finite(e.cost_usd),
       power_w: finite(e.power_w),
@@ -89,34 +96,40 @@ export function listDesigns(): SavedDesign[] {
   }
 }
 
-function write(designs: SavedDesign[]): SavedDesign[] {
+/** Null when the browser refused the write (storage full, turned off or missing): what was stored before stays. */
+function write(designs: SavedDesign[]): SavedDesign[] | null {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(designs))
   } catch {
-    // storage full or missing: what was stored before stays
+    return null
   }
   return listDesigns()
 }
 
 /**
- * Save the current design under `name`, replacing a design with the same name.
- * Returns what is now stored, so a failed save shows up as the name being absent.
+ * Save the current design under `name`. A design with the same name is replaced in place, and `replaced` says so.
+ * Returns what is now stored, or null when nothing was saved (blank name or the write failed).
  */
-export function saveDesign(name: string, state: SimState): SavedDesign[] {
+export function saveDesign(name: string, state: SimState): { designs: SavedDesign[]; replaced: boolean } | null {
   const trimmed = name.trim().slice(0, MAX_NAME)
-  if (trimmed === '') return listDesigns()
+  if (trimmed === '') return null
   const saved: SavedDesign = {
     name: trimmed,
-    design: pickDesign(state.params),
+    design: pickDesign(state.params, true),
     mass_kg: num(state.metrics, 'mass_kg'),
     cost_usd: num(state.metrics, 'cost_usd'),
     power_w: num(state.metrics, 'power_w'),
     science_per_day: num(state.metrics, 'science_per_day'),
     has_error: state.issues.some((issue) => issue.severity === 'error'),
   }
-  return write([...listDesigns().filter((d) => d.name !== trimmed), saved])
+  const designs = listDesigns()
+  const at = designs.findIndex((d) => d.name === trimmed)
+  designs[at < 0 ? designs.length : at] = saved
+  const stored = write(designs)
+  return stored && { designs: stored, replaced: at >= 0 }
 }
 
-export function deleteDesign(name: string): SavedDesign[] {
+/** Returns what is now stored, or null when the write failed. */
+export function deleteDesign(name: string): SavedDesign[] | null {
   return write(listDesigns().filter((d) => d.name !== name))
 }

@@ -1,5 +1,5 @@
 // Copy a link to the current design, save designs in this browser, and compare two of them.
-import { useState } from 'react'
+import { useState, type FormEvent } from 'react'
 import type { Command, SimState } from '../../shared'
 import { formatMetric } from '../mission/format'
 import { DESIGN_KEYS, deleteDesign, encodeDesign, listDesigns, loadCommands, saveDesign, type DesignKey } from './share'
@@ -27,10 +27,13 @@ const NUMBERS = [
   ['science_per_day', 'Science per day'],
 ] as const
 
+const FAILED = 'Could not change saved designs: browser storage is full or turned off.'
+
 export function SharePanel({ state, send }: SharePanelProps) {
   const [saved, setSaved] = useState(listDesigns)
   const [name, setName] = useState('')
-  const [saveFailed, setSaveFailed] = useState(false)
+  const [status, setStatus] = useState('')
+  const [confirming, setConfirming] = useState('')
   const [link, setLink] = useState<{ hash: string; url: string; copied: boolean } | null>(null)
   const [pickA, setPickA] = useState('')
   const [pickB, setPickB] = useState('')
@@ -42,8 +45,30 @@ export function SharePanel({ state, send }: SharePanelProps) {
   const choice = (ids = '') =>
     ids.split(',').filter(Boolean).map((id) => partNames.get(id) ?? id).join(', ') || 'None'
 
+  function save(e: FormEvent) {
+    e.preventDefault()
+    const result = saveDesign(name, state)
+    if (!result) return setStatus(FAILED)
+    setSaved(result.designs)
+    setStatus(`${result.replaced ? 'Replaced' : 'Saved'} "${name.trim()}".`)
+    setName('')
+  }
+
+  // Deleting cannot be undone, so it takes two clicks on the same button.
+  function remove(target: string) {
+    if (confirming !== target) return setConfirming(target)
+    setConfirming('')
+    const next = deleteDesign(target)
+    if (!next) return setStatus(FAILED)
+    setSaved(next)
+    setStatus(`Deleted "${target}".`)
+    // The row and its button are gone: keep keyboard focus in the panel.
+    document.getElementById('sh-name')?.focus()
+  }
+
   function copyLink() {
-    location.hash = hash
+    // replaceState, not location.hash: no hashchange event, so an app listening for pasted links is not re-triggered.
+    history.replaceState(null, '', `#${hash}`)
     const url = location.href
     const show = (copied: boolean) => setLink({ hash, url, copied })
     // No clipboard on http pages or in old browsers: show the link to copy by hand.
@@ -69,19 +94,13 @@ export function SharePanel({ state, send }: SharePanelProps) {
         </span>
       </div>
 
-      <form
-        className="sh-row"
-        onSubmit={(e) => {
-          e.preventDefault()
-          const next = saveDesign(name, state)
-          setSaved(next)
-          setSaveFailed(!next.some((d) => d.name === name.trim()))
-        }}
-      >
+      <form className="sh-row" onSubmit={save}>
         <label htmlFor="sh-name">Design name</label>
         <input id="sh-name" value={name} maxLength={40} onChange={(e) => setName(e.target.value)} />
-        <button type="submit" disabled={name.trim() === ''}>Save design</button>
-        {saveFailed && <span role="alert">Could not save: browser storage is full or turned off.</span>}
+        <button type="submit" disabled={name.trim() === ''}>
+          {saved.some((d) => d.name === name.trim()) ? 'Replace design' : 'Save design'}
+        </button>
+        <span role="status">{status}</span>
       </form>
 
       {saved.length === 0 ? (
@@ -94,8 +113,13 @@ export function SharePanel({ state, send }: SharePanelProps) {
               <button type="button" aria-label={`Load ${d.name}`} onClick={() => loadCommands(d.design).forEach(send)}>
                 Load
               </button>
-              <button type="button" aria-label={`Delete ${d.name}`} onClick={() => setSaved(deleteDesign(d.name))}>
-                Delete
+              <button
+                type="button"
+                aria-label={confirming === d.name ? `Really delete ${d.name}?` : `Delete ${d.name}`}
+                onClick={() => remove(d.name)}
+                onBlur={() => setConfirming('')}
+              >
+                {confirming === d.name ? 'Really delete?' : 'Delete'}
               </button>
             </li>
           ))}
@@ -108,13 +132,13 @@ export function SharePanel({ state, send }: SharePanelProps) {
             <label>
               Compare{' '}
               <select value={a.name} onChange={(e) => setPickA(e.target.value)}>
-                {saved.map((d) => <option key={d.name}>{d.name}</option>)}
+                {saved.map((d) => <option key={d.name} value={d.name}>{d.name}</option>)}
               </select>
             </label>
             <label>
               with{' '}
               <select value={b.name} onChange={(e) => setPickB(e.target.value)}>
-                {saved.map((d) => <option key={d.name}>{d.name}</option>)}
+                {saved.map((d) => <option key={d.name} value={d.name}>{d.name}</option>)}
               </select>
             </label>
           </div>

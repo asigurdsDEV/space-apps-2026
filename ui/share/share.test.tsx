@@ -14,6 +14,8 @@ const design = {
   instruments: 'camera,spectrometer',
 }
 
+const unset = { launch_vehicle: '', orbit: '', bus: '', solar: '', battery: '', comms: '', instruments: '' }
+
 const state: SimState = {
   contract_version: '0.1',
   scenario_id: 'test',
@@ -60,6 +62,22 @@ describe('share link', () => {
       expect(decodeDesign(`orbit=${bad}&bus=smallsat`), bad).toEqual({ bus: 'smallsat' })
   })
 
+  it('rejects values that are not a part id, and lists for single-choice keys', () => {
+    for (const bad of [',', '-', ',,,', 'a,,b', '-a-', 'a-', 'leo,geo'])
+      expect(decodeDesign(`orbit=${bad}&bus=smallsat`), bad).toEqual({ bus: 'smallsat' })
+    for (const bad of [',', 'a,,b', 'a,', '-a', 'a--b'])
+      expect(decodeDesign(`instruments=${bad}&bus=smallsat`), bad).toEqual({ bus: 'smallsat' })
+    expect(decodeDesign('instruments=camera,gamma-ray-2')).toEqual({ instruments: 'camera,gamma-ray-2' })
+  })
+
+  it('a link carries all seven keys, so a slot that is not picked is cleared on arrival', () => {
+    const { battery: _battery, solar: _solar, ...partial } = design
+    const hash = encodeDesign({ ...partial, solar: 5 })
+    expect(decodeDesign(hash)).toEqual({ ...design, battery: '', solar: '' })
+    expect(designFromHash(hash)).toHaveLength(7)
+    expect(designFromHash(hash)).toContainEqual({ type: 'set_param', payload: { key: 'battery', value: '' } })
+  })
+
   it('rejects oversized input and never throws', () => {
     expect(decodeDesign('orbit=' + 'a'.repeat(257))).toEqual({})
     expect(decodeDesign('bus=smallsat&x=' + 'a'.repeat(3000))).toEqual({})
@@ -79,7 +97,7 @@ describe('share link', () => {
 })
 
 describe('saved designs', () => {
-  it('saves, lists, replaces by name and deletes', () => {
+  it('saves, lists and deletes', () => {
     fakeStorage()
     expect(listDesigns()).toEqual([])
     saveDesign(' First ', state)
@@ -88,23 +106,43 @@ describe('saved designs', () => {
       { name: 'First', design, mass_kg: 820, cost_usd: 95e6, power_w: 410, science_per_day: 12, has_error: true },
       { name: 'Second', design: { ...design, orbit: 'geo' }, mass_kg: 820, cost_usd: 95e6, power_w: 410, science_per_day: 12, has_error: false },
     ])
-    saveDesign('First', { ...state, metrics: { mass_kg: 1 } })
-    expect(listDesigns().map((d) => [d.name, d.mass_kg])).toEqual([['Second', 820], ['First', 1]])
-    expect(deleteDesign('Second').map((d) => d.name)).toEqual(['First'])
-    expect(saveDesign('   ', state).map((d) => d.name)).toEqual(['First'])
+    expect(deleteDesign('Second')?.map((d) => d.name)).toEqual(['First'])
+    expect(saveDesign('   ', state)).toBeNull()
+    expect(listDesigns().map((d) => d.name)).toEqual(['First'])
+  })
+
+  it('says when a save replaced a design, and keeps that design in its place', () => {
+    fakeStorage()
+    expect(saveDesign('First', state)?.replaced).toBe(false)
+    expect(saveDesign('Second', state)?.replaced).toBe(false)
+    const result = saveDesign(' First ', { ...state, metrics: { mass_kg: 1 } })
+    expect(result?.replaced).toBe(true)
+    expect(result?.designs.map((d) => [d.name, d.mass_kg])).toEqual([['First', 1], ['Second', 820]])
+  })
+
+  it('reports a failed overwrite and a failed delete instead of showing the old list as success', () => {
+    const storage = fakeStorage()
+    saveDesign('A', state)
+    storage.setItem = () => {
+      throw new Error('QuotaExceededError')
+    }
+    expect(saveDesign('A', { ...state, metrics: { mass_kg: 999 } })).toBeNull()
+    expect(deleteDesign('A')).toBeNull()
+    expect(listDesigns().map((d) => [d.name, d.mass_kg])).toEqual([['A', 820]])
   })
 
   it('falls back to an empty list when storage is missing, full or corrupted', () => {
     vi.stubGlobal('localStorage', undefined)
     expect(listDesigns()).toEqual([])
-    expect(saveDesign('A', state)).toEqual([])
-    expect(deleteDesign('A')).toEqual([])
+    expect(saveDesign('A', state)).toBeNull()
+    expect(deleteDesign('A')).toBeNull()
 
     const full = fakeStorage()
     full.setItem = () => {
       throw new Error('QuotaExceededError')
     }
-    expect(saveDesign('A', state)).toEqual([])
+    expect(saveDesign('A', state)).toBeNull()
+    expect(listDesigns()).toEqual([])
 
     for (const garbage of ['{not json', '"text"', '{"a":1}', 'null', '[null, 3, {"name": 5}, {"design": {}}]']) {
       fakeStorage(garbage)
@@ -112,18 +150,21 @@ describe('saved designs', () => {
     }
   })
 
-  it('keeps only safe fields from a stored entry', () => {
+  it('keeps only safe fields from a stored entry, with every unset or bad choice as ""', () => {
     fakeStorage(JSON.stringify([{ name: 'X', design: { orbit: 'geo', bus: '<b>', hack: 'y' }, mass_kg: 'heavy', has_error: 'yes' }]))
     expect(listDesigns()).toEqual([
-      { name: 'X', design: { orbit: 'geo' }, mass_kg: 0, cost_usd: 0, power_w: 0, science_per_day: 0, has_error: false },
+      { name: 'X', design: { ...unset, orbit: 'geo' }, mass_kg: 0, cost_usd: 0, power_w: 0, science_per_day: 0, has_error: false },
     ])
   })
 
-  it('Load sends one set_param per saved choice', () => {
+  it('Load sends all seven choices, clearing a slot the saved design had not picked', () => {
     fakeStorage()
-    const [saved] = saveDesign('Mine', state)
+    const { battery: _battery, solar: _solar, ...partial } = design
+    saveDesign('Mine', { ...state, params: partial })
+    const [saved] = listDesigns()
+    expect(saved.design).toEqual({ ...design, battery: '', solar: '' })
     expect(loadCommands(saved.design)).toEqual(
-      Object.entries(design).map(([key, value]) => ({ type: 'set_param', payload: { key, value } })),
+      Object.entries({ ...design, battery: '', solar: '' }).map(([key, value]) => ({ type: 'set_param', payload: { key, value } })),
     )
   })
 })
@@ -133,6 +174,7 @@ describe('SharePanel', () => {
     fakeStorage()
     saveDesign('Cheap', state)
     saveDesign('Big', { ...state, issues: [], metrics: { mass_kg: 2400, cost_usd: 3e8 } })
+    saveDesign('A  B', state)
     const html = renderToStaticMarkup(<SharePanel state={state} send={() => {}} />)
     expect(html).toContain('>Copy link</button>')
     expect(html).toContain('>Save design</button>')
@@ -142,6 +184,8 @@ describe('SharePanel', () => {
     expect(html).toMatch(/<th scope="col">Cheap<\/th><th scope="col">Big<\/th>/)
     expect(html).toMatch(/<th scope="row">Launch vehicle<\/th><td>Falcon 9<\/td>/)
     expect(html).toContain('Wide Camera, spectrometer')
+    // without a value attribute the browser collapses the two spaces and the pick finds nothing
+    expect(html).toContain('<option value="A  B"')
     expect(html).toMatch(/<th scope="row">Mass<\/th><td>820 kg<\/td><td>2,400 kg<\/td>/)
   })
 
