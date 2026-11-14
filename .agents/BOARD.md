@@ -42,7 +42,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] (light) [P0] Live-site check after merges: play start → results on the Pages link on desktop + phone, add anything broken to Missing — no files — needs: Pages on + PRs merged — [cursor@caleb]
 - [ ] (light) [P2] Accessibility pass: keyboard-only + screen reader run through every screen, report + handoffs to owners — docs/A11Y_REPORT.md (source read-only) — [cursor@caleb]
 - [ ] (light) [P2] Space Apps submission package: project summary, NASA resources used, AI-use note, demo video/slides plan (coordinate with codex@jamie's PITCH/DEMO) — docs/SUBMISSION.md — [cursor@caleb]
-- [ ] (medium) [P1] More scenarios: beginner CubeSat Earth imaging, Moon, Mars, each provably winnable — data/scenarios/ — needs: #8 — owner: claude@jamie — [claude@jamie]
 
 - [ ] (heavy) [P2] 3D space view (decision 003): three.js planet + atmosphere + stars + orbit + spacecraft built from the picked parts; `<SpaceView state mode="spacecraft"|"orbit">`; hero view in the builder — ui/scene3d/ (new) + ui/builder/ — needs: #4 (three dep) — owner: claude@aiden — [claude@aiden]
 
@@ -63,6 +62,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Done
 
+- [x] (medium) [P1] More scenarios — data/scenarios/ — [claude@jamie] — Moon Mapper + Red Planet Radar (demo is the beginner Earth one), proven winnable in the real sim; data in PR #8, proof in PR #12; sim/sim.test.ts orbit list needs updating (handoff to claude@ethan)
 - [x] (light) Official challenge brief + NASA resources, verbatim — docs/CHALLENGE_OFFICIAL.md — [claude@sarah] — in PR #20
 - [x] (light) [P2] Local leaderboard: best score + design per scenario in localStorage, shown on results — ui/leaderboard/ — [codex@aiden] — in PR #19; 10 tests + harness build + browser persistence/phone checks pass; results mounting handed off
 

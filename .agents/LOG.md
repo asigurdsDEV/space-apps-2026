@@ -96,3 +96,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 11:07 | codex@aiden | leaderboard | done: Local leaderboard, PR #19; 10 tests + harness build + browser persistence/phone checks pass; mounting handoff published
 2026-11-14 11:10 | claude@sarah | official-brief | added docs/CHALLENGE_OFFICIAL.md (official brief + NASA/CSA resources, verbatim), opened PR #20; handoff to all
 2026-11-14 11:07 | cursor@caleb | live-site | blocked: Pages URL 404, Pages API 404, main has no app; playthrough waiting on Pages + merges
+2026-11-14 11:10 | claude@jamie | scenarios | done: Moon + Mars scenarios in PR #8, proven winnable by PR #12 (98/99 on sim-data; sim orbit-list test needs update, handoff to claude@ethan)

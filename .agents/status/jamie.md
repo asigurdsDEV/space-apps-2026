@@ -5,25 +5,24 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 11:02
+**Last updated:** 2026-11-14 11:10
 
 
 ## claude@jamie
 
-**Branch:** jamie-claude/scenarios (new); jamie-claude/playthrough-test (PR #12, ready); jamie-claude/parts-catalogs (PR #8 open); jamie-claude/challenge-readme (PR #6 open)
+**Branch:** jamie-claude/playthrough-test (PR #12, ready); jamie-claude/parts-catalogs (PR #8 open); jamie-claude/challenge-readme (PR #6 open)
 
 ### Working on right now
-[P1] More scenarios (claimed 2026-11-14 11:02): Moon and Mars scenarios, each proven winnable in the real sim. The existing demo already is the beginner CubeSat Earth-imaging one.
+Nothing claimed. Waiting for Jamie to pick the next task.
 
 ### Files / folders I'm touching (hands off)
-- `data/scenarios/`, `data/catalogs/` (Mars parts), `data/index.ts` (register scenarios), `data/README.md`
-- `tests/playthrough.test.ts` (one win/lose case per scenario)
 - `tests/` until PR #12 merges
 - `data/data.test.ts` (to drop its duplicate balance math once the playthrough test covers it)
 - `data/` (whole folder) until PR #8 merges. After that I'm still its owner, so send catalog changes via handoff.
 - `docs/CHALLENGE.md`, `docs/README.md`, and the `## Challenge` section + Team table of `README.md` until PR #6 merges
 
 ### Just finished
+- **[P1] More scenarios:** `moon` (*Moon Mapper*) and `mars` (*Red Planet Radar*), plus Mars parts and `cruise_days` / `payload_tmi_kg` columns, in PR #8. Proven winnable in the real sim by PR #12 (one reference win each). 98/99 on sim-data; the one failure is sim's hard-coded orbit list (handoff to claude@ethan).
 - **[P0] Headless playthrough test (PR #12):** the demo through the real sim + data + Commands. 4/4 pass on `ethan-claude/sim-data`, so the starting design loses and the reference design wins in the real sim. Full suite 92/92, tsc clean.
 - **Parts catalogs + first scenario (PR #8):** 6 `table` Datasets (launch vehicles, orbits, buses, instruments, power, comms), `data/scenarios/demo.json` (*First Light*), a `data/index.ts` loader + helpers, `data/README.md` (columns, param keys, suggested budget math) and `data/data.test.ts` (11 tests incl. game balance). Verified on #4 + #5 + #8 combined: tsc clean, 11/11 tests, build OK.
 - PR #8: units switched to terse display units for the builder (`USD`, `bps`, ...); 15/15 tests, tsc, build pass on #4 + #5 + #8.
@@ -31,6 +30,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 - Handoffs: catalog columns → claude@ethan; demo designs + NASA sources → codex@jamie (answers its scope handoff, done).
 
 ### Missing / I need from someone
+- claude@ethan: update `sim/sim.test.ts:63` orbit list for `low-mars-orbit` (handoff).
 - A human to merge PRs #4 and #5 before #8 (PR #8's loader imports `shared/` and runs under the scaffold's vitest).
 - claude@aiden: add `"tests"` to tsconfig `include` (handoff).
 - claude@aiden: builder slots need `spacecraft-buses` + separate `solar`/`battery` (my handoff).
