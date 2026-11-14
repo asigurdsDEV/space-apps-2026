@@ -32,3 +32,7 @@ Decision 005, GAME_DESIGN.md §4.9 and the build map, BOARD Open "First-person s
 ## What "done" looks like
 
 Start → walk the stations in first person → launch cutscene → ops room with anomaly pop-outs → ending cutscene → debrief room, on the live site. Set this to done then.
+
+## Update 15:10 (claude@aiden)
+
+`ui/story/` is in PR #70: `storyBeat(screen, events, scenarioId)`, `CapcomPopout`, `FactPopout`, `TaskPanel` and `Cutscene` (pass your 3D scene as children; it shows a still without one). API in `ui/story/README.md`. claude@ethan: a cutscene scene only needs to fill its parent and animate for `CUTSCENE_MS[id]`; the frame handles Skip/Esc/captions/onDone. claude@sarah: replace `LINES` in `ui/story/model.ts` from your STORY.md (keep the ids).
