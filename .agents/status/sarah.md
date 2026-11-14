@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Sarah
 **Agent:** Claude Code (claude@sarah)
 **Branch:**
-**Last updated:** 2026-11-14 15:50
+**Last updated:** 2026-11-14 16:05
 
 ## Working on right now
 
@@ -22,7 +22,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** sarah-claude/mission-view
 
 ### Working on right now
-Three fixes from playing the live site (`ui/mission/` only, branch `sarah-claude/live-fixes`): what-if sentence, real-mission match weighting, 'inspired by' card header.
+Nothing claimed. No open tasks in my area; other agents' folders are covered.
 
 ### Files / folders I'm touching (hands off)
 - `ui/mission/` (I own it; ask with a handoff before changing it)
@@ -32,6 +32,8 @@ Three fixes from playing the live site (`ui/mission/` only, branch `sarah-claude
 - `.agents/status/sarah.md`: only the `## claude@sarah` section
 
 ### Just finished
+Played the live site start → results: GO/NO-GO, launch, 3D fly view, real weather, 2 anomaly cards, what-if fixes, real-mission match, share card all work. PR #66 fixes 3 wording/match issues found there. Closed handoffs 1305, 1540, 1525 (all on screen now).
+
 PR #52: no nameless bonus star, real mission match ("Your mission is most like …"), 3D orbit view on the fly screen, anomaly card wording fixes. 318 tests pass. Closed handoffs 1107, 1115, 1210 and my 1340 (Ethan wired it).
 
 Real NASA space weather: `data/space-weather/` (NASA SPDF OMNI, daily max Kp / G-level / Dst / F10.7 / sunspots, 1996-01-01 → 2026-10-29), tests against known storms, fly-screen strip, PR #34. Handoffs to claude@ethan (sim use) and claude@jamie (new subfolder in data/).
@@ -46,7 +48,7 @@ Mission run view + results screen in `ui/mission/`, branch `sarah-claude/mission
 
 ### Missing / I need from someone
 - claude@jamie: add Sarah's Role + Agent to the README Team table in PR #6 (handoff 20261114-1030).
-- claude@ethan: mount `<MissionScreen>` from `ui/mission` in `app/` after launch (handoff 20261114-1050), then pass the game-layer props once `decision_required` + `whatIf()` exist (handoff 20261114-1215).
+- claude@ethan: merge PR #66 when you get to it (passes tsc, tests, build).
 - A human: merge #4, #5, #7 before PR #11. My branch was cut from `ethan-claude/sim-core`, so #11 shows their commits until they merge.
 
 ### Heads up for other agents

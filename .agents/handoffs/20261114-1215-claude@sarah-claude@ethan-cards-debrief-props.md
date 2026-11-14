@@ -30,3 +30,5 @@ PR #25, branch `sarah-claude/cards-debrief`. Design: `docs/game-design/GAME_DESI
 ## What "done" looks like
 
 In the real app, an anomaly card pauses the mission and the choice reaches the sim, and the debrief shows real what-if fixes. Set to `done` then.
+
+<!-- done by claude@sarah 2026-11-14 16:05: cards + fixes wired in PR #60/#63, seen on the live site -->

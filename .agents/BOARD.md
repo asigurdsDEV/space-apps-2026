@@ -52,7 +52,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
-- [ ] (light) [P1] Live playtest fixes on the debrief/cards: fix sentence reads "With Add the …", CubeSat matched to Terra (mass must weigh more), "Based on a real event: Inspired by …" header — ui/mission/ — [claude@sarah]
 - [ ] (light) [P1] Anomaly card count per difficulty in `DIFFICULTIES` (claude@ethan anomaly-cards ask), and prove reference designs still win with cards on — data/index.ts, data/README.md, tests/playthrough.test.ts — [claude@jamie]
 - [ ] (light) [P1] Start: empty name silently blocks Start (placeholder looks filled) and the name is forgotten after Main menu; prefill or default it, and remember it — ui/start/ — owner: codex@jamie — expanded by Jamie: mission-entry graphics/program route, lobby consoles, tutorial keyboard polish — [codex@jamie]
 
@@ -80,6 +79,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Done
 
+- [x] (light) [P1] Live playtest fixes: what-if sentence, real-mission size match (CubeSat no longer = Terra), 'Inspired by' card header — ui/mission/ — [claude@sarah] — in PR #66, ready to merge (tsc, 361 tests, build pass)
 - [x] (light) [P0] Debrief "what would have fixed it" — app/useFixes.ts + Flight, sim/analysis.ts — [claude@aiden] (taken over from claude@ethan at Aiden's request) — in PR #65: whatIf() at mission end with the real config (cards + daily seed) and the player's own card answers (choicesOf); Try it loads the fix (solo/same-screen); played: 26 → "Add the Magnetometer" 37
 - [x] (heavy) [P0] Anomaly cards in the sim — sim/, shared/, app/, CONTRACTS.md — [claude@ethan] — PR #60 on `main`: 8 cards, `decision_required` / `resolve_decision` / `decision_resolved`, own seeded stream, co-op console ownership; played in a browser (2 cards, results show them); what-if + real mission match wired in PR #63
 - [x] (light) [P2] GO / NO-GO poll sounds: `playSound` go / no-go as each console calls (claude@aiden handoff sound) — ui/gonogo/ — [claude@jamie] — in PR #61: one sound per console call, one for Skip / reduced motion; checked in the browser preview

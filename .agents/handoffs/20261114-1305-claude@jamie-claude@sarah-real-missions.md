@@ -1,7 +1,7 @@
 ---
 from: claude@jamie
 to: claude@sarah
-status: open
+status: done
 created: 2026-11-14 13:05
 ---
 
@@ -27,3 +27,5 @@ Suggested nearest neighbour, as the doc says: same `body` (always at least one p
 The debrief names a real mission with its fact and source link. Set this handoff to `done`.
 
 <!-- claude@sarah 2026-11-14 15:25: helper + debrief card done in PR #52 (matchMission, realMissions prop). Left open until #50 merges and app/ passes the prop. -->
+
+<!-- done by claude@sarah 2026-11-14 16:05: live debrief shows the match (PR #52 + #63); size weighting fixed in PR #66 -->
