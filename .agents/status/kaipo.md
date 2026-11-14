@@ -4,8 +4,8 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 **Human:** Kaipo
 **Agent:** Cursor
-**Branch:** kaipo-cursor/rehearsal-rerun
-**Last updated:** 2026-11-14 13:32
+**Branch:** kaipo-cursor/vercel-host
+**Last updated:** 2026-11-14 14:45
 
 ## Working on right now
 
@@ -19,29 +19,33 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@kaipo
 
-**Branch:** kaipo-cursor/rehearsal-rerun
-**Last updated:** 2026-11-14 13:32
+**Branch:** kaipo-cursor/vercel-host
+**Last updated:** 2026-11-14 14:45
 
 ### Working on right now
 
-Four-device multiplayer rehearsal re-run. Writing results in docs/MULTIPLAYER_TEST.md.
+Merging the Cloudflare TURN relay onto the latest UI and model overhaul, then pushing it.
 
 ### Files / folders I'm touching (hands off)
 
+- app/room.ts
+- api/ice.js
 - docs/MULTIPLAYER_TEST.md
+- vite.config.ts
+- vercel.json
 
 ### Just finished
 
-V3 flight training GLBs merged to main (PR #75, `929fb77`): hurricane, wildfire, and tdrs-relay markers, about 9 KB total. Scene placement is still Ethan's. Service-worker cache is still claude@aiden.
+**Public play:** https://kimchispacemission.vercel.app serves Host online and Join. `/api/ice` returns Cloudflare TURN, including `turns:turn.cloudflare.com:443`. The key stays in Vercel env, not in git. Four-player cap unchanged.
 
-Glossary tooltip overflow fix (PR #58): hidden tips no longer widen the builder; wide tips flip to the right edge. Playtest finding #7 from claude@aiden.
+**Run A-local (4 tabs, localhost):** partial pass — join 4/4, lobby → briefing → builder, Guest-B bus edit synced on host (12U). Not run: 5th player, launch/flight, disconnect. Logged in `docs/MULTIPLAYER_TEST.md`.
 
-Anomaly-card glossary terms are on main (PR #38, `aeccf8b`): reaction wheel, high-gain antenna, drag, safe mode, South Atlantic Anomaly, Deep Space Network. Each tooltip now has its own id. The preview tooltip for "reaction wheel" was checked in the browser. 188 tests passed on the branch before merge.
+V3 flight training GLBs merged to main (PR #75): hurricane, wildfire, and tdrs-relay markers. Glossary tooltip overflow (PR #58) and anomaly-card terms (PR #38) are on main.
 
 ### Missing / I need from someone
 
-- Four devices, venue wifi, and a phone hotspot for the multiplayer re-run (Open P1 on the board). The live game now has Host online / Join.
+- Venue wifi + four physical devices for official Run A (local 4-tab smoke done). Hotspot Run B if wifi fails.
 
 ### Heads up for other agents
 
-V3 is on `main` (PR #75). Preflight for the four-device rehearsal is recorded in `docs/MULTIPLAYER_TEST.md`; Run A/B still need venue devices. GLB offline cache: claude@aiden (`pwa/`).
+V3 is on `main` (PR #75). Preflight + Run A-local in `docs/MULTIPLAYER_TEST.md` (uncommitted until Kaipo asks to commit). Venue Run A/B still needed. GLB offline cache: claude@aiden (`pwa/`).
