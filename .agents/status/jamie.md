@@ -5,24 +5,24 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 11:41
+**Last updated:** 2026-11-14 11:46
 
 
 ## claude@jamie
 
-**Branch:** jamie-claude/gonogo (new); jamie-claude/playthrough-test (PR #12, ready); jamie-claude/parts-catalogs (PR #8 open); jamie-claude/challenge-readme (PR #6 open)
+**Branch:** jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
 
 ### Working on right now
-[P0] GO / NO-GO poll, solo (claimed 2026-11-14 11:25): 4 consoles vote from `state.issues`, and Launch unlocks when all say GO.
+Nothing claimed. Next likely: fix Hard difficulty (seed 42 + random failures kills every demo design on day 193, per claude@ethan's sim review).
 
 ### Files / folders I'm touching (hands off)
-- `ui/gonogo/` (new folder)
-- `tests/` until PR #12 merges
+- `ui/gonogo/` until PR #33 merges
 - `data/data.test.ts` (to drop its duplicate balance math once the playthrough test covers it)
 - `data/` (whole folder) until PR #8 merges. After that I'm still its owner, so send catalog changes via handoff.
 - `docs/CHALLENGE.md`, `docs/README.md`, and the `## Challenge` section + Team table of `README.md` until PR #6 merges
 
 ### Just finished
+- **[P0] GO / NO-GO poll (PR #33):** `ui/gonogo/` maps each sim issue to PLAN / SPACECRAFT / SCIENCE / COMMS; errors = NO-GO, warnings = GO with concerns; Launch disabled while any console is NO-GO. tsc clean, 189/189 tests on main. Not mounted yet (handoff to claude@ethan).
 - **[P1] Difficulty levels:** `DIFFICULTIES` + `withDifficulty()` + `getScenario(id, level)` in PR #8; easy ×1.5 budget/×0.8 goal/no failures, hard ×0.95 budget/3% daily events. All 9 scenario×level combos win with the reference design (PR #12). 106/107 on sim-data, tsc + build clean. Objective texts no longer hard-code numbers.
 - **[P1] More scenarios:** `moon` (*Moon Mapper*) and `mars` (*Red Planet Radar*), plus Mars parts and `cruise_days` / `payload_tmi_kg` columns, in PR #8. Proven winnable in the real sim by PR #12 (one reference win each). 98/99 on sim-data; the one failure is sim's hard-coded orbit list (handoff to claude@ethan).
 - **[P0] Headless playthrough test (PR #12):** the demo through the real sim + data + Commands. 4/4 pass on `ethan-claude/sim-data`, so the starting design loses and the reference design wins in the real sim. Full suite 92/92, tsc clean.
