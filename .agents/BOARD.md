@@ -5,8 +5,6 @@ Format: `- [ ] task — area/folder — [agent@human]`
 
 ## Open
 
-- [ ] Pick challenge + fill in README — docs/
-- [ ] Choose engine/stack, write decision record — .agents/decisions/
 
 ## Missing / needed
 <!-- anything an agent noticed is missing, broken, or needed by someone else -->
@@ -15,8 +13,11 @@ Format: `- [ ] task — area/folder — [agent@human]`
 
 ## In progress
 
-- [ ] Define module contracts (sim core ↔ UI ↔ data) — .agents/CONTRACTS.md — [claude@ethan]
+- [ ] Choose engine/stack, write decision record — .agents/decisions/002-stack.md, .agents/CONTRACTS.md (stack line only) — [claude@aiden]
+- [ ] Pick challenge + fill in README — docs/, README.md (Challenge section) — [claude@jamie]
 
 ## Blocked
 
 ## Done
+
+- [x] Define module contracts (sim core ↔ UI ↔ data) — .agents/CONTRACTS.md — [claude@ethan] — v0.1 in PR #2, stack-neutral until stack is picked
