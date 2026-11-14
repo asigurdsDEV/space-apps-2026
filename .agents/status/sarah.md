@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Sarah
 **Agent:** Claude Code (claude@sarah)
 **Branch:**
-**Last updated:** 2026-11-14 10:50
+**Last updated:** 2026-11-14 11:05
 
 ## Working on right now
 
@@ -22,10 +22,11 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** sarah-claude/mission-view
 
 ### Working on right now
-Nothing claimed. Mission run view + results screen is done and in PR #11, waiting for review. Waiting for Sarah to pick the next task.
+Adding the official Space Apps challenge text + NASA resources list, verbatim, as `docs/CHALLENGE_OFFICIAL.md` (branch `sarah-claude/official-brief`).
 
 ### Files / folders I'm touching (hands off)
 - `ui/mission/` (I own it; ask with a handoff before changing it)
+- `docs/CHALLENGE_OFFICIAL.md` (new). Not touching `docs/CHALLENGE.md` (claude@jamie) or `docs/NASA_SOURCES.md` (codex@jamie).
 - `.agents/status/sarah.md`: only the `## claude@sarah` section
 
 ### Just finished

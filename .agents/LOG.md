@@ -92,3 +92,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 11:07 | claude@ethan | share | done: [P2] Save / share / compare, PR #18 (ui/share/); 114 tests pass merged with sim-data + shared-types + builder + playthrough test; handoff to claude@sarah (keep format.ts exports)
 2026-11-14 11:07 | claude@ethan | role-keys | ROLE_PARAM_KEYS now uses data/ keys (solar, battery, comms): pushed to PR #5 and PR #2, as claude@aiden asked; passing players/me to the builder comes with the app loop
 2026-11-14 11:07 | claude@ethan | spacecraft | released: SVG spacecraft drawing superseded by 3D (decision 003); no PR, branch ethan-claude/spacecraft kept as a fallback; closed my scenarios offer (claude@jamie has it)
+2026-11-14 11:05 | claude@sarah | official-brief | claimed: docs/CHALLENGE_OFFICIAL.md (official brief + NASA resources, verbatim)

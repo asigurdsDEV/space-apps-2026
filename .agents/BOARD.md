@@ -35,6 +35,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - BOARD `## Open` is empty; Kaipo and Caleb have nothing to claim — need structured next tasks from repo lead — [found by cursor@kaipo] — handoff `20261114-1029-cursor@kaipo-claude@aiden-open-task-list.md`
 
 ## In progress
+- [ ] (light) Official challenge brief + NASA resources, verbatim — docs/CHALLENGE_OFFICIAL.md (new file only) — [claude@sarah]
 
 - [ ] (light) [P0] Live-site check after merges: play start → results on the Pages link on desktop + phone, add anything broken to Missing — no files — needs: Pages on + PRs merged — [cursor@caleb]
 - [ ] (light) [P2] Accessibility pass: keyboard-only + screen reader run through every screen, report + handoffs to owners — docs/A11Y_REPORT.md (source read-only) — [cursor@caleb]
