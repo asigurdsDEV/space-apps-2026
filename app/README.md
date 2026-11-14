@@ -7,9 +7,9 @@ Owner: claude@ethan. Ties `data/`, `sim/`, `ui/builder`, `ui/mission` and `net/`
 | `game.ts` | The game store. No React, DOM or timers. Owns the loop that calls the sim. |
 | `session.ts` | `Session`: the only thing the screens know about. `createSoloSession`, `createHostSession`, `createGuestSession`. |
 | `room.ts` | `openRoom(joinCode)`: opens a PeerJS room (host or guest). The only file that touches the network; PeerJS is loaded on demand. |
-| `driver.ts` | `startDriver(game)`: calls `game.advance(realMs)` from `requestAnimationFrame`. The only timer. |
+| `driver.ts` | `startDriver(game)`: calls `game.advance(realMs)` from `requestAnimationFrame`; an online host uses `timerClock()` so it keeps stepping in a background tab. The only timer. |
 | `useSession.ts` | `useSession(session)`: `useSyncExternalStore` over a `Session`. |
-| `slots.ts` | The builder's slots with the param keys the sim reads (`power_system`, `comms_system`). |
+| `slots.ts` | The builder's slots with the keys and catalogs the sim reads (`solar`, `battery`, `comms`, `spacecraft-buses`), and `builderDatasets` which splits power-systems into sources and batteries. |
 | `Lobby.tsx` | Co-op pieces: room code, crew list with role picker, lobby, notice banner. |
 | `App.tsx`, `app.css` | Start screen, lobby, then `MissionBuilder` while `metrics.phase` is `design`, then `MissionScreen`. |
 
@@ -37,7 +37,7 @@ Every screen takes a `Session`. Its snapshot adds `players`, `me`, `notice` and 
 | Play solo | `createSoloSession(game)` | none |
 | Same screen | `createHostSession(game, new LocalTransport(), 'Crew')`, started at once | `LocalTransport` (no network) |
 | Host a game | `createHostSession(game, transport, name)` | `PeerTransport` from `openRoom(null)` |
-| Join a game | `createGuestSession(transport, name)` | `PeerTransport` from `openRoom(code)` |
+| Join a game | `createGuestSession(transport, name, { baseline })` | `PeerTransport` from `openRoom(code)` |
 
 How co-op works (decision 002, contract section "Multiplayer"):
 
@@ -52,7 +52,7 @@ How co-op works (decision 002, contract section "Multiplayer"):
 Three things the contract does not spell out, decided here:
 
 1. `state` has no field for the app's pause flag or speed, so the host sends them inside the SimState: `status: "paused"` and `metrics.speed_multiplier`. Guests read them back from there.
-2. Every `state` message carries the whole event list, not only the new events. A late joiner or a reset then needs no special handling. A mission produces a few dozen events.
+2. `state` messages must stay under PeerJS's 16,300-byte limit, and the real SimState is bigger (its entities hold every catalog row). Host and guests are both given `baseline` (`sim.init(config, datasets).entities`); the host leaves unchanged baseline entities out and sends only new events (at most 8 kB of them), and says so in the metrics `base_entities`, `events_keep` and `events_total`. A late joiner or a reset gets the list from the start. The host also refuses `set_param` for keys no role owns, and any design change after launch.
 3. The room code is 6 characters. The PeerJS id is `smdg-` plus the code.
 
 Messages are checked with `isNetMessage` (`shared/net.ts`) by `PeerTransport` and again by the sessions.

@@ -556,6 +556,7 @@ export function createGuestSession(transport: SessionTransport, name: string, op
           const changed = new Map(sent.entities.map((entity) => [entity.id, entity]))
           const merged = baseline.map((entity) => changed.get(entity.id) ?? entity)
           const known = new Set(baseline.map((entity) => entity.id))
+          // Same entities as the host's; the order may differ, and nothing reads it.
           state = { ...sent, entities: [...merged, ...sent.entities.filter((entity) => !known.has(entity.id))] }
         }
         if (typeof keep === 'number' && typeof total === 'number') {
