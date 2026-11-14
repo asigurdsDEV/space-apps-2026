@@ -40,8 +40,8 @@ const BODY_INDEX: Record<Body, number> = { earth: 0, moon: 1, mars: 2 }
 const ATMOSPHERE: Record<Body, number | null> = { earth: 0x478cff, mars: 0xd97a4d, moon: null }
 const CRAFT_SIZE = 0.035
 const Y = new THREE.Vector3(0, 1, 0)
-/** How far (px) a name tag stays from the view's edges. The HUD's controls run along the bottom. */
-const TAG_INSET = { side: 80, top: 24, bottom: 100 }
+/** How far (px) a name tag's middle stays from the view's top and bottom. The HUD's controls run along the bottom. */
+const TAG_INSET = { top: 24, bottom: 100 }
 const vec = (v: Vec3, out: THREE.Vector3) => out.set(v[0], v[1], v[2])
 
 export function createFlightScene(container: HTMLElement, options: FlightSceneOptions): FlightScene {
@@ -116,7 +116,8 @@ export function createFlightScene(container: HTMLElement, options: FlightSceneOp
     tag.className = 's3d-flight-tag'
     tag.textContent = target.label
     container.appendChild(tag)
-    return [{ id: target.id, label: target.label, at, size: spot.size, group, beacon, tag, done: false }]
+    // `half`: half the tag's width plus a gap, so a pinned tag stays whole on a narrow screen.
+    return [{ id: target.id, label: target.label, at, size: spot.size, group, beacon, tag, half: tag.offsetWidth / 2 + 8, done: false }]
   })
   // A model that fails to load (offline, a 404) just leaves its beacon in place.
   void import('three/addons/loaders/GLTFLoader.js').then(({ GLTFLoader }) => {
@@ -186,7 +187,7 @@ export function createFlightScene(container: HTMLElement, options: FlightSceneOp
         y = (-tmp.y * height) / 2
       }
       // Out of view: pinned to the edge on the side the target is on, clear of the HUD's bottom strip.
-      const limitX = width / 2 - TAG_INSET.side
+      const limitX = width / 2 - marker.half
       const limitY = height / 2 - (y > 0 ? TAG_INSET.bottom : TAG_INSET.top)
       const off = behind || Math.abs(x) > limitX || Math.abs(y) > limitY
       if (off) {
@@ -202,6 +203,7 @@ export function createFlightScene(container: HTMLElement, options: FlightSceneOp
         marker.done = finished
         marker.tag.classList.toggle('is-done', finished)
         marker.tag.textContent = finished ? `✓ ${marker.label}` : marker.label
+        marker.half = marker.tag.offsetWidth / 2 + 8
       }
     }
   }
