@@ -43,7 +43,12 @@ export function flyMission(config: Config, datasets: Dataset[], design: Params):
   state = step(state, commands, config.dt_s).state
   state = step(state, [{ type: 'launch', payload: {} }], config.dt_s).state
   if (state.metrics.phase === 'design') return null
-  for (let n = 0; state.status !== 'ended' && n < MAX_STEPS; n++) state = step(state, [], config.dt_s).state
+  for (let n = 0; state.status !== 'ended' && n < MAX_STEPS; n++) {
+    // A what-if rerun has nobody to ask, so it takes the safe option (a) of every anomaly card.
+    const decision_id = state.metrics.decision_id
+    const answer: Command[] = decision_id ? [{ type: 'resolve_decision', payload: { decision_id: String(decision_id), option_id: 'a' } }] : []
+    state = step(state, answer, config.dt_s).state
+  }
   return summary(state)
 }
 

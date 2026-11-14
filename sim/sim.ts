@@ -17,6 +17,7 @@ import type {
   Summary,
 } from '../shared'
 import { CONTRACT_VERSION } from '../shared'
+import { cardById, cardContext, cardSchedule, CARDS, decisionOf, type Effect } from './cards'
 import { dayOfData, evaluateDesign, formatUsd, SCIENCE_TOLERANCE, uptimeAt, YEAR_S } from './design'
 import { bodyOf, circularState, transferState } from './orbit'
 import { applyParam, cleanParams, resolveAliases } from './params'
@@ -43,6 +44,8 @@ export const DEFAULT_PARAMS: Params = {
    * asks for it: the rolls depend only on the seed, so a scenario must test its seed first.
    */
   random_failures: false,
+  /** How many anomaly cards (decision 004) are drawn during operations. 0 = none. */
+  anomaly_cards: 0,
 }
 
 export type Outcome =
@@ -122,6 +125,31 @@ export function step(state: SimState, commands: Command[], dt_s: number): StepRe
   let phase = str(state.metrics, 'phase', 'design')
   let outcome = str(state.metrics, 'outcome', 'in_design') as Outcome
   const params: Params = { ...state.params }
+  // Anomaly cards (decision 004). What they need to remember is kept in flat metrics, so the state stays plain JSON.
+  const cardsOn = num(params, 'anomaly_cards') > 0 || state.metrics.card_rng !== undefined
+  const list = (key: string) => str(state.metrics, key).split(',').filter(Boolean)
+  const mult = (key: string) => (typeof state.metrics[key] === 'number' ? (state.metrics[key] as number) : 1)
+  let cardDays = list('card_days').map(Number)
+  let cardsDrawn = list('cards_drawn')
+  let cardRng = metric(state.metrics, 'card_rng')
+  let decisionId = str(state.metrics, 'decision_id')
+  let decisionCard = str(state.metrics, 'decision_card')
+  let endReason = str(state.metrics, 'end_reason')
+  /** Money the cards cost on top of the plan; the summary adds it to the mission cost. */
+  let cardCost = metric(state.metrics, 'card_cost_usd')
+  let resolve: { decision_id?: unknown; option_id?: unknown } | undefined
+  const fx = {
+    science: mult('fx_science_mult'),
+    downlink: mult('fx_downlink_mult'),
+    storage: mult('fx_storage_mult'),
+    /** Mission day until which the spacecraft is in safe mode (no observations). */
+    safe_until: metric(state.metrics, 'fx_safe_until_day'),
+    // shortcut: one temporary multiplier of each kind at a time (a newer one replaces it); enough for this deck.
+    science_tmp: mult('fx_science_tmp_mult'),
+    science_tmp_until: metric(state.metrics, 'fx_science_tmp_until_day'),
+    downlink_tmp: mult('fx_downlink_tmp_mult'),
+    downlink_tmp_until: metric(state.metrics, 'fx_downlink_tmp_until_day'),
+  }
   const warn = (message: string) => events.push({ type: 'warning', tick, t_s: t, payload: { message } })
   const changePhase = (to: string) => {
     events.push({ type: 'phase_changed', tick, t_s: t, payload: { from: phase, to } })
@@ -147,6 +175,8 @@ export function step(state: SimState, commands: Command[], dt_s: number): StepRe
     } else if (command.type === 'launch') {
       if (phase === 'design') launchRequested = true
       else warn('The mission has already launched.')
+    } else if (command.type === 'resolve_decision') {
+      resolve = command.payload ?? {}
     }
     // pause, resume, set_speed, reset and select_entity belong to app/ and ui/.
   }
@@ -234,12 +264,80 @@ export function step(state: SimState, commands: Command[], dt_s: number): StepRe
       outcome = budgets.science_goal > 0 && science < budgets.science_goal - SCIENCE_TOLERANCE ? 'science_shortfall' : 'success'
       changePhase('ended')
     }
+    // ---- Anomaly cards: answer the one that is waiting, before any time passes.
+    const today = () => Math.floor(t / DAY_S + 1e-9)
+    const context = () => cardContext(params, entities, today() - Math.ceil(budgets.cruise_days), stored, budgets.budget_usd)
+    const apply = (effects: Effect[]): string[] => {
+      const said: string[] = []
+      for (const e of effects) {
+        if (e.kind === 'lose_days') fx.safe_until = Math.max(fx.safe_until, today()) + e.days
+        else if (e.kind === 'science_mult') {
+          if (e.for_days) [fx.science_tmp, fx.science_tmp_until] = [e.x, today() + e.for_days]
+          else fx.science *= e.x
+        } else if (e.kind === 'downlink_mult') {
+          if (e.for_days) [fx.downlink_tmp, fx.downlink_tmp_until] = [e.x, today() + e.for_days]
+          else fx.downlink *= e.x
+        } else if (e.kind === 'storage_mult') fx.storage *= e.x
+        else if (e.kind === 'lose_stored_data') {
+          lost += stored
+          stored = 0
+        } else if (e.kind === 'cost_usd') {
+          spent += e.usd
+          cardCost += e.usd
+        }
+        else if (e.kind === 'end_mission') {
+          // Same rule as a bus failure: a spacecraft lost after it returned its science did its job.
+          const goal = budgets.science_goal
+          outcome = goal > 0 && science >= goal - SCIENCE_TOLERANCE ? 'success' : 'spacecraft_failure'
+          endReason = e.reason
+          warn(e.message)
+          changePhase('ended')
+        } else {
+          const roll = nextRandom(cardRng)
+          cardRng = roll.state
+          const hit = roll.value < e.p
+          said.push(hit ? e.then_text : e.otherwise_text, ...apply(hit ? e.then : e.otherwise))
+        }
+      }
+      return said
+    }
+    if (resolve && decisionId) {
+      const card = cardById(decisionCard)
+      const option = card?.options.find((o) => o.id === resolve?.option_id)
+      if (resolve.decision_id !== decisionId || !card || !option) warn('That answer does not match the anomaly that is waiting.')
+      else {
+        const said = apply(option.effects(context()))
+        events.push({
+          type: 'decision_resolved',
+          tick,
+          t_s: t,
+          payload: { decision_id: decisionId, card_id: card.id, option_id: option.id, message: said.join(' ') || option.effect_text },
+        })
+        decisionId = ''
+        decisionCard = ''
+      }
+    } else if (resolve) warn('There is no anomaly waiting for an answer.')
+    const flightNow = fx.storage === 1 ? flight : { ...flight, storage_gb: flight.storage_gb * fx.storage }
+
     // NaN or undefined would make every guard below false and the loop would never end.
     let remaining = dt_s > 0 ? dt_s : 0
-    while (phase !== 'ended') {
+    // While a card waits for its answer, time stands still (like the design phase).
+    while (phase !== 'ended' && !decisionId) {
       if (phase === 'cruise') {
         if (t >= cruiseEnd - EPSILON_S) {
           changePhase('operations')
+          const count = Math.min(CARDS.length, Math.floor(num(params, 'anomaly_cards')))
+          if (count > 0) {
+            // Its own random stream, so drawing cards never changes the failure rolls.
+            cardRng = (rng ^ 0x5bd1e995) | 0
+            const rolls: number[] = []
+            for (let i = 0; i < count; i++) {
+              const roll = nextRandom(cardRng)
+              cardRng = roll.state
+              rolls.push(roll.value)
+            }
+            cardDays = cardSchedule(count, Math.ceil(budgets.cruise_days), Math.floor(end / DAY_S), rolls)
+          }
           continue
         }
         if (remaining <= EPSILON_S) break
@@ -250,6 +348,20 @@ export function step(state: SimState, commands: Command[], dt_s: number): StepRe
       }
       if (t >= end - EPSILON_S) {
         finish()
+        break
+      }
+      if (cardDays.length && today() >= cardDays[0]) {
+        cardDays = cardDays.slice(1)
+        const ctx = context()
+        const eligible = CARDS.filter((card) => !cardsDrawn.includes(card.id) && card.when(ctx))
+        const pick = nextRandom(cardRng)
+        cardRng = pick.state
+        const card = eligible[Math.floor(pick.value * eligible.length)]
+        if (!card) continue // nothing fits this mission today: the draw is skipped
+        decisionCard = card.id
+        decisionId = `${card.id}-${today()}`
+        cardsDrawn = [...cardsDrawn, card.id]
+        events.push({ type: 'decision_required', tick, t_s: t, payload: decisionOf(card, decisionId) })
         break
       }
       if (remaining <= EPSILON_S) break
@@ -267,8 +379,9 @@ export function step(state: SimState, commands: Command[], dt_s: number): StepRe
       const kindRoll = nextRandom(eventRoll.state)
       rng = kindRoll.state
 
-      let generatingDays = days
-      let downlinkDays = days
+      // Card effects: safe mode stops observing; the multipliers scale downlink, storage and science.
+      let generatingDays = dayIndex < fx.safe_until ? 0 : days
+      let downlinkDays = days * fx.downlink * (dayIndex < fx.downlink_tmp_until ? fx.downlink_tmp : 1)
       if (randomFailures && days > 0) {
         const eventChance = 1 - Math.pow(1 - Math.min(1, Math.max(0, num(params, 'event_rate_per_day'))), days)
         if (eventRoll.value < eventChance) {
@@ -283,10 +396,10 @@ export function step(state: SimState, commands: Command[], dt_s: number): StepRe
       }
 
       // Science rides on the data: it only counts when the data reaches the ground.
-      const day = dayOfData(flight, stored, uptime, generatingDays, downlinkDays)
+      const day = dayOfData(flightNow, stored, uptime, generatingDays, downlinkDays)
       generated += day.made_gb
       downlinked += day.sent_gb
-      science += day.science
+      science += day.science * fx.science * (dayIndex < fx.science_tmp_until ? fx.science_tmp : 1)
       stored = day.stored_gb
       if (day.lost_gb > 0) {
         if (lost === 0) {
@@ -294,7 +407,7 @@ export function step(state: SimState, commands: Command[], dt_s: number): StepRe
             type: 'threshold_crossed',
             tick,
             t_s: t + advance,
-            payload: { metric: 'data_stored_gb', value: stored + day.lost_gb, threshold: flight.storage_gb, direction: 'up' },
+            payload: { metric: 'data_stored_gb', value: stored + day.lost_gb, threshold: flightNow.storage_gb, direction: 'up' },
           })
         }
         lost += day.lost_gb
@@ -349,6 +462,26 @@ export function step(state: SimState, commands: Command[], dt_s: number): StepRe
     data_lost_gb: lost,
     cost_spent_usd: spent,
     ...budgets,
+    ...(cardsOn
+      ? {
+          card_days: cardDays.join(','),
+          cards_drawn: cardsDrawn.join(','),
+          card_rng: cardRng,
+          decision_id: decisionId,
+          decision_card: decisionCard,
+          decision_console: cardById(decisionCard)?.console ?? '',
+          end_reason: endReason,
+          card_cost_usd: cardCost,
+          fx_science_mult: fx.science,
+          fx_downlink_mult: fx.downlink,
+          fx_storage_mult: fx.storage,
+          fx_safe_until_day: fx.safe_until,
+          fx_science_tmp_mult: fx.science_tmp,
+          fx_science_tmp_until_day: fx.science_tmp_until,
+          fx_downlink_tmp_mult: fx.downlink_tmp,
+          fx_downlink_tmp_until_day: fx.downlink_tmp_until,
+        }
+      : {}),
   }
   const next: SimState = {
     ...state,
@@ -398,7 +531,7 @@ export function summary(state: SimState): Summary {
   // Before launch `science_score` is only a forecast.
   const science = outcome === 'in_design' ? 0 : metric(m, 'science_score')
   const goal = metric(m, 'science_goal')
-  const cost = metric(m, 'cost_usd')
+  const cost = metric(m, 'cost_usd') + metric(m, 'card_cost_usd')
   const budget = metric(m, 'budget_usd')
   const mass = metric(m, 'mass_kg')
   const massLimit = metric(m, 'mass_limit_kg')

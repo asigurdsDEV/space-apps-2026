@@ -139,6 +139,7 @@ summary(state: SimState) -> { [key: string]: number | string }   // for end-of-r
 | `set_param` | `{ "key": string, "value": number\|string\|bool }` | ui | sim |
 | `select_entity` | `{ "id": string \| null }` | ui | app/ui only (no sim effect) |
 | `launch` | `{}` | ui | sim (leaves the design phase; refused with a `warning` event while any `error` issue exists) |
+| `resolve_decision` | `{ "decision_id": string, "option_id": string }` | ui | sim (answers the anomaly card that is waiting; decision 004. Owned by the card's `console` role, or by anyone if nobody holds it) |
 
 Scenario-specific commands are allowed. Add a row here when you add one.
 
@@ -155,6 +156,8 @@ Scenario-specific commands are allowed. Add a row here when you add one.
 | `phase_changed` | `{ "from": string, "to": string }` | sim | ui (phases: `design`, `cruise`, `operations`, `ended`) |
 | `scenario_ended` | `{ "reason": string, "summary": object }` | sim | ui (results screen) |
 | `warning` | `{ "message": string }` | any | ui (log/toast) |
+| `decision_required` | `Decision`: `{ "decision_id", "card_id", "title", "body", "console": Role, "options": [{ "id", "label", "effect_text" }], "story"?: { "mission", "year", "text", "source_url"? } }` | sim | ui (an anomaly card was drawn; time does not move until it is answered. The same card can be rebuilt from the state with `pendingDecision(state)` in `sim/`) |
+| `decision_resolved` | `{ "decision_id": string, "card_id": string, "option_id": string, "message": string }` | sim | ui (what happened, in plain words, for the log) |
 
 ## Multiplayer (net/)
 
@@ -193,6 +196,13 @@ Each command has one owning role. A player may send it if they hold that role, *
 | `comms-resources` | `comms`, `ground_stations` | |
 
 `select_entity` is local to each player and is never sent to the host.
+
+### Anomaly cards (decision 004)
+
+- A scenario turns cards on with the param `anomaly_cards` (how many are drawn during operations; 0 or missing = none). `app/` sets 1 / 2 / 3 for easy / normal / hard when the scenario does not.
+- While a card waits, `step` does not advance time and emits nothing. `state.metrics.decision_id`, `decision_card` and `decision_console` say which card is waiting (empty strings when none).
+- Cards are drawn from their own seeded random stream, so the same seed and the same answers give the same mission, and turning cards on never changes the failure rolls.
+- The deck and its effects are in `sim/cards.ts`; wording and stories come from `docs/game-design/ANOMALY_CARDS.md`.
 
 ## Mission design mapping (Space Mission Design Game)
 
