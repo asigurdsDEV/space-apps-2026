@@ -48,12 +48,12 @@ function horn(g: THREE.Group, effort: number, s: number, foot: number) {
   put(g, cyl(0.16 * a, 0.16 * a, 0.3 * a, 12), m.alu, 0, 0.65 * a, 0)
   const h = new THREE.Group()
   h.position.y = 0.8 * a
-  h.rotation.x = -0.3
+  h.rotation.x = 0.3
   g.add(h)
   put(h, cyl(0.5 * a, 0.16 * a, 0.8 * a, 24, true), m.gold, 0, 0.4 * a, 0)
   put(h, cyl(0.16 * a, 0.16 * a, 0.01 * a, 12), m.black, 0, 0.02 * a, 0)
   for (const [y, r] of [[0.28, 0.275], [0.54, 0.4], [0.8, 0.5]] as const) put(h, new THREE.TorusGeometry(r * a, 0.022 * a, 6, 24), m.gold, 0, y * a, 0, Math.PI / 2)
-  g.userData.anchor = V(0, 0.8 * a + 0.76 * a, -0.24 * a)
+  g.userData.anchor = V(0, 0.8 * a + 0.76 * a, 0.24 * a)
 }
 
 interface DishStyle { tilt: number; cassegrain: boolean; gimbal: boolean; ribs: number; grey?: boolean; lowGain?: boolean; amps?: boolean }
@@ -80,7 +80,8 @@ function dish(g: THREE.Group, d: number, foot: number, o: DishStyle) {
   }
   const head = new THREE.Group()
   head.position.y = pivot
-  head.rotation.x = -o.tilt
+  // Tilted toward the Sun side: from deep space, Earth is always near the Sun in the sky.
+  head.rotation.x = o.tilt
   g.add(head)
   put(head, cyl(0.13 * d, 0.07 * d, hub, 16), m.aluDark, 0, hub / 2, 0)
   put(head, dishGeometry(R, f), o.grey ? m.greyDouble : m.whiteDouble, 0, hub, 0)

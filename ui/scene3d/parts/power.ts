@@ -81,7 +81,7 @@ export function buildRtg(id: string, e: Entity): THREE.Group {
   const g = partGroup('power', id)
   const m = mats()
   const k = Math.cbrt(clamp(num(e.props.mass_kg, 45), 1, 500) / 45)
-  const [boom, len, rc, rf] = [0.42 * k, 0.64 * k, 0.105 * k, 0.32 * k]
+  const [boom, len, rc, rf] = [0.6 * k, 0.64 * k, 0.12 * k, 0.32 * k]
   // The boom keeps the hot, radioactive generator away from the instruments.
   strut(g, V(0, 0, 0), V(0, boom, 0), 0.022 * k, m.alu, 8)
   for (const a of [-1, 1]) strut(g, V(0, 0, a * 0.13 * k), V(0, boom, a * 0.04 * k), 0.012 * k, m.alu)

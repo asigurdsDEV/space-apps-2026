@@ -54,7 +54,7 @@ function picked(state: Pick<SimState, 'entities' | 'params'>, key: string, kind:
 }
 
 export function busSize(bus: Entity | undefined): { size: [number, number, number]; cubesat: boolean } {
-  if (!bus) return { size: [0.2, 0.1, 0.34], cubesat: true }
+  if (!bus) return { size: [0.2, 0.34, 0.1], cubesat: true }
   const units = /(\d+)\s*U\b/i.exec(bus.name)?.[1] ?? /cubesat-(\d+)u/i.exec(bus.id)?.[1]
   if (units || bus.props.class === 'cubesat') {
     const u = Number(units ?? 6)
