@@ -11,7 +11,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 ### Interactive 3D overhaul (Aiden: both modes, spacecraft flight first; plan PR #69)
 These are new work packages, not active claims. Suggested owners claim only their isolated scope with the normal lock push. Ethan keeps ui/scene3d/, part models, launch/fly branches, app/sim/shared/e2e. No immediate change or response is needed from him; V7 is a later integration checkpoint. Existing Start/Lobby/Tutorial graphics remain codex@jamie's current task.
 
-- [ ] (medium) [P1] V3 Flight prop/target asset pack: actual optimized GLB geometry + credited sources/axes/size manifest; reuse Ethan's craft/planets — public/visual-assets/flight/, art/flight/, docs/visual-assets/flight.md (new) — needs: plan PR #69; coordinate venue-rehearsal priority — owner: cursor@kaipo
 - [ ] (heavy) [P1] V7 Integrate at a checkpoint chosen by existing owners: player-craft control/chase camera + one large scene + HUD; preserve published SpaceView and sim authority — ui/scene3d/ + app/ owner: claude@ethan; ui/mission/ owner: claude@sarah; cache/config owner: claude@aiden — needs: reviewed V1/V2/V4, optional V3; owner agreement on additive API; no current 3D work takeover
 
 
@@ -81,7 +80,6 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 
 
-
 - [ ] (medium) [P1] Sim: richer random events + difficulty knobs the scenario files can set (the easy/normal/hard scenario variants stay with claude@jamie) — sim/ — starts when ethan-claude/sim-data lands — [claude@ethan]
 - [ ] (heavy) [P1] Browser end-to-end tests of the assembled game: full solo mission, and two browsers in one co-op room — e2e/ (new); uses playwright-core installed outside the repo, so no package.json change — paused until about 16:20 (usage limit); first scripts written, not in the repo yet — [claude@ethan]
 
@@ -100,6 +98,7 @@ These are new work packages, not active claims. Suggested owners claim only thei
 - [x] (light) [P1] V5 3D interaction QA: movement/target loop, touch/focus/Escape, loading/WebGL fallback, offline and measured phone FPS — docs/qa/flight3d.md (new); source read-only — [cursor@caleb] — in PR #77: test plan only. Result column is still "not run" until V7 is on a build you can open.
 - [x] (medium) [P1] V2 Flight HUD: objectives/checklist, aimed-target scan bar + V4 feedback, result + real fact/source, hints prop for V1, hold-to-scan/recenter/pause/exit; preview on V4 data — ui/flight-hud/ — [claude@sarah] — in PR #76 (merge after #73); V7 mounts it (handoff to claude@ethan)
 - [x] (medium) [P1] Story in the game now (decision 005): CAPCOM pop-outs on briefing/builder/poll/flight + cutscenes (arrival, launch, Moon/Mars orbit, anomaly, ending), clock held in solo — app/StoryLayer.tsx + app/App.tsx (additive), ui/story/ — [claude@aiden] (part of Ethan's app/ walk task, at Aiden's request) — in PR #74 (after #70): whole game played with every beat logged; phone pop-out moved to the top
+- [x] (medium) [P1] V3 Flight prop/target asset pack: actual optimized GLB geometry + credited sources/axes/size manifest; reuse Ethan's craft/planets — public/visual-assets/flight/, art/flight/, docs/visual-assets/flight.md (new) — [cursor@kaipo] — in PR #75: hurricane, wildfire, tdrs-relay GLBs (9 KB), manifest + credits; scene mount and service-worker cache still with Ethan and Aiden. Venue rehearsal stays Open.
 - [x] (medium) [P1] V4 Training route: 3 target descriptors, observation/relay rules and educational feedback, local schema + tests; no score/command changes — data/pilot-training/ (new) — needs: plan PR #69; coordinate V1/V2/V7 interfaces — owner: claude@jamie — [claude@jamie] — in PR #73: hurricane / wildfire / tdrs-relay descriptors, interact() → done|partial|blocked, routeComplete(); local only, no sim/score change
 - [x] (light) [P1] Start: empty name silently blocks Start (placeholder looks filled) and the name is forgotten after Main menu; prefill or default it, and remember it — ui/start/ — owner: codex@jamie — expanded by Jamie: mission-entry graphics/program route, lobby consoles, tutorial keyboard polish — [codex@jamie] — in PR #72: default/remembered name, PROGRAM route + SVG mission art, lobby console art, native modal tour; 363 tests/build, desktop/phone and keyboard checked
 

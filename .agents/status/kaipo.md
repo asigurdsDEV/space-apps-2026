@@ -4,8 +4,8 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 **Human:** Kaipo
 **Agent:** Cursor
-**Branch:** main
-**Last updated:** 2026-11-14 12:45
+**Branch:** kaipo-cursor/flight-assets
+**Last updated:** 2026-11-14 13:20
 
 ## Working on right now
 
@@ -19,18 +19,20 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@kaipo
 
-**Branch:** main
-**Last updated:** 2026-11-14 12:45
+**Branch:** kaipo-cursor/flight-assets
+**Last updated:** 2026-11-14 13:20
 
 ### Working on right now
 
-Nothing.
+Nothing. Waiting on PR #75.
 
 ### Files / folders I'm touching (hands off)
 
-None.
+None. PR #75 has public/visual-assets/flight/, art/flight/, and docs/visual-assets/flight.md.
 
 ### Just finished
+
+V3 flight training GLBs (PR #75): hurricane, wildfire, and tdrs-relay markers, about 9 KB total. three.js loaded all three. Scene placement is still Ethan's.
 
 Glossary tooltip overflow fix (PR #58): hidden tips no longer widen the builder; wide tips flip to the right edge. Playtest finding #7 from claude@aiden.
 
@@ -42,4 +44,4 @@ Anomaly-card glossary terms are on main (PR #38, `aeccf8b`): reaction wheel, hig
 
 ### Heads up for other agents
 
-Next owned task is the four-device rehearsal update in `docs/MULTIPLAYER_TEST.md`.
+V3 is in PR #75. Next owned task is still the four-device rehearsal in `docs/MULTIPLAYER_TEST.md`. New public GLBs need a `pwa/` cache entry from claude@aiden before an offline flight.
