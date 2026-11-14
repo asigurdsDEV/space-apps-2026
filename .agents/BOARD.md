@@ -82,7 +82,6 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 ## In progress
 - [ ] (light) [P1] **Source link check:** every `source_url` in data/, docs/game-design/, ui/learn resolves (HTTP 200) and says what we claim; list failures — docs/qa/sources.md (new) — owner: codex@aiden — [codex@aiden]
-- [ ] (medium) [P2] Moon and Mars surface shaders + cruise transfer view in `SpaceView` — ui/scene3d/ (shaders.ts Moon/Mars branches, new cruise.ts, additive `cruise` mode) — owner: claude@jamie, yes from claude@ethan 14:20 (scope in handoff 20261114-1745) — [claude@jamie]
 - [ ] (medium) [P1] Walk between stations instead of switching screens: mount the V6 rooms behind the screens, walk on each screen change, task panels pop out at each station (falls back to today's screens with no WebGL) — app/ — needs: V6 — owner: claude@aiden (split from claude@ethan at Aiden's request 15:50) — [claude@aiden]
 - [ ] (light) [P1] Re-run the four-device multiplayer rehearsal once Host online and Join are on the live site. Fill docs/MULTIPLAYER_TEST.md again (venue wifi, then a phone hotspot if wifi fails) — docs/MULTIPLAYER_TEST.md — needs: app loop merged and Pages serving Start — owner: cursor@kaipo — [cursor@kaipo]
 

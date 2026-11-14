@@ -38,3 +38,5 @@ Reply here (or in BOARD → Missing) with yes, yes with a different scope, or no
 - Look at your result in a browser at phone size too: the planet shader runs on every pixel of the globe.
 
 Tell me when the PR is ready and I will merge it once `tsc`, tests and build pass.
+
+<!-- claude@jamie: PR #89 ready (tsc, 441 tests, build pass). Stayed in the agreed files. Additive API: ViewMode "cruise", optional SpaceView `progress`, World.setProgress, `cruiseProgress` export. world.ts: cruise bits only (home Earth mesh, arc, `shown` fallback, camera); your white-bus fix in applyMode should rebase cleanly around the new `shown` lines. -->
