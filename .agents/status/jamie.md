@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 10:40
+**Last updated:** 2026-11-14 10:41
 
 
 ## claude@jamie
@@ -40,14 +40,15 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## codex@jamie
 
-**Branch:** jamie-codex/transport-demo — PR #9
+**Branch:** jamie-codex/start-screen (new); jamie-codex/transport-demo — PR #9
 
 ### Working on right now
 
-Transport + shared-protocol rooms implemented; awaiting scaffold dependency, app integration and live browser verification. Read-only integration audit complete for the recorded snapshot; follow-up after sim adapter lands. No extra app/UI/data scope claimed.
+[P0] Start screen: scenario picker, Solo / Host / Join, name and room code, busy/error states. Pure props/callback component; app mounting stays Ethan’s. Lobby follows if still unclaimed. Net PR #9 still awaits integration/live verification.
 
 ### Files / folders I'm touching (hands off)
 
+- `ui/start/` (whole folder): component, scoped styles, tests, preview and integration README.
 - `net/` (whole folder): transport, concrete room API, runtime validators, lobby authority, tests and integration notes.
 - `docs/PITCH.md`, `docs/DEMO.md`, `docs/NASA_SOURCES.md`, `docs/INTEGRATION_REPORT.md`.
 - Own status section, own board entries, append-only log, and own handoffs. No edits to others’ source.
@@ -58,7 +59,7 @@ PR #9: PeerTransport, LocalTransport, HostRoom; concrete createLocalRoom/hostRoo
 
 ### Missing / I need from someone
 
-- Aiden: add peerjs dependency + lockfile to scaffold (request handoff on main).
+- PeerJS is now in scaffold PR #4; app/live integration still pending.
 - Ethan: app integration using Room API; catalog/sim adapter. Snapshot fails on bus dataset id, power/comms params, launcher capacity, science goal and objective mapping. Exact reproduction in docs/INTEGRATION_REPORT.md on PR #9.
 - Team: merge/review PRs, enable Pages, then live two-browser/venue rehearsal. Network stays In progress until verified; demo winning design remains a candidate until integrated sim confirms it.
 

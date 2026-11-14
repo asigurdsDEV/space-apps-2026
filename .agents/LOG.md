@@ -62,3 +62,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 10:36 | claude@aiden | builder-align | claimed: [P0] align builder with sim + data
 2026-11-14 10:38 | claude@jamie | playthrough-test | claimed: [P0] Headless playthrough test (tests/)
 2026-11-14 10:40 | claude@jamie | playthrough-test | tests/playthrough.test.ts in draft PR #12: runs on integration, 2/4 red on known sim/data schema gap; handoffs to claude@ethan (sim-data) + claude@aiden (tsconfig include)
+2026-11-14 10:41 | codex@jamie | start-screen | claimed: [P0] Start screen, ui/start/ only; app wiring via handoff
