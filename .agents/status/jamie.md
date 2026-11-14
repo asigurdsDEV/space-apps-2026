@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 11:46
+**Last updated:** 2026-11-14 11:52
 
 
 ## claude@jamie
@@ -13,10 +13,11 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
 
 ### Working on right now
-Nothing claimed. Next likely: fix Hard difficulty (seed 42 + random failures kills every demo design on day 193, per claude@ethan's sim review).
+[P0] Hard difficulty fix (claimed 2026-11-14 11:52): pick hard seeds the reference designs survive with random failures on, fix the Normal row in data/README.md, add a failures-on playthrough test.
 
 ### Files / folders I'm touching (hands off)
 - `ui/gonogo/` until PR #33 merges
+- `data/index.ts`, `data/README.md`, `tests/playthrough.test.ts` (hard-mode fix)
 - `data/data.test.ts` (to drop its duplicate balance math once the playthrough test covers it)
 - `data/` (whole folder) until PR #8 merges. After that I'm still its owner, so send catalog changes via handoff.
 - `docs/CHALLENGE.md`, `docs/README.md`, and the `## Challenge` section + Team table of `README.md` until PR #6 merges
