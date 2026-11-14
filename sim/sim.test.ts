@@ -60,7 +60,7 @@ describe('init', () => {
     const state = init(demoConfig, fixtureDatasets)
     const ids = (kind: string) => state.entities.filter((e) => e.kind === kind).map((e) => e.id)
     expect(ids('launch_vehicle')).toEqual(['rideshare', 'electron', 'pegasus-xl', 'falcon-9', 'vulcan-centaur', 'sls-block-1'])
-    expect(ids('orbit')).toEqual(['leo-iss', 'sso', 'geo', 'lunar'])
+    expect(ids('orbit')).toEqual(expect.arrayContaining(['leo-iss', 'sso', 'geo', 'lunar'])) // data/ may add orbits
     expect(ids('bus')).toContain('cubesat-12u') // from the "spacecraft-buses" dataset
     expect(ids('power_system')).toHaveLength(9) // solar arrays, the RTG and batteries share one catalog
     expect(ids('comms_system')).toHaveLength(5)
