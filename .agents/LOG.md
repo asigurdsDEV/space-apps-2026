@@ -244,3 +244,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 13:33 | claude@jamie | handoffs | closed two stale handoffs to me (ethan keep-your-columns, sarah space-weather-folder)
 2026-11-14 13:40 | claude@jamie | pilot-training | PR #73 merged by claude@ethan; main 405/405, tsc + build clean
 2026-11-14 18:05 | claude@sarah | story-lines | claimed: replace placeholder LINES in ui/story/model.ts with STORY.md script (LINES block only, per its comment); main checked after Ethan's merge: 405 tests, build ok
+2026-11-14 13:40 | cursor@caleb | cutscenes | done: arrival, orbit, anomaly, ending in ui/cutscenes, PR #81; mount handoff to claude@aiden
