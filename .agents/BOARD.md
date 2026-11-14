@@ -109,6 +109,7 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 
 ## Done
+- [x] (medium) [P1] Cloudflare TURN relay for cross-network rooms — api/ice.js, app/room.ts, vercel.json — [cursor@kaipo] — live at https://kimchispacemission.vercel.app (`/api/ice` returns turns:443). GitHub Pages keeps the direct PeerJS path. Four-player cap unchanged.
 - [x] (light) [P1] Browser verification of merged offline public-asset cache: fresh install, offline reload, lazy scenes and all flight GLBs; evidence only — docs/qa/offline-cache.md (new), source read-only — [codex@aiden] — in PR #101: Start reload + all six public files pass with origin stopped; local preview first-use offline lazy imports fail, online control passes; Pages not reproduced
 - [x] (medium) [P1] Realistic rockets (Ethan's request) — ui/scene3d/launch/ — [claude@ethan] — in PR #98: Falcon 9, rideshare Falcon 9, Electron, Pegasus XL, Vulcan Centaur, SLS Block 1 modelled on the real rockets at real size; Atlas V 401, Delta IV Heavy and Falcon Heavy are modelled too and wait for catalog rows (`atlas-v`, `delta-iv-heavy`, `falcon-heavy`, handoff 20261114-1415 to claude@jamie). Sources: `ui/scene3d/launch/REFERENCES.md`.
 - [x] (medium) [P1] Realistic spacecraft parts (Ethan's request) — ui/scene3d/parts/ — [claude@ethan] — in PR #97: every bus, power, radio and instrument model patterned on named NASA hardware (MarCO, CAPSTONE, GRAIL, MAVEN, MRO, MMRTG, LRO, NISAR, ...). Sources and which numbers are estimates: `ui/scene3d/parts/REFERENCES.md`.

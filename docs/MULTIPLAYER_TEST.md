@@ -2,9 +2,11 @@
 
 How to check online co-op for up to 4 players, and what to do when the network fails. This is the venue script for the Space Mission Design Game (team Kimchi Trenchers).
 
-**Status:** first attempt 2026-11-14 11:35 **fail** (scaffold only). **Preflight 2026-11-14 13:30 pass:** live [Pages](https://asigurdsdev.github.io/space-apps-2026/) and local dev show **Play solo**, **Host online**, and **Join a room** (app loop on `main`, merge `929fb77+`). **Run A / Run B not started:** need four devices on venue wifi, then a phone hotspot if wifi fails. Net unit tests still do not prove WebRTC.
+**Status:** first attempt 2026-11-14 11:35 **fail** (scaffold only). **Preflight 2026-11-14 13:30 pass:** live [Pages](https://asigurdsdev.github.io/space-apps-2026/) and local dev show **Play solo**, **Host online**, and **Join a room** (app loop on `main`, merge `929fb77+`). **Run A-local 2026-11-14 ~13:40 partial pass** (4 tabs, one laptop, loopback — see below). **Venue Run A / Run B still not run.** Net unit tests still do not prove WebRTC.
 
-Transport behavior below matches `net/README.md` (checked 2026-11-14). The room code is the **full PeerJS id**, not a short code.
+Transport behavior below matches `net/README.md` (checked 2026-11-14). The room code players type is the **6-letter code** (`smdg-` plus that code is the PeerJS id). A room never grows past **4 players** (host + 3). Extra joins are closed.
+
+**Public play:** open the same site on every device. The Vercel address is [https://kimchispacemission.vercel.app](https://kimchispacemission.vercel.app) (Vercel account lit-turtle). GitHub Pages remains `https://asigurdsdev.github.io/space-apps-2026/`. Play still goes peer-to-peer (PeerJS signaling + WebRTC). `/api/ice` on that Vercel site gives each browser a short-lived Cloudflare TURN relay (including TCP/TLS on port 443) so guest Wi-Fi does not have to be a hotspot. Confirmed live 2026-11-14. The TURN key stays in Vercel env (`CLOUDFLARE_TURN_KEY_ID`, `CLOUDFLARE_TURN_API_TOKEN`), not in the repo. GitHub Pages has no `/api/ice` and keeps the direct PeerJS path. There is no extra game server, and a fifth player is still rejected.
 
 ## What you need
 
@@ -39,6 +41,35 @@ PeerJS tests in the repo do **not** prove this. They never open a real WebRTC co
 | Local dev has Host / Join | pass | `http://localhost:5176/` (Vite on this machine). |
 | Four devices available | not run | One laptop only at preflight time. |
 | Venue wifi | not run | Do Run A at the event. |
+
+## Run A-local — same machine, 4 browser tabs
+
+Smoke test when you have one computer: open four tabs on the same origin (e.g. `http://localhost:5176/`). This exercises PeerJS/WebRTC over loopback; it does **not** replace venue wifi or hotspot Run A/B.
+
+| Step | Who | Action |
+|------|-----|--------|
+| 1 | Host tab | Start → Host online → name **Host-A** → Create room. Note room code (display showed `LL2KQG`; join used that code). |
+| 2 | Guest tabs | Start → Join → same code → names **Guest-B**, **Guest-C**, **Guest-D**. |
+| 3 | All | Lobby shows **Crew 4 / 4**. Claim roles (host: mission planning; Guest-B: spacecraft). |
+| 4 | Optional 5th tab | Try to join — not run in this session. |
+| 5 | Guest-B (spacecraft) | Change bus **6U** → **12U**. Host tab should show **12U** and **Last changed by Guest-B**. |
+| 6 | Host | Continue → briefing, then builder. Confirm role locks (“Only Guest-B can change bus” on host). |
+| 7–8 | Disconnect tests | Not run in this session. |
+
+| Check | Result | Notes |
+|-------|--------|-------|
+| Date / place | 2026-11-14 ~13:35–13:45 Pacific | One Windows laptop, Cursor IDE browser tabs + automation. |
+| URL or build | `http://localhost:5176/` | Vite dev on `main` after V3 + preflight merges. |
+| Network | localhost loopback | Not venue wifi. |
+| 3 guests joined | pass | Guest-B/C/D joined; roster **Crew 4 / 4**. |
+| Roles unique | partial | Host **mission planning**, Guest-B **spacecraft**; Science / Comms left **Free** (valid; two players had no role yet). Duplicate-role block when a role is taken was not re-tested. |
+| Fifth player rejected | not run | |
+| Guest edit seen by others | pass | 12U CubeSat on host; attribution **Last changed by Guest-B**. |
+| Host advance (lobby → briefing → builder) | pass | Guest-C saw briefing; all four in co-op builder with section locks. |
+| Host launch / flight seen by guests | not run | |
+| Guest leave updates roster | not run | |
+| Host close ends the room | not run | |
+| Pass or fail | partial pass | Join, roster, sync, and phase advance OK; finish venue Run A + disconnect/launch before judging sign-off. |
 
 ## Run A — venue wifi
 
