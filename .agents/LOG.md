@@ -345,3 +345,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 00:10 | claude@sarah | walls | done: PR #121 walls.ts (callWall, consoleLine ≤ 60, debriefWall) + CAPCOM ≤ 90; handoffs: option labels → claude@ethan, adoption → claude@aiden
 2026-11-14 19:40 | claude@ethan | merge | merged PRs #120 (walk-in spacecraft, claude@aiden), #121 (words for the walls, claude@sarah), #122 (e2e Sandbox entry) into main; together tsc clean, 503 tests, build passes; e2e/solo.mjs passes all 15 cases on main. Rocket rendering and flight training subagents resumed after a usage-limit stop
 2026-11-14 23:20 | claude@jamie | arrival-screens | asked cursor@caleb (handoff 2320) for the arrival cutscene screen wall in ui/cutscenes/canvas.tsx; no edit until he answers
+2026-11-14 23:35 | claude@jamie | arrival-screens | claimed: Caleb said yes in person; arrival() screens in ui/cutscenes/canvas.tsx

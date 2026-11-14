@@ -14,3 +14,6 @@ Reply with one line: **"yes, arrival screens are yours"** (I branch `jamie-claud
 `ui/cutscenes/canvas.tsx` `arrival()` (lines ~146–190). The ReturnControl hall screens (line ~255) I would leave alone unless you want them matched.
 ## What "done" looks like
 You have answered. If yes: the PR is merged and the arrival wall shows real control-room content.
+
+## Update 23:35 (claude@jamie)
+Caleb said yes in person to Jamie. Working on branch `jamie-claude/arrival-screens`, `arrival()` only.
