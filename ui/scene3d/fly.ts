@@ -87,14 +87,16 @@ export const CLOSE_UP_SLOWDOWN = 5
 /**
  * Sim seconds the picture advances per real second. The sim can run days per second, which would
  * spin the craft into a blur, so the picture follows the sim exactly up to one lap per
- * lapSeconds() (12 s in low Earth orbit) and no faster: above that it is a time-lapse. Craft and
- * planet share this one clock, so ground tracks stay true and a GEO craft still hovers.
+ * lapSeconds() (12 s in low Earth orbit). Above that it is a time-lapse: a faster sim still looks
+ * faster, but only by a quarter per tenfold and never more than twice. Craft and planet share this
+ * one clock, so ground tracks stay true and a GEO craft still hovers.
  */
 export function displayRate(simRate: number, period_s: number, closeUp = false): { rate: number; timeLapse: boolean } {
   const period = Math.max(fin(period_s) ?? 0, 600)
-  const cap = period / (lapSeconds(period) * (closeUp ? CLOSE_UP_SLOWDOWN : 1))
+  const exact = period / (lapSeconds(period) * (closeUp ? CLOSE_UP_SLOWDOWN : 1))
   const rate = Math.max(fin(simRate) ?? 0, 0)
-  return { rate: Math.min(rate, cap), timeLapse: rate > cap }
+  if (rate <= exact) return { rate, timeLapse: false }
+  return { rate: exact * Math.min(2, 1 + 0.25 * Math.log10(rate / exact)), timeLapse: true }
 }
 
 export function formatRate(simRate: number): string {
@@ -278,9 +280,10 @@ const ENDINGS: Record<string, Pill> = {
   spacecraft_failure: { text: 'Spacecraft lost: no signal', tone: 'bad' },
 }
 
-/** The status chips under the view. */
-export function pills(flight: Flight, status: FlyStatus, craft: { power: Power; body: Body }): Pill[] {
+/** The status chips under the view. The builder's close-up (no clock, no orbit to fly) has none, as before. */
+export function pills(flight: Flight, status: FlyStatus, craft: { power: Power; body: Body }, mode: 'spacecraft' | 'orbit' = 'orbit'): Pill[] {
   if (flight.phase === 'ended') return [ENDINGS[flight.outcome] ?? { text: 'Mission ended', tone: 'shadow' }]
+  if (flight.phase === 'design' && mode === 'spacecraft') return []
   const out: Pill[] = []
   if (flight.phase === 'cruise') out.push({ text: `On the way to ${BODY_NAMES[craft.body]}`, tone: 'time' })
   else if (!status.inShadow) out.push({ text: 'In sunlight', tone: 'sun' })
@@ -289,6 +292,6 @@ export function pills(flight: Flight, status: FlyStatus, craft: { power: Power; 
     out.push({ text: `In shadow: ${how}`, tone: 'shadow' })
   }
   if (status.link) out.push({ text: `Sending data to ${status.link}`, tone: 'link' })
-  if (status.timeLapse) out.push({ text: `Time-lapse: ${formatRate(status.rate)} each second, orbit slowed`, tone: 'time' })
+  if (status.timeLapse) out.push({ text: `Time-lapse: ${formatRate(status.rate)} each second`, tone: 'time' })
   return out
 }

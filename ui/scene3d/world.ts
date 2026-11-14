@@ -576,6 +576,15 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
     return { shadow, link }
   }
 
+  const stats = (): WorldStats => ({
+    calls: renderer.info.render.calls,
+    triangles: renderer.info.render.triangles,
+    geometries: renderer.info.memory.geometries,
+    textures: renderer.info.memory.textures,
+    level,
+    ...q,
+  })
+
   function render() {
     renderer.info.reset()
     if (composer) composer.render()
@@ -634,6 +643,8 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
     if (!drew) return
     dirty = false
     render()
+    // Dev only (the preview's stats=1): what the last frame cost.
+    if (import.meta.env.DEV) container.dataset.stats = JSON.stringify({ ...stats(), frame_ms: Math.round(governor.avg_ms * 10) / 10 })
   }
 
   function resize() {
@@ -719,14 +730,7 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
       highlight = key
       applyHighlight()
     },
-    stats: () => ({
-      calls: renderer.info.render.calls,
-      triangles: renderer.info.render.triangles,
-      geometries: renderer.info.memory.geometries,
-      textures: renderer.info.memory.textures,
-      level,
-      ...q,
-    }),
+    stats,
     dispose() {
       renderer.setAnimationLoop(null)
       visibility.disconnect()
