@@ -1,0 +1,49 @@
+{
+  "contract_version": "0.1",
+  "scenario_id": "sandbox",
+  "title": "Sandbox: no limits, every part",
+  "seed": 1,
+  "dt_s": 86400,
+  "duration_s": 31536000,
+  "start_utc": "2027-01-01T00:00:00Z",
+  "datasets": [
+    "launch-vehicles",
+    "orbits",
+    "spacecraft-buses",
+    "instruments",
+    "power-systems",
+    "comms-systems"
+  ],
+  "entities": [
+    {
+      "id": "earth",
+      "kind": "body",
+      "name": "Earth",
+      "props": {
+        "radius_m": 6371000
+      }
+    },
+    {
+      "id": "spacecraft",
+      "kind": "spacecraft",
+      "name": "Your spacecraft",
+      "props": {}
+    }
+  ],
+  "params": {
+    "objective": "sandbox",
+    "objective_text": "Free play: no budget, no deadline and no science goal. Try any part, orbit or rocket and see what happens. Failures are switched off, so you can test ideas safely.",
+    "budget_usd": 0,
+    "target_science_score": 0,
+    "mission_duration_s": 31536000,
+    "launch_vehicle": "rideshare",
+    "orbit": "sso",
+    "bus": "cubesat-6u",
+    "instruments": "camera-basic",
+    "solar": "solar-deployable-small",
+    "battery": "battery-small",
+    "comms": "s-band-patch",
+    "random_failures": false,
+    "anomaly_cards": 0
+  }
+}

@@ -5,7 +5,7 @@
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ComponentType, type FormEvent } from 'react'
 import { realStorms } from '../data/space-weather/storms'
-import { DIFFICULTIES, getDatasets, getScenario, realMissions, rowsAsObjects, scenarios, withDifficulty, type Difficulty } from '../data'
+import { DIFFICULTIES, PROGRAM, getDatasets, getScenario, realMissions, rowsAsObjects, scenarios, withDifficulty, type Difficulty } from '../data'
 import { LocalTransport } from '../net'
 import type { Config, NetMessage, SimEvent, SimState, Summary } from '../shared'
 import { canSend, ROLES } from '../shared'
@@ -109,7 +109,7 @@ export function App() {
   /** A design from a shared link (ui/share) that no game has taken yet. */
   const link = useRef(typeof location === 'undefined' ? '' : location.hash)
   // Same day, same scenario and same seed for everyone (ui/start/daily.ts).
-  const daily = dailyMissionForDate(new Date(useUtcDay()), scenarios.map((scenario) => scenario.scenario_id))
+  const daily = dailyMissionForDate(new Date(useUtcDay()), PROGRAM)
 
   // A link pasted while the page is open: change the design on screen, or keep it for the next game.
   useEffect(() => {
