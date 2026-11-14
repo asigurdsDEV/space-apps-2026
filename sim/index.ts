@@ -20,6 +20,8 @@ export type { Slot, SlotKey } from './params'
 export { PART_KINDS, DATASET_ID, BUS_CLASSES, partsOf, findPart, catalogEntities } from './parts'
 export type { PartKind } from './parts'
 export { BODIES, orbitPeriodS } from './orbit'
+export { whatIf, successRate, flyMission, designOf, oneChangeDesigns } from './analysis'
+export type { WhatIfFix } from './analysis'
 
 /** The three contract functions as one object, typed against shared/. */
 export const simCore: SimCore = { init, step, summary }
