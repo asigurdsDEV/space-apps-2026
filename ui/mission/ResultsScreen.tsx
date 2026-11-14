@@ -15,7 +15,7 @@ import {
   splitSentences,
   str,
 } from './format'
-import { bestFixes, shareText, stars, type RealMission, type ShareInfo, type WhatIfFix } from './game'
+import { bestFixes, shareText, stars, TEAM_BONUS_AT, type Priority, type RealMission, type ShareInfo, type WhatIfFix } from './game'
 import { ShareCard } from './ShareCard'
 
 export interface ResultsScreenProps {
@@ -32,9 +32,11 @@ export interface ResultsScreenProps {
   share?: Pick<ShareInfo, 'daily' | 'anomalies'>
   /** The real NASA mission most like this one (`matchMission`). */
   realMatch?: RealMission | null
+  /** Each console's own goal and whether it was met (`teamPriorities`). */
+  priorities?: readonly Priority[]
 }
 
-export function ResultsScreen({ summary, onCommand, title, bonusGoal, fixes, onTryFix, share, realMatch }: ResultsScreenProps) {
+export function ResultsScreen({ summary, onCommand, title, bonusGoal, fixes, onTryFix, share, realMatch, priorities }: ResultsScreenProps) {
   const outcome = str(summary, 'outcome', 'in_design')
   const tone = outcomeTone(outcome)
   const score = num(summary, 'score')
@@ -101,6 +103,25 @@ export function ResultsScreen({ summary, onCommand, title, bonusGoal, fixes, onT
               </li>
             ))}
           </ul>
+        </div>
+      )}
+
+      {priorities && priorities.length > 0 && (
+        <div className="mv-card mv-team">
+          <h3>Team priorities</h3>
+          <ul>
+            {priorities.map((p) => (
+              <li key={p.console} className={p.met ? 'is-met' : undefined}>
+                <span aria-hidden="true">{p.met ? '✓' : '✗'}</span> <strong>{p.console}</strong> {p.goal}
+                <span className="mv-sr">{p.met ? ' (met)' : ' (missed)'}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="mv-muted mv-small">
+            {priorities.filter((p) => p.met).length >= TEAM_BONUS_AT
+              ? `Team bonus: ${priorities.filter((p) => p.met).length} of ${priorities.length} priorities met. The consoles found a design that worked for everyone.`
+              : `${priorities.filter((p) => p.met).length} of ${priorities.length} priorities met. These goals pull against each other, so the team has to agree which ones to give up.`}
+          </p>
         </div>
       )}
 
