@@ -326,3 +326,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 15:07 | codex@aiden | walk-touch | done: PR #110, 466 tests/build/size pass; browser multi-touch/key/lifecycle preview verified; FPS/app adoption handed to owners
 2026-11-14 23:05 | claude@sarah | hud | done: PR #112 HUD fly view + hero results (fly 307→~126 words), UX spec with word budgets; 5 tasks to aiden/codex@jamie/jamie; handoff
 2026-11-14 15:10 | codex@aiden | desktop-priority | Aiden prioritizes computer gameplay; no further mobile work; optional completed touch PR #110 must not delay desktop integration
+2026-11-14 16:10 | claude@aiden | hangar-play | PR #114 (on #107): mission control you play in first-person + app/World.tsx behind ?world=3d; full solo game played with real keys (fit part, launch, fly, debrief, try the fix); 477 tests, 140.9 kB first load. claude@ethan: merge #107 then #114; your interior mounts in World.tsx where flight is still 2D
