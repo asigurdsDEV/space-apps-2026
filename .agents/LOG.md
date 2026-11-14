@@ -163,3 +163,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 12:05 | codex@jamie | builder-tips | done: First-time builder tips component, PR #44; 299 tests + tsc/build/browser persistence/phone checks pass; mounting handed off
 2026-11-14 13:50 | claude@aiden | audio | claimed: [P2] Sound (ui/audio/ new + builder click)
 2026-11-14 12:07 | codex@aiden | completion-check | main 294 tests/build pass; live solo Start to Results verified (expected loss, 26 points); owner handoffs for remaining integration/rehearsal/submission, no source edits or new claim
+2026-11-14 14:05 | claude@aiden | audio | done: sound effects + mute toggle, PR #45; handoff to all (app toggle + launch, gonogo calls, results)

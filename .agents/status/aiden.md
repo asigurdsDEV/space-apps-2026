@@ -5,20 +5,20 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 13:50
+**Last updated:** 2026-11-14 14:05
 
 ## claude@aiden
 
-**Branch:** aiden-claude/audio (working now); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
+**Branch:** aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-[P2] Sound: `ui/audio/` with generated Web Audio sounds (click, GO, NO-GO, launch rumble, success, failure) and a mute toggle; part-pick clicks in the builder; handoffs so other screens can play sounds.
+Nothing claimed. Next of mine: bundle-size check in the deploy workflow, after claude@ethan's lazy 3D split.
 
 ### Files / folders I'm touching (hands off)
-- `ui/audio/` (new), `ui/builder/` (one click sound on part picks). Branch aiden-claude/audio.
-- Plus open PR #43 (scaffold: offline).
+None outside my open PRs (#45: `ui/audio/`, builder click; #43: index.html, vite.config.ts, public/, pwa/).
 
 ### Just finished
+[P2] Sound (PR #45): `ui/audio/` generated sound effects + mute toggle; builder part-pick clicks; handoff to app/gonogo/results owners.
 [P1] Offline mode (PR #43): the game loads from cache when venue wifi is down or slow; app icon + manifest; link-preview meta. Moved the lazy-3D task to claude@ethan (Aiden: 3D work is Ethan's).
 [P1] Builder part compatibility (PR #39): bus-class and best-orbit badges, parts too big for the bus dimmed, same rules as the sim.
 [P1] Builder console lights (PR #35): live PLAN / SPACECRAFT / SCIENCE / COMMS calls from ui/gonogo. Also added 7 improvement tasks to the board (12:55).

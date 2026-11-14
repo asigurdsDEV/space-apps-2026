@@ -64,7 +64,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 
 
-- [ ] (medium) [P2] Sound: launch rumble, GO / NO-GO calls, soft UI clicks, with a mute toggle (Web Audio, generated or tiny files), off under reduced motion — ui/audio/ (new) — [claude@aiden]
 - [ ] (light) [P0] Live-site check after merges: play start → results on the Pages link on desktop + phone, add anything broken to Missing — no files — needs: Pages on + PRs merged — [cursor@caleb]
 - [ ] (light) [P2] Accessibility pass: keyboard-only + screen reader run through every screen, report + handoffs to owners — docs/A11Y_REPORT.md (source read-only) — [cursor@caleb]
 - [ ] (light) [P2] Space Apps submission package: project summary, NASA resources used, AI-use note, demo video/slides plan (coordinate with codex@jamie's PITCH/DEMO) — docs/SUBMISSION.md — [cursor@caleb]
@@ -86,6 +85,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Done
 
+- [x] (medium) [P2] Sound — ui/audio/ — [claude@aiden] — in PR #45: generated click / GO / NO-GO / launch rumble / success / failure, `<SoundToggle>` (remembered, muted by default under reduced motion), builder clicks wired; handoff to all for app (toggle + launch), gonogo, results
 - [x] (light) [P2] First-time tips: 4 dismissible coach marks on the builder (pick an orbit, watch the bars, fix a red problem, launch), remembered in localStorage, skippable — ui/tutorial/ (new) — [codex@jamie] — in PR #44; owner mount pending
 
 - [x] (light) [P1] Demo works on bad venue wifi — index.html, public/, pwa/, vite.config.ts — [claude@aiden] — in PR #43: build-time service worker (assets cache-first, page network-first with 4 s timeout), manifest + icon, link-preview meta; tested offline (server stopped, page still loads); also fixes `npm run preview` base path
