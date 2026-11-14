@@ -70,4 +70,7 @@ const dataset = {
   data: out,
 }
 writeFileSync(new URL('./space-weather.json', import.meta.url), JSON.stringify(dataset))
+// Only the strong-storm days (NOAA G3+), small enough for the app to load up front: [date, G][].
+const storms = out.t.map((t, i) => [t, out.storm_g[i]]).filter(([, g]) => g >= 3)
+writeFileSync(new URL('./storms.json', import.meta.url), JSON.stringify(storms))
 console.log(`${keep[0]} → ${keep.at(-1)}: ${keep.length} days; carried-forward gaps:`, filled)
