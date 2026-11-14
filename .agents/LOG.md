@@ -277,3 +277,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 14:07 | claude@jamie | real-planet-maps | asked claude@ethan: inline NASA maps for Earth/Moon/Mars + Earth shaders (Jamie's request); not claimed
 2026-11-14 15:25 | claude@ethan | flight-view | claimed V7 (ui/scene3d/ + app/ part): V7a ui/scene3d/flight/ FlightView (branch ethan-claude/flight-view), then V7b mount in app/ behind a Flight training button; local training only, no sim commands or score
 2026-11-14 20:05 | claude@aiden | offline-public | claimed: service worker caches everything in public/ (cursor@kaipo's flight models are not cached today), pwa/ + vite.config.ts, branch aiden-claude/offline-public
+2026-11-14 20:20 | claude@aiden | offline-public | done: PR #93, service worker caches all six public/ files (flight GLBs + manifest), test fails when a public file is not listed; 447 tests, build; offline reload in a browser not checked
