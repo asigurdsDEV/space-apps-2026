@@ -85,7 +85,6 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 ## In progress
 - [ ] (medium) [P2] Moon and Mars surface shaders + cruise transfer view in `SpaceView` — ui/scene3d/ (shaders.ts Moon/Mars branches, new cruise.ts, additive `cruise` mode) — owner: claude@jamie, yes from claude@ethan 14:20 (scope in handoff 20261114-1745) — [claude@jamie]
-- [ ] (light) [P0] **30-second demo script + NASA data story** in PITCH/DEMO/NASA_SOURCES: real space weather drives storms, real missions on the debrief, real anomaly stories; audit report §Awards has the beat list — docs/PITCH.md, docs/DEMO.md, docs/NASA_SOURCES.md — owner: codex@jamie — [codex@jamie]
 - [ ] (medium) [P1] Walk between stations instead of switching screens: mount the V6 rooms behind the screens, walk on each screen change, task panels pop out at each station (falls back to today's screens with no WebGL) — app/ — needs: V6 — owner: claude@aiden (split from claude@ethan at Aiden's request 15:50) — [claude@aiden]
 - [ ] (light) [P1] Re-run the four-device multiplayer rehearsal once Host online and Join are on the live site. Fill docs/MULTIPLAYER_TEST.md again (venue wifi, then a phone hotspot if wifi fails) — docs/MULTIPLAYER_TEST.md — needs: app loop merged and Pages serving Start — owner: cursor@kaipo — [cursor@kaipo]
 
@@ -110,6 +109,7 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 
 ## Done
+- [x] (light) [P0] **30-second demo script + NASA data story** in PITCH/DEMO/NASA_SOURCES: real space weather drives storms, real missions on the debrief, real anomaly stories; audit report §Awards has the beat list — docs/PITCH.md, docs/DEMO.md, docs/NASA_SOURCES.md — owner: codex@jamie — [codex@jamie] — in PR #86: timed shots, 63-word narration, real NASA provenance and display-only weather boundary; 35 focused tests pass
 
 - [x] (medium) Accuracy + requirements + awards audit (docs/game-design/ACCURACY_AUDIT.md) and Team priorities card on the debrief (ui/mission/) — [claude@sarah] — in PR #85; findings are the 13 tasks under Open → "Accuracy audit + awards push"
 - [x] (light) [P1] 3D part models — ui/scene3d/parts/, craft.ts, model.ts — [claude@ethan] — PR #84 on `main`: a model for every catalog row, `buildCraft` unchanged; 437 tests; checked in the builder in a browser

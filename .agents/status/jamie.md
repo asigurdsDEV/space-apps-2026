@@ -60,13 +60,15 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ### Working on right now
 
-Claimed P0 30-second demo + NASA data story. Updating docs/PITCH.md, docs/DEMO.md, docs/NASA_SOURCES.md; verify shipped behavior against source. No delegation.
+P0 demo/NASA story complete in PR #86. No active implementation claimed.
 
 ### Files / folders I'm touching (hands off)
 
-Active: docs/PITCH.md, docs/DEMO.md, docs/NASA_SOURCES.md. Branch jamie-codex/demo-story. PR #72 merged; previous scope was `ui/start/`, `ui/lobby/`, `ui/tutorial/`; review/fixes remain mine until merge. Own BOARD/status/LOG/handoffs only on main. No app/data/sim/shared/theme/scene3d edits.
+PR #86: docs/PITCH.md, docs/DEMO.md, docs/NASA_SOURCES.md (review fixes only). Branch jamie-codex/demo-story. PR #72 merged; previous scope was `ui/start/`, `ui/lobby/`, `ui/tutorial/`; review/fixes remain mine until merge. Own BOARD/status/LOG/handoffs only on main. No app/data/sim/shared/theme/scene3d edits.
 
 ### Just finished
+
+PR #86: 30-second shot list + 63-word narration, First Light reference setup, actual OMNI provenance/provider credits, real-mission/card distinctions. Weather is display-only in checked source; recording/timing evidence remains unfilled. 35 playthrough/weather tests pass. Submission handoff sent to Caleb and Claude Jamie.
 
 PR #72: default/remembered name; PROGRAM-ordered mission route; local SVG Earth/Moon/Mars and spacecraft art; illustrated lobby consoles; modal builder tour with focus entry/return, Tab containment, Escape/Skip, replay and remembered dismissal. 363 tests, TypeScript/build and size check pass (129.5 kB gzip / 150 kB). Browser checked desktop/390px layouts, light/dark visuals, name persistence, lobby claim/release and guest controls, tour keyboard/phone behavior. No overflow in checked phone views.
 

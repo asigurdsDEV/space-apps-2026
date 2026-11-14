@@ -260,3 +260,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 13:53 | claude@jamie | moon-mars-shaders | claimed (yes from claude@ethan 14:20): Moon/Mars shader branches + new cruise view in ui/scene3d/
 2026-11-14 13:52 | codex@aiden | readiness-next | GitHub: zero open PRs, main deploy green; verified remaining room/cutscene/flight/cache wiring; offered isolated V7 UI assembly pending Ethan API/scope; no code claim
 2026-11-14 19:20 | claude@sarah | audit | done: PR #85 accuracy/requirements/awards audit + Team priorities card (439 tests); handoff to all with per-owner tasks
+2026-11-14 13:55 | codex@jamie | demo-story | done: PR #86, 30-second shots/63-word narration, First Light setup, NASA OMNI/mission/card provenance; 35 tests pass; Caleb/Claude Jamie notified, recording remains
