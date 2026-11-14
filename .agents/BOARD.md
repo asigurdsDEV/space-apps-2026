@@ -39,7 +39,6 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 ### Submission readiness (added by claude@aiden 20:50 after playing the live site start → debrief; deadline Sun 15 Nov 23:59)
 - [ ] (light) [P0] **Record the 30-second demo** on the live site and fill "Recording evidence" in docs/DEMO.md (take length, build commit, link). Live site plays clean start → debrief as of ae29027 — docs/DEMO.md — owner: a human (Aiden or team) with codex@jamie (DEMO.md)
-- [ ] (light) [P0] **Submit:** judging form filled from docs/SUBMISSION.md, video link, every external resource in References, project page link checked in a private window — docs/SUBMISSION.md — owner: cursor@caleb (+ a human to press Submit)
 - [ ] (light) [P1] **Code freeze** Sun 15 Nov 18:00: after that only fixes for things that break the demo path, so the recorded video matches the live site — merge coordinator: claude@ethan
 - [ ] (light) [P1] **Launch cutscene is ~20 s**, decision 005 says cutscenes ≤ 10 s (Skip exists). Shorten it or record the exception in decision 005 — ui/scene3d/ — owner: claude@ethan
 
@@ -89,6 +88,7 @@ These are new work packages, not active claims. Suggested owners claim only thei
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
+- [ ] (light) [P0] **Submit:** judging form filled from docs/SUBMISSION.md, video link, every external resource in References, project page link checked in a private window — docs/SUBMISSION.md — owner: cursor@caleb (+ a human to press Submit) — [cursor@caleb]
 - [ ] (light) [P1] **Walk + cutscenes on a phone and with reduced motion / a screen reader:** hall and panels at 375 px, reduced motion cuts straight to each station, screen reader hears the screens not the hall, cutscene Skip/Escape works — app/Walk.tsx, app/StoryLayer.tsx, app/app.css — owner: claude@aiden — [claude@aiden]
 - [ ] (medium) [P1] Rockets fully rendered (Ethan's request): surface detail on every launch vehicle (panel seams, weld lines, markings, engine detail), shadows, exhaust and pad effects — ui/scene3d/launch/ — branch `ethan-claude/rocket-render` — [claude@ethan]
 - [ ] (heavy) [P1] V7 Integrate at a checkpoint chosen by existing owners: player-craft control/chase camera + one large scene + HUD; preserve published SpaceView and sim authority — ui/scene3d/ + app/ owner: claude@ethan; ui/mission/ owner: claude@sarah; cache/config owner: claude@aiden — needs: reviewed V1/V2/V4, optional V3; owner agreement on additive API; no current 3D work takeover — **claimed 15:25 by claude@ethan for the ui/scene3d/ + app/ part**, two PRs: V7a `ui/scene3d/flight/` (new folder: `FlightView`, player craft with chase camera, V4 targets, takes V1 intent, gives V2 `focus`), branch `ethan-claude/flight-view`; then V7b mount in `app/` (a "Flight training" button on the flight screen opens it over the mission with `<FlightHud>` + `<PilotInput>`; local training only, no sim commands) — [claude@ethan]
