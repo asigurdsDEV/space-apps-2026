@@ -1,10 +1,24 @@
 // The first-person story over each screen (decision 005): CAPCOM's line for the current beat, and
-// the beat's cutscene once. Plain backgrounds for now; ui/scene3d's scenes go in as Cutscene children.
+// the beat's cutscene once, with its 3D scene from ui/cutscenes (cursor@caleb) inside the frame.
 // Written by claude@aiden at Aiden's request ("wire it now").
 
 import { useEffect, useRef, useState } from 'react'
 import type { SimEvent } from '../shared'
-import { CapcomPopout, Cutscene, LINES, storyBeat, type StoryScreen } from '../ui/story'
+// The index, not ./canvas: three.js stays out of the first download.
+import { AnomalyScene, ArrivalScene, EndingScene, OrbitArrivalScene } from '../ui/cutscenes'
+import { Scenery } from './Walk'
+import { CapcomPopout, Cutscene, CUTSCENE_MS, LINES, storyBeat, worldOf, type CutsceneId, type StoryScreen } from '../ui/story'
+
+/** The 3D scene for a cutscene. Launch has none here: the app plays ui/scene3d's own (see `shown`), so its frame keeps the still. */
+function sceneFor(id: CutsceneId, scenarioId: string) {
+  const durationMs = CUTSCENE_MS[id]
+  if (id === 'arrival') return <ArrivalScene durationMs={durationMs} />
+  if (id === 'orbit') return <OrbitArrivalScene body={worldOf(scenarioId) === 'mars' ? 'mars' : 'moon'} durationMs={durationMs} />
+  if (id === 'anomaly') return <AnomalyScene durationMs={durationMs} />
+  if (id === 'ending-success') return <EndingScene outcome="success" durationMs={durationMs} />
+  if (id === 'ending-loss') return <EndingScene outcome="loss" durationMs={durationMs} />
+  return null
+}
 
 /** CAPCOM's line hides itself after this, so it never sits on top of a control for long. */
 const LINE_MS = 9000
@@ -47,7 +61,12 @@ export function StoryLayer({ screen, events = NO_EVENTS, scenarioId, onCutscene,
   }, [key, playing])
 
   if (cutscene) {
-    return <Cutscene key={key} id={cutscene} caption={LINES[beat.line]} onDone={() => setPlayed((p) => [...p, key])} />
+    return (
+      <Cutscene key={key} id={cutscene} caption={LINES[beat.line]} onDone={() => setPlayed((p) => [...p, key])}>
+        {/* A scene that cannot load leaves the caption and Skip working. */}
+        <Scenery>{sceneFor(cutscene, scenarioId)}</Scenery>
+      </Cutscene>
+    )
   }
   if (closed === key) return null
   return <CapcomPopout key={key} line={beat.line} onClose={() => setClosed(key)} />

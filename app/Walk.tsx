@@ -30,8 +30,8 @@ function hasWebGL(): boolean {
   }
 }
 
-/** The hall is scenery: if it cannot load (offline, a stale chunk) the game goes on without it. */
-class Scenery extends Component<{ children: ReactNode }, { failed: boolean }> {
+/** For 3D that is only scenery (the hall, a cutscene picture): if it cannot load (offline, a stale chunk) the game goes on without it. */
+export class Scenery extends Component<{ children: ReactNode }, { failed: boolean }> {
   state = { failed: false }
   static getDerivedStateFromError() {
     return { failed: true }
