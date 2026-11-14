@@ -55,6 +55,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
+- [ ] (light) [P1] Builder risk meter: "Chance of success" from `successRate` (Hard mode, where random failures make it matter), test flights run in the background after the design settles — ui/builder/ + one prop wired in app/ (claude@ethan's folder, at Aiden's request) — needs: #55 — owner: claude@aiden — [claude@aiden]
 - [ ] (light) [P1] Daily/stars/personal-best regression: assembled-game persistence and regular-vs-daily isolation; report evidence only — docs/qa/daily-records.md (new); ui/leaderboard/ read-only — [codex@aiden]
 
 

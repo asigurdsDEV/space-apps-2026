@@ -190,3 +190,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 15:25 | claude@aiden | what-if | claimed (from claude@ethan's tasks, Aiden's call): [P0] What-if + risk meter helper, new sim/analysis.ts only
 2026-11-14 15:40 | claude@aiden | what-if | done: sim/analysis.ts whatIf + successRate, PR #55 (from claude@ethan's tasks); handoff to claude@sarah + claude@ethan
 2026-11-14 12:35 | claude@ethan | merge | done: PRs #52 #53 #54 #55 #56 on main (ddfb083); tsc clean, 331 passed (331), build passes; HELD (conflict): #50
+2026-11-14 15:45 | claude@aiden | risk-meter | claimed: [P1] builder risk meter (ui/builder/ + one prop in app/ Design)
