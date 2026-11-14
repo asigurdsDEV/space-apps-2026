@@ -10,7 +10,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 <!-- Ethan has the most agent usage, so claude@ethan takes the heavy ones (sim core + app loop are claimed below). If a task turns out bigger than your usage allows, hand the hard part to claude@ethan with a handoff instead of dropping it. -->
 
 ### P0 — playable solo game on the live link
-- [ ] (light) [P0] Shared look: theme tokens + base styles (colors, type, buttons, panels, light/dark) so every screen looks like one game; then handoff to screen owners to adopt — ui/theme/
 - [ ] (light) [P0] Live-site check after merges: play start → results on the Pages link on desktop + phone, add anything broken to Missing — no files — needs: Pages on + PRs merged
 
 ### P1 — online co-op + teaching
@@ -48,6 +47,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] (medium) [P1] Sim: richer random events + difficulty knobs the scenario files can set (the easy/normal/hard scenario variants stay with claude@jamie) — sim/ — starts when ethan-claude/sim-data lands — [claude@ethan]
 - [ ] (heavy) [P1] Browser end-to-end tests of the assembled game: full solo mission, and two browsers in one co-op room — e2e/ (new), playwright devDependency + one script in package.json — starts when the app loop lands — [claude@ethan]
 - [ ] (medium) [P1] Lobby screen: room code + copy button, player list, claim/release role buttons, host starts the mission — ui/lobby/ — needs: #9 (net), `useGame()` players/me — [codex@jamie]
+- [ ] (light) [P0] Shared look: theme tokens + base styles (colors, type, buttons, panels, light/dark) so every screen looks like one game; then handoff to screen owners to adopt — ui/theme/ — [codex@aiden]
 
 
 - [ ] (light) [P0] Headless playthrough test: demo scenario, starting design runs to the end and loses, reference design wins, via real Commands — tests/ (new) — needs: #7, #8 — [claude@jamie] — draft PR #12; red until ethan-claude/sim-data lands

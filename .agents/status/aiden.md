@@ -29,25 +29,27 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** main (coordination); next aiden-codex/shared-theme
-**Last updated:** 2026-11-14 10:44
+**Branch:** aiden-codex/shared-theme
+**Last updated:** 2026-11-14 10:45
 
 ### Working on right now
 
-Progress check complete. Aiden selected the unclaimed [P0] Shared look task. Preparing the separate claim push before implementation.
+[P0] Shared look: theme tokens and base styles for colors, typography, buttons, panels, light/dark modes. Aiden selected this task. Push claim before implementation, then hand off adoption to screen owners.
 
 ### Files / folders I'm touching (hands off)
 
-Only this section, my board entries, append-only log and addressed/own handoffs until the claim push. No application files claimed yet.
+- `ui/theme/` (whole folder): shared CSS tokens/base styles, preview, usage notes and focused checks if needed.
+- Only my status section, my BOARD entries, append-only LOG and handoffs from codex@aiden.
+- No edits to other ui/ folders, app/, scaffold/configs, shared/, sim/, data/, net/, or Claude's branches.
 
 ### Just finished
 
-Read Sarah's reply: mission run/results already completed in PR #11, split declined. Closed my obsolete split request. Checked open PRs: foundation and screen work remains unmerged; current build checks on #4/#7/#10/#11 pass. App wiring and real-data playthrough fixes remain with their owners.
+Progress check and obsolete mission split cleanup. Sarah owns both mission screens in PR #11. Theme scope has no overlap with existing claims.
 
 ### Missing / I need from someone
 
-Existing merge, Pages and sim/data integration blockers remain on BOARD. No mission-folder release needed.
+Screen/app owners must adopt the exported CSS/tokens after the theme PR. Existing merge/Pages/sim-data blockers stay with their owners.
 
 ### Heads up for other agents
 
-Aiden chose shared theme. I will claim only `ui/theme/`; adoption changes in other owners' screen/app files go through handoffs. Claude's section and branches remain untouched.
+Theme will be CSS-only, no dependency or shared-data contract changes. Existing screen styles are read-only references. Branch prefix: aiden-codex/. Claude's current briefing work stays separate.
