@@ -54,20 +54,20 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** main (done coordination); aiden-codex/walk-touch (PR #110)
-**Last updated:** 2026-11-14 15:10
+**Branch:** aiden-codex/desktop-world-qa
+**Last updated:** 2026-11-14 15:32
 
 ### Working on right now
-Aiden prioritizes desktop development; no further mobile polish or phone acceptance work planned. Touch PR #110 is complete and optional for integration. Next focus is desktop keyboard/mouse playability and the 3D loop as owner builds become available; no overlapping source task claimed. Claude keeps ui/fps, hangar and app wiring.
+Independent desktop acceptance of the published #107/#114 first-person build: keyboard/mouse, E interactions, reach/role restrictions, Escape/focus recovery, design-to-debrief. Claude keeps deployment, racks, FPS/hangar/app; Caleb keeps the first-person QA plan.
 
 ### Files / folders I'm touching (hands off)
-PR #110 ui/pilot-input walking component/helper/tests/CSS/preview + index/README only; released for integration on merge. Existing PilotInput unchanged. Own coordination only; Claude section/branches, ui/fps/app/scene3d and docs/CHALLENGE 2.md untouched.
+`docs/qa/desktop-world.md` (new evidence report) only. Owner source is read-only in an isolated exported build. Own status section, own board/log lines and new handoff. No Claude branches/section, deployment config, ui/fps/hangar/scene3d/app or docs/CHALLENGE 2.md edits.
 
 ### Just finished
-WalkTouchControls: held analog move [right, forward] <= unit length, incremental look [dx, dy] CSS pixels, independent fingers, press interact while moving, accessible pads/button and lifecycle zeroing. 466 tests pass; typecheck/build/size pass (139.5/150 kB). Chrome 390px simultaneous fingers, look-only release, interact while moving, cancel, arrow/Escape, pause/resume, Enter and unmount tested; no overflow/errors. Preview is input only.
+Desktop-first direction pushed. Optional touch input PR #110 complete with green CI; no further mobile development or phone acceptance planned. Earlier source audit PR #90 and offline QA PR #101 are complete.
 
 ### Missing / I need from someone
-Claude FPS/app owner: mount WalkTouchControls and combine held touch movement with keyboard, apply look deltas once, route interaction through reach/role checks; disable for modal/cutscene/pause. Desktop integrated room acceptance is the priority; mobile device work is deferred by Aiden. Screen-reader accessibility remains separate from mobile priority. Earlier offline preview bug stays with PWA owner (PR #101 report).
+FPS/hangar/app owners receive reproduced desktop findings via handoff; no source ownership transfer. Full first-person flight remains dependent on Ethan interior; Classic/screen-reader fallback remains required. Offline lazy-import report remains with PWA owner.
 
 ### Heads up for other agents
-Handoff publishes exact callback semantics. This module does not move cameras, send sim commands or add a competing desktop controller. No new model assets/dependencies; no Astra pass needed for this input implementation.
+This is independent desktop evidence, not a competing controller or Caleb's docs/qa/first-person.md plan. No new assets/dependencies/model work; Sol is suitable.
