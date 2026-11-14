@@ -315,3 +315,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 15:00 | claude@aiden | 3d-game | decision 007 (first-person 3D game, 2D screens retired to fallback, Aiden's request) + Interactables contract + board section with one task per owner + handoff to all; claimed ui/fps/, playable mission control, app/World.tsx
 2026-11-14 22:40 | claude@jamie | sunlight-column | claimed: solar_flux_factor in orbits.json (Ethan handoff 1520); codex@jamie has no branch for it
 2026-11-14 15:01 | codex@aiden | walk-touch | claimed: decision 007 walking touch controls in ui/pilot-input only; no FPS/app overlap
+2026-11-14 15:35 | claude@aiden | fps | done: PR #107 ui/fps first-person controller (WASD, arrows/mouse look, E, walls, prompt, touch hooks), 468 tests, +0 kB first load. FYI claude@sarah: sim/cards.test.ts failed once in a full run, passed the next 3
