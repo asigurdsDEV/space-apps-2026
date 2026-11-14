@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Entity, Player } from '../../shared'
-import { DEFAULT_SLOTS, changedBy, commandAccess, slotAccess, budgetBars, columnLabel, formatValue, parseIds, slotColumns, slotParts, toggleId, unitOf } from './model'
+import { DEFAULT_SLOTS, changedBy, termFor, commandAccess, slotAccess, budgetBars, columnLabel, formatValue, parseIds, slotColumns, slotParts, toggleId, unitOf } from './model'
 
 const part = (id: string, kind: string, props: Entity['props'] = {}): Entity => ({ id, kind, name: id, props })
 const slot = (key: string) => DEFAULT_SLOTS.find((s) => s.key === key)!
@@ -114,5 +114,15 @@ describe('co-op roles', () => {
     })
     expect(changedBy(prev, next, ['bus'], players, sci, new Set(['bus']))).toEqual({ bus: 'You' })
     expect(changedBy(prev, prev, ['orbit'], players, sci, new Set())).toEqual({})
+  })
+})
+
+describe('termFor', () => {
+  it('maps columns, slots and budget labels to glossary ids', () => {
+    expect(termFor('payload_tli_kg')).toBe('payload-capacity')
+    expect(termFor('eclipse_fraction')).toBe('eclipse')
+    expect(termFor('orbit')).toBe('orbit')
+    expect(termFor('Power')).toBe('power-budget')
+    expect(termFor('cost_usd')).toBeUndefined()
   })
 })

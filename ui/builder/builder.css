@@ -110,3 +110,6 @@
 /* 3D close-up of the craft (ui/scene3d) at the top of the parts list. */
 .mb-hero { height: 300px; margin-bottom: 16px; }
 @media (max-width: 800px) { .mb-hero { height: 220px; } }
+
+/* Glossary tooltips (ui/learn) in headers keep the header's capitalisation. */
+.mb-table th .learn-term-trigger { text-transform: inherit; }

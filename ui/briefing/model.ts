@@ -45,17 +45,5 @@ export const HOW_TO_WIN: string[] = [
   'You can’t launch while any problem says “Blocks launch”. Fix it, then launch and watch your mission fly.',
 ]
 
-export interface Term {
-  term: string
-  meaning: string
-}
-
-// shortcut: a short local list; switch to ui/learn/glossary.ts once the "Glossary + tooltips" task lands.
-export const KEY_TERMS: Term[] = [
-  { term: 'Orbit', meaning: 'The path your spacecraft takes around Earth (or the Moon). Higher orbits see more at once and stay up longer, but they cost more to reach.' },
-  { term: 'Payload capacity', meaning: 'How much mass a rocket can carry to a given orbit. The farther the orbit, the less it can lift.' },
-  { term: 'In shadow (eclipse)', meaning: 'Part of every orbit is spent in Earth’s shadow, where solar panels make no power and the battery has to take over.' },
-  { term: 'Data rate and downlink', meaning: 'Instruments make data every second. The radio can only send it home while a ground station is in view, so contact time matters.' },
-  { term: 'Power budget', meaning: 'Every part draws power. The total your power source makes, on average, has to be bigger than the total everything uses.' },
-  { term: 'Reliability', meaning: 'The chance a rocket or spacecraft works. 97% sounds high, but it means about 1 launch in 33 fails.' },
-]
+/** Glossary ids (ui/learn, cursor@kaipo) shown under "Words you'll see". The definitions live in the glossary only. */
+export const KEY_TERM_IDS = ['orbit', 'payload-capacity', 'eclipse', 'downlink', 'power-budget', 'reliability'] as const
