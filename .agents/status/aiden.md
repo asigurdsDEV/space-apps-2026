@@ -5,20 +5,20 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 15:25
+**Last updated:** 2026-11-14 15:40
 
 ## claude@aiden
 
-**Branch:** aiden-claude/what-if (working now); aiden-claude/app-safety (PR #53); aiden-claude/bundle-check (PR #54); aiden-claude/briefing-bonus (PR #49); aiden-claude/mobile-budgets (PR #46); aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
+**Branch:** aiden-claude/what-if (PR #55); aiden-claude/app-safety (PR #53); aiden-claude/bundle-check (PR #54); aiden-claude/briefing-bonus (PR #49); aiden-claude/mobile-budgets (PR #46); aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-[P0] What-if + risk meter helper (from claude@ethan's tasks, Aiden's call): new `sim/analysis.ts` with `whatIf()` (one-change reruns, shape = claude@sarah's `WhatIfFix`) and `successRate()` (seed reruns).
+Nothing claimed. Next candidates: builder risk meter (uses successRate, PR #55), wiring whatIf into the debrief in app/ if claude@ethan prefers (handoff what-if-ready).
 
 ### Files / folders I'm touching (hands off)
-- `sim/analysis.ts` + `sim/analysis.test.ts` (new) and one export line in `sim/index.ts`. No other `sim/` file.
-- Plus open PRs #53, #54, #49.
+None outside my open PRs (#55 `sim/analysis.ts`; #54 `scripts/`, workflow; #53 `app/`; #49 `ui/briefing/`).
 
 ### Just finished
+What-if + success-rate helpers (PR #55, taken over from claude@ethan at Aiden's request).
 Took over claude@ethan's scroll-to-top + crash safety (PR #53) at Aiden's request; bundle-size check in CI (PR #54, first load 117 kB / 150 kB). Ethan's lazy 3D, GO/NO-GO and daily lines moved to Done in his name.
 Briefing shows the bonus star goal (PR #49, claude@jamie handoff 1225 done).
 Playtest of main (won A 94 / lost F 26, no errors), 7 findings posted with owners. Fixed mine: compact phone budgets panel (PR #46).

@@ -55,7 +55,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
-- [ ] (medium) [P0] What-if + risk meter helper: `whatIf()` and `successRate()` reruns of the pure sim — sim/analysis.ts — owner: claude@ethan — taken over by claude@aiden at Aiden's request (claude@ethan at usage limit); new file only, no other sim/ file changes — [claude@aiden]
 - [ ] (light) [P1] Daily/stars/personal-best regression: assembled-game persistence and regular-vs-daily isolation; report evidence only — docs/qa/daily-records.md (new); ui/leaderboard/ read-only — [codex@aiden]
 
 
@@ -84,6 +83,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Done
 
+- [x] (medium) [P0] What-if + risk meter helper — sim/analysis.ts — [claude@aiden] (taken over from claude@ethan at Aiden's request) — in PR #55: whatIf() (one-change reruns, same-body orbits, WhatIfFix shape) + successRate() (seed reruns); <1 s per scenario; handoff to claude@sarah + claude@ethan for the debrief wiring
 - [x] (light) [P0] Scroll to top on every screen change — app/ — [claude@aiden] (taken over from claude@ethan at Aiden's request) — in PR #53: useScrollToTop at every screen switch; checked briefing/builder/poll/flight open at the top
 - [x] (light) [P1] Crash safety for judging — app/ — [claude@aiden] (taken over from claude@ethan) — in PR #53: ErrorBoundary + crash screen (Back to the builder / Main menu); crash-tested in the browser
 - [x] (light) [P1] Bundle-size check in the deploy workflow — scripts/, .github/workflows/ — [claude@aiden] — in PR #54: `npm run size`, first load 117 kB gzipped, limit 150 kB
