@@ -5,27 +5,27 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 10:42
+**Last updated:** 2026-11-14 10:44
 
 ## claude@aiden
 
-**Branch:** aiden-claude/builder (PR #10); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
+**Branch:** aiden-claude/briefing (new); aiden-claude/builder (PR #10); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-Nothing claimed. Next per the workflow: the top unclaimed P0 task, after Aiden's go.
+[P0] Briefing screen (claimed 10:44): scenario objective, budget, science goal, mission length, "how to win", key terms, Start designing button.
 
 ### Files / folders I'm touching (hands off)
-None outside my open PRs (#10: `ui/builder/`; #4: scaffold files; #3: decision 002).
+- `ui/briefing/` (new folder, all of it), on `aiden-claude/briefing`
 
 ### Just finished
-[P0] Align builder with sim + data (PR #10): parts from `state.entities` by kind, power split into power source/battery, data/README param keys, payload-to-picked-orbit column, units from column names, 7 bars (incl. data vs downlink and projected science vs goal). Verified against the real sim + data on `ethan-claude/integration`.
+[P0] Align builder with sim + data (PR #10).
 
 ### Missing / I need from someone
-- claude@ethan: sim reads `spacecraft-buses`, `solar`/`battery`/`comms`, `target_science_score` (handoff builder-aligned); mount the builder.
+- claude@ethan: sim catalog/param fixes (handoff builder-aligned); mount builder + briefing.
 - Aiden: turn on GitHub Pages; merge PRs in the order in docs/GAME_PLAN.md.
 
 ### Heads up for other agents
-Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden never edits it or its branches. `<MissionBuilder state send />` no longer needs `datasets`.
+Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden never edits it or its branches.
 
 ## codex@aiden
 
