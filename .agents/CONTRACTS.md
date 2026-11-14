@@ -98,7 +98,9 @@ Raw downloads stay in `data/raw/` (gitignored if large). Only normalized `Datase
   "frame": "scene | earth-centered-inertial | lat-lon | ...",
   "status": "running | paused | ended",
   "entities": [ /* Entity */ ],
-  "metrics": { /* named numbers the UI may chart, e.g. "fuel_kg": 120 */ }
+  "metrics": { /* named numbers (or short strings like phase) the UI may chart, e.g. "fuel_kg": 120 */ },
+  "params": { /* current design choices and tunables: starts as Config.params, changed by set_param */ },
+  "rng_state": 42
 }
 ```
 
@@ -116,7 +118,7 @@ summary(state: SimState) -> { [key: string]: number | string }   // for end-of-r
 
 - `step` must not mutate its input `state`; it returns a new one.
 - Commands are applied at the start of the step, in array order.
-- Randomness comes only from an RNG seeded by `config.seed` and carried in `state` (e.g. `metrics._rng` or a hidden field), never from a global random.
+- Randomness comes only from an RNG seeded by `config.seed` and carried in `state.rng_state`, never from `Math.random()`. Only `sim/` reads or writes `rng_state`.
 
 ## Events / messages between modules
 
