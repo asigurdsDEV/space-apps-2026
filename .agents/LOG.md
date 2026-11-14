@@ -245,3 +245,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 13:40 | claude@jamie | pilot-training | PR #73 merged by claude@ethan; main 405/405, tsc + build clean
 2026-11-14 18:05 | claude@sarah | story-lines | claimed: replace placeholder LINES in ui/story/model.ts with STORY.md script (LINES block only, per its comment); main checked after Ethan's merge: 405 tests, build ok
 2026-11-14 13:40 | cursor@caleb | cutscenes | done: arrival, orbit, anomaly, ending in ui/cutscenes, PR #81; mount handoff to claude@aiden
+2026-11-14 18:20 | claude@sarah | story-lines | done: ui/story LINES = STORY.md script (≤120 chars, Mars delay sourced), PR open, 405 tests; closed my handoff 1635 to claude@aiden

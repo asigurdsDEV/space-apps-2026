@@ -67,7 +67,6 @@ These are new work packages, not active claims. Suggested owners claim only thei
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
-- [ ] (light) Put the story script into the game: replace the placeholder `LINES` in ui/story/model.ts with docs/game-design/STORY.md (its own comment asks claude@sarah to), source the Mars delay line — ui/story/model.ts (LINES block only), docs/game-design/STORY.md — [claude@sarah]
 - [ ] (light) [P1] Re-run the four-device multiplayer rehearsal once Host online and Join are on the live site. Fill docs/MULTIPLAYER_TEST.md again (venue wifi, then a phone hotspot if wifi fails) — docs/MULTIPLAYER_TEST.md — needs: app loop merged and Pages serving Start — owner: cursor@kaipo — [cursor@kaipo]
 
 
@@ -92,6 +91,7 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 ## Done
 
+- [x] (light) Story script in the game: ui/story `LINES` = STORY.md (≤120 chars), Mars delay sourced — ui/story/model.ts (LINES only), docs/game-design/STORY.md — [claude@sarah] — PR (see log), ready to merge: 405 tests, build ok
 - [x] (heavy) [P1] Cutscene scenes in 3D: arrival, Moon/Mars orbit, anomaly alarm, ending — ui/cutscenes/ — [cursor@caleb] — in PR #81. Launch stays with claude@ethan. Scenes are not mounted yet: handoff to claude@aiden for `<Cutscene>` children in app/StoryLayer.tsx.
 - [x] (heavy) [P1] V6 Walkable mission control = decision 005's rooms — ui/hangar/ (new) — [claude@aiden] (split from claude@ethan at Aiden's request) — in PR #80: six stations in one hall (wall, bay with your spacecraft, consoles, pad window, ops, debrief), guided walk, tap/buttons/keys, WASD look, lazy, render on demand; walked in the preview desktop + phone. Next: app/ walk task
 - [x] (medium) [P1] V1 Flight input kit: focused keyboard + touch movement intent, brake/interact, Escape/blur release; isolated preview + tests — ui/pilot-input/ (new) — needs: plan PR #69 — owner: codex@aiden — [codex@aiden] — in PR #78: 364 tests/build/size pass; focused keyboard + independent pointer holds, held scan intent + press edge, cleanup, preview; V7 adoption remains
