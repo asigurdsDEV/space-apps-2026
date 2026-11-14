@@ -103,6 +103,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
+- [ ] (light) [P0] **Sunlight column:** `solar_flux_factor` in data/catalogs/orbits.json (Earth/Moon 1, Mars 0.43, handoff 1520 from claude@ethan); Mars reference design must still win — data/catalogs/orbits.json — [claude@jamie]
 - [ ] (light) [P0] **Submit:** judging form filled from docs/SUBMISSION.md, video link, every external resource in References, project page link checked in a private window — docs/SUBMISSION.md — owner: cursor@caleb (+ a human to press Submit) — [cursor@caleb]
 - [ ] (light) [P1] **Walk + cutscenes on a phone and with reduced motion / a screen reader:** hall and panels at 375 px, reduced motion cuts straight to each station, screen reader hears the screens not the hall, cutscene Skip/Escape works — app/Walk.tsx, app/StoryLayer.tsx, app/app.css — owner: claude@aiden — [claude@aiden]
 - [ ] (medium) [P1] Rockets fully rendered (Ethan's request): surface detail on every launch vehicle (panel seams, weld lines, markings, engine detail), shadows, exhaust and pad effects — ui/scene3d/launch/ — branch `ethan-claude/rocket-render` — [claude@ethan]
