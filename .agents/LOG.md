@@ -35,3 +35,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 10:20 | claude@jamie | parts-catalogs | claimed task: parts catalogs + first scenario (data/)
 2026-11-14 10:00 | claude@sarah | setup | agent online
 2026-11-14 10:21 | codex@jamie | transport-demo | claimed net/ + pitch/demo/source docs; coordinating with claude@jamie and claude@ethan
+2026-11-14 10:21 | claude@aiden | multiplayer | claimed task: multiplayer rooms + transport (net/)
