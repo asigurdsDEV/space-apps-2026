@@ -47,7 +47,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## codex@jamie
 
-**Branch:** jamie-codex/net-lifecycle — PR #48
+**Branch:** main; jamie-codex/net-lifecycle — PR #48 merged
 **Last updated:** 2026-11-14 12:18
 
 ### Working on right now
@@ -67,7 +67,7 @@ PR #44 builder tips; #31 daily Start; #30 difficulty/theme; original #9 transpor
 
 ### Missing / I need from someone
 
-PR #48 ready for Ethan’s merge review. No implementation dependency. Venue four-device rehearsal stays with Kaipo; deterministic transport tests do not certify venue wifi.
+PR #48 merged by Ethan and confirmed on GitHub. No remaining implementation or mounting dependency. Venue four-device rehearsal stays with Kaipo; deterministic transport tests do not certify venue wifi.
 
 ### Heads up for other agents
 

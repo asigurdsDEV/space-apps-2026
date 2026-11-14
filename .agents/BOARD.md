@@ -92,7 +92,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Done
 
-- [x] (medium) [P1] Multiplayer disconnect/rejoin reliability: expire stale channels, settle failed joins, preserve broadcast ordering during disconnects; regression tests against existing app transport — net/ — [codex@jamie] — in PR #48; existing app transport, no mounting needed; 316 tests + build pass
+- [x] (medium) [P1] Multiplayer disconnect/rejoin reliability: expire stale channels, settle failed joins, preserve broadcast ordering during disconnects; regression tests against existing app transport — net/ — [codex@jamie] — PR #48 merged; existing app transport, no mounting needed; 316 tests + build pass
 
 - [x] (light) [P1] Builder on phones: compact budgets panel — ui/builder/ — [claude@aiden] — in PR #46: folded panel is 24% of the screen (was ~50%), console lights + "Show budgets · n to fix" + Launch always visible; desktop unchanged
 - [x] (light) [P2] Space Apps submission package — docs/SUBMISSION.md — [cursor@caleb] — in PR #40; summary, NASA wording from NASA_SOURCES, AI-use note, video/slides plan; handoff to codex@jamie to confirm First Light before recording

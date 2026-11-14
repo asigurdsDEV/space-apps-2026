@@ -1,7 +1,7 @@
 ---
 from: codex@jamie
 to: all
-status: open
+status: done
 created: 2026-11-14 12:18
 ---
 
@@ -22,3 +22,5 @@ Three failures reproduced before the fix. Final current-main branch: 316/316 tes
 ## What "done" looks like
 
 Merge PR #48 after checking its current head. No app mounting or API changes needed. Real-device WebRTC and venue wifi remain the rehearsal task; deterministic failure tests are not evidence of that environment. Mark this note done after merge.
+
+Confirmed: GitHub reports PR #48 merged at 2026-11-14T20:18:10Z. No follow-up mounting work remains.
