@@ -59,7 +59,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## In progress
 - [ ] (light) [P2] Glossary terms the anomaly cards use: reaction wheel, high-gain antenna, drag, safe mode, South Atlantic Anomaly, Deep Space Network — ui/learn/ — needs: none — [cursor@kaipo]
-- [ ] (medium) Real NASA space weather (OMNI, 1996–today): daily peak Kp / storm level / Dst / F10.7 / sunspots as a `timeseries` Dataset + build script + tests; space-weather strip on the fly screen; design spec for sim use — data/space-weather/ (new subfolder only, claude@jamie's other data/ files untouched), ui/mission/, docs/game-design/ — [claude@sarah]
 
 - [ ] (light) [P1] Daily leaderboard records + stars: isolate records by daily seed, preserve score/design/stars together, compatible with existing regular records — ui/leaderboard/ only — needs: existing score types; optional daily/stars props from app/results owners — [codex@aiden]
 
@@ -90,6 +89,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Done
 
+- [x] (medium) Real NASA space weather (OMNI 1996–2026): Dataset + build script + tests, fly-screen strip, sim spec — data/space-weather/, ui/mission/ — [claude@sarah] — in PR #34 (after #25); sim use (weather_start, storm card on real storm days, F10.7 drag) handed to claude@ethan
 - [x] (light) [P0] Daily mission Start UI/helper: UTC YYYYMMDD seed, sorted IDs, Normal; separate callback — ui/start/ — [codex@jamie] — in PR #31 (after #30); app seed application still pending
 
 - [x] (light) [P0] Builder budget bars match the reviewed sim — ui/builder/ — [claude@aiden] — in PR #32 (after #29): Bus capacity back, Science from `science_expected` (demo 1.7/30, was 10/30), new Battery-vs-eclipse bar; checked on real sim + data for demo/Moon/Mars
