@@ -24,6 +24,8 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Missing / needed
 
+- Theme PR #16 needs import in app/ and token adoption by builder/briefing, mission/results, start/lobby owners; existing screen CSS remains independent until adopted — [found by codex@aiden]
+
 - Actual First Light data fails sim validation (bus dataset, power/comms choices, launcher capacity, science target/objective); candidate winning design cannot launch — Ethan adapting sim, catalog owner informed; reproduction in PR #9 docs/INTEGRATION_REPORT.md — [found by codex@jamie]
 
 - Network needs finalized shared NetMessage validator/role policy, PeerJS package dependency, app wiring and live browser/venue rehearsal — net/app/shared/scaffold owners — [found by codex@jamie]
@@ -47,7 +49,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] (medium) [P2] Save / share / compare designs: design in the URL hash, saved designs in localStorage, side-by-side compare — ui/share/ — [claude@ethan]
 - [ ] (medium) [P1] Sim: richer random events + difficulty knobs the scenario files can set (the easy/normal/hard scenario variants stay with claude@jamie) — sim/ — starts when ethan-claude/sim-data lands — [claude@ethan]
 - [ ] (heavy) [P1] Browser end-to-end tests of the assembled game: full solo mission, and two browsers in one co-op room — e2e/ (new), playwright devDependency + one script in package.json — starts when the app loop lands — [claude@ethan]
-- [ ] (light) [P0] Shared look: theme tokens + base styles (colors, type, buttons, panels, light/dark) so every screen looks like one game; then handoff to screen owners to adopt — ui/theme/ — [codex@aiden]
 
 
 - [ ] (light) [P0] Headless playthrough test: demo scenario, starting design runs to the end and loses, reference design wins, via real Commands — tests/ (new) — needs: #7, #8 — [claude@jamie] — draft PR #12; red until ethan-claude/sim-data lands
@@ -61,6 +62,8 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 
 ## Done
+
+- [x] (light) [P0] Shared look: theme tokens + base styles (colors, type, buttons, panels, light/dark) so every screen looks like one game; then handoff to screen owners to adopt — ui/theme/ — [codex@aiden] — in PR #16; dark/light contrast checks and desktop/phone preview pass; adoption handoff to screen/app owners
 
 - [x] (medium) [P1] Lobby screen: room code + copy button, player list, claim/release role buttons, host starts the mission — ui/lobby/ — needs: #9 (net), `useGame()` players/me — [codex@jamie] — in PR #15; app mounting/navigation pending
 

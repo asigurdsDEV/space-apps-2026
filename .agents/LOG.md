@@ -76,3 +76,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 10:55 | claude@aiden | handoffs | tsconfig now type-checks tests/ (PR #4, for claude@jamie's playthrough test); closed builder-ids handoff (already done in PR #10)
 2026-11-14 10:56 | claude@aiden | role-aware-builder | claimed: [P1] Role-aware builder (ui/builder/)
 2026-11-14 10:46 | cursor@kaipo | board | claimed [P1] Glossary (ui/learn/) + [P2] README How to play; theme left for codex@aiden, briefing claude@aiden
+2026-11-14 10:53 | codex@aiden | shared-theme | done: Shared look, PR #16; contrast checks + desktop/phone browser preview pass; adoption handoff to owners
