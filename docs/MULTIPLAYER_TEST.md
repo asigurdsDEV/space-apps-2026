@@ -2,9 +2,9 @@
 
 How to check online co-op for up to 4 players, and what to do when the network fails. This is the venue script for the Space Mission Design Game (team Kimchi Trenchers).
 
-**Status:** script and fallback call are written. The four-device run has **not** been done yet. `main` does not yet have the wired app (`net/` is PR #9; `app/` is still in progress). Fill the results tables at the venue. Do not treat the empty rows as a pass.
+**Status:** first attempt recorded 2026-11-14 11:35 (Pacific). **Fail.** The live site and local dev both show the scaffold page ("Scaffold is running"). There is no Host online or Join control, so a room was never created. `ui/start/` has those controls, and `app/main.tsx` does not mount them yet (`ethan-claude/app-loop` is still open). Net unit tests passed (26/26) and do not count: they never open WebRTC. Run B was not started. Venue wifi, a phone hotspot, and four devices were not available on this machine. Re-run the tables when the live URL shows Host online.
 
-Transport behavior below matches `net/README.md` on `jamie-codex/transport-demo` (checked 2026-11-14). The room code is the **full PeerJS id**, not a short code.
+Transport behavior below matches `net/README.md` (checked 2026-11-14). The room code is the **full PeerJS id**, not a short code.
 
 ## What you need
 
@@ -48,17 +48,17 @@ Do this first, on the event wifi.
 
 | Check | Result | Notes |
 |-------|--------|-------|
-| Date / place | not run | |
-| URL or build | not run | |
-| Network | venue wifi | |
-| 3 guests joined | | |
-| Roles unique | | |
-| Fifth player rejected | | |
-| Guest edit seen by others | | |
-| Host launch seen by guests | | |
-| Guest leave updates roster | | |
-| Host close ends the room | | |
-| Pass or fail | not run | |
+| Date / place | 2026-11-14 11:35 Pacific | One laptop. Not the venue. |
+| URL or build | https://asigurdsdev.github.io/space-apps-2026/ and http://localhost:5173/ | Both pages: heading "Space Mission Design Game", text "Scaffold is running." Live bundle `assets/index-COb7i1JO.js` contains that sentence and does not contain "Host online" or "Join a room". |
+| Network | not venue wifi | Dev machine only. |
+| 3 guests joined | fail | No room was created. The running page has no Host or Join. |
+| Roles unique | not reached | |
+| Fifth player rejected | not reached | |
+| Guest edit seen by others | not reached | |
+| Host launch seen by guests | not reached | |
+| Guest leave updates roster | not reached | |
+| Host close ends the room | not reached | |
+| Pass or fail | fail | Blocked before join. `npm run dev` on `main` (`d248feb`) served the same scaffold. |
 
 ## Run B — phone hotspot
 
@@ -66,13 +66,13 @@ Do this only if Run A fails, or if you have time after a pass. One phone turns o
 
 | Check | Result | Notes |
 |-------|--------|-------|
-| Date / place | not run | |
-| Hotspot owner | | |
-| 3 guests joined | | |
-| Guest edit seen by others | | |
-| Host launch seen by guests | | |
-| Host close ends the room | | |
-| Pass or fail | not run | |
+| Date / place | not run | Run A never opened a room, so there was nothing to retry. |
+| Hotspot owner | | No second network. |
+| 3 guests joined | not run | |
+| Guest edit seen by others | not run | |
+| Host launch seen by guests | not run | |
+| Host close ends the room | not run | |
+| Pass or fail | not run | Do this after Host online is on the live site and Run A fails. |
 
 ## Fallback call
 
