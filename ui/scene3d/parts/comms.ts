@@ -1,34 +1,36 @@
-// Radios. All mount on the zenith deck at y = 0 and point up (+y). Each sets userData.anchor:
-// where its radio beam starts, in the group's own coordinates.
-// UHF: four tape-measure whips (turnstile). S-band: a flat patch. X-band: a horn on its transmitter.
-// Dishes: a gimballed relay dish, a fixed deep-space dish with a low-gain antenna, a big Mars dish.
+// Radios, each modelled on real flight hardware (REFERENCES.md). All mount on the zenith deck at y = 0 and
+// point up (+y). Each sets userData.anchor: where its radio beam starts, in the group's own coordinates.
+//   UHF: four quarter-wave tape antennas (turnstile) · S-band: a patch · X-band: MarCO's flat reflectarray
+//   dishes: LRO's 75 cm Ka-band dish on two gimbals, Mars Odyssey's 1.3 m dish with its horn, MRO's 3 m dish.
 import * as THREE from 'three'
-import { aim, box, cyl, dishGeometry, mats, partGroup, put, strut } from './kit'
-import { dishDiameter, linkEffort, type Mount } from './layout'
+import { aim, box, cyl, dishGeometry, mats, partGroup, put, strut, tileBox } from './kit'
+import { dishDiameter, type Mount } from './layout'
+import { ANTENNA } from './references'
 
-const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v))
 const V = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z)
 
-function turnstile(g: THREE.Group, s: number, foot: number) {
+function turnstile(g: THREE.Group, foot: number) {
   const m = mats()
-  // A quarter wave at 437 MHz is 17 cm; on a big bus it is drawn a little larger so it stays visible.
-  const len = Math.max(0.17, 0.12 * s)
-  const b = Math.min(clamp(0.09, 0.06 * s, 0.3), foot * 0.8)
-  put(g, box(b * 1.08, b * 0.06, b * 1.08), m.alu, 0, b * 0.03, 0)
-  put(g, box(b, b * 0.05, b), m.pcb, 0, b * 0.085, 0)
-  put(g, box(b * 0.3, b * 0.06, b * 0.3), m.aluDark, 0, b * 0.14, 0)
-  const tape = box(len * 0.05, len, len * 0.006).translate(0, len / 2, 0)
+  // Real size: a quarter wave at 437 MHz is 17 cm, on a board that fits a 10 cm CubeSat face.
+  const len = ANTENNA.uhfTape
+  const b = Math.min(ANTENNA.uhfBoard, foot * 0.9)
+  put(g, box(b, b * 0.07, b), m.alu, 0, b * 0.035, 0)
+  put(g, box(b * 0.94, b * 0.016, b * 0.94), m.pcb, 0, b * 0.078, 0)
+  put(g, box(b * 0.3, b * 0.06, b * 0.3), m.aluDark, 0, b * 0.116, 0)
+  put(g, cyl(b * 0.03, b * 0.03, b * 0.08, 8), m.gold, b * 0.3, b * 0.12, 0)
+  const tape = box(0.006, len, 0.0004).translate(0, len / 2, 0)
   for (const a of [-1, 1]) for (const c of [-1, 1]) {
-    put(g, box(b * 0.16, b * 0.1, b * 0.16), m.alu, a * b * 0.42, b * 0.13, c * b * 0.42)
-    const t = aim(put(g, tape, m.tape, a * b * 0.42, b * 0.17, c * b * 0.42), V(a, 0.3, c))
-    t.rotateY(Math.PI / 4)
+    // Each tape was wound in its corner housing and sprang out when a burn wire let go.
+    put(g, box(b * 0.16, b * 0.1, b * 0.16), m.aluDark, a * b * 0.4, b * 0.12, c * b * 0.4)
+    aim(put(g, tape, m.tape, a * b * 0.4, b * 0.16, c * b * 0.4), V(a, 0.3, c)).rotateY(Math.PI / 4)
   }
   g.userData.anchor = V(0, b * 0.15, 0)
 }
 
-function patch(g: THREE.Group, s: number, foot: number) {
+function patch(g: THREE.Group, foot: number) {
   const m = mats()
-  const a = Math.min(Math.max(0.09, 0.05 * s), foot * 0.6)
+  // Real size: an S-band patch is 7 cm across.
+  const a = Math.min(ANTENNA.patch, foot * 0.6)
   put(g, box(1.3 * a, 0.1 * a, 1.3 * a), m.alu, 0, 0.05 * a, 0)
   put(g, box(a, 0.08 * a, a), m.ceramic, 0, 0.14 * a, 0)
   // The copper square is the antenna; its two cut corners make the signal circularly polarised.
@@ -39,54 +41,65 @@ function patch(g: THREE.Group, s: number, foot: number) {
   g.userData.anchor = V(0, 0.2 * a, 0)
 }
 
-function horn(g: THREE.Group, effort: number, s: number, foot: number) {
+/** MarCO: the Iris radio, and a flat three-panel reflectarray that a small feed lights from the front. */
+function reflectarray(g: THREE.Group, foot: number) {
   const m = mats()
-  const a = Math.min(Math.max(clamp(0.03 * (effort - 15.5), 0.1, 0.3), 0.06 * s), foot * 0.6)
-  // Transmitter box with cooling fins: a fast radio runs hot.
-  put(g, box(1.5 * a, 0.5 * a, 1.2 * a), m.aluDark, 0, 0.25 * a, 0)
-  for (let i = 0; i < 6; i++) put(g, box(0.12 * a, 0.42 * a, 0.03 * a), m.alu, 0.8 * a, 0.25 * a, (i - 2.5) * 0.2 * a)
-  put(g, cyl(0.16 * a, 0.16 * a, 0.3 * a, 12), m.alu, 0, 0.65 * a, 0)
-  const h = new THREE.Group()
-  h.position.y = 0.8 * a
-  h.rotation.x = 0.3
-  g.add(h)
-  put(h, cyl(0.5 * a, 0.16 * a, 0.8 * a, 24, true), m.gold, 0, 0.4 * a, 0)
-  put(h, cyl(0.16 * a, 0.16 * a, 0.01 * a, 12), m.black, 0, 0.02 * a, 0)
-  for (const [y, r] of [[0.28, 0.275], [0.54, 0.4], [0.8, 0.5]] as const) put(h, new THREE.TorusGeometry(r * a, 0.022 * a, 6, 24), m.gold, 0, y * a, 0, Math.PI / 2)
-  g.userData.anchor = V(0, 0.8 * a + 0.76 * a, 0.24 * a)
+  const [w, h] = ANTENNA.reflectarray
+  const hz = Math.min(0.05, foot * 0.45)
+  const b = Math.min(ANTENNA.iris[0], foot * 0.8)
+  // The radio: "softball-size", with its coax connectors.
+  put(g, box(b, 0.03, b), m.aluDark, 0, 0.015, 0)
+  for (const x of [-0.3, 0, 0.3]) put(g, cyl(0.004, 0.004, 0.012, 8), m.gold, x * b, 0.036, 0.3 * b)
+  // The panel leans back so the reflected beam leaves along the feed side.
+  const lean = 0.4
+  const panel = new THREE.Group()
+  panel.position.set(0, 0.02, -hz)
+  panel.rotation.x = -lean
+  g.add(panel)
+  const pw = w / 3
+  const leaf = tileBox(box(pw - 0.003, h, 0.004), 1, 1, 1)
+  for (let i = -1; i <= 1; i++) {
+    put(panel, leaf, [m.alu, m.alu, m.alu, m.alu, m.reflectarray, m.cellBack], i * pw, h / 2 + 0.012, 0)
+    if (i < 1) for (const y of [0.2, 0.8]) put(panel, cyl(0.003, 0.003, 0.03, 6), m.steel, (i + 0.5) * pw, y * h + 0.012, -0.004)
+  }
+  for (const x of [-0.3, 0.3]) put(panel, box(0.012, 0.03, 0.006), m.alu, x * pw, 0.004, 0)
+  // The feed: a strip of patches on a fold-out arm, looking back at the panel.
+  strut(g, V(0, 0.02, hz), V(0, 0.07, hz + 0.05), 0.003, m.alu)
+  const feed = new THREE.Group()
+  feed.position.set(0, 0.075, hz + 0.052)
+  feed.rotation.x = -1.0
+  g.add(feed)
+  put(feed, box(0.09, 0.003, 0.045), m.pcb)
+  for (let i = 0; i < 4; i++) for (const z of [-1, 1]) put(feed, box(0.014, 0.001, 0.014), m.copper, (i - 1.5) * 0.02, -0.002, z * 0.01)
+  g.userData.anchor = V(0, 0.02 + Math.cos(lean) * h * 0.5, -hz - Math.sin(lean) * h * 0.5)
 }
 
-interface DishStyle { tilt: number; cassegrain: boolean; gimbal: boolean; ribs: number; grey?: boolean; lowGain?: boolean; amps?: boolean }
+interface DishStyle { tilt: number; ribs: number; lowGain?: boolean; horn?: boolean; amps?: boolean; goldBack?: boolean }
 
-function dish(g: THREE.Group, d: number, foot: number, o: DishStyle) {
+/** A Cassegrain dish on a two-axis gimbal: the big dish focuses onto a small mirror, which bounces the beam into the feed at the centre. */
+function dish(g: THREE.Group, d: number, o: DishStyle) {
   const m = mats()
   const R = d / 2
   const f = 0.36 * d
   const depth = (R * R) / (4 * f)
   const hub = 0.1 * d
   // High enough that the tilted rim never dips below the deck.
-  const pivot = R * Math.sin(o.tilt) + (o.gimbal ? 0.16 * d : 0.1 * d)
-  if (o.gimbal) {
-    put(g, cyl(0.09 * d, 0.1 * d, 0.05 * d, 16), m.aluDark, 0, 0.025 * d, 0)
-    put(g, cyl(0.035 * d, 0.045 * d, pivot - 0.05 * d, 12), m.alu, 0, pivot / 2 + 0.025 * d, 0)
-    put(g, cyl(0.055 * d, 0.055 * d, 0.24 * d, 14), m.aluDark, 0, pivot, 0, 0, 0, Math.PI / 2)
-  } else {
-    put(g, box(0.34 * d, 0.1 * d, 0.24 * d), m.goldMLI, 0, 0.05 * d, 0)
-    for (let i = 0; i < 3; i++) {
-      const a = (i / 3) * Math.PI * 2 + 0.5
-      const r = Math.min(0.36 * d, 0.42 * foot)
-      strut(g, V(Math.sin(a) * r, 0.03 * d, Math.cos(a) * r), V(Math.sin(a) * 0.08 * d, pivot, Math.cos(a) * 0.08 * d), 0.014 * d, m.alu)
-    }
-  }
+  const pivot = R * Math.sin(o.tilt) + 0.16 * d
+  // Azimuth drive on the deck, a mast, then the elevation drive in a yoke.
+  put(g, cyl(0.09 * d, 0.1 * d, 0.05 * d, 16), m.aluDark, 0, 0.025 * d, 0)
+  put(g, cyl(0.06 * d, 0.06 * d, 0.03 * d, 16), m.alu, 0, 0.065 * d, 0)
+  put(g, cyl(0.035 * d, 0.045 * d, pivot - 0.05 * d, 12), m.goldMLI, 0, pivot / 2 + 0.025 * d, 0)
+  put(g, cyl(0.055 * d, 0.055 * d, 0.24 * d, 14), m.aluDark, 0, pivot, 0, 0, 0, Math.PI / 2)
+  for (const a of [-1, 1]) put(g, cyl(0.065 * d, 0.065 * d, 0.012 * d, 14), m.alu, a * 0.125 * d, pivot, 0, 0, 0, Math.PI / 2)
   const head = new THREE.Group()
   head.position.y = pivot
   // Tilted toward the Sun side: from deep space, Earth is always near the Sun in the sky.
   head.rotation.x = o.tilt
   g.add(head)
   put(head, cyl(0.13 * d, 0.07 * d, hub, 16), m.aluDark, 0, hub / 2, 0)
-  put(head, dishGeometry(R, f), o.grey ? m.greyDouble : m.whiteDouble, 0, hub, 0)
-  put(head, new THREE.TorusGeometry(R, (o.amps ? 0.018 : 0.012) * d, 6, 40), o.amps ? m.gold : m.alu, 0, hub + depth, 0, Math.PI / 2)
-  // Stiffening ribs behind the reflector.
+  put(head, dishGeometry(R, f), m.dishFace, 0, hub, 0)
+  put(head, new THREE.TorusGeometry(R, 0.01 * d, 6, 48), m.alu, 0, hub + depth, 0, Math.PI / 2)
+  // Stiffening ribs behind the reflector, and a ring that ties them together.
   // A straight rib under a curved dish: it follows the tangent at half radius, a quarter of the depth below the vertex.
   const rib = box(0.012 * d, 0.05 * d, R * 0.82).translate(0, -depth / 4 - 0.032 * d, R * 0.52)
   for (let i = 0; i < o.ribs; i++) {
@@ -96,21 +109,26 @@ function dish(g: THREE.Group, d: number, foot: number, o: DishStyle) {
     head.add(r)
     put(r, rib, m.aluDark).rotation.x = -Math.atan2(depth, R)
   }
-  // The Mars dish wears a gold blanket on its back, against the cold of deep space.
-  if (o.amps) put(head, dishGeometry(R * 0.99, f), m.goldDouble, 0, hub - 0.006 * d, 0)
-  if (o.amps) for (const a of [-1, 1]) put(head, box(0.14 * d, 0.07 * d, 0.2 * d), m.goldMLI, a * 0.2 * d, hub * 0.2, 0)
-  const top = o.cassegrain ? hub + f * 0.78 : hub + f
-  if (o.cassegrain) {
-    // Cassegrain: the big dish focuses onto a small mirror, which bounces the beam into the feed cone at the centre.
-    put(head, cyl(0.025 * d, 0.06 * d, 0.2 * d, 14), m.gold, 0, hub + 0.1 * d, 0)
-    put(head, cyl(0.085 * d, 0.1 * d, 0.02 * d, 20), m.whiteDouble, 0, top, 0)
-  } else {
-    put(head, cyl(0.04 * d, 0.05 * d, 0.1 * d, 14), m.aluDark, 0, top - 0.02 * d, 0)
+  // A blanket on the back of the dish, against the cold of deep space.
+  if (o.goldBack) put(head, dishGeometry(R * 0.99, f), m.goldDouble, 0, hub - 0.006 * d, 0)
+  // Amplifiers ride on the back of the dish, so the signal has only a short way to go to the feed.
+  if (o.amps) for (const a of [-1, 1]) {
+    put(head, box(0.14 * d, 0.07 * d, 0.2 * d), m.goldMLI, a * 0.2 * d, hub * 0.2, 0)
+    put(head, box(0.1 * d, 0.012 * d, 0.16 * d), m.white, a * 0.2 * d, hub * 0.2 - 0.042 * d, 0)
   }
+  const top = hub + f * 0.78
+  put(head, cyl(0.025 * d, 0.06 * d, 0.2 * d, 14), m.gold, 0, hub + 0.1 * d, 0)
+  put(head, cyl(0.085 * d, 0.1 * d, 0.02 * d, 20), m.whiteDouble, 0, top, 0)
   for (let i = 0; i < 3; i++) {
     const a = (i / 3) * Math.PI * 2
-    const r = R * (o.cassegrain ? 0.72 : 0.92)
+    const r = R * 0.72
     strut(head, V(Math.sin(a) * r, hub + (r * r) / (4 * f), Math.cos(a) * r), V(Math.sin(a) * 0.07 * d, top, Math.cos(a) * 0.07 * d), 0.008 * d, m.alu)
+  }
+  if (o.horn) {
+    // Mars Odyssey: the medium-gain horn pokes through the dish, beside the centre.
+    const hw = ANTENNA.odysseyHorn * d
+    const r = 0.45 * R
+    put(head, cyl(hw * 0.75, hw * 0.4, hw * 1.6, 4, true), m.gold, r, hub + (r * r) / (4 * f) + hw * 0.6, 0, 0, Math.PI / 4)
   }
   if (o.lowGain) {
     // Low-gain antenna: slow, but it works whichever way the spacecraft points.
@@ -124,14 +142,14 @@ function dish(g: THREE.Group, d: number, foot: number, o: DishStyle) {
 /** The antenna for a comms mount. `bus` is the host bus size in meters. */
 export function buildComms(mount: Mount, [bx, by, bz]: [number, number, number]): THREE.Group {
   const g = partGroup('comms', mount.id)
-  const s = Math.max(bx, by, bz)
   const foot = Math.min(bx, bz)
-  const d = Math.min(dishDiameter(mount.entity), 2 * s)
-  if (mount.key === 'turnstile') turnstile(g, s, foot)
-  else if (mount.key === 'horn') horn(g, linkEffort(mount.entity), s, foot)
-  else if (mount.key === 'dish-gimbal') dish(g, d, foot, { tilt: 0.45, cassegrain: true, gimbal: true, ribs: 8 })
-  else if (mount.key === 'dish-fixed') dish(g, d * 0.85, foot, { tilt: 0, cassegrain: false, gimbal: false, ribs: 6, grey: true, lowGain: true })
-  else if (mount.key === 'dish-deep') dish(g, d, foot, { tilt: 0.5, cassegrain: true, gimbal: true, ribs: 12, lowGain: true, amps: true })
-  else patch(g, s, foot)
+  // shortcut: a dish more than twice as wide as its bus is drawn smaller, so the bus stays visible.
+  const d = Math.min(dishDiameter(mount.entity), 2 * Math.max(bx, by, bz))
+  if (mount.key === 'turnstile') turnstile(g, foot)
+  else if (mount.key === 'reflectarray') reflectarray(g, foot)
+  else if (mount.key === 'dish-gimbal') dish(g, d, { tilt: 0.45, ribs: 6 })
+  else if (mount.key === 'dish-fixed') dish(g, d, { tilt: 0.3, ribs: 8, horn: true, lowGain: true, amps: true })
+  else if (mount.key === 'dish-deep') dish(g, d, { tilt: 0.5, ribs: 12, lowGain: true, amps: true, goldBack: true })
+  else patch(g, foot)
   return g
 }

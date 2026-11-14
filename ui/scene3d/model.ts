@@ -1,6 +1,7 @@
 // Pure: turns SimState (picked params + part entities) into what the 3D scene draws.
 // No three.js here, so it is easy to test. Columns follow data/README.md (PR #8).
 import type { Entity, ParamValue, SimState } from '../../shared'
+import { BUS, CUBESAT } from './parts/references'
 
 export type Body = 'earth' | 'moon' | 'mars'
 export type Power = 'none' | 'body' | 'wings' | 'rtg'
@@ -53,17 +54,32 @@ function picked(state: Pick<SimState, 'entities' | 'params'>, key: string, kind:
   return state.entities.find((e) => e.kind === kind && e.id === id)
 }
 
+export type BusClass = 'cubesat' | 'smallsat' | 'medium' | 'flagship'
+
+/** The class of a bus: its catalog class, else its name (3U, 6U...), else its dry mass. */
+export function busClass(bus: Entity | undefined): BusClass {
+  if (!bus) return 'cubesat'
+  const c = str(bus.props.class)
+  if (c === 'cubesat' || c === 'smallsat' || c === 'medium' || c === 'flagship') return c
+  if (/cubesat|\b\d+\s*u\b/i.test(`${bus.id} ${bus.name}`)) return 'cubesat'
+  const m = num(bus.props.dry_mass_kg, 120)
+  return m < 40 ? 'cubesat' : m < 400 ? 'smallsat' : m < 1800 ? 'medium' : 'flagship'
+}
+
+/**
+ * Real sizes (parts/references.ts): a CubeSat is its standard size; a box bus is the real spacecraft of its
+ * class (GRAIL, MAVEN, MRO), scaled by the cube root of the catalog dry mass over the real one.
+ */
 export function busSize(bus: Entity | undefined): { size: [number, number, number]; cubesat: boolean } {
-  if (!bus) return { size: [0.2, 0.34, 0.1], cubesat: true }
-  const units = /(\d+)\s*U\b/i.exec(bus.name)?.[1] ?? /cubesat-(\d+)u/i.exec(bus.id)?.[1]
-  if (units || bus.props.class === 'cubesat') {
-    const u = Number(units ?? 6)
-    // 1U = 10 cm cube; 3U is 1x1x3, 6U is 2x1x3, 12U is 2x2x3.
-    const [x, z] = u <= 3 ? [0.1, 0.1] : u <= 6 ? [0.2, 0.1] : [0.2, 0.2]
-    return { size: [x, 0.34, z], cubesat: true }
+  const cls = busClass(bus)
+  if (!bus || cls === 'cubesat') {
+    const u = Number(/(\d+)\s*U\b/i.exec(bus?.name ?? '')?.[1] ?? /cubesat-(\d+)u/i.exec(bus?.id ?? '')?.[1] ?? 6)
+    const fit = [1, 2, 3, 6, 12].find((n) => n >= u) ?? 12
+    return { size: [...CUBESAT.sizes[fit]!], cubesat: true }
   }
-  const side = Math.cbrt(num(bus.props.dry_mass_kg, 120) / 300)
-  return { size: [side, side * 1.25, side], cubesat: false }
+  const ref = BUS[cls]
+  const k = Math.cbrt(Math.max(num(bus.props.dry_mass_kg, ref.dry_kg), 1) / ref.dry_kg)
+  return { size: ref.size.map((v) => v * k) as [number, number, number], cubesat: false }
 }
 
 export function wingSpan(power_w: number): number {
