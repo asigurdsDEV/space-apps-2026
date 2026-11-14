@@ -18,7 +18,7 @@ const entities: Entity[] = [
   part('instrument', 'magnetometer', 'Magnetometer'),
 ]
 
-function draw(params: Params): string {
+function draw(params: Params, ents: Entity[] = entities): string {
   const state: SimState = {
     contract_version: '0.1',
     scenario_id: 'test',
@@ -27,7 +27,7 @@ function draw(params: Params): string {
     utc: '2026-11-14T09:00:00Z',
     frame: 'scene',
     status: 'paused',
-    entities,
+    entities: ents,
     metrics: {},
     params,
     issues: [],
@@ -90,7 +90,7 @@ describe('SpacecraftDrawing', () => {
     expect(svg).toContain('sc-bus--none')
     for (const cls of ['sc-panel', 'sc-rtg', 'sc-battery', 'sc-dish']) expect(count(svg, cls)).toBe(0)
     expect(count(svg, 'sc-instrument')).toBe(2)
-    expect(svg).toContain('aria-label="Spacecraft: 2 instruments (Camera, Magnetometer)"')
+    expect(svg).toContain('aria-label="Spacecraft: no bus, 2 instruments (Camera, Magnetometer)"')
     expect(draw({ bus: 'nope', instruments: 'nope' })).toContain('No spacecraft yet')
   })
 
@@ -99,5 +99,52 @@ describe('SpacecraftDrawing', () => {
       'aria-label="Spacecraft: SmallSat bus, Large solar array, Small battery pack, X-band radio, 2 instruments (Camera, Magnetometer)"',
     )
     expect(draw({ bus: 'cubesat-3u', instruments: 'camera' })).toContain('aria-label="Spacecraft: 3U CubeSat, 1 instrument (Camera)"')
+  })
+
+  /** Every number in the markup (label removed) is a coordinate or size, so all must sit inside the 320-wide canvas. */
+  const expectOnCanvas = (svg: string) => {
+    expect(svg).not.toMatch(/Infinity|NaN/)
+    for (const n of svg.replace(/aria-label="[^"]*"/, '').match(/-?\d+(\.\d+)?/g) ?? []) {
+      expect(Number(n)).toBeGreaterThanOrEqual(0)
+      expect(Number(n)).toBeLessThanOrEqual(320)
+    }
+  }
+
+  it('keeps every size on the canvas for out-of-range catalog values', () => {
+    for (const v of [0, 1e-9, 1e12, 1e300, Infinity, -5, NaN]) {
+      const odd = [
+        part('bus', 'b', 'B', { dry_mass_kg: v }),
+        part('power_system', 's', 'S', { type: 'solar', power_w: v }),
+        part('comms_system', 'c', 'C', { data_rate_bps: v }),
+        ...entities,
+      ]
+      expectOnCanvas(draw({ ...full, bus: 'b', solar: 's', comms: 'c' }, odd))
+    }
+    const zero = [part('power_system', 'z', 'Z', { type: 'solar', power_w: 0 }), ...entities]
+    expect(width(draw({ solar: 'z' }, zero), 'sc-panel')).toBeLessThan(width(draw({ solar: 'solar-small' }), 'sc-panel'))
+  })
+
+  it('draws a repeated instrument once and keeps a long row on the canvas', () => {
+    const svg = draw({ instruments: 'camera,camera, camera' })
+    expect(count(svg, 'sc-instrument')).toBe(1)
+    expect(svg).toContain('1 instrument (Camera)')
+
+    const many = Array.from({ length: 30 }, (_, i) => part('instrument', `i${i}`, `I${i}`))
+    const row = draw({ ...full, instruments: many.map((e) => e.id).join(',') }, [...entities, ...many])
+    expect(count(row, 'sc-instrument')).toBe(30)
+    expectOnCanvas(row)
+  })
+
+  it('gives each of 10 instruments its own shape, whatever else is picked', () => {
+    const ten = Array.from({ length: 10 }, (_, i) => part('instrument', `i${i}`, `I${i}`))
+    const shapes = (ids: string) =>
+      draw({ instruments: ids }, ten)
+        .split('class="sc-instrument">')
+        .slice(1)
+        .map((s) => s.split('</g>')[0])
+    // Drawn alone, every instrument sits at the same spot, so different markup means a different shape.
+    expect(new Set(ten.map((e) => shapes(e.id)[0])).size).toBe(10)
+    expect(shapes('i7')[0]).toContain('width="12"')
+    expect(shapes('i0,i7')[1]).toContain('width="12"')
   })
 })

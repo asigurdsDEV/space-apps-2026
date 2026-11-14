@@ -9,17 +9,30 @@ const H = 200
 const CX = W / 2
 const CY = H / 2
 
-/** log10 of a positive numeric prop, or of `fallback` when the prop is missing. */
+/** log10 of a numeric prop (-Infinity for 0), or of `fallback` when the prop is missing, negative or NaN. */
 function log(entity: Entity, key: string, fallback: number): number {
   const v = entity.props[key]
-  return Math.log10(typeof v === 'number' && v > 0 ? v : fallback)
+  return Math.log10(typeof v === 'number' && v >= 0 ? v : fallback)
 }
 
+/** Keeps a size on the canvas whatever the catalog says (also turns +-Infinity into a bound). */
+const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v))
+
+// One per instrument in the real catalog (10). An instrument's shape is picked by its place in the catalog,
+// so it keeps its shape whatever else is picked.
 const INSTRUMENT_SHAPES = [
   (x: number, y: number) => <circle cx={x} cy={y} r={5} />,
   (x: number, y: number) => <rect x={x - 5} y={y - 5} width={10} height={10} />,
   (x: number, y: number) => <polygon points={`${x},${y - 5} ${x + 5},${y + 5} ${x - 5},${y + 5}`} />,
   (x: number, y: number) => <polygon points={`${x},${y - 6} ${x + 6},${y} ${x},${y + 6} ${x - 6},${y}`} />,
+  (x: number, y: number) => <polygon points={`${x - 5},${y - 5} ${x + 5},${y - 5} ${x},${y + 5}`} />,
+  (x: number, y: number) => (
+    <polygon points={`${x - 6},${y} ${x - 3},${y - 5} ${x + 3},${y - 5} ${x + 6},${y} ${x + 3},${y + 5} ${x - 3},${y + 5}`} />
+  ),
+  (x: number, y: number) => <path d={`M ${x - 2} ${y - 6} H ${x + 2} V ${y - 2} H ${x + 6} V ${y + 2} H ${x + 2} V ${y + 6} H ${x - 2} V ${y + 2} H ${x - 6} V ${y - 2} H ${x - 2} Z`} />,
+  (x: number, y: number) => <rect x={x - 6} y={y - 3} width={12} height={6} />,
+  (x: number, y: number) => <rect x={x - 3} y={y - 6} width={6} height={12} />,
+  (x: number, y: number) => <path d={`M ${x - 6} ${y + 3} A 6 6 0 0 1 ${x + 6} ${y + 3} Z`} />,
 ]
 
 export interface SpacecraftDrawingProps {
@@ -37,10 +50,10 @@ export function SpacecraftDrawing({ state }: SpacecraftDrawingProps) {
   const rtg = find('power_system', p.solar, 'rtg')
   const battery = find('power_system', p.battery, 'battery')
   const comms = find('comms_system', p.comms)
-  const instruments = String(p.instruments ?? '')
-    .split(',')
-    .map((id) => find('instrument', id.trim()))
+  const instruments = [...new Set(String(p.instruments ?? '').split(',').map((id) => id.trim()))]
+    .map((id) => find('instrument', id))
     .filter((e) => e !== undefined)
+  const catalog = state.entities.filter((e) => e.kind === 'instrument')
 
   const names = [bus, solar ?? rtg, battery, comms].filter((e) => e !== undefined).map((e) => e.name)
   if (instruments.length > 0) {
@@ -48,12 +61,14 @@ export function SpacecraftDrawing({ state }: SpacecraftDrawingProps) {
       `${instruments.length} instrument${instruments.length === 1 ? '' : 's'} (${instruments.map((e) => e.name).join(', ')})`,
     )
   }
+  if (!bus && names.length > 0) names.unshift('no bus')
 
-  const h = bus ? 15 + 6 * log(bus, 'dry_mass_kg', 10) : 22 // half the bus side: 18 (3U CubeSat) to 36 (flagship)
-  const wing = solar ? Math.max(10, 20 * log(solar, 'power_w', 30)) : 0 // 17 (7 W) to 76 (6 kW)
-  const dish = comms ? Math.max(5, 3 * (log(comms, 'data_rate_bps', 1e6) - 2)) : 0 // 6 (UHF) to 19 (Ka dish)
+  const h = bus ? clamp(15 + 6 * log(bus, 'dry_mass_kg', 10), 16, 40) : 22 // half the bus side: 18 (3U CubeSat) to 36 (flagship)
+  const wing = solar ? clamp(20 * log(solar, 'power_w', 30), 10, 80) : 0 // 17 (7 W) to 76 (6 kW)
+  const dish = comms ? clamp(3 * (log(comms, 'data_rate_bps', 1e6) - 2), 5, 20) : 0 // 6 (UHF) to 19 (Ka dish)
   const rim = CY - h - 6 - dish * 0.6
   const deck = CY + h + 4
+  const step = Math.min(14, 300 / instruments.length) // squeeze a long row so it stays on the canvas
 
   return (
     <svg
@@ -101,12 +116,15 @@ export function SpacecraftDrawing({ state }: SpacecraftDrawingProps) {
       )}
       {instruments.length > 0 && (
         <path
-          d={`M ${CX} ${CY + h} V ${deck} M ${CX - instruments.length * 7} ${deck} H ${CX + instruments.length * 7}`}
+          d={`M ${CX} ${CY + h} V ${deck} M ${CX - (instruments.length * step) / 2} ${deck} H ${CX + (instruments.length * step) / 2}`}
         />
       )}
-      {instruments.map((_, i) => (
-        <g key={i} className="sc-instrument">
-          {INSTRUMENT_SHAPES[i % INSTRUMENT_SHAPES.length](CX + (i - (instruments.length - 1) / 2) * 14, deck + 7)}
+      {instruments.map((e, i) => (
+        <g key={e.id} className="sc-instrument">
+          {INSTRUMENT_SHAPES[catalog.indexOf(e) % INSTRUMENT_SHAPES.length](
+            CX + (i - (instruments.length - 1) / 2) * step,
+            deck + 7,
+          )}
         </g>
       ))}
       {names.length === 0 && (
