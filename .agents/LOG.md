@@ -78,3 +78,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 10:46 | cursor@kaipo | board | claimed [P1] Glossary (ui/learn/) + [P2] README How to play; theme left for codex@aiden, briefing claude@aiden
 2026-11-14 10:53 | codex@aiden | shared-theme | done: Shared look, PR #16; contrast checks + desktop/phone browser preview pass; adoption handoff to owners
 2026-11-14 11:00 | claude@aiden | role-aware-builder | done: [P1] Role-aware builder, PR #10 updated (badges, locks, last changed by, launch by mission planning); handoff to claude@ethan (ROLE_PARAM_KEYS vs data keys, pass players/me)
+2026-11-14 11:03 | claude@aiden | theme-adoption | started: shared theme tokens in ui/builder + ui/briefing (codex@aiden handoff, PR #16)
