@@ -42,9 +42,9 @@ export type NetMessageType = NetMessage['type']
 /** Which role owns each design choice (`set_param` key). Keys not listed belong to mission planning. */
 export const ROLE_PARAM_KEYS: Record<Role, readonly string[]> = {
   'mission-planning': ['orbit', 'launch_vehicle', 'spacecraft_name'],
-  spacecraft: ['bus', 'power_system'],
+  spacecraft: ['bus', 'solar', 'battery'],
   science: ['instruments'],
-  'comms-resources': ['comms_system', 'ground_stations'],
+  'comms-resources': ['comms', 'ground_stations'],
 }
 
 /**

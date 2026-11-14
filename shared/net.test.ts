@@ -9,7 +9,7 @@ describe('role permissions', () => {
   it('maps each design choice to one role', () => {
     expect(ownerRole(set('instruments'))).toBe('science')
     expect(ownerRole(set('bus'))).toBe('spacecraft')
-    expect(ownerRole(set('comms_system'))).toBe('comms-resources')
+    expect(ownerRole(set('comms'))).toBe('comms-resources')
     expect(ownerRole(set('orbit'))).toBe('mission-planning')
     expect(ownerRole(set('something_else'))).toBe('mission-planning')
     expect(ownerRole(launch)).toBe('mission-planning')
