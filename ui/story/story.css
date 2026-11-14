@@ -1,0 +1,84 @@
+/* Story pop-outs (decision 005). Theme tokens from ui/theme, with fallbacks. All selectors are .st-*. */
+
+.st-pop {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  z-index: 40;
+  width: min(560px, calc(100vw - 32px));
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--game-border, #607397);
+  border-left: 4px solid var(--game-accent, #b1caff);
+  border-radius: 10px;
+  background: var(--game-panel, #141b33);
+  color: var(--game-text, #edf1fa);
+  font-family: var(--game-font, system-ui, sans-serif);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.35);
+  animation: st-in 220ms ease-out;
+}
+.st-fact { bottom: auto; top: 72px; border-left-color: var(--game-success, #63dbad); }
+.st-speaker { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--game-accent, #b1caff); }
+.st-fact .st-speaker { color: var(--game-success, #63dbad); }
+.st-line { margin: 0; font-size: 0.95rem; line-height: 1.4; }
+.st-button {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--game-border, #607397);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--game-text, #edf1fa);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.st-button:focus-visible { outline: 2px solid var(--game-focus, #ffda8a); outline-offset: 2px; }
+@media (max-width: 520px) {
+  .st-pop { grid-template-columns: 1fr auto; }
+  .st-speaker { grid-column: 1 / -1; }
+}
+
+.st-panel {
+  margin: 0 auto;
+  max-width: 1280px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--game-bg, #0b1020) 88%, transparent);
+  box-shadow: 0 12px 40px rgb(0 0 0 / 0.4);
+}
+
+.st-cutscene {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: #000;
+  color: #fff;
+  font-family: var(--game-font, system-ui, sans-serif);
+}
+.st-scene, .st-still { position: absolute; inset: 0; }
+.st-still { background: radial-gradient(ellipse at 50% 120%, #1f3a6b 0%, #0b1020 55%, #000 100%); }
+.is-launch .st-still { background: radial-gradient(ellipse at 50% 110%, #ff9b4a 0%, #6b2f1f 22%, #0b1020 60%, #000 100%); }
+.is-anomaly .st-still { background: radial-gradient(ellipse at 50% 50%, #5a1020 0%, #1a0710 60%, #000 100%); }
+.is-ending-success .st-still { background: radial-gradient(ellipse at 50% 100%, #2e7d5b 0%, #0b1020 60%, #000 100%); }
+.st-caption {
+  position: absolute;
+  left: 50%;
+  bottom: 12%;
+  transform: translateX(-50%);
+  width: min(720px, calc(100vw - 32px));
+  margin: 0;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: rgb(0 0 0 / 0.6);
+  font-size: clamp(1rem, 2.5vw, 1.4rem);
+  line-height: 1.4;
+  text-align: center;
+}
+.st-skip { position: absolute; top: 16px; right: 16px; background: rgb(0 0 0 / 0.5); color: #fff; border-color: rgb(255 255 255 / 0.5); }
+
+@keyframes st-in { from { opacity: 0; transform: translate(-50%, 8px); } }
+@media (prefers-reduced-motion: reduce) { .st-pop { animation: none; } }
