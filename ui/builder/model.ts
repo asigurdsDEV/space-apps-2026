@@ -1,28 +1,35 @@
 // Pure helpers for the mission builder. No React here, so they're easy to test.
-import type { Dataset, Id, Metrics, ParamValue, TableDataset } from '../../shared'
+import type { Entity, Metrics, ParamValue, SimState } from '../../shared'
 
-/** One design choice on the builder screen: a param key filled from a parts catalog. */
+/** One design choice on the builder screen: a `set_param` key filled from the sim's part entities. */
 export interface Slot {
-  /** `set_param` key, e.g. "launch_vehicle". */
+  /** `set_param` key, e.g. "launch_vehicle" (data/README.md "Design params"). */
   key: string
   label: string
-  /** Id of the `table` Dataset that lists the parts for this slot. */
-  dataset: Id
-  /** Several parts at once (stored as a comma-separated id list, e.g. "camera,spectrometer"). */
+  /** Entity kind the sim gives these parts (sim/README.md), e.g. "power_system". */
+  kind: string
+  /** Only parts whose `props[prop]` is one of `values`, e.g. power systems of type "battery". */
+  where?: { prop: string; values: ParamValue[] }
+  /** Several parts at once (stored as a comma-separated id list, e.g. "camera-basic,magnetometer"). */
   multi?: boolean
+  /** Part props to show as stats, in order. `ORBIT_CAPACITY` = the launcher's payload to the picked orbit. */
+  columns: string[]
   /** One-line explainer for students. */
   hint?: string
 }
 
-// Proposed keys + catalog ids. data/ (claude@jamie) and sim/ (claude@ethan) should match these,
-// or the app passes its own `slots` prop.
+/** Stands in for the launch-vehicle column that matches the picked orbit (orbit.props.launch_capacity_column). */
+export const ORBIT_CAPACITY = '@orbit_capacity'
+
+// Keys follow data/README.md (claude@jamie); kinds follow sim/README.md (claude@ethan).
 export const DEFAULT_SLOTS: Slot[] = [
-  { key: 'orbit', label: 'Orbit', dataset: 'orbits', hint: 'Where the spacecraft flies. Higher orbits see more but cost more to reach.' },
-  { key: 'bus', label: 'Spacecraft bus', dataset: 'buses', hint: 'The body: structure, computer and attitude control everything else bolts onto.' },
-  { key: 'instruments', label: 'Science instruments', dataset: 'instruments', multi: true, hint: 'More instruments mean more science, but also more mass, power, data and cost.' },
-  { key: 'power', label: 'Power system', dataset: 'power-systems', hint: 'Solar panels and batteries. Must cover what everything else draws.' },
-  { key: 'comms', label: 'Communications', dataset: 'comms-systems', hint: 'How fast data gets back to Earth. Too slow and science is lost.' },
-  { key: 'launch_vehicle', label: 'Launch vehicle', dataset: 'launch-vehicles', hint: 'Must lift the total mass to your orbit, and it is often the biggest bill.' },
+  { key: 'orbit', label: 'Orbit', kind: 'orbit', columns: ['altitude_m', 'eclipse_fraction', 'contact_s_per_day', 'radiation_factor'], hint: 'Where the spacecraft flies. It decides how much sunlight you get, how often you can talk to Earth, and which rockets can get you there.' },
+  { key: 'bus', label: 'Spacecraft bus', kind: 'bus', columns: ['dry_mass_kg', 'max_added_mass_kg', 'max_instruments', 'base_power_w', 'cost_usd'], hint: 'The body: structure, computer and pointing. Everything else bolts onto it, up to its mass and instrument limits.' },
+  { key: 'instruments', label: 'Science instruments', kind: 'instrument', multi: true, columns: ['mass_kg', 'power_w', 'data_rate_bps', 'science_value', 'cost_usd'], hint: 'More instruments mean more science, but also more mass, power, data and cost.' },
+  { key: 'solar', label: 'Power source', kind: 'power_system', where: { prop: 'type', values: ['solar', 'rtg'] }, columns: ['mass_kg', 'power_w', 'cost_usd'], hint: 'Must make more power than everything draws. Solar panels make nothing while the spacecraft is in shadow.' },
+  { key: 'battery', label: 'Battery', kind: 'power_system', where: { prop: 'type', values: ['battery'] }, columns: ['mass_kg', 'capacity_wh', 'cost_usd'], hint: 'Keeps everything running through each pass in Earth’s shadow.' },
+  { key: 'comms', label: 'Radio', kind: 'comms_system', columns: ['mass_kg', 'power_w', 'data_rate_bps', 'cost_usd'], hint: 'How fast data gets home. Science only counts once its data reaches the ground.' },
+  { key: 'launch_vehicle', label: 'Launch vehicle', kind: 'launch_vehicle', columns: [ORBIT_CAPACITY, 'cost_usd', 'reliability'], hint: 'Must lift your total mass to your orbit. It’s often the biggest bill.' },
 ]
 
 /** Ids picked in a multi slot. */
@@ -37,30 +44,51 @@ export function toggleId(value: ParamValue | undefined, id: string): string {
   return (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]).join(',')
 }
 
-export function findTable(datasets: Dataset[], id: Id): TableDataset | undefined {
-  const ds = datasets.find((d) => d.id === id)
-  return ds?.kind === 'table' ? ds : undefined
+/** The parts a slot offers, from state.entities. */
+export function slotParts(entities: Entity[], slot: Slot): Entity[] {
+  return entities.filter((e) => e.kind === slot.kind && (!slot.where || slot.where.values.includes(e.props[slot.where.prop])))
 }
 
-export type Row = Record<string, ParamValue | null>
-
-/** Table rows as objects keyed by column name. */
-export function tableRows(ds: TableDataset): Row[] {
-  return ds.data.rows.map((r) => Object.fromEntries(ds.data.columns.map((c, i) => [c, r[i] ?? null])))
+/** Concrete prop names to show for a slot, resolving ORBIT_CAPACITY from the picked orbit. */
+export function slotColumns(slot: Slot, state: Pick<SimState, 'entities' | 'params'>): string[] {
+  return slot.columns.map((c) => {
+    if (c !== ORBIT_CAPACITY) return c
+    const orbit = state.entities.find((e) => e.kind === 'orbit' && e.id === state.params.orbit)
+    const col = orbit?.props.launch_capacity_column
+    return typeof col === 'string' ? col : 'payload_leo_kg'
+  })
 }
 
-/** Columns worth showing as stats (everything but the label columns). */
-export function statColumns(ds: TableDataset): string[] {
-  return ds.data.columns.filter((c) => !['id', 'name', 'description'].includes(c))
+const LABELS: Record<string, string> = {
+  eclipse_fraction: 'In shadow',
+  contact_s_per_day: 'Contact time',
+  radiation_factor: 'Radiation (×LEO)',
+  max_added_mass_kg: 'Max added mass',
+  max_instruments: 'Max instruments',
+  base_power_w: 'Base power draw',
+  data_rate_bps: 'Data rate',
+  science_value: 'Science',
+  capacity_wh: 'Capacity',
+  payload_leo_kg: 'Payload to LEO',
+  payload_sso_kg: 'Payload to SSO',
+  payload_gto_kg: 'Payload to GTO',
+  payload_tli_kg: 'Payload to Moon',
 }
 
-/** Column header without its unit suffix: "cost_usd" → "cost". */
+/** Column header: a friendly name, else the column without its unit suffix ("cost_usd" → "cost"). */
 export function columnLabel(column: string): string {
-  return column.replace(/_(kg|w|usd|bps|km|m|s)$/i, '').replace(/_/g, ' ')
+  return LABELS[column] ?? column.replace(/_(kg|w|wh|usd|bps|km|m|ms|s|rad)$/i, '').replace(/_/g, ' ')
 }
 
-/** Units formatValue renders itself ($M, Mbps), so headers skip them. */
-export const SELF_FORMATTED_UNITS = ['USD', 'bps']
+/** Display unit inferred from the column name. Entities don't carry units, so names are the contract. */
+export function unitOf(column: string): string {
+  if (/(_fraction|^reliability|duty_cycle)$/.test(column)) return '%'
+  const units: [RegExp, string][] = [
+    [/_s_per_day$/, 's/day'], [/_per_kg_usd$/, 'USD/kg'], [/_kg$/, 'kg'], [/_usd$/, 'USD'], [/_bps$/, 'bps'],
+    [/_wh$/, 'Wh'], [/_w$/, 'W'], [/_ms$/, 'm/s'], [/_m$/, 'm'], [/_s$/, 's'], [/_rad$/, 'rad'], [/^science_value$/, 'pts'],
+  ]
+  return units.find(([re]) => re.test(column))?.[1] ?? ''
+}
 
 export interface Bar {
   resource: string
@@ -68,30 +96,60 @@ export interface Bar {
   used: number
   limit: number
   unit: string
-  /** used / limit; > 1 means over. */
+  /** used / limit. For limits > 1 means over; for goals < 1 means short. */
   ratio: number
-  over: boolean
+  /** A goal to reach (science) rather than a limit to stay under. */
+  goal: boolean
+  /** Limit exceeded, or goal not reached. */
+  bad: boolean
 }
 
-const BAR_PAIRS = [
-  { resource: 'mass', label: 'Mass', used: 'mass_kg', limit: 'mass_limit_kg', unit: 'kg' },
-  { resource: 'power', label: 'Power', used: 'power_w', limit: 'power_available_w', unit: 'W' },
-  { resource: 'budget', label: 'Budget', used: 'cost_usd', limit: 'budget_usd', unit: 'USD' },
-] as const
+type BarSpec = { resource: string; label: string; used: (m: Metrics) => unknown; limit: string; unit: string; goal?: boolean; skipZeroLimit?: boolean }
 
-/** Budget bars for whichever used/limit pairs the sim reports. */
+const num = (k: string) => (m: Metrics) => m[k]
+const BAR_SPECS: BarSpec[] = [
+  { resource: 'mass', label: 'Launch mass', used: num('mass_kg'), limit: 'mass_limit_kg', unit: 'kg' },
+  { resource: 'mass', label: 'Bus capacity', used: num('payload_mass_kg'), limit: 'payload_limit_kg', unit: 'kg' },
+  { resource: 'power', label: 'Power', used: num('power_w'), limit: 'power_available_w', unit: 'W' },
+  { resource: 'budget', label: 'Budget', used: num('cost_usd'), limit: 'budget_usd', unit: 'USD' },
+  { resource: 'data', label: 'Data made vs. downlink', used: num('data_generated_gb_per_day'), limit: 'downlink_gb_per_day', unit: 'GB/day' },
+  { resource: 'time', label: 'Schedule', used: num('schedule_months'), limit: 'deadline_months', unit: 'months', skipZeroLimit: true },
+  {
+    resource: 'science',
+    label: 'Science (projected)',
+    used: (m) => (typeof m.science_per_day === 'number' && typeof m.mission_days === 'number' ? m.science_per_day * m.mission_days : undefined),
+    limit: 'science_goal',
+    unit: 'pts',
+    goal: true,
+    skipZeroLimit: true,
+  },
+]
+
+/** Budget bars for whichever pairs the sim reports. */
 export function budgetBars(metrics: Metrics): Bar[] {
-  return BAR_PAIRS.flatMap((p) => {
-    const used = metrics[p.used]
-    const limit = metrics[p.limit]
+  return BAR_SPECS.flatMap((spec) => {
+    const used = spec.used(metrics)
+    const limit = metrics[spec.limit]
     if (typeof used !== 'number' || typeof limit !== 'number') return []
+    if (spec.skipZeroLimit && limit <= 0) return []
     const ratio = limit > 0 ? used / limit : used > 0 ? Infinity : 0
-    return [{ resource: p.resource, label: p.label, used, limit, unit: p.unit, ratio, over: used > limit }]
+    const goal = spec.goal ?? false
+    return [{ resource: spec.resource, label: spec.label, used, limit, unit: spec.unit, ratio, goal, bad: goal ? used < limit : used > limit }]
   })
 }
 
+const n1 = (n: number) => n.toLocaleString(undefined, { maximumFractionDigits: 1 })
+
 export function formatValue(n: number, unit: string): string {
-  if (unit === 'USD') return `$${(n / 1e6).toLocaleString(undefined, { maximumFractionDigits: 1 })}M`
-  if (unit === 'bps') return n >= 1e6 ? `${(n / 1e6).toLocaleString(undefined, { maximumFractionDigits: 1 })} Mbps` : `${(n / 1e3).toLocaleString(undefined, { maximumFractionDigits: 1 })} kbps`
-  return `${n.toLocaleString(undefined, { maximumFractionDigits: 1 })}${unit ? ' ' + unit : ''}`
+  switch (unit) {
+    case 'USD': return n >= 1e6 ? `$${n1(n / 1e6)}M` : `$${n1(n / 1e3)}k`
+    case 'USD/kg': return `$${n1(n)}/kg`
+    case 'bps': return n >= 1e6 ? `${n1(n / 1e6)} Mbps` : `${n1(n / 1e3)} kbps`
+    case 'm': return n >= 1e3 ? `${n1(n / 1e3)} km` : `${n1(n)} m`
+    case 's': return n >= 2 * 365 * 86400 ? `${n1(n / (365 * 86400))} years` : n >= 2 * 86400 ? `${n1(n / 86400)} days` : n >= 120 ? `${n1(n / 60)} min` : `${n1(n)} s`
+    case 's/day': return `${n1(n / 60)} min/day`
+    case '%': return `${n1(n * 100)}%`
+    case '': return n1(n)
+    default: return `${n1(n)} ${unit}`
+  }
 }

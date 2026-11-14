@@ -1,43 +1,45 @@
 import type { Command, Dataset, SimState } from '../../shared'
 import {
   DEFAULT_SLOTS,
-  SELF_FORMATTED_UNITS,
   budgetBars,
   columnLabel,
-  findTable,
   formatValue,
   parseIds,
-  statColumns,
-  tableRows,
+  slotColumns,
+  slotParts,
   toggleId,
+  unitOf,
   type Slot,
 } from './model'
 import './builder.css'
 
 export interface MissionBuilderProps {
-  /** Latest SimState. The builder reads params, metrics and issues; it never changes state itself. */
+  /** Latest SimState. The builder reads entities (the parts), params, metrics and issues; it never changes state itself. */
   state: SimState
-  /** Parts catalogs (`table` Datasets). */
-  datasets: Dataset[]
   /** Sends a Command to the app loop (or over net/ to the host). */
   send: (command: Command) => void
   slots?: Slot[]
+  /** shortcut: unused since parts come from state.entities; kept so app/ code written against the first API still compiles. Remove once app/ stops passing it. */
+  datasets?: Dataset[]
 }
 
-export function MissionBuilder({ state, datasets, send, slots = DEFAULT_SLOTS }: MissionBuilderProps) {
+const UNIT_HEADERS = new Set(['kg', 'W', 'Wh', 'pts'])
+
+export function MissionBuilder({ state, send, slots = DEFAULT_SLOTS }: MissionBuilderProps) {
   const setParam = (key: string, value: string) => send({ type: 'set_param', payload: { key, value } })
   const errors = state.issues.filter((i) => i.severity === 'error')
   const warnings = state.issues.filter((i) => i.severity === 'warning')
   const bars = budgetBars(state.metrics)
-  const dataRate = state.metrics.data_rate_bps
-  const science = state.metrics.science_score
+  const objective = state.params.objective_text
 
   return (
     <div className="mb">
       <div className="mb-parts">
         <h1 className="mb-title">Design your mission</h1>
+        {typeof objective === 'string' && <p className="mb-objective">{objective}</p>}
         {slots.map((slot) => {
-          const table = findTable(datasets, slot.dataset)
+          const parts = slotParts(state.entities, slot)
+          const columns = slotColumns(slot, state).filter((c) => parts.some((p) => p.props[c] != null))
           const value = state.params[slot.key]
           const picked = slot.multi ? parseIds(value) : typeof value === 'string' ? [value] : []
           return (
@@ -47,8 +49,8 @@ export function MissionBuilder({ state, datasets, send, slots = DEFAULT_SLOTS }:
                 {slot.multi && <span className="mb-muted"> (pick any)</span>}
               </legend>
               {slot.hint && <p className="mb-hint">{slot.hint}</p>}
-              {!table ? (
-                <p className="mb-muted">No “{slot.dataset}” catalog loaded yet.</p>
+              {parts.length === 0 ? (
+                <p className="mb-muted">No parts of this kind loaded yet.</p>
               ) : (
                 <div className="mb-table-wrap">
                   <table className="mb-table">
@@ -56,43 +58,43 @@ export function MissionBuilder({ state, datasets, send, slots = DEFAULT_SLOTS }:
                       <tr>
                         <th scope="col"><span className="mb-sr">Pick</span></th>
                         <th scope="col">Part</th>
-                        {statColumns(table).map((c) => (
+                        {columns.map((c) => (
                           <th scope="col" key={c}>
                             {columnLabel(c)}
-                            {table.units[c] && !SELF_FORMATTED_UNITS.includes(table.units[c]) && (
-                              <span className="mb-muted"> ({table.units[c]})</span>
-                            )}
+                            {UNIT_HEADERS.has(unitOf(c)) && <span className="mb-muted"> ({unitOf(c)})</span>}
                           </th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
-                      {tableRows(table).map((row) => {
-                        const id = String(row.id)
-                        const inputId = `mb-${slot.key}-${id}`
-                        const checked = picked.includes(id)
+                      {parts.map((part) => {
+                        const inputId = `mb-${slot.key}-${part.id}`
+                        const checked = picked.includes(part.id)
+                        const description = part.props.description
                         return (
-                          <tr key={id} className={checked ? 'is-picked' : undefined}>
+                          <tr key={part.id} className={checked ? 'is-picked' : undefined}>
                             <td>
                               <input
                                 id={inputId}
                                 type={slot.multi ? 'checkbox' : 'radio'}
                                 name={slot.key}
                                 checked={checked}
-                                onChange={() => setParam(slot.key, slot.multi ? toggleId(value, id) : id)}
+                                onChange={() => setParam(slot.key, slot.multi ? toggleId(value, part.id) : part.id)}
                               />
                             </td>
                             <td>
-                              <label htmlFor={inputId} className="mb-name">{String(row.name ?? id)}</label>
-                              {row.description != null && <div className="mb-hint">{String(row.description)}</div>}
+                              <label htmlFor={inputId} className="mb-name">{part.name}</label>
+                              {typeof description === 'string' && <div className="mb-hint">{description}</div>}
                             </td>
-                            {statColumns(table).map((c) => (
-                              <td key={c} className="mb-num">
-                                {typeof row[c] === 'number'
-                                  ? formatValue(row[c], SELF_FORMATTED_UNITS.includes(table.units[c]) ? table.units[c] : '')
-                                  : String(row[c] ?? '—')}
-                              </td>
-                            ))}
+                            {columns.map((c) => {
+                              const v = part.props[c]
+                              const unit = unitOf(c)
+                              return (
+                                <td key={c} className="mb-num">
+                                  {typeof v === 'number' ? formatValue(v, UNIT_HEADERS.has(unit) ? '' : unit) : String(v ?? '—')}
+                                </td>
+                              )
+                            })}
                           </tr>
                         )
                       })}
@@ -109,38 +111,37 @@ export function MissionBuilder({ state, datasets, send, slots = DEFAULT_SLOTS }:
         <h2>Budgets</h2>
         {bars.length === 0 && <p className="mb-muted">Pick parts to see your budgets.</p>}
         {bars.map((b) => (
-          <div key={b.resource} className={`mb-bar${b.over ? ' is-over' : ''}`}>
+          <div key={b.label} className={`mb-bar${b.bad ? ' is-bad' : ''}${b.goal ? ' is-goal' : ''}`}>
             <div className="mb-bar-head">
               <span>{b.label}</span>
               <span>
                 {formatValue(b.used, b.unit)} / {formatValue(b.limit, b.unit)}
-                {b.over && <strong> over by {formatValue(b.used - b.limit, b.unit)}</strong>}
+                {b.bad && (
+                  <strong>
+                    {' '}
+                    {b.goal ? 'short by' : 'over by'} {formatValue(Math.abs(b.used - b.limit), b.unit)}
+                  </strong>
+                )}
               </span>
             </div>
             <div
               className="mb-track"
               role="meter"
-              aria-label={`${b.label} used`}
+              aria-label={b.label}
               aria-valuemin={0}
               aria-valuemax={b.limit}
               aria-valuenow={b.used}
-              aria-valuetext={`${formatValue(b.used, b.unit)} of ${formatValue(b.limit, b.unit)}`}
+              aria-valuetext={`${formatValue(b.used, b.unit)} of ${formatValue(b.limit, b.unit)}${b.goal ? ' goal' : ''}`}
             >
               <div className="mb-fill" style={{ width: `${Math.min(b.ratio, 1) * 100}%` }} />
             </div>
           </div>
         ))}
-        {(typeof dataRate === 'number' || typeof science === 'number') && (
-          <dl className="mb-stats">
-            {typeof dataRate === 'number' && (<><dt>Data rate</dt><dd>{formatValue(dataRate, 'bps')}</dd></>)}
-            {typeof science === 'number' && (<><dt>Science score</dt><dd>{formatValue(science, '')}</dd></>)}
-          </dl>
-        )}
 
         {(errors.length > 0 || warnings.length > 0) && (
           <ul className="mb-issues">
             {[...errors, ...warnings].map((i) => (
-              <li key={i.code} className={`mb-issue is-${i.severity}`}>
+              <li key={i.code + i.message} className={`mb-issue is-${i.severity}`}>
                 <strong>{i.severity === 'error' ? 'Blocks launch' : 'Warning'}:</strong> {i.message}
               </li>
             ))}
