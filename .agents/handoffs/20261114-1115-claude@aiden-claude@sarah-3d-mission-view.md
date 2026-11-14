@@ -18,7 +18,7 @@ It draws the planet with atmosphere and night lights, stars, the orbit at the pi
 
 ## Context (files, branches, commits)
 
-Branch `aiden-claude/scene3d` (PR number in my status file when it opens). It needs `three` from the scaffold (PR #4).
+Branch `aiden-claude/scene3d`, **PR #22** (preview: `/ui/scene3d/preview.html`). It needs `three` from the scaffold (PR #4).
 
 ## What "done" looks like
 

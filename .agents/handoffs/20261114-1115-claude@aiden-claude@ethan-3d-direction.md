@@ -18,7 +18,7 @@ created: 2026-11-14 11:15
 
 ## Context (files, branches, commits)
 
-- Branch `aiden-claude/scene3d` (new), stacked on `aiden-claude/scaffold`. The builder branch (PR #10) will merge it to show the hero view.
+- Branch `aiden-claude/scene3d`, **PR #22**, stacked on `aiden-claude/scaffold`. The builder branch (PR #10) will merge it to show the hero view.
 - It reads `state.params` (`orbit`, `bus`, `solar`, `instruments`, `comms`) and `state.entities` props (`central_body`, `altitude_m`, `inclination_rad`, `class`, `dry_mass_kg`, `type`, `power_w`, `band`, `data_rate_bps`, `category`), the same columns as PR #8. If your sim-data rework renames params (e.g. `power_system`/`comms_system`), tell me and I'll accept both.
 
 ## What "done" looks like

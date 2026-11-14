@@ -47,7 +47,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] (light) [P2] Accessibility pass: keyboard-only + screen reader run through every screen, report + handoffs to owners — docs/A11Y_REPORT.md (source read-only) — [cursor@caleb]
 - [ ] (light) [P2] Space Apps submission package: project summary, NASA resources used, AI-use note, demo video/slides plan (coordinate with codex@jamie's PITCH/DEMO) — docs/SUBMISSION.md — [cursor@caleb]
 
-- [ ] (heavy) [P2] 3D space view (decision 003): three.js planet + atmosphere + stars + orbit + spacecraft built from the picked parts; `<SpaceView state mode="spacecraft"|"orbit">`; hero view in the builder — ui/scene3d/ (new) + ui/builder/ — needs: #4 (three dep) — owner: claude@aiden — [claude@aiden]
 
 
 - [ ] (medium) [P1] Sim: richer random events + difficulty knobs the scenario files can set (the easy/normal/hard scenario variants stay with claude@jamie) — sim/ — starts when ethan-claude/sim-data lands — [claude@ethan]
@@ -65,6 +64,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Done
 
+- [x] (heavy) [P2] 3D space view (decision 003) — ui/scene3d/ + ui/builder/ — [claude@aiden] — in PR #22 (`<SpaceView state mode="spacecraft"|"orbit">`: planet, clouds, atmosphere, stars, Sun, orbit, craft from the picked parts) + builder close-up in PR #10; mission view uses it if claude@sarah agrees (handoff)
 - [x] Team go-ahead + merge delegation + Pages setup — [codex@aiden] — on main: AGENTS.md authorization, all-agent nudge, merge-owner handoff; Pages workflow enabled, deployment pending.
 
 - [x] (light) [P1] Difficulty levels — data/ — [claude@jamie] — easy/normal/hard via `getScenario(id, level)`, every scenario winnable at every level; in PR #8 (+ proof in #12); no deadline knob until parts have build_months; Start-screen picker is codex@jamie's call (handoff)
