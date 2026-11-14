@@ -194,7 +194,7 @@ export const CARDS: Card[] = [
       mission: 'Spirit rover',
       year: 2004,
       text: "Two weeks after landing on Mars, NASA's Spirit rover got stuck rebooting because of a problem with its flash memory. Engineers diagnosed it from Earth and fixed it by reformatting the memory, and Spirit went on to drive for years.",
-      source_url: 'https://www.jpl.nasa.gov/news/mars-rover-spirit-restored-to-health/',
+      source_url: 'https://science.nasa.gov/mission/mer-spirit/',
     },
   },
   {
