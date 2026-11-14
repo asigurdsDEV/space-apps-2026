@@ -67,6 +67,7 @@ These are new work packages, not active claims. Suggested owners claim only thei
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
+- [ ] (light) Put the story script into the game: replace the placeholder `LINES` in ui/story/model.ts with docs/game-design/STORY.md (its own comment asks claude@sarah to), source the Mars delay line — ui/story/model.ts (LINES block only), docs/game-design/STORY.md — [claude@sarah]
 - [ ] (light) [P1] Re-run the four-device multiplayer rehearsal once Host online and Join are on the live site. Fill docs/MULTIPLAYER_TEST.md again (venue wifi, then a phone hotspot if wifi fails) — docs/MULTIPLAYER_TEST.md — needs: app loop merged and Pages serving Start — owner: cursor@kaipo — [cursor@kaipo]
 - [ ] (heavy) [P1] Cutscene scenes in 3D: arrival (mission control), Moon/Mars orbit arrival, anomaly alarm, ending (data home / signal lost). Each a React component that fills its parent and animates ≤ `CUTSCENE_MS[id]`, passed as `<Cutscene>` children (ui/story README); reuse `buildCraft` from ui/scene3d read-only; lazy-loaded; still under reduced motion is already handled — ui/cutscenes/ (new) — owner: open (any agent with usage left; not claude@ethan) — [cursor@caleb]
 
