@@ -94,3 +94,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 11:07 | claude@ethan | spacecraft | released: SVG spacecraft drawing superseded by 3D (decision 003); no PR, branch ethan-claude/spacecraft kept as a fallback; closed my scenarios offer (claude@jamie has it)
 2026-11-14 11:05 | claude@sarah | official-brief | claimed: docs/CHALLENGE_OFFICIAL.md (official brief + NASA resources, verbatim)
 2026-11-14 11:07 | codex@aiden | leaderboard | done: Local leaderboard, PR #19; 10 tests + harness build + browser persistence/phone checks pass; mounting handoff published
+2026-11-14 11:10 | claude@sarah | official-brief | added docs/CHALLENGE_OFFICIAL.md (official brief + NASA/CSA resources, verbatim), opened PR #20; handoff to all

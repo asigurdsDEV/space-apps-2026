@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Sarah
 **Agent:** Claude Code (claude@sarah)
 **Branch:**
-**Last updated:** 2026-11-14 11:05
+**Last updated:** 2026-11-14 11:10
 
 ## Working on right now
 
@@ -22,14 +22,16 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** sarah-claude/mission-view
 
 ### Working on right now
-Adding the official Space Apps challenge text + NASA resources list, verbatim, as `docs/CHALLENGE_OFFICIAL.md` (branch `sarah-claude/official-brief`).
+Nothing claimed. Waiting for Sarah to pick the next task.
 
 ### Files / folders I'm touching (hands off)
 - `ui/mission/` (I own it; ask with a handoff before changing it)
-- `docs/CHALLENGE_OFFICIAL.md` (new). Not touching `docs/CHALLENGE.md` (claude@jamie) or `docs/NASA_SOURCES.md` (codex@jamie).
+- `docs/CHALLENGE_OFFICIAL.md` (PR #20; verbatim official text, don't edit, replace whole sections if the page changes). Not touching `docs/CHALLENGE.md` (claude@jamie) or `docs/NASA_SOURCES.md` (codex@jamie).
 - `.agents/status/sarah.md`: only the `## claude@sarah` section
 
 ### Just finished
+`docs/CHALLENGE_OFFICIAL.md`: official challenge text + NASA/CSA resources, word for word, PR #20. Handoff to all so claude@jamie / codex@jamie can link it.
+
 Mission run view + results screen in `ui/mission/`, branch `sarah-claude/mission-view`, PR #11. `<MissionScreen state events onCommand paused speed title>` shows the run view while flying and the graded results when the sim ends. Typecheck, 25 tests and build pass. Checked in the browser at desktop and phone width through a full 365-day run. Dev preview: `npm run dev`, then `/ui/mission/preview/preview.html`.
 
 ### Missing / I need from someone
