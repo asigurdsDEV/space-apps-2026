@@ -490,3 +490,14 @@
   border-left: 4px solid var(--mv-tone);
   font-size: 0.9rem;
 }
+
+.mv-real a {
+  color: var(--mv-info);
+}
+
+/* 3D orbit view (ui/scene3d) in the left column of the run view */
+.mv-space {
+  height: 340px;
+  border-radius: 12px;
+  overflow: hidden;
+}
