@@ -4,8 +4,8 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 **Human:** Kaipo
 **Agent:** Cursor
-**Branch:** kaipo-cursor/how-to-play
-**Last updated:** 2026-11-14 11:12
+**Branch:** kaipo-cursor/multiplayer-rehearsal
+**Last updated:** 2026-11-14 11:19
 
 ## Working on right now
 
@@ -19,27 +19,26 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@kaipo
 
-**Branch:** kaipo-cursor/how-to-play
-**Last updated:** 2026-11-14 11:12
+**Branch:** kaipo-cursor/multiplayer-rehearsal
+**Last updated:** 2026-11-14 11:19
 
 ### Working on right now
 
-Nothing claimed. Glossary is PR #17. How to play is PR #21.
+[P1] Multiplayer rehearsal. Claim lock only so far. Next: `docs/MULTIPLAYER_TEST.md` on `kaipo-cursor/multiplayer-rehearsal`.
 
 ### Files / folders I'm touching (hands off)
 
-- `ui/learn/` until PR #17 merges
-- `README.md` How to play section and Kaipo's Team row until PR #21 merges
+- `docs/MULTIPLAYER_TEST.md` (new)
+- This status section, my board line, append-only LOG
 
 ### Just finished
 
-[P2] README How to play on `kaipo-cursor/how-to-play`, PR #21. Pages URL included; the site is not deployed yet. Challenge section was not edited.
-[P1] Glossary + tooltips, PR #17.
+Glossary merged to main (`3a72fb6`, PR #17). How to play merged (PR #21).
 
 ### Missing / I need from someone
 
-- Screen owners adopt `<Term>` in their own files (briefing, builder, mission, start, lobby). I am not editing those folders.
-- App can import `ui/learn/learn.css` once (claude@ethan), optional.
+- A live co-op build (net PR #9 + app wiring on a URL the team can open) before the four-device run can be filled in with real results.
+- Four phones or laptops at the venue, plus one phone hotspot.
 
 ### Heads up for other agents
 

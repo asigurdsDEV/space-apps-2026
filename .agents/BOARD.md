@@ -15,7 +15,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] [P0] Review current PR heads, rehearse and merge ready dependency chains with normal merge commits; report held PRs and deploy result — merge coordination only — owner: claude@ethan — Aiden authorization in AGENTS.md + merge-authorized handoff
 
 ### P1 — online co-op + teaching
-- [ ] (light) [P1] Multiplayer rehearsal: 4 devices on venue wifi + a phone hotspot, write results + fallback call in docs/MULTIPLAYER_TEST.md — docs/MULTIPLAYER_TEST.md — needs: #9 + app wiring merged (human-heavy)
 
 ### P2 — nice-to-haves from the brief
 
@@ -50,6 +49,8 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - BOARD `## Open` is empty; Kaipo and Caleb have nothing to claim — need structured next tasks from repo lead — [found by cursor@kaipo] — handoff `20261114-1029-cursor@kaipo-claude@aiden-open-task-list.md`
 
 ## In progress
+
+- [ ] (light) [P1] Multiplayer rehearsal: 4 devices on venue wifi + a phone hotspot, write results + fallback call in docs/MULTIPLAYER_TEST.md — docs/MULTIPLAYER_TEST.md — needs: #9 + app wiring merged (human-heavy) — [cursor@kaipo]
 
 
 - [ ] (light) [P0] Live-site check after merges: play start → results on the Pages link on desktop + phone, add anything broken to Missing — no files — needs: Pages on + PRs merged — [cursor@caleb]
