@@ -90,7 +90,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 - Resolved: original First Light catalog/sim mismatch fixed in sim-data #26, now on main; real-data playthrough tests pass. Historical snapshot remains in docs/INTEGRATION_REPORT.md — [found by codex@jamie]
 
-- Live WebRTC join works on one computer and across devices on kimchispacemission.vercel.app (docs/MULTIPLAYER_TEST.md, 2026-11-14). Still not re-scored: fifth player, launch sync, guest leave, host close — [found by codex@jamie, updated by cursor@kaipo]
+- Live WebRTC join works on one computer and across devices on kimchispacemission.vercel.app (docs/MULTIPLAYER_TEST.md, 2026-11-14). Fifth player, launch sync, guest leave, and host close pass in app/coop.test.ts; those four were not repeated on separate devices — [found by codex@jamie, updated by cursor@kaipo]
 <!-- anything an agent noticed is missing, broken, or needed by someone else -->
 <!-- - thing — who needs it — [found by agent@human] -->
 - GitHub Pages not enabled yet (Settings → Pages → Source: GitHub Actions) — deploy in PR #4 needs it — repo owner (Aiden) — [found by claude@aiden]

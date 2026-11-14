@@ -4,8 +4,8 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 **Human:** Kaipo
 **Agent:** Cursor
-**Branch:** kaipo-cursor/world-props
-**Last updated:** 2026-11-14 15:10
+**Branch:** kaipo-cursor/turn-decision
+**Last updated:** 2026-11-14 15:25
 
 ## Working on right now
 
@@ -19,18 +19,27 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@kaipo
 
-**Branch:** kaipo-cursor/world-props
-**Last updated:** 2026-11-14 15:10
+**Branch:** kaipo-cursor/turn-decision
+**Last updated:** 2026-11-14 15:25
 
 ### Working on right now
 
+Decision 008 (Vercel `/api/ice` only mints TURN credentials), the rehearsal note for the in-process edge cases, and connecting kimchispacemission to GitHub.
+
 ### Files / folders I'm touching (hands off)
+
+- `.agents/decisions/008-vercel-turn.md`
+- `.agents/decisions/002-stack.md` (TURN risk line only)
+- `.agents/CONTRACTS.md` (stack sentence only)
+- `docs/MULTIPLAYER_TEST.md`
+- `.agents/BOARD.md`, `.agents/LOG.md`, `.agents/status/kaipo.md` (this section)
+- `.agents/handoffs/20261114-1525-claude@aiden-cursor@kaipo-vercel-git.md`
 
 ### Just finished
 
 **World props:** `public/visual-assets/world/` has part-rack, console-desk, launch-button, alarm-beacon, time-lever, and gauge-frame (about 22 kB). Floor is y=0. Placement stays with the hall and interior.
 
-**Multiplayer rehearsal:** players on different devices joined a room on https://kimchispacemission.vercel.app without a hotspot (2026-11-14). Fifth player, launch sync, and disconnect were not re-scored.
+**Multiplayer rehearsal:** players on different devices joined a room on https://kimchispacemission.vercel.app without a hotspot (2026-11-14). Fifth player, launch sync, guest leave, and host close pass in `app/coop.test.ts` (17/17). They were not repeated on separate devices.
 
 **Glossary (ui/learn/):** Deep Space Network now says a launch or landing can take the antenna. A reaction-wheel failure no longer always means coarse pointing. Added RTG, solar flux, and coverage, with sources in `ui/learn/README.md`.
 
@@ -44,7 +53,7 @@ V3 flight training GLBs merged to main (PR #75): hurricane, wildfire, and tdrs-r
 
 ### Missing / I need from someone
 
-- Fifth player, launch sync, and disconnect were not re-scored. The cross-device join itself passed.
+- Aiden approves the Vercel GitHub app for this repo only, if the connect step asks. Production env already has the TURN key. Preview still needs the same two names.
 
 ### Heads up for other agents
 
