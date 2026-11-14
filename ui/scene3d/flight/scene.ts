@@ -11,6 +11,7 @@ import type { HudFocus } from '../../flight-hud/model'
 import type { PilotIntent } from '../../pilot-input/model'
 import { buildCraft, disposeObject } from '../craft'
 import { makeStars } from '../launch/fx'
+import { planetMaps } from '../maps'
 import { BODY_RADIUS_M, type Body, type CraftSpec } from '../model'
 import { atmosphereShader, cloudShader, planetShader } from '../shaders'
 import { chase, nextFocus, SPOTS, startPose, stepPose, type FlightTarget, type Vec3 } from './model'
@@ -37,7 +38,7 @@ export interface FlightScene {
 const SUN = new THREE.Vector3(1, 0.35, 0.55).normalize()
 const ATMOSPHERE_R = 1.06
 const BODY_INDEX: Record<Body, number> = { earth: 0, moon: 1, mars: 2 }
-const ATMOSPHERE: Record<Body, number | null> = { earth: 0x478cff, mars: 0xd97a4d, moon: null }
+const ATMOSPHERE: Record<Body, THREE.Color | null> = { earth: new THREE.Color(0.28, 0.55, 1.0), mars: new THREE.Color(0.4, 0.23, 0.14), moon: null }
 const CRAFT_SIZE = 0.035
 const Y = new THREE.Vector3(0, 1, 0)
 /** How far (px) a name tag's middle stays from the view's top and bottom. The HUD's controls run along the bottom. */
@@ -73,7 +74,11 @@ export function createFlightScene(container: HTMLElement, options: FlightSceneOp
 
   const uSun = { value: SUN.clone() }
   const uTime = { value: 0 }
-  scene.add(new THREE.Mesh(new THREE.SphereGeometry(1, 160, 120), new THREE.ShaderMaterial({ ...planetShader, uniforms: { uSun, uBody: { value: BODY_INDEX[options.body] } } })))
+  // Real NASA maps (../maps), procedural until they load.
+  const maps = planetMaps(renderer.capabilities.getMaxAnisotropy())
+  scene.add(
+    new THREE.Mesh(new THREE.SphereGeometry(1, 160, 120), new THREE.ShaderMaterial({ ...planetShader, uniforms: { uSun, uBody: { value: BODY_INDEX[options.body] }, ...maps.maps[options.body] } })),
+  )
   if (options.body === 'earth') {
     scene.add(new THREE.Mesh(new THREE.SphereGeometry(1.012, 128, 96), new THREE.ShaderMaterial({ ...cloudShader, uniforms: { uSun, uTime }, transparent: true, depthWrite: false })))
   }
@@ -84,7 +89,7 @@ export function createFlightScene(container: HTMLElement, options: FlightSceneOp
         new THREE.SphereGeometry(ATMOSPHERE_R, 96, 64),
         new THREE.ShaderMaterial({
           ...atmosphereShader,
-          uniforms: { uSun, uColor: { value: new THREE.Color(air) }, uThickness: { value: Math.sqrt(1 - 1 / (ATMOSPHERE_R * ATMOSPHERE_R)) } },
+          uniforms: { uSun, uColor: { value: air }, uThickness: { value: Math.sqrt(1 - 1 / (ATMOSPHERE_R * ATMOSPHERE_R)) } },
           side: THREE.BackSide,
           blending: THREE.AdditiveBlending,
           transparent: true,
@@ -276,6 +281,7 @@ export function createFlightScene(container: HTMLElement, options: FlightSceneOp
       delete container.dataset.aim
       disposeObject(scene)
       environment.dispose()
+      maps.dispose()
       pmrem.dispose()
       composer.dispose()
       renderer.dispose()

@@ -124,4 +124,13 @@ describe('targets', () => {
     expect(nextFocus(null, facing('tdrs-relay'), targets, ['hurricane'], true, 0.5, 1)).toMatchObject({ id: 'tdrs-relay', held_s: 0 })
     expect(nextFocus(null, facing('tdrs-relay'), targets, ['hurricane', 'wildfire'], true, 0.5, 1)!.held_s).toBe(0.5)
   })
+
+  it('prefers a target still to do over a nearer finished one', () => {
+    // Right over the storm, looking at the fire: both count as aimed at.
+    const pos = add(SPOTS.hurricane!.at, unit(SPOTS.hurricane!.at), 0.2)
+    const toFire = add(SPOTS.wildfire!.at, pos, -1)
+    const pose: Pose = { pos, heading: unit(add(toFire, unit(pos), -dot(toFire, unit(pos)))), vel: [0, 0, 0] }
+    expect(nextFocus(null, pose, targets, [], false, 0, 1)).toMatchObject({ id: 'hurricane' })
+    expect(nextFocus(null, pose, targets, ['hurricane'], false, 0, 1)).toMatchObject({ id: 'wildfire', inRange: false })
+  })
 })

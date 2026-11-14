@@ -32,21 +32,23 @@ const unit = (a: Vec3) => scale(a, 1 / (len(a) || 1))
 /** `a` without its part along the unit vector `n`. */
 const flat = (a: Vec3, n: Vec3) => add(a, n, -dot(a, n))
 
-/** A point `r` planet radii from the centre, by latitude and longitude in degrees (+x at lon 0, as in ../shaders.ts). */
+/** A point `r` planet radii from the centre, by latitude and east longitude in degrees, where the real maps put it (`latLon` in ../shaders.ts). */
 const at = (lat: number, lon: number, r: number): Vec3 => {
   const a = (lat * Math.PI) / 180
   const b = (lon * Math.PI) / 180
-  return [r * Math.cos(a) * Math.cos(b), r * Math.sin(a), r * Math.cos(a) * Math.sin(b)]
+  return [r * Math.cos(a) * Math.cos(b), r * Math.sin(a), -r * Math.cos(a) * Math.sin(b)]
 }
 
 /**
  * Where each V4 target sits, how close counts as in range and how big it is drawn (all in planet radii).
- * shortcut: classroom scale, not real sizes or orbits; the storm and the fire sit on the day side.
+ * On Earth's real map: a storm on the Atlantic hurricane track, a fire in Brazil's dry-season fire belt, and
+ * the relay over 41°W like TDRS-East. All three are in daylight (the scene's Sun stands over the mid-Atlantic).
+ * shortcut: classroom scale, not real sizes; the relay is drawn far below its real geosynchronous height.
  */
 export const SPOTS: Readonly<Record<string, { at: Vec3; range: number; size: number }>> = {
-  hurricane: { at: at(20, -10, 1.02), range: 0.45, size: 0.14 },
-  wildfire: { at: at(-12, 55, 1.012), range: 0.45, size: 0.07 },
-  'tdrs-relay': { at: at(25, 110, 1.75), range: 0.5, size: 0.1 },
+  hurricane: { at: at(22, -55, 1.02), range: 0.45, size: 0.14 },
+  wildfire: { at: at(-10, -50, 1.012), range: 0.45, size: 0.07 },
+  'tdrs-relay': { at: at(0, -41, 1.75), range: 0.5, size: 0.1 },
 }
 
 // Tuned by flying it: top speed crosses a quarter of the planet in about 5 s, and the craft stops about 1 s after the keys are let go.
@@ -63,9 +65,9 @@ const SPRING = 40
 const R_FLOOR = 1.1
 const R_CEIL = 2.08
 
-/** Low over the day side, facing the first target. */
+/** Low off West Africa, where Atlantic hurricanes start, facing the first target. */
 export function startPose(): Pose {
-  const pos = at(5, -50, 1.25)
+  const pos = at(12, -15, 1.25)
   const up = unit(pos)
   return { pos, heading: unit(flat(add(SPOTS.hurricane!.at, pos, -1), up)), vel: [0, 0, 0] }
 }
@@ -148,10 +150,12 @@ export function nextFocus(
   dt: number,
   unit_m: number,
 ): HudFocus | null {
-  const pick = pickTarget(pose, targets.map((t) => t.id))
+  const isOpen = (t: FlightTarget) => !done.includes(t.id) && t.requires.every((id) => done.includes(id))
+  const ids = (list: readonly FlightTarget[]) => list.map((t) => t.id)
+  // A target still to do wins over a finished or locked one that happens to be nearer.
+  const pick = pickTarget(pose, ids(targets.filter(isOpen))) ?? pickTarget(pose, ids(targets))
   const target = targets.find((t) => t.id === pick?.id)
   if (!pick || !target) return null
-  const open = !done.includes(target.id) && target.requires.every((id) => done.includes(id))
-  const held_s = holding && open && pick.inRange ? Math.min(target.hold_s, (prev?.id === target.id ? prev.held_s : 0) + dt) : 0
+  const held_s = holding && isOpen(target) && pick.inRange ? Math.min(target.hold_s, (prev?.id === target.id ? prev.held_s : 0) + dt) : 0
   return { id: target.id, distance_m: Math.round((pick.distance * unit_m) / 1000) * 1000, inRange: pick.inRange, held_s }
 }
