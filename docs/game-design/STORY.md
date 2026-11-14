@@ -16,11 +16,11 @@ Rules (GAME_DESIGN.md §4.8, §7): one or two short sentences, spoken to "Flight
 
 | Beat (`LineId`) | When | CAPCOM says | Pop-out (glossary `termId`) |
 |---|---|---|---|
-| `call-earth` | briefing, First Light | Flight, CAPCOM. Welcome to your first shift. Small satellite, small budget: let's prove we can bring pictures home. | `orbit` |
-| `call-moon` | briefing, Moon Mapper | Flight, CAPCOM. Good work on First Light. The lunar team wants the whole surface mapped from orbit, and the Moon hides you in its shadow for part of every orbit. | `eclipse` |
-| `call-mars` | briefing, Red Planet Radar | Flight, CAPCOM. This is the big one: radar to hunt for ice under the surface of Mars. Out there, every message takes minutes to arrive. | `delta-v` |
-| `design` | builder | Your spacecraft is on the stand. Every part you add costs mass, power and money, and the rocket has to carry all of it. | `payload-capacity` |
-| `poll` | GO / NO-GO | Flight, it's your call. Poll the room: every console has to say GO before we fly. | `power-budget` |
+| `call-earth` | briefing, First Light | Flight, CAPCOM. Welcome to your first shift. Small satellite, small budget: let's bring pictures home. | `orbit` |
+| `call-moon` | briefing, Moon Mapper | Flight, CAPCOM. Good work on First Light. Now map the Moon from orbit, where its shadow hides you every orbit. | `eclipse` |
+| `call-mars` | briefing, Red Planet Radar | Flight, CAPCOM. The big one: radar to find ice under Mars. Out there, every message takes minutes to arrive. | `delta-v` |
+| `design` | builder | Your spacecraft is on the stand. Every part costs mass, power and money, and the rocket has to carry it all. | `payload-capacity` |
+| `poll` | GO / NO-GO | Flight, the call is yours. Poll the room: every console has to say GO before we fly. | `power-budget` |
 | `launch` | launch cutscene | Lift-off. Clear of the tower, and all the work from the clean room is riding on it now. | `reliability` |
 | `orbit-earth` | operations start, Earth | Orbit confirmed. Instruments on. Remember, data only counts once it's on the ground. | `downlink` |
 | `orbit-moon` | operations start, Moon | Lunar orbit confirmed. Watch the battery: in the Moon's shadow, it's all you've got. | `eclipse` |
@@ -32,7 +32,9 @@ Rules (GAME_DESIGN.md §4.8, §7): one or two short sentences, spoken to "Flight
 | `debrief-success` | results, success | Good flight. Here's the full report, and one change that would have made it even better. | none |
 | `debrief-loss` | results, loss | Here's what happened, and the one change that would have saved it. Fix it and fly again. | none |
 
-The Mars call's "every message takes minutes to arrive" is the only real-world claim in the lines. Radio signals between Earth and Mars take several minutes to over 20 minutes one way, depending on where the planets are. Source: TODO, a NASA Mars mission page on communication delay. Verify before shipping, or drop the second sentence.
+The Mars call's "every message takes minutes to arrive" is the only real-world claim in the lines. Radio signals between Earth and Mars take about 4 to 20 minutes one way, depending on where the planets are. Source: [NASA, Deep Space Atomic Clock](https://www.nasa.gov/missions/tech-demonstration/deep-space-atomic-clock/how-an-atomic-clock-will-get-humans-to-mars-on-time/), and the [Mars Global Surveyor FAQ](https://mars.nasa.gov/mgs/faqs/faq_mplan.html) (4 to 21 minutes).
+
+These lines are live in `ui/story/model.ts` `LINES`. Change them here first.
 
 ## Optional next step (needs `ui/story` model changes, claude@aiden's call)
 
@@ -42,11 +44,11 @@ Per-world `launch` and `ending-*` lines would make each mission feel different, 
 
 ```ts
 export const LINES = {
-  'call-earth': "Flight, CAPCOM. Welcome to your first shift. Small satellite, small budget: let's prove we can bring pictures home.",
-  'call-moon': "Flight, CAPCOM. Good work on First Light. The lunar team wants the whole surface mapped from orbit, and the Moon hides you in its shadow for part of every orbit.",
-  'call-mars': 'Flight, CAPCOM. This is the big one: radar to hunt for ice under the surface of Mars. Out there, every message takes minutes to arrive.',
-  design: 'Your spacecraft is on the stand. Every part you add costs mass, power and money, and the rocket has to carry all of it.',
-  poll: "Flight, it's your call. Poll the room: every console has to say GO before we fly.",
+  'call-earth': "Flight, CAPCOM. Welcome to your first shift. Small satellite, small budget: let's bring pictures home.",
+  'call-moon': "Flight, CAPCOM. Good work on First Light. Now map the Moon from orbit, where its shadow hides you every orbit.",
+  'call-mars': 'Flight, CAPCOM. The big one: radar to find ice under Mars. Out there, every message takes minutes to arrive.',
+  design: 'Your spacecraft is on the stand. Every part costs mass, power and money, and the rocket has to carry it all.',
+  poll: "Flight, the call is yours. Poll the room: every console has to say GO before we fly.",
   launch: 'Lift-off. Clear of the tower, and all the work from the clean room is riding on it now.',
   'orbit-earth': "Orbit confirmed. Instruments on. Remember, data only counts once it's on the ground.",
   'orbit-moon': "Lunar orbit confirmed. Watch the battery: in the Moon's shadow, it's all you've got.",
