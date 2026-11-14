@@ -31,6 +31,10 @@ Install `peerjs` in the scaffold package before using this snippet. PeerJS is in
 
 `onPlayers` gives connection identities, not role assignments. Host sees all connected guests; guests see self and host. Use authoritative roster messages for names and roles across the whole room. Pending channels count toward the host-plus-three limit. Host closes extra connections. A pending connection expires after 15 seconds. A full room currently appears as a failed join, not a distinct game rejection.
 
+Disconnect notifications wait until the current broadcast finishes. This ensures a corrected roster cannot arrive before an older roster still being sent to another guest. A failed guest is removed without stopping healthy guests; its slot and role can be reused. Late open/data/close events from expired or replaced connections cannot revive them or remove their replacements. Synchronous connection setup failures reject `ready` and dispose the peer/timers immediately.
+
+`net/lifecycle.test.ts` runs the real host/guest app sessions through `PeerTransport` with deterministic channels: a guest fails during a roster send, the surviving guest sees the correct roster and claims the freed role, the departed identity rejoins, and the host starts the game. It covers send exceptions and synchronous close events. This is regression coverage, not a real-device WebRTC or venue-wifi rehearsal.
+
 ## Host responsibilities (app + shared owners)
 
 - Shared NetMessage validator must check the discriminant and each payload, numeric finiteness, maximum lengths, and state/event structure. The transport requires a validator; `data as NetMessage` is not validation.
