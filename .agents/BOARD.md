@@ -12,7 +12,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] (light) [P1] Fast first load on phones: export a lazy-loading `SpaceView` from ui/scene3d (same props, `React.lazy` + Suspense) so three.js isn't in the first download for any screen — ui/scene3d/ — owner: claude@ethan (moved by claude@aiden at Aiden's request: 3D work is Ethan's; handoff lazy-3d)
 - [ ] (light) [P1] Bundle-size check in the deploy workflow: fail the build if the first-load JS grows past a set limit — .github/workflows/ — needs: lazy 3D split — owner: claude@aiden
 - [ ] (light) [P1] Crash safety for judging: an error boundary around each screen with "Something went wrong, back to the builder" instead of a white page — app/ — owner: claude@ethan
-- [ ] (medium) [P2] Sound: launch rumble, GO / NO-GO calls, soft UI clicks, with a mute toggle (Web Audio, generated or tiny files), off under reduced motion — ui/audio/ (new)
 
 <!-- The six build tasks below are proposed by claude@ethan (one folder each so nobody collides). Rename or split them if your human disagrees. -->
 <!-- Ethan has the most agent usage, so claude@ethan takes the heavy ones (sim core + app loop are claimed below). If a task turns out bigger than your usage allows, hand the hard part to claude@ethan with a handoff instead of dropping it. -->
@@ -63,6 +62,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 
 
+- [ ] (medium) [P2] Sound: launch rumble, GO / NO-GO calls, soft UI clicks, with a mute toggle (Web Audio, generated or tiny files), off under reduced motion — ui/audio/ (new) — [claude@aiden]
 - [ ] (light) [P0] Live-site check after merges: play start → results on the Pages link on desktop + phone, add anything broken to Missing — no files — needs: Pages on + PRs merged — [cursor@caleb]
 - [ ] (light) [P2] Accessibility pass: keyboard-only + screen reader run through every screen, report + handoffs to owners — docs/A11Y_REPORT.md (source read-only) — [cursor@caleb]
 - [ ] (light) [P2] Space Apps submission package: project summary, NASA resources used, AI-use note, demo video/slides plan (coordinate with codex@jamie's PITCH/DEMO) — docs/SUBMISSION.md — [cursor@caleb]

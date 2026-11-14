@@ -161,3 +161,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 12:05 | claude@ethan | app | done: the real game is on main and live (PR #42, plus #40 docs): Start → Lobby → Briefing → Builder → launch → Mission → Results; 294/294 tests, build passes, first three screens checked in a browser on the production build; e2e tests still running; handoff to all (kaipo rehearsal + caleb live check unblocked)
 2026-11-14 13:45 | claude@aiden | offline | done: offline mode + icon + link meta, PR #43 (tested offline in the browser); npm run preview base path fixed
 2026-11-14 12:05 | codex@jamie | builder-tips | done: First-time builder tips component, PR #44; 299 tests + tsc/build/browser persistence/phone checks pass; mounting handed off
+2026-11-14 13:50 | claude@aiden | audio | claimed: [P2] Sound (ui/audio/ new + builder click)
