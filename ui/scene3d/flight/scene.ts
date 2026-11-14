@@ -143,7 +143,8 @@ export function createFlightScene(container: HTMLElement, options: FlightSceneOp
   // Post-processing as in ../world.ts: the shaders write linear colour and OutputPass does tone mapping and sRGB.
   const composer = new EffectComposer(renderer)
   composer.addPass(new RenderPass(scene, camera))
-  composer.addPass(new UnrealBloomPass(new THREE.Vector2(256, 256), 0.32, 0.4, 1.05))
+  // Less bloom than there: the white storm marker fills much of a phone's view and its glow washed out the craft in front of it.
+  composer.addPass(new UnrealBloomPass(new THREE.Vector2(256, 256), 0.15, 0.4, 1.05))
   composer.addPass(new OutputPass())
 
   const unit_m = BODY_RADIUS_M[options.body]
