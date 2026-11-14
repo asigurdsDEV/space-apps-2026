@@ -4,7 +4,7 @@
 **Official page:** https://www.spaceappschallenge.org/2026/challenges/space-mission-design-game/
 **Difficulty:** Intermediate, Beginner/Youth · **Subject:** Games
 
-> This is our team's paraphrase of the brief, to help agents and humans build against it. The official page is the source of truth, so check it before you quote anything.
+> This is our team's paraphrase of the brief, to help agents and humans build against it. The official page is the source of truth. To quote it, use the word-for-word copy in [`CHALLENGE_OFFICIAL.md`](CHALLENGE_OFFICIAL.md) (PR #20).
 
 ## The ask, in one paragraph
 
