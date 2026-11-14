@@ -27,16 +27,16 @@ export interface StoryBeat {
  * https://www.nasa.gov/missions/tech-demonstration/deep-space-atomic-clock/how-an-atomic-clock-will-get-humans-to-mars-on-time/).
  */
 export const LINES = {
-  'call-earth': "Flight, CAPCOM. Welcome to your first shift. Small satellite, small budget: let's bring pictures home.",
-  'call-moon': 'Flight, CAPCOM. Good work on First Light. Now map the Moon from orbit, where its shadow hides you every orbit.',
-  'call-mars': 'Flight, CAPCOM. The big one: radar to find ice under Mars. Out there, every message takes minutes to arrive.',
-  design: 'Your spacecraft is on the stand. Every part costs mass, power and money, and the rocket has to carry it all.',
+  'call-earth': "Flight, CAPCOM. Your first shift: small satellite, small budget. Bring pictures home.",
+  'call-moon': 'Good work on First Light, Flight. Now map the Moon, and watch its shadow on every orbit.',
+  'call-mars': 'Flight, the big one: radar to find ice under Mars. Out there, messages take minutes.',
+  design: 'Your spacecraft is on the stand. Every part costs mass, power and money. Choose well.',
   poll: "Flight, the call is yours. Poll the room: every console has to say GO before we fly.",
   launch: 'Lift-off. Clear of the tower, and all the work from the clean room is riding on it now.',
   'orbit-earth': "Orbit confirmed. Instruments on. Remember, data only counts once it's on the ground.",
   'orbit-moon': "Lunar orbit confirmed. Watch the battery: in the Moon's shadow, it's all you've got.",
   'orbit-mars': 'Mars orbit confirmed. Radar on. Every pass over a ground station counts now.',
-  anomaly: 'Flight, CAPCOM: we have an anomaly. The clock is stopped. Take your time and make the call.',
+  anomaly: 'Flight, CAPCOM: we have an anomaly. The clock is stopped. Take your time.',
   'anomaly-resolved': 'Copy, Flight. Executing. Back to the mission.',
   'ending-success': 'The data is home. Science team is cheering. Nice flying, Flight.',
   'ending-loss': "Signal's quiet, Flight. Every mission teaches us something. Let's go find out what.",
