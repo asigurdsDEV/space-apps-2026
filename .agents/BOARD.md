@@ -8,10 +8,22 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Open
 
+### Interactive 3D overhaul (Aiden: both modes, spacecraft flight first; plan PR #69)
+These are new work packages, not active claims. Suggested owners claim only their isolated scope with the normal lock push. Ethan keeps ui/scene3d/, part models, launch/fly branches, app/sim/shared/e2e. No immediate change or response is needed from him; V7 is a later integration checkpoint. Existing Start/Lobby/Tutorial graphics remain codex@jamie's current task.
+
+- [ ] (medium) [P1] V1 Flight input kit: focused keyboard + touch movement intent, brake/interact, Escape/blur release; isolated preview + tests — ui/pilot-input/ (new) — needs: plan PR #69 — owner: codex@aiden
+- [ ] (medium) [P1] V2 Flight HUD: compact targets/objectives, observation/relay feedback, control hints; plain props/callbacks, independent preview — ui/flight-hud/ (new) — needs: plan PR #69; V1 for final action labels — owner: claude@sarah
+- [ ] (medium) [P1] V3 Flight prop/target asset pack: actual optimized GLB geometry + credited sources/axes/size manifest; reuse Ethan's craft/planets — public/visual-assets/flight/, art/flight/, docs/visual-assets/flight.md (new) — needs: plan PR #69; coordinate venue-rehearsal priority — owner: cursor@kaipo
+- [ ] (medium) [P1] V4 Training route: 3 target descriptors, observation/relay rules and educational feedback, local schema + tests; no score/command changes — data/pilot-training/ (new) — needs: plan PR #69; coordinate V1/V2/V7 interfaces — owner: claude@jamie
+- [ ] (light) [P1] V5 3D interaction QA: movement/target loop, touch/focus/Escape, loading/WebGL fallback, offline and measured phone FPS — docs/qa/flight3d.md (new); source read-only — needs: test plan now, V7 for execution — owner: cursor@caleb
+- [ ] (heavy) [P2] V6 Walkable hangar/mission-control room: bounded movement, clickable build/briefing/launch stations, standalone preview and callback navigation — ui/hangar/, public/visual-assets/hangar/, art/hangar/ (new) — needs: first flight slice accepted; no Ethan source edits — owner: claude@aiden
+- [ ] (heavy) [P1] V7 Integrate at a checkpoint chosen by existing owners: player-craft control/chase camera + one large scene + HUD; preserve published SpaceView and sim authority — ui/scene3d/ + app/ owner: claude@ethan; ui/mission/ owner: claude@sarah; cache/config owner: claude@aiden — needs: reviewed V1/V2/V4, optional V3; owner agreement on additive API; no current 3D work takeover
+
+
+
 ### First-person story (decision 005, Aiden 14:45: walk through the mission tasks, cutscenes, pop-outs; GAME_DESIGN.md §4.9)
 - [ ] (heavy) [P1] First-person mission control in 3D: rooms for each station (wall screen, assembly bay, 4 consoles, launch pad, ops room, debrief), guided walking camera (tap / Enter / → to the next station, look with arrows/WASD), phone-friendly — ui/scene3d/ — owner: claude@ethan
 - [ ] (heavy) [P1] Cutscenes in 3D from the real design: arrival, launch (pad → lift-off → fairing → orbit, the `LaunchView` seam), Moon/Mars arrival, anomaly alarm, ending (data home / signal lost); each ≤ 10 s, `onDone` when finished — ui/scene3d/ — owner: claude@ethan
-- [ ] (light) [P1] Story script: beats + CAPCOM lines per mission (First Light → Moon → Mars), one line each, real facts with sources — docs/game-design/STORY.md — owner: claude@sarah
 - [ ] (medium) [P1] Walk between stations instead of switching screens + play cutscenes (falls back to today's screens with no WebGL) — app/ — needs: ui/story, scene3d rooms — owner: claude@ethan
 
 ### Playtest 14:15 (claude@aiden played main start → results; details in handoff 20261114-1420 playtest)
@@ -31,6 +43,8 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 ### Game design (decision 004, proposed, see docs/game-design/GAME_DESIGN.md §8)
 
 ## Missing / needed
+
+- Interactive 3D movement/target loop and walkable room are not implemented by the plan. Existing SpaceView has orbit/close-up viewing only; GLB asset pack, player intent, HUD and training targets are V1–V7. Scored maneuvers require a separate agreed sim/CONTRACTS change; no arbitrary score or set_param shortcut — [found by codex@aiden]
 
 - Supersedes the 12:07 check: difficulty, Daily, GO/NO-GO, stars/weather/tips/sound and lazy 3D are integrated. Focused Daily/regular record regression passes on de0d869 (PR #56 report, 316 tests/build). The old completion handoff is historical for those integrations; venue rehearsal, full phone/a11y, final demo/submission and newer app-safety validation remain separate — [found by codex@aiden]
 
@@ -58,8 +72,8 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
-- [ ] (medium) [P1] Story pop-outs: CAPCOM dialogue, fact pop-outs, task panel shell, cutscene frame (Skip/Esc, captions, reduced-motion still), `storyBeat(screen, events)` — ui/story/ (new) — owner: claude@aiden — [claude@aiden]
-- [ ] (light) [P1] V0 visual-overhaul work breakdown and import/asset plan — docs/VISUAL_OVERHAUL.md (new), .agents/decisions/005-interactive-3d.md (new); existing source read-only; flight first then walkable hangar, per Aiden — [codex@aiden]
+- [ ] (light) [P1] Story script: beats + CAPCOM lines per mission (First Light → Moon → Mars), one line each, real facts with sources — docs/game-design/STORY.md — [claude@sarah]
+- [ ] (medium) [P1] Story in the game now, over plain backgrounds: CAPCOM pop-outs on every screen, cutscenes (arrival, launch, orbit, anomaly, ending) from ui/story; 3D scenes slot in later — app/ (additive), ui/story/ — part of the app/ "walk between stations" task (owner claude@ethan), taken over at Aiden's request ("wire it now"); Ethan keeps the walk itself — [claude@aiden]
 - [ ] (light) [P1] Start: empty name silently blocks Start (placeholder looks filled) and the name is forgotten after Main menu; prefill or default it, and remember it — ui/start/ — owner: codex@jamie — expanded by Jamie: mission-entry graphics/program route, lobby consoles, tutorial keyboard polish — [codex@jamie]
 
 
@@ -85,6 +99,9 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 
 ## Done
+
+- [x] (medium) [P1] Story pop-outs (decision 005) — ui/story/ (new) — [claude@aiden] — in PR #70: storyBeat(screen, events, scenarioId), CapcomPopout, FactPopout (glossary), TaskPanel, Cutscene frame (Skip/Esc, captions, still under reduced motion, ≤10 s); placeholder lines for claude@sarah's STORY.md; not mounted yet (app/ task)
+- [x] (light) [P1] V0 visual-overhaul work breakdown and import/asset plan — docs/VISUAL_OVERHAUL.md (new), .agents/decisions/005-interactive-3d.md (new); existing source read-only; flight first then walkable hangar, per Aiden — [codex@aiden] — in PR #69 (green build): product decision, 7 owner-scoped breakouts, verified Three.js imports, GLB/provenance/performance/offline requirements; no production source edits
 
 - [x] (light) [P1] Builder: Launch button off-screen on 768 px-tall laptops — ui/builder/ — [claude@aiden] — in PR #68: desktop side panel capped at screen height, scrolls inside, Launch sticks to its bottom; checked 1024×768 at every scroll position + phone unchanged
 - [x] (light) [P1] Anomaly card count per difficulty in `DIFFICULTIES` (claude@ethan anomaly-cards ask), and prove reference designs still win with cards on — data/index.ts, data/README.md, tests/playthrough.test.ts — [claude@jamie] — in PR #67: easy 1 / normal 2 / hard 3 as data; every reference win wins with its cards (tested); Moon was unwinnable on Normal with 2 cards, reference now adds camera + magnetometer; app reads the count (handoff to claude@ethan)

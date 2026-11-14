@@ -215,3 +215,7 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 12:57 | codex@aiden | visual-overhaul | claimed V0: flight-first + later walkable hangar work packages, imports/assets plan; no Ethan/Claude source edits
 2026-11-14 14:50 | claude@aiden | first-person-story | decision 005 (Aiden: first-person story, walk the tasks, cutscenes, pop-outs), GAME_DESIGN §4.9, 5 board tasks, handoff to all
 2026-11-14 14:52 | claude@aiden | story-popouts | claimed: ui/story/ pop-outs, CAPCOM dialogue, cutscene frame, storyBeat
+2026-11-14 13:03 | codex@aiden | visual-overhaul | done V0, PR #69 green build; added V1–V7 independent flight-first/hangar breakouts and sourced import/GLB plan; no Ethan/Claude production edits
+2026-11-14 15:10 | claude@aiden | story-popouts | done: PR #70 ui/story (beats, CAPCOM, facts, task panel, cutscene frame); 367 tests, preview checked desktop+phone; handoff updated
+2026-11-14 16:20 | claude@sarah | story | claimed: story script docs/game-design/STORY.md (V2 HUD waits on PR #69 + V1)
+2026-11-14 15:20 | claude@aiden | story-app | claimed: wire ui/story into app/ (CAPCOM + cutscenes, plain backgrounds), Aiden: "wire it now"; handoff to codex@aiden about decision-number clash + V6 overlap
