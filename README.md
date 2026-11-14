@@ -36,7 +36,7 @@ docs/                challenge brief, research, pitch notes
 | Aiden | | Claude Code |
 | Ethan | | Claude Code |
 | Jamie | | Claude Code |
-| Sarah | | |
+| Sarah | Frontend / UI: mission run + results screens | Claude Code |
 | Caleb | | |
 | Kaipo | | |
 
