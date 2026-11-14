@@ -37,6 +37,12 @@ describe('catalogs', () => {
     }
   })
 
+  it('every orbit supplies sunlight relative to Earth', () => {
+    for (const orbit of rowsAsObjects(getDataset(CATALOG_IDS.orbits)!)) {
+      expect(orbit.solar_flux_factor, String(orbit.id)).toBe(orbit.central_body === 'mars' ? 0.43 : 1)
+    }
+  })
+
   it('cross-reference correctly', () => {
     const orbitIds = rowsAsObjects(getDataset(CATALOG_IDS.orbits)!).map((o) => o.id)
     const launcherCols = getDataset(CATALOG_IDS.launchVehicles)!.data.columns
@@ -116,7 +122,7 @@ describe('demo scenario', () => {
     return {
       addedOk: added <= num(bus.max_added_mass_kg) && insts.length <= num(bus.max_instruments),
       launchOk: mass <= num(lv[String(orbit.launch_capacity_column)]),
-      powerOk: num(solar.power_w) * (1 - num(orbit.eclipse_fraction)) >= load,
+      powerOk: num(solar.power_w) * (1 - num(orbit.eclipse_fraction)) * num(orbit.solar_flux_factor) >= load,
       batteryOk: num(battery.capacity_wh) >= (load * num(orbit.eclipse_fraction) * num(orbit.period_s)) / 3600,
       cost: num(lv.cost_usd) + num(lv.cost_per_kg_usd) * mass +
         [bus, ...insts, solar, battery, radio].reduce((c, part) => c + num(part.cost_usd), 0),

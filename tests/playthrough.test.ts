@@ -80,6 +80,16 @@ describe('playthrough (real sim + real data)', () => {
     expect(bonus.earned).toBe(true)
   })
 
+  it('Mars needs its larger starting solar array under weaker sunlight', () => {
+    const config = sandbox('mars')
+    const state = init(config, getDatasets(config.datasets))
+    expect(state.metrics.power_available_w).toBeCloseTo(6000 * 0.62 * 0.43)
+    expect(state.issues.filter((issue) => issue.severity === 'error')).toEqual([])
+    const smaller = step(state, [{ type: 'set_param', payload: { key: 'solar', value: 'solar-array-medium' } }], config.dt_s).state
+    expect(smaller.metrics.power_available_w).toBeCloseTo(1000 * 0.62 * 0.43)
+    expect(smaller.issues.some((issue) => issue.code === 'power_negative')).toBe(true)
+  })
+
   it('the mission program lists every scenario once (Sandbox is free play, outside the program)', () => {
     expect([...PROGRAM].sort()).toEqual(scenarios.map((s) => s.scenario_id).filter((id) => id !== 'sandbox').sort())
   })
