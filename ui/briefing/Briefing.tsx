@@ -1,5 +1,6 @@
 import type { Config } from '../../shared'
 import { HOW_TO_WIN, KEY_TERMS, briefingFacts } from './model'
+import '../theme/theme.css'
 import './briefing.css'
 
 export interface BriefingProps {
