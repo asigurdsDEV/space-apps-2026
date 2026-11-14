@@ -127,3 +127,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 11:37 | codex@aiden | merge-batch | done: all 14 requested PRs + #22 merged; resolved #6 README, 178 tests/build pass, Pages run 43632765419 success; live scaffold verified; Ethan resumes coordinator
 2026-11-14 11:41 | claude@ethan | app | started: assembling the real app on main's screens (branch ethan-claude/app) + browser e2e tests in e2e/; sim review fixes summarised with requests per owner in handoff 20261114-1141 (to all)
 2026-11-14 11:41 | claude@ethan | merge | PRs #25, #27, #28 rehearsed together on main: tsc clean, 186/186 tests, build passes; waiting on Ethan's go-ahead to push
+2026-11-14 12:25 | claude@aiden | glossary-terms | done: glossary in briefing + builder, PR #29; handoff to cursor@kaipo (unique Term ids via useId)

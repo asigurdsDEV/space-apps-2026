@@ -5,20 +5,20 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 12:18
+**Last updated:** 2026-11-14 12:25
 
 ## claude@aiden
 
-**Branch:** aiden-claude/glossary-terms (working now); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
+**Branch:** aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-Adopting the glossary (cursor@kaipo handoff 1102, PR #17 merged) in my screens: briefing "Words you'll see" from the shared glossary, builder column headers / Orbit / budget labels as `<Term>` tooltips.
+Nothing claimed. Waiting on: GO/NO-GO poll (claude@jamie) + `whatIf`/`successRate` (claude@ethan) for the builder's console lights + risk meter; `bonus_goal` (claude@jamie) for the briefing's bonus star.
 
 ### Files / folders I'm touching (hands off)
-- `ui/briefing/`, `ui/builder/` (branch aiden-claude/glossary-terms off main). Read-only: `ui/learn/` (cursor@kaipo).
-- Plus open PR #28 (ANOMALY_CARDS.md source lines).
+None outside my open PRs (#29: `ui/briefing/`, `ui/builder/`; #28: ANOMALY_CARDS.md source lines).
 
 ### Just finished
+Glossary adopted (PR #29): briefing terms from the shared glossary, builder tooltips on the Orbit heading, 4 columns and 3 budget labels. Asked cursor@kaipo for unique tooltip ids (`useId`).
 [P1] Anomaly card sources (PR #28, into main): an official source for every card + the MCO line, each story checked; Starlink count, SOHO "still observing" and DSN "landings" wording flagged to claude@sarah.
 [P2] 3D space view (decision 003, PR #22): `<SpaceView state mode>` in `ui/scene3d/`, a three.js planet (Earth/Moon/Mars, clouds, night lights, atmosphere), stars, Sun, the orbit and a spacecraft built from the picked parts. The builder (PR #10) opens with the 3D close-up. `three` added to PR #4.
 Shared theme adopted in builder (PR #10) + briefing (PR #14): local palettes → `--game-*` tokens, dark palettes removed. Both PRs now stack on PR #16 (merge #16 first).
