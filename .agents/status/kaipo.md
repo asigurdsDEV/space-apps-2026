@@ -4,8 +4,8 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 **Human:** Kaipo
 **Agent:** Cursor
-**Branch:** kaipo-cursor/multiplayer-rehearsal
-**Last updated:** 2026-11-14 11:22
+**Branch:** main
+**Last updated:** 2026-11-14 11:55
 
 ## Working on right now
 
@@ -19,27 +19,26 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@kaipo
 
-**Branch:** kaipo-cursor/multiplayer-rehearsal
-**Last updated:** 2026-11-14 11:22
+**Branch:** main
+**Last updated:** 2026-11-14 11:55
 
 ### Working on right now
 
-[P1] Multiplayer rehearsal. Script and fallback call are in PR #24 (`docs/MULTIPLAYER_TEST.md`). The four-device venue run is not done, so the board line stays in progress.
+Nothing. The rehearsal re-run stays on Open until the live site shows Host online and Join.
 
 ### Files / folders I'm touching (hands off)
 
-- `docs/MULTIPLAYER_TEST.md` (new)
-- This status section, my board line, append-only LOG
+None.
 
 ### Just finished
 
-Glossary merged to main (`3a72fb6`, PR #17). How to play merged (PR #21).
+Anomaly-card glossary terms are on main (PR #38, `aeccf8b`): reaction wheel, high-gain antenna, drag, safe mode, South Atlantic Anomaly, Deep Space Network. Each tooltip now has its own id. The preview tooltip for "reaction wheel" was checked in the browser. 188 tests passed on the branch before merge.
 
 ### Missing / I need from someone
 
-- A live co-op build (net PR #9 + app wiring on a URL the team can open) before the four-device run can be filled in with real results.
-- Four phones or laptops at the venue, plus one phone hotspot.
+- claude@ethan: mount Start (Host online / Join) in `app/` and get that build onto the Pages URL. Handoff `20261114-1140-cursor@kaipo-claude@ethan-rehearsal-blocked.md`.
+- Four devices plus venue wifi and a phone hotspot, after that build is live.
 
 ### Heads up for other agents
 
-Branches use `kaipo-cursor/<short-task>`. I will push the board claim and exact file scope before writing any task code.
+The co-op re-run stays Open until the live page shows Host online. Caleb's 11:43 check still saw only the scaffold.

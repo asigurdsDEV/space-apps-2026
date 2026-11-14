@@ -122,3 +122,66 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 11:33 | claude@ethan | scene3d | claimed: [P1] 3D models + launch + 3D fly scene (ui/scene3d/, whole folder), branch ethan-claude/scene3d; took over from claude@aiden
 2026-11-14 12:10 | claude@aiden | card-sources | done: [P1] Anomaly card sources, PR #28 into #23 (official sources for 8 cards + MCO line, stories checked); handoff to claude@sarah with 3 wording notes
 2026-11-14 12:14 | claude@aiden | card-sources | #23 merged before PR #28, so retargeted #28 to main (clean); handoff + board updated
+2026-11-14 11:40 | cursor@kaipo | multiplayer-rehearsal | done: first attempt failed, PR #27. Live site and localhost are still the scaffold (no Host/Join). Run B not started. Venue re-run and glossary terms added to Open, owner cursor@kaipo. Handoff to claude@ethan.
+2026-11-14 12:18 | claude@aiden | glossary-terms | started: glossary tooltips in ui/briefing + ui/builder (cursor@kaipo handoff 1102)
+2026-11-14 11:37 | codex@aiden | merge-batch | done: all 14 requested PRs + #22 merged; resolved #6 README, 178 tests/build pass, Pages run 43632765419 success; live scaffold verified; Ethan resumes coordinator
+2026-11-14 11:41 | claude@ethan | app | started: assembling the real app on main's screens (branch ethan-claude/app) + browser e2e tests in e2e/; sim review fixes summarised with requests per owner in handoff 20261114-1141 (to all)
+2026-11-14 11:41 | claude@ethan | merge | PRs #25, #27, #28 rehearsed together on main: tsc clean, 186/186 tests, build passes; waiting on Ethan's go-ahead to push
+2026-11-14 12:25 | claude@aiden | glossary-terms | done: glossary in briefing + builder, PR #29; handoff to cursor@kaipo (unique Term ids via useId)
+2026-11-14 11:41 | codex@jamie | start-polish | done: difficulty + theme/glossary adoption, PR #30; 179 tests + tsc/build/contrast + desktop/phone browser checks pass
+2026-11-14 11:42 | codex@jamie | daily-mission | claimed: Start UI/helper only; Ethan accepted UTC day + YYYYMMDD seed + normal + sorted IDs; app stays his
+2026-11-14 11:47 | claude@ethan | merge | done: PRs #25, #27, #28 on main (b57df67), Ethan's go-ahead; tsc clean, 186/186 tests, build + Pages deploy pass
+2026-11-14 12:35 | claude@aiden | budget-bars | claimed: [P0] builder budget bars match the reviewed sim (probe on real data: Bus capacity bar missing, science bar 10 vs sim forecast 1.7 on demo)
+2026-11-14 11:43 | cursor@caleb | live-site | ran P0 check: Pages 200 but scaffold only on desktop and phone; start to results blocked on app loop
+2026-11-14 12:45 | claude@aiden | budget-bars | done: builder bars match reviewed sim, PR #32 (after #29); ethan's no_station_keeping ask: builder never handled it, nothing to drop
+2026-11-14 12:40 | claude@sarah | space-weather | claimed: real NASA OMNI space weather dataset (data/space-weather/ new subfolder) + fly-screen strip + design spec
+2026-11-14 11:43 | codex@aiden | daily-records | claimed: daily-seeded leaderboard + supplied stars, ui/leaderboard/ only; app assembly remains Ethan
+2026-11-14 11:46 | claude@jamie | gonogo | done: GO / NO-GO poll in PR #33 (ui/gonogo/), tsc clean, 189/189 tests; handoff to claude@ethan to mount it in app/
+2026-11-14 11:46 | codex@jamie | daily-mission | done: Start daily helper/UI, PR #31 after #30; 191 tests + tsc/build/browser pass; app integration task stays Ethan-owned; net clarification handoff
+2026-11-14 11:50 | cursor@kaipo | glossary-cards | claimed: [P2] anomaly-card glossary terms (ui/learn/). Rehearsal re-run stays Open: live site still has no Host/Join.
+2026-11-14 12:55 | claude@aiden | board | added 7 improvement tasks to Open (console lights, part compatibility, lazy 3D + size check, crash safety, offline/PWA, first-time tips, sound)
+2026-11-14 13:05 | claude@sarah | space-weather | real NASA OMNI space weather (data/space-weather, 1996–2026) + fly-screen strip + preview storm card on real storm days, PR #34; tests verify known storms; handoffs to claude@ethan (sim) + claude@jamie (subfolder)
+2026-11-14 12:56 | claude@aiden | console-lights | claimed: [P1] Builder console lights (ui/builder/)
+2026-11-14 11:52 | claude@jamie | hard-mode | claimed: make Hard winnable with random failures on; fix Normal row in data README
+2026-11-14 11:52 | claude@ethan | scene3d | paused the 3D build until about 16:20 so the app assembly (the playable game) finishes first; partial work pushed to ethan-claude/scene3d-launch and -fly; ui/scene3d/ stays claimed
+2026-11-14 13:05 | claude@aiden | console-lights | done: builder console lights, PR #35 (merge after #29, #32, #33)
+2026-11-14 11:58 | claude@ethan | merge | done: PRs #29, #30, #31, #32, #33, #34, #35 on main (07b6c1f); tsc clean, 201/201 tests, build passes; Ethan gave standing approval to merge PRs that pass those three checks, so tell me when yours is ready
+2026-11-14 12:00 | claude@jamie | hard-mode | done: PR #36, demo seed 42 -> 1, Normal failures off, failures-on Hard test; tsc clean, 189/189; handoff to claude@ethan (sim/README seed note)
+2026-11-14 12:00 | claude@ethan | merge | done: PRs #36, #37 on main (bec90dc); tsc clean, 214/214 tests, build passes
+2026-11-14 13:08 | claude@aiden | part-fit | claimed: [P1] Builder part compatibility (ui/builder/)
+2026-11-14 11:55 | cursor@kaipo | glossary-cards | done: anomaly-card glossary terms merged, PR #38. Six ids in ui/learn/. Term tooltip ids are unique. Rehearsal re-run still Open.
+2026-11-14 13:20 | claude@aiden | part-fit | done: builder part compatibility badges, PR #39 (after #35)
+2026-11-14 11:55 | claude@ethan | merge | done: PRs #39 on main (8fb9e4c); tsc clean, 218 passed (218), build passes
+2026-11-14 11:56 | codex@aiden | daily-records | done: PR #37 merged; daily seed isolation + matching stars, 20 owned tests; actual main 216 tests/build pass; app/results integration handoff
+2026-11-14 12:10 | claude@jamie | bonus-goal | claimed: [P1] bonus star goal per scenario + program order (data/scenarios/)
+2026-11-14 13:25 | claude@aiden | board | Aiden: 3D visual work goes to Ethan. Moved lazy-3D task to claude@ethan (handoff lazy-3d); split off bundle-size CI check (mine, after the split)
+2026-11-14 13:27 | claude@aiden | offline | claimed: [P1] Demo works on bad venue wifi (index.html, vite.config.ts, public/, pwa/)
+2026-11-14 12:25 | claude@jamie | bonus-goal | done: PR #41, bonus_goal per scenario + PROGRAM order; tsc clean, 222/222; handoffs to claude@ethan, claude@aiden, codex@jamie
+2026-11-14 11:59 | codex@jamie | builder-tips | claimed: First-time tips, ui/tutorial only; mounting via owner handoff
+2026-11-14 12:05 | claude@ethan | app | done: the real game is on main and live (PR #42, plus #40 docs): Start → Lobby → Briefing → Builder → launch → Mission → Results; 294/294 tests, build passes, first three screens checked in a browser on the production build; e2e tests still running; handoff to all (kaipo rehearsal + caleb live check unblocked)
+2026-11-14 13:45 | claude@aiden | offline | done: offline mode + icon + link meta, PR #43 (tested offline in the browser); npm run preview base path fixed
+2026-11-14 12:05 | codex@jamie | builder-tips | done: First-time builder tips component, PR #44; 299 tests + tsc/build/browser persistence/phone checks pass; mounting handed off
+2026-11-14 13:50 | claude@aiden | audio | claimed: [P2] Sound (ui/audio/ new + builder click)
+2026-11-14 12:07 | codex@aiden | completion-check | main 294 tests/build pass; live solo Start to Results verified (expected loss, 26 points); owner handoffs for remaining integration/rehearsal/submission, no source edits or new claim
+2026-11-14 14:05 | claude@aiden | audio | done: sound effects + mute toggle, PR #45; handoff to all (app toggle + launch, gonogo calls, results)
+2026-11-14 14:10 | claude@aiden | board | main chunk is 959 kB / 264 kB gz with the app in (three.js not split yet); note to claude@ethan (bundle size + tab icon vs PR #43)
+2026-11-14 12:40 | claude@jamie | real-missions | claimed: [P1] real missions table (data/real-missions.json) for the debrief match
+2026-11-14 11:56 | cursor@caleb | submission | done: Space Apps submission package, PR #40
+2026-11-14 14:20 | claude@aiden | playtest | played main start → results (won A 94, lost F 26, no console errors); 7 findings posted to Open with owners + handoff to all; claimed the builder phone-panel fix
+2026-11-14 12:13 | codex@jamie | net-lifecycle | claimed: multiplayer disconnect/rejoin reliability, existing PeerTransport internals + tests/docs; no app mounting dependency
+2026-11-14 12:18 | claude@ethan | merge | done: PRs #41, #43, #44, #45 + app follow-up (difficulty picker, daily mission, GO / NO-GO, stars, space weather wired) on main (bb6a932); tsc clean, 310/310 tests, build passes
+2026-11-14 13:40 | claude@sarah | game-design | handoff to claude@ethan: wire decision 004 no-sim pieces first (GO/NO-GO poll, space-weather strip, stars/share) in app/; offered to do it
+2026-11-14 14:35 | claude@aiden | mobile-budgets | done: compact phone budgets panel, PR #46 (playtest finding)
+2026-11-14 12:25 | claude@ethan | app | done: PR #47 on main (builder tips, sound toggle, launch sound mounted); small requests per owner in handoff 20261114-1225 (to all); 3D build and e2e tests paused until about 16:20 (usage limit), merges continue
+2026-11-14 14:42 | claude@aiden | briefing-bonus | started: bonus star on the briefing (claude@jamie handoff 1225)
+2026-11-14 12:28 | claude@ethan | merge | done: PRs #46 #48 on main (0f04a69); tsc clean, 316 passed (316), build passes
+2026-11-14 12:18 | codex@jamie | net-lifecycle | done: multiplayer disconnect/rejoin reliability, PR #48; 316 tests + tsc/build; existing app sessions covered, no mounting needed
+2026-11-14 14:50 | claude@aiden | briefing-bonus | done: briefing names the bonus star, PR #49; claude@jamie handoff 1225 set done
+2026-11-14 13:05 | claude@jamie | real-missions | done: PR #50, 12 sourced real missions + realMissions export; tsc clean, 308/308; handoff to claude@sarah for the debrief match helper
+2026-11-14 14:55 | claude@aiden | offer | offered claude@ethan to take 2 app/ tasks (scroll to top, crash safety); noted GO/NO-GO mount already done in 24247ed
+2026-11-14 15:00 | claude@sarah | debrief-polish | claimed: bonus star fix, real mission match, 3D orbit view on fly screen (ui/mission/), card wording (ANOMALY_CARDS.md)
+2026-11-14 15:00 | claude@aiden | takeover | Aiden: take over Ethan's tasks without overriding (Ethan at limit). Claimed scroll-to-top, crash safety, lazy 3D (index.ts only); moved Ethan's finished GO/NO-GO + daily lines to Done (24247ed)
+2026-11-14 12:35 | claude@ethan | merge | done: PRs #49, #51 on main (8bfbd90); 316/316 tests, build passes; #50 HELD (conflict in data/README.md + data/index.ts, claude@jamie to merge main into it); lazy 3D cut first-load script from 959 kB to 352 kB; answers to all open handoffs in 20261114-1235 (to all); accepted claude@aiden taking scroll-to-top + error boundary in app/
+2026-11-14 15:03 | claude@aiden | takeover | withdrew lazy-3D takeover: claude@ethan finished it in 10ae68e (959 → 352 kB), moved to Done in his name; claimed my bundle-size check (now unblocked)
+2026-11-14 15:25 | claude@sarah | debrief-polish | done: PR #52 (no nameless bonus star, real mission match, 3D orbit view on fly screen, card wording); 318 tests; closed handoffs 1107/1115/1210/1340; handoff to claude@ethan for realMissions prop
+2026-11-14 12:40 | claude@ethan | scene3d | restarted the 3D build (parts, launch, fly scene) from the saved partial branches; pushes work in progress often to ethan-claude/scene3d-*; may be cut off by the usage limit and continue after about 16:20

@@ -1,5 +1,7 @@
 import type { Config } from '../../shared'
-import { HOW_TO_WIN, KEY_TERMS, briefingFacts } from './model'
+import { glossaryEntry } from '../learn'
+import { BONUS_GOALS } from '../mission'
+import { HOW_TO_WIN, KEY_TERM_IDS, briefingFacts } from './model'
 import '../theme/theme.css'
 import './briefing.css'
 
@@ -15,6 +17,8 @@ export interface BriefingProps {
 export function Briefing({ config, onStart, onBack }: BriefingProps) {
   const objective = config.params.objective_text
   const facts = briefingFacts(config)
+  const bonusCode = config.params.bonus_goal
+  const bonus = typeof bonusCode === 'string' ? BONUS_GOALS[bonusCode] : undefined
 
   return (
     <main className="bf">
@@ -35,6 +39,13 @@ export function Briefing({ config, onStart, onBack }: BriefingProps) {
           </dl>
         )}
 
+        {bonus && (
+          <p className="bf-bonus">
+            <span aria-hidden="true">★ </span>
+            <strong>Bonus star:</strong> {bonus.label}. <span className="bf-bonus-hint">Win the mission and do this too for a second star.</span>
+          </p>
+        )}
+
         <section aria-labelledby="bf-win">
           <h2 id="bf-win">How to win</h2>
           <ol className="bf-win">
@@ -47,12 +58,17 @@ export function Briefing({ config, onStart, onBack }: BriefingProps) {
         <section aria-labelledby="bf-terms">
           <h2 id="bf-terms">Words you’ll see</h2>
           <dl className="bf-terms">
-            {KEY_TERMS.map((t) => (
-              <div key={t.term} className="bf-term">
-                <dt>{t.term}</dt>
-                <dd>{t.meaning}</dd>
-              </div>
-            ))}
+            {KEY_TERM_IDS.map((id) => {
+              const entry = glossaryEntry(id)
+              return (
+                entry && (
+                  <div key={id} className="bf-term">
+                    <dt>{entry.term}</dt>
+                    <dd>{entry.meaning}</dd>
+                  </div>
+                )
+              )
+            })}
           </dl>
         </section>
 

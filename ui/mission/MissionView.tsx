@@ -3,7 +3,8 @@
 
 import type { Command, SimEvent, SimState } from '../../shared'
 import { Bar } from './Bar'
-import { logLines } from './eventText'
+import { DecisionCard } from './DecisionCard'
+import { eventWhen, logLines } from './eventText'
 import {
   formatDate,
   formatGb,
@@ -14,6 +15,7 @@ import {
   phaseLabel,
   str,
 } from './format'
+import { STORM_LABEL, type Decision, type SpaceWeather } from './game'
 import { OrbitDiagram } from './OrbitDiagram'
 
 /** Speed buttons. The multiplier goes straight into `set_speed`; the app decides what 1x means. */
@@ -31,13 +33,34 @@ export interface MissionViewProps {
   speed?: number
   /** Scenario title from Config.title. */
   title?: string
+  /** The open anomaly card, if any (from the latest unresolved `decision_required` event). */
+  decision?: Decision | null
+  /** Sends `resolve_decision`. Required for the card's buttons to do anything. */
+  onDecide?: (decisionId: string, optionId: string) => void
+  /** Co-op: false when another player's console owns the open card. */
+  canDecide?: boolean
+  /** Today's real space weather for this mission day (data/space-weather). Hidden when absent. */
+  spaceWeather?: SpaceWeather | null
 }
 
-export function MissionView({ state, events, onCommand, paused, speed = 1, title }: MissionViewProps) {
+export function MissionView({
+  state,
+  events,
+  onCommand,
+  paused,
+  speed = 1,
+  title,
+  decision,
+  onDecide,
+  canDecide,
+  spaceWeather,
+}: MissionViewProps) {
   const m = state.metrics
   const phase = str(m, 'phase', 'design')
   const isPaused = paused ?? state.status === 'paused'
   const ended = state.status === 'ended'
+  // Time stands still while a card is open, so the run controls do nothing until it's answered.
+  const locked = ended || !!decision
 
   const missionDays = num(m, 'mission_days')
   const missionDay = num(m, 'mission_day')
@@ -85,11 +108,11 @@ export function MissionView({ state, events, onCommand, paused, speed = 1, title
 
       <div className="mv-controls" role="toolbar" aria-label="Simulation controls">
         {isPaused ? (
-          <button type="button" onClick={send({ type: 'resume', payload: {} })} disabled={ended}>
+          <button type="button" onClick={send({ type: 'resume', payload: {} })} disabled={locked}>
             ▶ Resume
           </button>
         ) : (
-          <button type="button" onClick={send({ type: 'pause', payload: {} })} disabled={ended}>
+          <button type="button" onClick={send({ type: 'pause', payload: {} })} disabled={locked}>
             ❚❚ Pause
           </button>
         )}
@@ -101,7 +124,7 @@ export function MissionView({ state, events, onCommand, paused, speed = 1, title
               aria-pressed={speed === s}
               className={speed === s ? 'is-active' : undefined}
               onClick={send({ type: 'set_speed', payload: { multiplier: s } })}
-              disabled={ended}
+              disabled={locked}
             >
               {s}×
             </button>
@@ -111,6 +134,28 @@ export function MissionView({ state, events, onCommand, paused, speed = 1, title
           ↺ Start over
         </button>
       </div>
+
+      {decision && (
+        <DecisionCard
+          decision={decision}
+          onDecide={onDecide ?? (() => {})}
+          when={phase === 'operations' && missionDay > 0 ? `Day ${Math.floor(missionDay)}` : eventWhen(state.t_s)}
+          canAnswer={canDecide ?? !!onDecide}
+        />
+      )}
+
+      {spaceWeather && (
+        <p
+          className={`mv-weather mv-tone-${spaceWeather.storm_g >= 3 ? 'bad' : spaceWeather.storm_g >= 1 ? 'warn' : 'good'}`}
+          aria-live="polite"
+        >
+          <strong>☀ Space weather: {STORM_LABEL[spaceWeather.storm_g] ?? STORM_LABEL[0]}</strong>
+          <span>Kp {spaceWeather.kp_max.toFixed(1)}</span>
+          <span>{Math.round(spaceWeather.sunspots)} sunspots</span>
+          <span>Solar flux {Math.round(spaceWeather.f107_sfu)}</span>
+          <span className="mv-muted">Real NASA data from {formatDate(spaceWeather.date)}</span>
+        </p>
+      )}
 
       <div className="mv-body">
         <OrbitDiagram entities={state.entities} targetAltitudeKm={targetAltitudeKm} />

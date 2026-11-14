@@ -63,6 +63,9 @@ export const catalogs: TableDataset[] = [
 
 export const scenarios: Config[] = [demo, moon, mars] as Config[]
 
+/** Mission program order (GAME_DESIGN.md §4.5): finish one to unlock the next. */
+export const PROGRAM: readonly Id[] = ['demo', 'moon', 'mars']
+
 /** All Datasets, for handing to `sim.init(config, datasets)`. */
 export function getDatasets(ids?: Id[]): Dataset[] {
   return ids ? catalogs.filter((d) => ids.includes(d.id)) : catalogs
@@ -78,7 +81,7 @@ export function getDataset(id: Id): TableDataset | undefined {
  */
 export const DIFFICULTIES = {
   easy: { label: 'Easy', budget: 1.5, science: 0.8, random_failures: false, event_rate_per_day: 0 },
-  normal: { label: 'Normal', budget: 1, science: 1, random_failures: true, event_rate_per_day: 0 },
+  normal: { label: 'Normal', budget: 1, science: 1, random_failures: false, event_rate_per_day: 0 },
   hard: { label: 'Hard', budget: 0.95, science: 1, random_failures: true, event_rate_per_day: 0.03 },
 } as const
 export type Difficulty = keyof typeof DIFFICULTIES

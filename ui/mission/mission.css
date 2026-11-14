@@ -345,3 +345,148 @@
   display: grid;
   gap: 6px;
 }
+
+/* ---------- anomaly card (decision 004) */
+.mv-decision {
+  background: var(--mv-card);
+  border: 2px solid var(--mv-warn);
+  border-radius: 14px;
+  padding: 16px 18px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+  display: grid;
+  gap: 10px;
+  animation: mv-pop 0.25s ease-out;
+}
+@keyframes mv-pop {
+  from { transform: translateY(8px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mv-decision { animation: none; }
+}
+.mv-decision__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--mv-muted);
+}
+.mv-decision__badge {
+  background: var(--mv-warn);
+  color: #1a1200;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.mv .mv-decision__title {
+  font-size: 1.25rem;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--mv-text);
+  margin: 0;
+}
+.mv-decision__options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+.mv button.mv-decision__option {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  text-align: left;
+  padding: 12px;
+  background: var(--mv-bg);
+}
+.mv-decision__option strong {
+  display: block;
+}
+.mv-decision__key {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--mv-info);
+  color: #fff;
+  font-weight: 700;
+}
+.mv-decision__effect {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--mv-muted);
+  margin-top: 2px;
+}
+.mv-decision__story {
+  font-size: 0.85rem;
+  border-left: 3px solid var(--mv-info);
+  padding: 6px 10px;
+  background: var(--mv-bg);
+  border-radius: 0 6px 6px 0;
+}
+.mv-decision__story a {
+  color: var(--mv-info);
+}
+
+/* ---------- debrief additions */
+.mv-stars {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  font-size: 0.85rem;
+  color: var(--mv-muted);
+}
+.mv-stars li.is-earned {
+  color: var(--mv-text);
+}
+.mv-stars li.is-earned span {
+  color: #ffd166;
+}
+.mv-fixes ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.mv-fixes button {
+  flex: none;
+  white-space: nowrap;
+}
+.mv-fixes li {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--mv-bg);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+.mv-share pre {
+  margin: 0 0 10px;
+  white-space: pre-wrap;
+  font-size: 0.9rem;
+  background: var(--mv-bg);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+/* ---------- real space weather strip (data/space-weather) */
+.mv-weather {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  align-items: baseline;
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--mv-card);
+  border: 1px solid var(--mv-line);
+  border-left: 4px solid var(--mv-tone);
+  font-size: 0.9rem;
+}

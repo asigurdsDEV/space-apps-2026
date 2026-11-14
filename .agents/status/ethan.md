@@ -5,22 +5,22 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-14 11:33
+**Last updated:** 2026-11-14 12:40
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-Running several subagents in parallel (all as claude@ethan, all inside my folders) until about 11:20:
-1. **Sim reads the real catalogs** (`sim/`, branch `ethan-claude/sim-data`): PR #8's dataset ids, columns and param keys (`solar`, `battery`, `comms`, `bus` from `spacecraft-buses`), as promised to claude@jamie and claude@aiden.
-2. **App loop** (`app/`, branch `ethan-claude/app-loop`): store + host loop, mounts `MissionBuilder` (PR #10) in design and `MissionScreen` (PR #11) after launch, wires `net/` (PR #9) for same-screen and online play.
-3. **`shared/net.ts` runtime validator** for `NetMessage`, as codex@jamie asked.
-4. Reviews of 1 to 3 and a balance playtest of the demo scenario in the real sim.
+**Low on usage until about 16:20.** Until then I only merge PRs that pass `tsc`, tests and build, and make small fixes in `app/`. The game is live (PRs #42, #47): every screen mounted, difficulty, daily mission, GO / NO-GO poll, stars, space weather, builder tips, sound.
 
-`ethan-claude/integration` already has PRs #4, #5, #7, #8, #9, #10, #11 merged together: no conflicts, `tsc` clean, 62 tests pass. Use it if you want to see everything in one place.
+Paused until about 16:20, still claimed: the 3D build (`ui/scene3d/`), browser end-to-end tests and app review (`e2e/`). After that: the sim side of decision 004 (anomaly cards, what-if) and claude@sarah's space-weather requests.
 
-**3D build** (`ui/scene3d/`, branch `ethan-claude/scene3d`), handed over by claude@aiden at Aiden's request, claimed 11:33: a model for every catalog part, a launch sequence, the fly scene tied to sim time, Moon/Mars scenes, phone performance. `SpaceView`'s existing props stay as they are; I only add new ones.
+**3D build** (`ui/scene3d/`, branch `ethan-claude/scene3d`), see below.
+
+Next, not started: the sim side of decision 004 (anomaly cards: `decision_required` / `resolve_decision`, what-if analysis) together with my sim random events + difficulty knobs task.
+
+**3D build** (`ui/scene3d/`, branch `ethan-claude/scene3d`), handed over by claude@aiden at Aiden's request, claimed 11:33. **Restarted at 12:40** (it was paused 11:52 to 12:40 so the app could land first); it may be cut off by my usage limit and then continues after about 16:20. The builders push work in progress often. Partial work is on `ethan-claude/scene3d-launch` and `ethan-claude/scene3d-fly` (unfinished, untested). Scope: a model for every catalog part, a launch sequence, the fly scene tied to sim time, Moon/Mars scenes, phone performance. `SpaceView`'s existing props stay as they are; I only add new ones.
 
 Other claims:
 5. **Sim random events + difficulty knobs** (`sim/`) and **browser end-to-end tests** (`e2e/`): start when sim-data and the app loop land.
@@ -36,6 +36,7 @@ The lobby screen is codex@jamie's (`ui/lobby/`). More scenarios and difficulty v
 - Plus my usual shared-file edits: this section, my BOARD.md lines, append-only LOG.md lines, my own handoffs
 
 ### Just finished
+- **Lazy 3D** (PR #51): first-load script 959 kB → 352 kB. Answers to every handoff addressed to me: `20261114-1235-claude@ethan-all-answers.md`. PR #50 is held (conflict in `data/`, claude@jamie).
 - **Merged 21 PRs into `main`** (c1b8d30, tested: 178/178 tests, build and Pages deploy pass). Held #6 and #25. See handoff `20261114-1129-claude@ethan-all-main-is-live.md`. I am the merge coordinator: tell me when a PR is ready.
 - **Sim reads the real catalogs** (PR #26, merged).
 - **Save / share / compare** (PR #18, `ui/share/`): `<SharePanel state send />`, share link in the URL hash, saved designs, compare table. 114 tests pass merged with sim-data, shared-types, the builder and the playthrough test.

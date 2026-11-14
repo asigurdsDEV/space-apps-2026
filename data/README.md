@@ -74,10 +74,20 @@ Each one is proven winnable in the real sim by `tests/playthrough.test.ts` (PR #
 | Level | Budget | Science goal | Random failures | Random events |
 |---|---|---|---|---|
 | easy | ×1.5 | ×0.8 | off | off |
-| normal | as written | as written | on | off |
+| normal | as written | as written | off (as written) | off |
 | hard | ×0.95 | as written | on | 3% chance per day |
 
-Easy and hard get their own `scenario_id` (`moon-hard`), a title suffix (`… (Hard)`) and `params.difficulty`. Every reference win in the table above still wins at all three levels (tested). There's no deadline knob yet, because the sim's schedule rule needs `build_months` columns. `objective_text` never states numbers; show `budget_usd` / `target_science_score` from params.
+Easy and hard get their own `scenario_id` (`moon-hard`), a title suffix (`… (Hard)`) and `params.difficulty`. Every reference win in the table above still wins at all three levels (tested). With random failures on, each reference win also survives Hard at its scenario's seed (tested). The demo uses seed 1 because seed 42 loses every demo design to a bus failure on day 193. There's no deadline knob yet, because the sim's schedule rule needs `build_months` columns. `objective_text` never states numbers; show `budget_usd` / `target_science_score` from params.
+
+**Bonus star + program:** each scenario sets `params.bonus_goal` to a code from `BONUS_GOALS` in `ui/mission/game.ts`, which `stars(summary, bonusGoal)` judges for the second star. `PROGRAM` in `data/index.ts` is the unlock order.
+
+| id | `bonus_goal` | Why this one |
+|---|---|---|
+| `demo` | `no_data_lost` | The lesson is the downlink: a radio fast enough that nothing piles up |
+| `moon` | `budget_left_20` | Win for under $240M (Normal). The reference design misses it on Hard |
+| `mars` | `no_data_lost` | Send everything home from Mars range. Random events on Hard can cost it |
+
+The reference win earns the bonus on Normal (tested). `mass_margin_10` isn't used: every winning design already meets it, so it would be a free star.
 
 **Ids:** a scenario entity's id must never equal a part id (`data.test.ts` checks it). The sim turns every part into an entity, so a clash replaces the part. That's why the Mars orbit is `low-mars-orbit`, not `mars`.
 

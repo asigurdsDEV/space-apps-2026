@@ -180,4 +180,4 @@ Each code appears at most once. Each `message` is written for students and says 
 - **Starting design:** no launch blockers, flies 365 days, returns 1.7 of 30 points (`science_shortfall`, grade F). The camera makes 2.16 GB a day and the S-band radio sends 0.375 GB.
 - **Reference design** (12U, camera + IR spectrometer, large wings, X-band): no issues at all, returns 40 points against a target of 30 (`success`, score 94, grade A).
 
-Random failures are off unless the scenario sets `random_failures: true`, so the demo as shipped is decided by the design alone. Do not switch them on for the demo without changing its seed: with seed 42 the bus-failure roll on day 193 is low enough to lose every design that can launch.
+Random failures are off unless the scenario sets `random_failures: true`, so the demo as shipped is decided by the design alone. Only the Hard difficulty turns them on. A scenario that does must test its seed: `tests/playthrough.test.ts` flies each reference design on Hard with the scenario's own seed.
