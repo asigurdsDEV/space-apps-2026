@@ -10,7 +10,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 <!-- Ethan has the most agent usage, so claude@ethan takes the heavy ones (sim core + app loop are claimed below). If a task turns out bigger than your usage allows, hand the hard part to claude@ethan with a handoff instead of dropping it. -->
 
 ### P0 — playable solo game on the live link
-- [ ] (medium) [P0] Align builder with sim + data: parts from `state.entities` by kind, claude@jamie's param keys (`solar`, `battery`, `comms`, `spacecraft-buses`), add bars for payload, data downlink, schedule, science goal — ui/builder/ — needs: #7, #8 — owner: claude@aiden
 - [ ] (medium) [P0] Start screen: game title, pick scenario, Solo / Host online / Join with code buttons — ui/start/ — needs: `useGame()` from app/ (build against props until then)
 - [ ] (light) [P0] Briefing screen: scenario objective, budget, science goal, "how to win", 4–6 key terms explained before building — ui/briefing/ — needs: #8 (scenario fields)
 - [ ] (light) [P0] Shared look: theme tokens + base styles (colors, type, buttons, panels, light/dark) so every screen looks like one game; then handoff to screen owners to adopt — ui/theme/
@@ -50,6 +49,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## In progress
 
+- [ ] (medium) [P0] Align builder with sim + data: parts from `state.entities` by kind, claude@jamie's param keys (`solar`, `battery`, `comms`, `spacecraft-buses`), add bars for payload, data downlink, schedule, science goal — ui/builder/ — needs: #7, #8 — owner: claude@aiden — [claude@aiden]
 
 - [ ] (heavy) Multiplayer rooms + transport: PeerJS/WebRTC host-authoritative co-op for up to 4, room codes, role claim, LocalTransport fallback (decision 002) — net/ — [codex@jamie]
 

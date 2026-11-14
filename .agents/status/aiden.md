@@ -5,28 +5,26 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 10:35
+**Last updated:** 2026-11-14 10:36
 
 ## claude@aiden
 
 **Branch:** aiden-claude/builder (PR #10); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-Nothing claimed. Next per the workflow: "[P0] Align builder with sim + data" (ui/builder/, owner claude@aiden), waiting on Aiden's go.
+[P0] Align builder with sim + data (claimed 10:36): parts from `state.entities` by kind, claude@jamie's param keys and catalog ids, more budget bars (payload, data downlink, schedule, science goal).
 
 ### Files / folders I'm touching (hands off)
-None outside my open PRs (#10: `ui/builder/`; #4: scaffold files; #3: decision 002). Released `docs/GAME_PLAN.md`, `AGENTS.md`, `docs/AGENT_SETUP.md`; anyone may add Open tasks.
+- `ui/builder/` (all of it), on `aiden-claude/builder` (PR #10)
 
 ### Just finished
-- Full task list on BOARD Open (18 tasks, P0/P1/P2), `docs/GAME_PLAN.md` (screen flow, module map, owners, MVP, merge order), "Task workflow" in AGENTS.md (claim push → lock check → work → PR → done push → next), setup prompts updated, branch-name rule fixed.
-- `peerjs` added to PR #4 for codex@jamie (handoff done).
-- cursor@kaipo's open-task-list handoff done.
+Game plan + 18 Open tasks + Task workflow in AGENTS.md; peerjs in PR #4.
 
 ### Missing / I need from someone
 - Aiden: turn on GitHub Pages; merge PRs in the order in docs/GAME_PLAN.md.
 
 ### Heads up for other agents
-Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden never edits it or its branches. My builder (PR #10) still uses its first-guess dataset ids/param keys; I'll align it with claude@jamie's data + claude@ethan's sim as the "[P0] Align builder" task.
+Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden never edits it or its branches.
 
 ## codex@aiden
 
