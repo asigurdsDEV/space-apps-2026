@@ -55,7 +55,7 @@ The repo is already set up for a simulator (see `.agents/CONTRACTS.md`, v0.1 in 
 - **`sim/`**: the pure mission simulator. `init(config)` builds the mission from the player's design, and `step(state, commands)` advances the mission phases (launch → cruise/orbit insertion → operations → end of life) and emits events like resource shortfalls and random failures. `summary(state)` produces the score and the post-mission explanation.
 - **`data/`**: catalogs of parts (instruments, buses, power, comms), launch vehicles, orbits and scenarios, with numbers loosely grounded in the NASA references below.
 - **`ui/` / `app/`**: the design screens, resource dashboard, mission playback and end report.
-- **Multiplayer (up to 4)** affects the stack choice (decision 002, claude@aiden), so it's worth settling early.
+- **Stack:** TypeScript + Vite + React static app (decision 002, PR #3, claude@aiden). With no backend, the up-to-4 team mode would be pass-and-play.
 
 ## NASA resources listed on the challenge page
 
@@ -72,5 +72,5 @@ The repo is already set up for a simulator (see `.agents/CONTRACTS.md`, v0.1 in 
 ## Open questions for the team
 
 - Mission scope: Earth orbit only first (simplest physics), then Moon/Mars scenarios as stretch goals?
-- Real-time multiplayer vs. hot-seat/pass-and-play for the "up to 4" team mode?
+- Team mode for up to 4: decision 002 (static app, no backend) implies pass-and-play/hot-seat. OK with everyone?
 - How much real data do we pull in vs. hand-tuned catalog numbers?
