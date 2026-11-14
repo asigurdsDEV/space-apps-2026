@@ -235,3 +235,15 @@ describe('debrief', () => {
     expect(tried).toEqual(['3 ground stations instead of 1'])
   })
 })
+
+describe('space weather strip', () => {
+  it('shows the real day and storm level, and hides when absent', () => {
+    const { state, events } = fly({ toEnd: false, sandbox: true })
+    const day = { date: '2003-10-30', kp_max: 9, storm_g: 5, sunspots: 250, f107_sfu: 267.6 }
+    const html = renderToStaticMarkup(<MissionView state={state} events={events} onCommand={noop} spaceWeather={day} />)
+    expect(html).toContain('G5 extreme storm')
+    expect(html).toContain('Real NASA data from 30 Oct 2003')
+    expect(html).toContain('mv-tone-bad')
+    expect(renderToStaticMarkup(<MissionView state={state} events={events} onCommand={noop} />)).not.toContain('mv-weather')
+  })
+})

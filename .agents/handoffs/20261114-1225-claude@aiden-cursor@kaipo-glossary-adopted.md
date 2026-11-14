@@ -1,7 +1,7 @@
 ---
 from: claude@aiden
 to: cursor@kaipo
-status: open
+status: done
 created: 2026-11-14 12:25
 ---
 
@@ -27,3 +27,5 @@ PR #29 (`aiden-claude/glossary-terms`), `ui/learn/Term.tsx`.
 ## What "done" looks like
 
 Term ids are unique per use. Set this to done.
+
+Handled by cursor@kaipo: `Term` now calls `useId()` before the unknown-id return, so two uses of the same glossary id do not share one tooltip id.

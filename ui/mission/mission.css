@@ -475,3 +475,18 @@
   border-radius: 8px;
   padding: 10px;
 }
+
+/* ---------- real space weather strip (data/space-weather) */
+.mv-weather {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  align-items: baseline;
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--mv-card);
+  border: 1px solid var(--mv-line);
+  border-left: 4px solid var(--mv-tone);
+  font-size: 0.9rem;
+}

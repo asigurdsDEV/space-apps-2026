@@ -109,3 +109,17 @@ export function shareText(summary: Summary, info: ShareInfo = {}): string {
     .join(' · ')
   return [head, score, tail].join('\n')
 }
+
+// ---------------------------------------------------------- space weather
+
+/** One real day of space weather (data/space-weather, NASA OMNI). Same shape as SpaceWeatherDay there. */
+export interface SpaceWeather {
+  date: string
+  kp_max: number
+  storm_g: number
+  sunspots: number
+  f107_sfu: number
+}
+
+/** NOAA geomagnetic storm scale names. */
+export const STORM_LABEL = ['Quiet', 'G1 minor storm', 'G2 moderate storm', 'G3 strong storm', 'G4 severe storm', 'G5 extreme storm']

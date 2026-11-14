@@ -110,3 +110,28 @@
 /* 3D close-up of the craft (ui/scene3d) at the top of the parts list. */
 .mb-hero { height: 300px; margin-bottom: 16px; }
 @media (max-width: 800px) { .mb-hero { height: 220px; } }
+
+/* Glossary tooltips (ui/learn) in headers keep the header's capitalisation. */
+.mb-table th .learn-term-trigger { text-transform: inherit; }
+
+/* Flight console lights (ui/gonogo poll), live while designing. */
+.mb-consoles { list-style: none; margin: 0 0 16px; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.mb-console { display: flex; flex-direction: column; padding: 6px 8px 6px 22px; border: 1px solid var(--mb-line); border-radius: 8px; position: relative; font-size: 0.8rem; line-height: 1.3; }
+.mb-console::before { content: ''; position: absolute; left: 8px; top: 10px; width: 8px; height: 8px; border-radius: 50%; background: var(--mb-ok); }
+.mb-console-name { font-family: var(--game-font-mono, monospace); letter-spacing: 0.06em; color: var(--mb-muted); }
+.mb-console-call { font-weight: 700; color: var(--mb-ok); }
+.mb-console.is-go-concerns::before { background: var(--mb-warn); }
+.mb-console.is-go-concerns .mb-console-call { color: var(--mb-warn); }
+.mb-console.is-no-go { border-color: var(--mb-bad); }
+.mb-console.is-no-go::before { background: var(--mb-bad); }
+.mb-console.is-no-go .mb-console-call { color: var(--mb-bad); }
+.mb-console.is-mine { outline: 2px solid var(--mb-accent); outline-offset: 1px; }
+
+/* Part compatibility (partFit): badges in the name cell; parts too big for the bus are dimmed but still pickable. */
+.mb-badge { display: inline-block; margin: 2px 6px 2px 0; padding: 0 6px; border-radius: 999px; border: 1px solid currentColor; font-size: 0.75rem; font-weight: 600; line-height: 1.5; }
+.mb-badge.is-good { color: var(--mb-ok); }
+.mb-badge.is-warn { color: var(--mb-warn); }
+.mb-badge.is-bad { color: var(--mb-bad); }
+.mb-table tr.is-dim td { opacity: 0.55; }
+.mb-table tr.is-dim td:nth-child(2) { opacity: 1; }
+.mb-table tr.is-dim .mb-name, .mb-table tr.is-dim .mb-hint { opacity: 0.55; }

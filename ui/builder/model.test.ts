@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Entity, Player } from '../../shared'
-import { DEFAULT_SLOTS, changedBy, commandAccess, slotAccess, budgetBars, columnLabel, formatValue, parseIds, slotColumns, slotParts, toggleId, unitOf } from './model'
+import { DEFAULT_SLOTS, callText, partFit, changedBy, termFor, commandAccess, slotAccess, budgetBars, columnLabel, formatValue, parseIds, slotColumns, slotParts, toggleId, unitOf } from './model'
 
 const part = (id: string, kind: string, props: Entity['props'] = {}): Entity => ({ id, kind, name: id, props })
 const slot = (key: string) => DEFAULT_SLOTS.find((s) => s.key === key)!
@@ -57,6 +57,16 @@ describe('budgetBars', () => {
     expect(short).toMatchObject({ label: 'Science (projected)', goal: true, bad: true })
     expect(short.used).toBeCloseTo(18.25)
     expect(budgetBars({ science_per_day: 0.1, mission_days: 365, science_goal: 30 })[0].bad).toBe(false)
+    // The sim's forecast wins over the naive product (it knows the radio can't send everything home).
+    expect(budgetBars({ science_expected: 1.7, science_per_day: 0.1, mission_days: 365, science_goal: 30 })[0]).toMatchObject({ used: 1.7, bad: true })
+  })
+
+  it('reads bus capacity and the battery from the reviewed sim metrics', () => {
+    const bars = budgetBars({ added_mass_kg: 2.1, added_mass_limit_kg: 4, battery_wh: 40, battery_needed_wh: 8.7 })
+    expect(bars.map((b) => b.label)).toEqual(['Bus capacity', 'Battery vs. one eclipse'])
+    expect(bars[1]).toMatchObject({ goal: true, bad: false })
+    expect(budgetBars({ battery_wh: 5, battery_needed_wh: 8.7 })[0].bad).toBe(true)
+    expect(budgetBars({ battery_wh: 40, battery_needed_wh: 0 })).toEqual([])
   })
 })
 
@@ -114,5 +124,52 @@ describe('co-op roles', () => {
     })
     expect(changedBy(prev, next, ['bus'], players, sci, new Set(['bus']))).toEqual({ bus: 'You' })
     expect(changedBy(prev, prev, ['orbit'], players, sci, new Set())).toEqual({})
+  })
+})
+
+describe('termFor', () => {
+  it('maps columns, slots and budget labels to glossary ids', () => {
+    expect(termFor('payload_tli_kg')).toBe('payload-capacity')
+    expect(termFor('eclipse_fraction')).toBe('eclipse')
+    expect(termFor('orbit')).toBe('orbit')
+    expect(termFor('Power')).toBe('power-budget')
+    expect(termFor('cost_usd')).toBeUndefined()
+  })
+})
+
+describe('callText', () => {
+  it('says the call in words', () => {
+    const issue = { code: 'x', severity: 'warning' as const, resource: 'power', message: 'm' }
+    expect(callText({ call: 'go', reasons: [] })).toBe('GO')
+    expect(callText({ call: 'go-concerns', reasons: [issue] })).toBe('GO · 1 concern')
+    expect(callText({ call: 'no-go', reasons: [issue, issue] })).toBe('NO-GO · 2')
+  })
+})
+
+describe('partFit', () => {
+  const entities = [
+    part('cubesat-6u', 'bus', { class: 'cubesat' }),
+    part('smallsat', 'bus', { class: 'smallsat' }),
+    { ...part('sso', 'orbit'), name: 'Sun-synchronous orbit' },
+    part('leo-iss', 'orbit'),
+  ]
+  const sounder = part('microwave-sounder', 'instrument', { min_bus_class: 'smallsat', best_orbit: 'sso' })
+  const magnetometer = part('magnetometer', 'instrument', { min_bus_class: 'cubesat', best_orbit: 'any' })
+
+  it('flags parts too big for the picked bus, like the sim', () => {
+    expect(partFit(sounder, { entities, params: { bus: 'cubesat-6u' } })).toEqual({
+      badges: [{ text: 'Needs a SmallSat bus or bigger', tone: 'bad' }],
+      dim: true,
+    })
+    expect(partFit(sounder, { entities, params: { bus: 'smallsat' } }).dim).toBe(false)
+    expect(partFit(sounder, { entities, params: {} }).dim).toBe(false) // no bus picked yet
+  })
+
+  it('says whether an instrument suits the picked orbit', () => {
+    expect(partFit(sounder, { entities, params: { bus: 'smallsat', orbit: 'sso' } }).badges).toEqual([{ text: 'Best in your orbit', tone: 'good' }])
+    expect(partFit(sounder, { entities, params: { bus: 'smallsat', orbit: 'leo-iss' } }).badges).toEqual([
+      { text: 'Half science here · best in Sun-synchronous orbit', tone: 'warn' },
+    ])
+    expect(partFit(magnetometer, { entities, params: { bus: 'cubesat-6u', orbit: 'leo-iss' } })).toEqual({ badges: [], dim: false })
   })
 })

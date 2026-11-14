@@ -9,7 +9,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 ## Open
 
 ### Improvements (added by claude@aiden 12:55, ideas from playing the builder + the game design)
-- [ ] (medium) [P1] Builder part compatibility: badge each row with what it needs (`min_bus_class`: "needs a SmallSat bus") and where it works best (`best_orbit`), and dim parts that can't fit the picked bus, so students see why before an error — ui/builder/ — owner: claude@aiden
 - [ ] (light) [P1] Fast first load on phones: lazy-load the 3D view (`React.lazy` around `SpaceView` where it's mounted) so three.js isn't in the first download; add a bundle-size check to the deploy workflow — ui/builder/, .github/workflows/ (+ handoff to app/ for its own mounts) — owner: claude@aiden
 - [ ] (light) [P1] Crash safety for judging: an error boundary around each screen with "Something went wrong, back to the builder" instead of a white page — app/ — owner: claude@ethan
 - [ ] (light) [P1] Demo works on bad venue wifi: web app manifest + offline cache of the built site (cache-first for assets, network-first for index.html so new deploys still show), app icon, social preview meta — index.html, public/, vite.config.ts — owner: claude@aiden
@@ -57,10 +56,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
-- [ ] (light) [P1] Builder console lights: PLAN / SPACECRAFT / SCIENCE / COMMS lights next to the budgets, live from `poll(state.issues)` (ui/gonogo), so each co-op role sees its own problems while designing — ui/builder/ — needs: #33 — owner: claude@aiden — [claude@aiden]
-- [ ] (light) [P0] Hard difficulty winnable with random failures on (seed 42 kills every demo design on day 193); Normal row says failures on but sim default is off — data/index.ts, data/README.md, tests/playthrough.test.ts — [claude@jamie]
-- [ ] (light) [P2] Glossary terms the anomaly cards use: reaction wheel, high-gain antenna, drag, safe mode, South Atlantic Anomaly, Deep Space Network — ui/learn/ — needs: none — [cursor@kaipo]
-
 - [ ] (light) [P1] Daily leaderboard records + stars: isolate records by daily seed, preserve score/design/stars together, compatible with existing regular records — ui/leaderboard/ only — needs: existing score types; optional daily/stars props from app/results owners — [codex@aiden]
 
 
@@ -90,6 +85,11 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Done
 
+- [x] (medium) [P1] Builder part compatibility — ui/builder/ — [claude@aiden] — in PR #39 (after #35): "Needs a SmallSat bus or bigger" (dimmed) and best-orbit badges from the sim's own rules (bus_too_small, off_best_orbit); checked on real demo data
+- [x] (light) [P2] Glossary terms the anomaly cards use: reaction wheel, high-gain antenna, drag, safe mode, South Atlantic Anomaly, Deep Space Network — ui/learn/ — [cursor@kaipo] — merged in PR #38 (`aeccf8b`). Tooltip ids are unique per use. Rehearsal re-run stays Open until Host/Join is on the live site.
+- [x] (light) [P0] Hard difficulty winnable with random failures on (seed 42 kills every demo design on day 193); Normal row says failures on but sim default is off — data/index.ts, data/README.md, tests/playthrough.test.ts — [claude@jamie] — in PR #36: demo seed 42 → 1, Normal failures off, new failures-on Hard test
+
+- [x] (light) [P1] Builder console lights — ui/builder/ — [claude@aiden] — in PR #35 (merge order #29 → #32 → #33 → #35): GO / GO · n concerns / NO-GO · n per console from `poll(state.issues)`, your console outlined in co-op
 - [x] (medium) Real NASA space weather (OMNI 1996–2026): Dataset + build script + tests, fly-screen strip, sim spec — data/space-weather/, ui/mission/ — [claude@sarah] — in PR #34 (after #25); sim use (weather_start, storm card on real storm days, F10.7 drag) handed to claude@ethan
 - [x] (light) [P0] Daily mission Start UI/helper: UTC YYYYMMDD seed, sorted IDs, Normal; separate callback — ui/start/ — [codex@jamie] — in PR #31 (after #30); app seed application still pending
 

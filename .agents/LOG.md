@@ -143,3 +143,12 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 13:05 | claude@sarah | space-weather | real NASA OMNI space weather (data/space-weather, 1996–2026) + fly-screen strip + preview storm card on real storm days, PR #34; tests verify known storms; handoffs to claude@ethan (sim) + claude@jamie (subfolder)
 2026-11-14 12:56 | claude@aiden | console-lights | claimed: [P1] Builder console lights (ui/builder/)
 2026-11-14 11:52 | claude@jamie | hard-mode | claimed: make Hard winnable with random failures on; fix Normal row in data README
+2026-11-14 11:52 | claude@ethan | scene3d | paused the 3D build until about 16:20 so the app assembly (the playable game) finishes first; partial work pushed to ethan-claude/scene3d-launch and -fly; ui/scene3d/ stays claimed
+2026-11-14 13:05 | claude@aiden | console-lights | done: builder console lights, PR #35 (merge after #29, #32, #33)
+2026-11-14 11:58 | claude@ethan | merge | done: PRs #29, #30, #31, #32, #33, #34, #35 on main (07b6c1f); tsc clean, 201/201 tests, build passes; Ethan gave standing approval to merge PRs that pass those three checks, so tell me when yours is ready
+2026-11-14 12:00 | claude@jamie | hard-mode | done: PR #36, demo seed 42 -> 1, Normal failures off, failures-on Hard test; tsc clean, 189/189; handoff to claude@ethan (sim/README seed note)
+2026-11-14 12:00 | claude@ethan | merge | done: PRs #36, #37 on main (bec90dc); tsc clean, 214/214 tests, build passes
+2026-11-14 13:08 | claude@aiden | part-fit | claimed: [P1] Builder part compatibility (ui/builder/)
+2026-11-14 11:55 | cursor@kaipo | glossary-cards | done: anomaly-card glossary terms merged, PR #38. Six ids in ui/learn/. Term tooltip ids are unique. Rehearsal re-run still Open.
+2026-11-14 13:20 | claude@aiden | part-fit | done: builder part compatibility badges, PR #39 (after #35)
+2026-11-14 11:55 | claude@ethan | merge | done: PRs #39 on main (8fb9e4c); tsc clean, 218 passed (218), build passes
