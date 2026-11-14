@@ -6,7 +6,7 @@ import type { Command, Config, Player } from '../shared'
 import { simCore } from '../sim'
 import { demoConfig, fixtureDatasets, goodDesign } from '../sim/testing/fixtures'
 import { DIFFICULTIES, scenarios } from '../data'
-import { App, GameScreen, Room, SCENARIOS, weatherStart } from './App'
+import { App, GameScreen, Room, roomError, SCENARIOS, weatherStart } from './App'
 import { createGame } from './game'
 import { createSoloSession, type Session, type SessionSnapshot } from './session'
 
@@ -54,9 +54,32 @@ describe('start screen', () => {
   it('keeps play on one screen, which needs no network', () => {
     expect(html).toMatch(/<button(?![^>]*disabled)[^>]*>Play on one screen/)
   })
+
+  it('lists each mission once on the one-screen strip, with its own difficulty picker', () => {
+    const strip = html.slice(html.indexOf('app-same-screen'))
+    expect(strip.match(/<option/g)).toHaveLength(scenarios.length + Object.keys(DIFFICULTIES).length)
+    expect(strip).not.toContain('(Easy)')
+    expect(strip).toContain('>Difficulty<')
+  })
+
+  it('explains a failed join without net/ jargon', () => {
+    expect(roomError(true, 'Could not connect to peer smdg-ZZZZZZ')).toMatch(/^Could not join that room: no open room has that code/)
+    expect(roomError(true, 'Could not connect to peer smdg-ZZZZZZ')).not.toMatch(/peer|smdg/)
+    expect(roomError(true, 'Room connection timed out')).toMatch(/Could not join that room.*may be full \(4 players/)
+    expect(roomError(false, 'Lost connection to server')).toMatch(/^Could not open a room \(Lost connection to server\)/)
+  })
 })
 
 describe('game screen', () => {
+  it('gives the builder and the flight a main landmark, and the flight an h1', () => {
+    const { session } = soloSession()
+    expect(screen(session)).toMatch(/<main>.*class="mb"/s)
+    expect(screen(session)).not.toContain('<h1 class="app-bar-title"')
+    designCommands.forEach(session.send)
+    session.send({ type: 'launch', payload: {} })
+    expect(screen(session)).toMatch(/<h1 class="app-bar-title">.*<main>.*class="mv/s)
+  })
+
   it('shows the builder in the design phase', () => {
     const { session } = soloSession()
     const html = screen(session)

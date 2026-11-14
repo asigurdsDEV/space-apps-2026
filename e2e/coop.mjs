@@ -392,7 +392,8 @@ const local = await open('one-screen')
 await check(
   'one screen: every role’s parts are open on the one device',
   async () => {
-    await local.locator('.app-same-screen select').selectOption(`${SCENARIO}-easy`)
+    await local.locator('.app-same-screen').getByLabel('Mission').selectOption(SCENARIO)
+    await local.locator('.app-same-screen').getByLabel('Difficulty').selectOption('easy')
     await local.getByRole('button', { name: 'Play on one screen' }).click()
     await local.getByRole('button', { name: 'Start designing' }).click()
     await local.waitForSelector('.mb')

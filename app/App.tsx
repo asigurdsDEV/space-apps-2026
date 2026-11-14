@@ -7,7 +7,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ComponentTy
 import { DIFFICULTIES, getDatasets, getScenario, realMissions, rowsAsObjects, scenarios, withDifficulty, type Difficulty } from '../data'
 import { LocalTransport } from '../net'
 import type { Config, NetMessage, SimEvent, SimState, Summary } from '../shared'
-import { canSend, ROLES } from '../shared'
+import { canSend, MAX_PLAYERS, ROLES } from '../shared'
 import { catalogEntities, pendingDecision, simCore, whatIf } from '../sim'
 import { playSound, SoundToggle } from '../ui/audio'
 import { Briefing } from '../ui/briefing'
@@ -59,6 +59,19 @@ export const withCards = (config: Config): Config => ({
  * and the results. Drop this once it uses the ui/theme tokens.
  */
 const DARK_ONLY = { className: 'game-theme app-page', 'data-theme': 'dark' } as const
+
+/**
+ * Why a room could not be opened or joined, in words for a student. `detail` is net/'s error text.
+ * A code no room has fails at once ("Could not connect to peer smdg-…"); a room that does not
+ * answer in time is usually full, because net/ drops a fifth connection without a word.
+ */
+export function roomError(joining: boolean, detail: string): string {
+  const tail = 'Solo and one-screen play work without a network.'
+  if (!joining) return `Could not open a room (${detail}). ${tail}`
+  if (/^Could not connect to peer/.test(detail)) return `Could not join that room: no open room has that code. Check the code with your host. ${tail}`
+  if (/timed out/i.test(detail)) return `Could not join that room: it did not answer. It may be full (${MAX_PLAYERS} players at most), or the network may be blocking the connection. ${tail}`
+  return `Could not join that room (${detail}). ${tail}`
+}
 
 export interface Active {
   session: Session
@@ -142,7 +155,7 @@ export function App() {
       setActive({ session, roomCode: code })
     } catch (reason) {
       const detail = reason instanceof Error ? reason.message : 'no connection'
-      setError(`${joinCode ? 'Could not join that room' : 'Could not open a room'} (${detail}). Solo and one-screen play work without a network.`)
+      setError(roomError(joinCode !== null, detail))
     } finally {
       setBusy(false)
     }
@@ -160,7 +173,15 @@ export function App() {
     active?.session.close()
     setActive(null)
   }
-  useScrollToTop(active ? 'room' : 'start')
+  // A closed tab sends nothing by itself, and net/ does not notice a dead connection: without
+  // this the host kept the seat and the role, and guests were never told the host had gone.
+  useEffect(() => {
+    if (!active?.roomCode) return
+    addEventListener('pagehide', exit)
+    return () => removeEventListener('pagehide', exit)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active])
+  useScreen(active ? 'room' : 'start', active ? undefined : '')
 
   return (
     <div className="game-theme app">
@@ -188,31 +209,44 @@ export function App() {
 
 /** Under the Start screen: the no-network way to play together, which ui/start has no mode for. */
 function SameScreen({ disabled, onPlay }: { disabled: boolean; onPlay: (config: Config) => void }) {
-  const [scenarioId, setScenarioId] = useState(SCENARIOS[0]?.scenario_id ?? '')
+  const [scenarioId, setScenarioId] = useState(scenarios[0]?.scenario_id ?? '')
+  const [difficulty, setDifficulty] = useState<Difficulty>('normal')
   const submit = (event: FormEvent) => {
     event.preventDefault()
-    const config = SCENARIOS.find((scenario) => scenario.scenario_id === scenarioId)
+    const config = getScenario(scenarioId, difficulty)
     if (config) onPlay(config)
   }
   return (
     <form className="app-same-screen" onSubmit={submit} aria-labelledby="app-same-screen-title">
-      <div>
-        <h2 id="app-same-screen-title">One screen, whole crew</h2>
-        <p className="game-muted">No network needed. Everyone shares this device and every role’s controls are open.</p>
+      <div className="game-panel">
+        <div>
+          <h2 id="app-same-screen-title">One screen, whole crew</h2>
+          <p className="game-muted">No network needed. Everyone shares this device and every role’s controls are open.</p>
+        </div>
+        <label>
+          Mission
+          <select className="game-field" value={scenarioId} onChange={(event) => setScenarioId(event.target.value)} disabled={disabled}>
+            {scenarios.map((scenario) => (
+              <option key={scenario.scenario_id} value={scenario.scenario_id}>
+                {scenario.title}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Difficulty
+          <select className="game-field" value={difficulty} onChange={(event) => setDifficulty(event.target.value as Difficulty)} disabled={disabled}>
+            {LEVELS.map((level) => (
+              <option key={level} value={level}>
+                {DIFFICULTIES[level].label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <button type="submit" className="game-button" disabled={disabled || scenarioId === ''}>
+          Play on one screen
+        </button>
       </div>
-      <label>
-        Mission
-        <select className="game-field" value={scenarioId} onChange={(event) => setScenarioId(event.target.value)} disabled={disabled}>
-          {SCENARIOS.map((scenario) => (
-            <option key={scenario.scenario_id} value={scenario.scenario_id}>
-              {scenario.title}
-            </option>
-          ))}
-        </select>
-      </label>
-      <button type="submit" className="game-button" disabled={disabled || scenarioId === ''}>
-        Play on one screen
-      </button>
     </form>
   )
 }
@@ -238,7 +272,13 @@ export function Room({ active, onExit }: { active: Active; onExit: () => void })
   const { stage, notice, state, players, me } = useSession(session)
   /** Each player reads the briefing on their own screen and goes on when they are ready. */
   const [briefed, setBriefed] = useState(false)
-  useScrollToTop(stage === 'lobby' || stage === 'closed' ? stage : !briefed && state.metrics.phase === 'design' ? 'briefing' : 'game')
+  // A guest learns the scenario from the host's state.
+  const config = SCENARIOS.find((scenario) => scenario.scenario_id === state.scenario_id)
+  const briefing = !briefed && state.metrics.phase === 'design'
+  useScreen(
+    stage === 'lobby' || stage === 'closed' ? stage : briefing ? 'briefing' : 'game',
+    stage === 'lobby' ? 'Crew lobby' : stage === 'closed' ? 'Room closed' : !config ? 'Unknown mission' : briefing ? `Briefing · ${config.title}` : undefined,
+  )
 
   if (stage === 'lobby') {
     return (
@@ -257,8 +297,6 @@ export function Room({ active, onExit }: { active: Active; onExit: () => void })
   if (stage === 'closed') {
     return <Closed title="The room is closed" text={notice ?? 'The connection to the room was lost.'} onExit={onExit} />
   }
-  // A guest learns the scenario from the host's state.
-  const config = SCENARIOS.find((scenario) => scenario.scenario_id === state.scenario_id)
   if (!config) {
     return (
       <Closed
@@ -269,7 +307,7 @@ export function Room({ active, onExit }: { active: Active; onExit: () => void })
     )
   }
   // Someone who joins after launch goes straight to the flight.
-  if (!briefed && state.metrics.phase === 'design') {
+  if (briefing) {
     return <Briefing config={config} onStart={() => setBriefed(true)} onBack={onExit} />
   }
   return <GameScreen session={session} config={config} onExit={onExit} roomCode={roomCode} daily={active.daily} />
@@ -291,13 +329,15 @@ export function GameScreen({ session, config, onExit, roomCode, daily }: GameScr
   const snapshot = useSession(session)
   const { state, notice, players, me } = snapshot
   const designing = state.metrics.phase === 'design'
-  useScrollToTop(designing ? 'design' : 'flight')
+  useScreen(designing ? 'design' : 'flight')
+  // The builder has its own h1; the flight and the results have none, so the bar's title is theirs.
+  const Title = designing ? 'span' : 'h1'
   const backToBuilder = () => session.send({ type: 'reset', payload: {} })
 
   return (
     <div {...(designing ? { className: 'app-page' } : DARK_ONLY)}>
       <header className="app-bar">
-        <span className="app-bar-title">{config.title}</span>
+        <Title className="app-bar-title">{config.title}</Title>
         {roomCode && (
           <details className="app-crew-menu">
             <summary className="game-button app-small">
@@ -309,7 +349,7 @@ export function GameScreen({ session, config, onExit, roomCode, daily }: GameScr
             </div>
           </details>
         )}
-        <SoundToggle />
+        <SoundToggle className="app-small" />
         <button type="button" className="game-button app-small" onClick={onExit}>
           Main menu
         </button>
@@ -326,22 +366,42 @@ export function GameScreen({ session, config, onExit, roomCode, daily }: GameScr
           <Design session={session} config={config} />
         ) : (
           // Unmounts on reset, so every launch starts it fresh.
-          <Flight session={session} config={config} daily={daily} />
+          <main>
+            <Flight session={session} config={config} daily={daily} />
+          </main>
         )}
       </ErrorBoundary>
     </div>
   )
 }
 
-/** Every new screen starts at the top of the page; without this the old scroll position carried over. */
-function useScrollToTop(screen: string) {
+/** False until the page has shown its first screen: loading the page must not move focus. */
+let shown = false
+
+/**
+ * Every new screen starts at the top of the page (the old scroll position carried over), names
+ * itself in the tab title, and puts focus on its heading, so keyboard and screen-reader players
+ * are told the screen changed and Tab starts from its top. Pass `title` only from the component
+ * that decides the screen: '' is the bare game name.
+ */
+function useScreen(screen: string, title?: string) {
   useLayoutEffect(() => {
     window.scrollTo(0, 0)
+    if (title !== undefined) document.title = title ? `${title} · ${GAME_NAME}` : GAME_NAME
+    const heading = document.querySelector<HTMLElement>('main h1') ?? document.querySelector<HTMLElement>('main h2')
+    if (shown && heading) {
+      heading.tabIndex = -1
+      heading.focus({ preventScroll: true })
+    }
+    shown = true
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screen])
 }
 
-/** A ref that never changes, so React calls it once, when the element appears. */
-const focusOnMount = (node: HTMLElement | null) => node?.focus()
+type SpaceWeatherData = typeof import('../data/space-weather')
+let weatherData: SpaceWeatherData | null = null
+/** 340 kB of real NASA data. Asked for while the mission is designed, so the flight has its weather strip from the first frame. */
+const loadWeather = () => import('../data/space-weather').then((data) => (weatherData = data), () => null)
 
 /** The design phase: the builder with save-and-share under it, then the GO / NO-GO poll before launch. */
 function Design({ session, config }: { session: Session; config: Config }) {
@@ -349,12 +409,12 @@ function Design({ session, config }: { session: Session; config: Config }) {
   const chance = useChance(config, state.params, !state.issues.some((i) => i.severity === 'error'))
   /** The builder's Launch button opens the poll; the poll's Launch button sends the command. */
   const [polling, setPolling] = useState(false)
-  useScrollToTop(polling ? 'poll' : 'builder')
+  useScreen(polling ? 'poll' : 'builder', `${polling ? 'GO / NO-GO poll' : 'Builder'} · ${config.title}`)
+  useEffect(() => void loadWeather(), [])
 
   if (polling) {
     return (
-      // Focused when it opens, so keyboard and screen-reader players land on the poll, not at the top of the page.
-      <main className="app-poll" tabIndex={-1} ref={focusOnMount}>
+      <main className="app-poll">
         <GoNoGoPoll
           issues={state.issues}
           onLaunch={() => session.send({ type: 'launch', payload: {} })}
@@ -364,8 +424,11 @@ function Design({ session, config }: { session: Session; config: Config }) {
     )
   }
   return (
-    <>
-      <BuilderTutorial />
+    <main>
+      {/* ui/tutorial's panel has no margin of its own: line it up with the builder under it. */}
+      <div className="app-tips">
+        <BuilderTutorial />
+      </div>
       <MissionBuilder
         state={state}
         send={(command) => (command.type === 'launch' ? setPolling(true) : session.send(command))}
@@ -377,7 +440,7 @@ function Design({ session, config }: { session: Session; config: Config }) {
         <h2 id="app-share-title">Save, share and compare designs</h2>
         <SharePanel state={state} send={session.send} />
       </section>
-    </>
+    </main>
   )
 }
 
@@ -411,20 +474,20 @@ export function weatherStart(config: Config, seed: number): string {
   return new Date(Date.UTC(1996, 0, 1) + ((Math.abs(Math.trunc(seed)) * 7919) % 9500) * DAY_MS).toISOString().slice(0, 10)
 }
 
-type SpaceWeatherData = typeof import('../data/space-weather')
-
 /** Everything after launch: (the launch sequence,) cruise and operations, then the results with the personal best. */
 function Flight({ session, config, daily }: { session: Session; config: Config; daily?: DailyMission }) {
   const { state, events, paused, speed, players, me } = useSession(session)
   const [launchDone, setLaunchDone] = useState(false)
-  // 340 kB of real NASA data, so it is loaded only once a mission flies.
-  const [weather, setWeather] = useState<SpaceWeatherData | null>(null)
+  const [weather, setWeather] = useState(weatherData)
   useEffect(() => {
-    if (session.getSnapshot().state.status !== 'ended') playSound('launch') // Flight mounts when the mission leaves design
-    void import('../data/space-weather').then(setWeather, () => {})
+    // Flight mounts when the mission leaves design, but also for a late joiner and after a crash screen: those are not a launch.
+    const now = session.getSnapshot().state
+    if (now.status !== 'ended' && Number(now.metrics.mission_day) < 1) playSound('launch')
+    if (!weather) void loadWeather().then(setWeather) // a late joiner never saw the builder
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   const ended = state.status === 'ended'
+  useScreen(ended ? 'results' : 'flight', `${ended ? 'Results' : 'Flight'} · ${config.title}`)
   // "What would have fixed it": the flown mission rerun with every single change, once, when it ends.
   const fixes = useMemo(
     () => (ended ? whatIf({ ...withCards(config), seed: daily?.seed ?? config.seed }, getDatasets(config.datasets), state.params) : undefined),

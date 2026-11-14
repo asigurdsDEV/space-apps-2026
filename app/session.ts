@@ -222,11 +222,10 @@ export function createHostSession(
   options: HostSessionOptions = {},
 ): Session {
   const hostId = transport.playerId
-  // The policy callback is unused: HostRoom.authorize refuses players with no role, but the
-  // contract lets anyone cover an unclaimed role, so commands are checked with canSend below.
-  const newRoom = (hostName: string) => new HostRoom<Role, Command>(hostId, hostName, ROLES, () => true)
+  // The policy callback is unused: who may send a command also depends on which roles are
+  // taken and on the waiting anomaly card, so commands are checked with canSend in attempt().
+  const room = new HostRoom<Role, Command>(hostId, name, ROLES, () => true)
   const listeners = new Set<() => void>()
-  let room = newRoom(name)
   let players: Player[] = room.players
   let stage: SessionSnapshot['stage'] = 'lobby'
   let notice: string | null = null
@@ -329,16 +328,6 @@ export function createHostSession(
     broadcast({ type: 'rejected', payload: command ? { player_id, reason, command } : { player_id, reason } })
   }
 
-  // HostRoom cannot take a role back, so build a new room with every other seat and role as it was.
-  function release(id: string): void {
-    const old = room.players
-    room = newRoom(old[0].name)
-    for (const player of old) {
-      if (!player.is_host) room.join(player.player_id, player.name)
-      if (player.role && player.player_id !== id) room.claimRole(player.player_id, player.role)
-    }
-  }
-
   /** Check the sender's role, then run the command. Returns why it was refused, or null. */
   function attempt(player: Player, command: Command): string | null {
     if (command.type === 'set_param') {
@@ -376,12 +365,8 @@ export function createHostSession(
         return
       }
       case 'claim_role': {
-        const { role } = message.payload
-        if (role === null) release(from)
-        else {
-          const result = room.claimRole(from, role)
-          if (!result.ok) return reject(from, result.reason)
-        }
+        const result = room.claimRole(from, message.payload.role)
+        if (!result.ok) return reject(from, result.reason)
         return rosterChanged()
       }
       case 'command': {
@@ -439,11 +424,8 @@ export function createHostSession(
     claimRole(role) {
       if (closed) return
       notice = sticky
-      if (role === null) release(hostId)
-      else {
-        const result = room.claimRole(hostId, role)
-        if (!result.ok) notice = result.reason
-      }
+      const result = room.claimRole(hostId, role)
+      if (!result.ok) notice = result.reason
       rosterChanged()
     },
     start() {
