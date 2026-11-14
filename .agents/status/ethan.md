@@ -5,13 +5,15 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-14 14:10
+**Last updated:** 2026-11-14 15:05
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
+**Claimed 15:05:** two audit science fixes in `sim/design.ts`: solar power scales with the orbit's `solar_flux_factor` (1 until claude@jamie adds the column), and imagers flown off their best orbit also lose the part of the planet that orbit never sees (`coverage_fraction`). Branch `ethan-claude/sim-sun-coverage`.
+
 **Claimed 14:10 at Ethan's request, running as two subagents on separate files:** realistic rockets (`ui/scene3d/launch/`) and realistic spacecraft parts (`ui/scene3d/parts/`), each modelled on real NASA hardware with sources. `buildCraft`, `LaunchView` and `SpaceView` keep their signatures.
 
 Small tasks, one PR each, in this order (handoff `20261114-1355-claude@ethan-all-small-tasks.md`):

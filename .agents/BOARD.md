@@ -37,11 +37,9 @@ These are new work packages, not active claims. Suggested owners claim only thei
 ### Game design (decision 004, proposed, see docs/game-design/GAME_DESIGN.md §8)
 
 ### Accuracy audit + awards push (claude@sarah 18:45, Sarah's request; full report: docs/game-design/ACCURACY_AUDIT.md)
-- [ ] (light) [P0] **Science fix: solar power falls with distance from the Sun.** Mars gets ~43% of Earth's sunlight (1/1.524² = 0.43); sim gives full power at Mars. Multiply solar `power_w` by orbit `solar_flux_factor` (RTG unaffected) — sim/design.ts — owner: claude@ethan (or claude@aiden if Ethan is at his limit, as with what-if) — needs the data column below
 - [ ] (light) [P0] **Data fixes:** add orbit `solar_flux_factor` (earth/moon 1.0, mars 0.43); Falcon 9 `payload_tli_kg` must exceed `payload_tmi_kg` (TLI needs less energy than Mars; now 3,500 < 4,000); 3U CubeSat total 4.5 kg > 4 kg CubeSat limit (set max_added 1.0); verify LRO launch mass (1,846 vs 1,916 kg); keep the Mars reference design winnable — data/ — owner: claude@jamie
 - [ ] (light) [P1] **Sandbox mode** (brief lists it): a 4th scenario with no science goal, a huge budget and random failures off, labelled Sandbox on Start — data/scenarios/ (+ PROGRAM) — owner: claude@jamie
 - [ ] (light) [P1] **Development time** (brief: Time = development + lifetime): give parts `build_months` and scenarios `deadline_months` so `behind_schedule` is live — data/ — owner: claude@jamie
-- [ ] (light) [P1] **Orbit coverage** (brief: orbit affects coverage): sim ignores `coverage_fraction`; scale imaging science by it (GEO sees ~42% of Earth) — sim/ — owner: claude@ethan (or claude@aiden)
 - [ ] (light) [P1] **Onboard computer + attitude control** (brief's component list): say in each bus description what flight computer / pointing it includes; builder shows it — data/catalogs/spacecraft-buses.json — owner: claude@jamie
 - [ ] (light) [P2] Rocket nozzle drawn on buses with `propulsion_delta_v_ms: 0` (3U, 6U) — ui/scene3d/ — owner: claude@ethan
 - [ ] (light) [P2] Glossary: Deep Space Network priority "such as a launch or landing" (card source says launches); add terms rtg, solar-flux, coverage — ui/learn/ — owner: cursor@kaipo
@@ -83,6 +81,8 @@ These are new work packages, not active claims. Suggested owners claim only thei
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
+- [ ] (light) [P0] **Science fix: solar power falls with distance from the Sun.** Mars gets ~43% of Earth's sunlight (1/1.524² = 0.43); sim gives full power at Mars. Multiply solar `power_w` by orbit `solar_flux_factor` (RTG unaffected) — sim/design.ts — owner: claude@ethan (or claude@aiden if Ethan is at his limit, as with what-if) — needs the data column below — claimed 15:05, branch `ethan-claude/sim-sun-coverage` — [claude@ethan]
+- [ ] (light) [P1] **Orbit coverage** (brief: orbit affects coverage): sim ignores `coverage_fraction`; scale imaging science by it (GEO sees ~42% of Earth) — sim/ — owner: claude@ethan (or claude@aiden) — claimed 15:05, branch `ethan-claude/sim-sun-coverage` — [claude@ethan]
 - [ ] (light) [P1] Re-run the four-device multiplayer rehearsal once Host online and Join are on the live site. Fill docs/MULTIPLAYER_TEST.md again (venue wifi, then a phone hotspot if wifi fails) — docs/MULTIPLAYER_TEST.md — needs: app loop merged and Pages serving Start — owner: cursor@kaipo — [cursor@kaipo]
 
 
