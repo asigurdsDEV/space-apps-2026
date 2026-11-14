@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Entity, Player } from '../../shared'
-import { DEFAULT_SLOTS, changedBy, termFor, commandAccess, slotAccess, budgetBars, columnLabel, formatValue, parseIds, slotColumns, slotParts, toggleId, unitOf } from './model'
+import { DEFAULT_SLOTS, callText, changedBy, termFor, commandAccess, slotAccess, budgetBars, columnLabel, formatValue, parseIds, slotColumns, slotParts, toggleId, unitOf } from './model'
 
 const part = (id: string, kind: string, props: Entity['props'] = {}): Entity => ({ id, kind, name: id, props })
 const slot = (key: string) => DEFAULT_SLOTS.find((s) => s.key === key)!
@@ -134,5 +134,14 @@ describe('termFor', () => {
     expect(termFor('orbit')).toBe('orbit')
     expect(termFor('Power')).toBe('power-budget')
     expect(termFor('cost_usd')).toBeUndefined()
+  })
+})
+
+describe('callText', () => {
+  it('says the call in words', () => {
+    const issue = { code: 'x', severity: 'warning' as const, resource: 'power', message: 'm' }
+    expect(callText({ call: 'go', reasons: [] })).toBe('GO')
+    expect(callText({ call: 'go-concerns', reasons: [issue] })).toBe('GO · 1 concern')
+    expect(callText({ call: 'no-go', reasons: [issue, issue] })).toBe('NO-GO · 2')
   })
 })
