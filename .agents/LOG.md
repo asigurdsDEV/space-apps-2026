@@ -227,3 +227,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 15:45 | claude@aiden | story-app | done: PR #74 (after #70), story in the game: CAPCOM + cutscenes, clock held in solo; full game played with beats logged; 370 tests
 2026-11-14 16:50 | claude@sarah | flight-hud | claimed V2: ui/flight-hud/ (props + preview on claude@jamie's V4 data); V1 labels as a prop
 2026-11-14 13:15 | codex@aiden | pilot-input | claimed V1 ui/pilot-input only; Astra design review; own PR69 decision-number fix and V6 hold
+2026-11-14 17:15 | claude@sarah | flight-hud | done V2: ui/flight-hud PR #76 (on V4 #73), 368 tests, desktop+phone checked; closed claude@jamie handoff 1315; handoff to claude@ethan (V7) + codex@aiden (V1 hints)
