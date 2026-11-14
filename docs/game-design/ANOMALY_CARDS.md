@@ -53,7 +53,7 @@ Numbers below are starting values for balance. claude@ethan may tune them. Keep 
 - **B. Keep running on half the memory:** `storage_mult(0.5)`. *"Keep your data, but storage is half the size from now on."*
 - **Story (Spirit rover, 2004):** Two weeks after landing on Mars, NASA's Spirit rover got stuck rebooting because of a problem with its flash memory. Engineers diagnosed it from Earth and fixed it by reformatting the memory, and Spirit went on to drive for years.
 - **Lesson:** storage and downlink work together. Data on board isn't science yet.
-- **source_url:** https://www.jpl.nasa.gov/news/mars-rover-spirit-restored-to-health/
+- **source_url:** https://www.jpl.nasa.gov/news/mars-rover-spirit-restored-to-health/ · completed repair and return to science (5 Feb 2004): https://science.nasa.gov/mission/mer-spirit/
 
 ### 5. `dust-storm`: planet-wide dust storm
 
@@ -63,7 +63,7 @@ Numbers below are starting values for balance. claude@ethan may tune them. Keep 
 - **B. Keep working on battery:** `chance(p_battery, [end_mission("power_loss")], [science_rate_mult(0.8, for_days: 12)])`, where `p_battery` = 0.5 with no battery or the smallest `capacity_wh`, 0.2 with a mid-size one, 0.05 with the largest. *"Bigger battery, better odds."*
 - **Story (Opportunity rover, 2018):** A global dust storm on Mars blocked the sunlight that powered NASA's Opportunity rover. It went silent in June 2018 and never woke up, after nearly 15 years of driving. Curiosity, powered by a nuclear generator instead of solar panels, kept working through the same storm.
 - **Lesson:** power source choice matters, and battery margin is insurance.
-- **source_url:** https://science.nasa.gov/missions/mer/nasas-opportunity-rover-mission-on-mars-comes-to-end/
+- **source_url:** https://science.nasa.gov/missions/mer/nasas-opportunity-rover-mission-on-mars-comes-to-end/ · Curiosity (nuclear-powered) kept working through the same storm: https://www.nasa.gov/missions/martian-dust-storm-grows-global-curiosity-captures-photos-of-thickening-haze/
 
 ### 6. `lost-contact`: spacecraft goes silent
 
@@ -73,7 +73,7 @@ Numbers below are starting values for balance. claude@ethan may tune them. Keep 
 - **B. Wait for it to fix itself:** `chance(0.55 × bus_reliability_factor, [lose_days(15)], [end_mission("lost_contact")])`. *"Free, but you might lose it for good."*
 - **Story (SOHO, 1998):** The Sun-watching SOHO observatory (ESA and NASA) lost contact in June 1998 after a command error sent it spinning. Teams found it by bouncing radar signals off it, slowly brought it back, and resumed science later that year. It was still observing 30 years after launch.
 - **Lesson:** ground stations are part of the mission, not just the spacecraft.
-- **source_url:** https://www.esa.int/Newsroom/Press_Releases/SOHO_spacecraft_located_with_ground-based_radar · https://soho.nascom.nasa.gov/operations/Recovery/recovery_diary.html
+- **source_url:** https://www.esa.int/Newsroom/Press_Releases/SOHO_spacecraft_located_with_ground-based_radar · https://soho.nascom.nasa.gov/operations/Recovery/recovery_diary.html · still operating decades later (mission history): https://science.nasa.gov/mission/soho/
 
 ### 7. `radiation-zone`: radiation hits in the South Atlantic Anomaly
 
