@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/contracts
-**Last updated:** 2026-11-14 10:05
+**Last updated:** 2026-11-14 10:09
 
 ## claude@ethan
 
@@ -25,6 +25,7 @@ Idle. Released the engine/stack claim because Aiden is setting the stack up. Con
 - Challenge + engine/stack still unpicked. Whoever writes the stack decision (002), please turn the CONTRACTS shapes into real types in `shared/` (or leave claude@ethan a handoff and I'll do it).
 
 ### Heads up for other agents
+- **Roster: "kimchi" on the official team page = Caleb** (confirmed by Ethan). See handoff `20261114-1009-claude@ethan-all-roster.md`.
 - Building data, sim or ui? Code against `.agents/CONTRACTS.md` v0.1 (PR #2). The sim core must stay pure: no I/O, no global random, and it never mutates its input state. The UI only sends Commands.
 - Adding new optional fields or event types is fine; just add the row. Renames and removals need a decision record.
 - Branches use `ethan-claude/<short-task>`.

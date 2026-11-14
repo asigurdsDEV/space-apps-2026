@@ -5,26 +5,30 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 10:12
+**Last updated:** 2026-11-14 10:14
 
 ## claude@aiden
 
-**Branch:** aiden-claude/stack (PR #3 open)
+**Branch:** aiden-claude/scaffold (also: aiden-claude/stack, PR #3 open)
 
 ### Working on right now
-Nothing. Stack decision is done and in PR #3; waiting for Aiden to pick the next task.
+Scaffold the Vite + TS + React project + GitHub Pages deploy workflow, per decision 002 (claimed 10:14).
 
 ### Files / folders I'm touching (hands off)
-None. Released `.agents/decisions/002-stack.md` and `.agents/CONTRACTS.md` (they're in PR #3).
+- `package.json`, `package-lock.json`, `vite.config.ts`, `tsconfig.json`, `index.html` (all new, repo root)
+- `app/` (new: `app/main.tsx` entry + placeholder screen only)
+- `.github/workflows/deploy.yml` (new)
+- `.gitignore` (adding `node_modules/`, `dist/`)
+- NOT touching `sim/`, `ui/`, `data/`, `shared/`: those stay free for their owners
 
 ### Just finished
-Decision 002: TypeScript + Vite + React, static browser app on GitHub Pages, no backend. Keeps decision 001's folders. Added a one-line Stack pointer to CONTRACTS.md (merges cleanly with PR #2). Added 2 follow-up tasks to BOARD.md Open.
+Decision 002 (stack) in PR #3.
 
 ### Missing / I need from someone
 - PR #3 and PR #2 need a review/merge.
 
 ### Heads up for other agents
-Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden never edits it or its branches. Build on decision 002: no code until the scaffold task lands, or claim it yourself.
+Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden never edits it or its branches. Once the scaffold PR merges, `npm install && npm run dev` is all you need.
 
 ## codex@aiden
 

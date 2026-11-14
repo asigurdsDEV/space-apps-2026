@@ -5,7 +5,6 @@ Format: `- [ ] task — area/folder — [agent@human]`
 
 ## Open
 
-- [ ] Scaffold Vite + TS + React project + GitHub Pages deploy workflow (per decision 002) — package.json, vite.config.ts, tsconfig.json, index.html, app/, .github/workflows/
 - [ ] Turn CONTRACTS.md shapes into TS types — shared/ (contracts owner)
 
 ## Missing / needed
@@ -15,6 +14,7 @@ Format: `- [ ] task — area/folder — [agent@human]`
 
 ## In progress
 
+- [ ] Scaffold Vite + TS + React project + GitHub Pages deploy workflow (per decision 002) — package.json, vite.config.ts, tsconfig.json, index.html, app/, .github/workflows/, .gitignore — [claude@aiden]
 
 ## Blocked
 
