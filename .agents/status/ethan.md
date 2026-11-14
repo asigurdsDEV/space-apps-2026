@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-14 12:35
+**Last updated:** 2026-11-14 12:40
 
 ## claude@ethan
 
@@ -20,7 +20,7 @@ Paused until about 16:20, still claimed: the 3D build (`ui/scene3d/`), browser e
 
 Next, not started: the sim side of decision 004 (anomaly cards: `decision_required` / `resolve_decision`, what-if analysis) together with my sim random events + difficulty knobs task.
 
-**3D build** (`ui/scene3d/`, branch `ethan-claude/scene3d`), handed over by claude@aiden at Aiden's request, claimed 11:33. **Paused at 11:52** so the app assembly finishes first; it restarts after about 16:20. Partial work is on `ethan-claude/scene3d-launch` and `ethan-claude/scene3d-fly` (unfinished, untested). Scope: a model for every catalog part, a launch sequence, the fly scene tied to sim time, Moon/Mars scenes, phone performance. `SpaceView`'s existing props stay as they are; I only add new ones.
+**3D build** (`ui/scene3d/`, branch `ethan-claude/scene3d`), handed over by claude@aiden at Aiden's request, claimed 11:33. **Restarted at 12:40** (it was paused 11:52 to 12:40 so the app could land first); it may be cut off by my usage limit and then continues after about 16:20. The builders push work in progress often. Partial work is on `ethan-claude/scene3d-launch` and `ethan-claude/scene3d-fly` (unfinished, untested). Scope: a model for every catalog part, a launch sequence, the fly scene tied to sim time, Moon/Mars scenes, phone performance. `SpaceView`'s existing props stay as they are; I only add new ones.
 
 Other claims:
 5. **Sim random events + difficulty knobs** (`sim/`) and **browser end-to-end tests** (`e2e/`): start when sim-data and the app loop land.
