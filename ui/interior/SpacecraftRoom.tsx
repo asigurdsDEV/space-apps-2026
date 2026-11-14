@@ -77,7 +77,7 @@ export function SpacecraftRoom({ state, send, paused, speed, decision, decisionB
     c.fps.setPlace(interactables(list, { send: sendWithSound, paused, speed, decision, decisionBlocked }), walls)
   }, [state, list, walls, craft, body, paused, speed, decision, decisionBlocked, send])
 
-  useEffect(() => cabin.current?.fps.setEnabled(enabled), [enabled])
+  useEffect(() => cabin.current?.setActive(enabled), [enabled])
 
   return (
     <div className={`sc${className ? ` ${className}` : ''}`}>

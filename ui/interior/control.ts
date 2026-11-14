@@ -29,6 +29,8 @@ export interface CabinScreens {
 
 export interface Cabin {
   fps: Fps
+  /** Off while a cutscene covers the view: nothing is drawn, so two 3D scenes never render at once. */
+  setActive(on: boolean): void
   show(screens: CabinScreens): void
   dispose(): void
 }
@@ -60,13 +62,17 @@ function label(text: string, sub?: string, w = 512, h = 128) {
 
 export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start' | 'yaw'>): Cabin {
   const renderer = new THREE.WebGLRenderer({ antialias: true }) // throws without WebGL; the component shows a fallback
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+  // 1.25× not the screen's 2×: ~60% fewer pixels to fill every frame.
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25))
   renderer.toneMapping = THREE.ACESFilmicToneMapping
   renderer.outputColorSpace = THREE.SRGBColorSpace
   host.appendChild(renderer.domElement)
+  if (import.meta.env.DEV) Object.assign(window, { __renderer: renderer }) // QA: __renderer.info.render.calls
 
   const scene = new THREE.Scene()
   scene.background = new THREE.Color(0x01030a)
+  // Only the world outside and the little craft move: the rest of the cabin's positions are computed once.
+  scene.matrixWorldAutoUpdate = false
   const camera = new THREE.PerspectiveCamera(72, 1, 0.05, 400)
   const pmrem = new THREE.PMREMGenerator(renderer)
   const envMap = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
@@ -142,7 +148,6 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   const craftHolder = new THREE.Group()
   craftHolder.position.set(0.5, DASH.top + 0.25, DASH.z)
   scene.add(craftHolder)
-  let craftKey = ''
   const controlMat = (c: number) => new THREE.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: 0.5 })
   const pauseBtn = box(0.22, 0.08, 0.22, 1.4, DASH.top + 0.04, DASH.z + 0.05, controlMat(0x63dbad))
   const speedBtn = box(0.22, 0.08, 0.22, 1.9, DASH.top + 0.04, DASH.z + 0.05, controlMat(0xffd166))
@@ -241,9 +246,11 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
     gltf.scene.rotation.x = Math.PI // hangs from the ceiling
     gltf.scene.position.set(0, y1, 0)
     scene.add(gltf.scene)
+    gltf.scene.updateMatrixWorld(true)
   }, undefined, () => {})
 
   // ---- Walking.
+  scene.updateMatrixWorld(true)
   const fps = createFps(renderer.domElement, camera, { ...options, start: START.pos, yaw: START.yaw })
   const resize = () => {
     const { clientWidth: cw, clientHeight: ch } = host
@@ -256,35 +263,60 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   observer.observe(host)
   resize()
   let worldTurn = 0
+  /** Screens redraw only when their numbers change, and at most 4 times a second (the sim can step 60 times a second). */
+  let screensKey = ''
+  let screensAt = 0
+  let latest: CabinScreens | null = null
+  let active = true
+  let lastCraft: CraftSpec | null | undefined
   let alarmKey: string | null = null
   let last = performance.now()
   let frame = requestAnimationFrame(function loop(now) {
     const dt = Math.min((now - last) / 1000, 0.1)
     last = now
+    frame = requestAnimationFrame(loop)
+    if (!active) return
     fps.update(dt)
     world.rotation.y = worldTurn
     craftHolder.rotation.y += dt * 0.4
+    world.updateMatrixWorld(true)
+    craftHolder.updateMatrixWorld(true)
+    if (latest && now - screensAt > 250) {
+      const sk = `${latest.gauges.map((g) => g.value).join('|')}|${Math.round(latest.storage * 100)}`
+      if (sk !== screensKey) {
+        screensKey = sk
+        screensAt = now
+        drawGauges(gaugeScreen, latest.gauges)
+        if (storageScreen) drawStorage(storageScreen, latest.storage)
+      }
+    }
     const pulse = alarm ? 0.5 + 0.5 * Math.sin(now / 160) : 0
     alarmLight.intensity = 25 * pulse
     cabinLight.intensity = alarm ? 1.2 : 1.9
     const flash = alarmKey && lights.get(alarmKey)
     if (flash) flash.emissiveIntensity = 0.3 + 1.5 * pulse
     renderer.render(scene, camera)
-    frame = requestAnimationFrame(loop)
   })
 
   return {
     fps,
+    setActive(on) {
+      active = on
+      fps.setEnabled(on)
+    },
     show(s) {
       const mk = s.modules.map((m) => `${m.key}:${m.part?.id ?? ''}`).join('|')
       if (mk !== modulesKey) {
         modulesKey = mk
+        screensKey = '' // the data core screen is new
         buildModules(s.modules)
+        moduleGroup.updateMatrixWorld(true)
       }
       const ck = s.decision ? `${s.decision.decision_id}|${mk}` : ''
       if (ck !== choicesKey) {
         choicesKey = ck
         buildChoices(s.decision, s.modules)
+        choiceGroup.updateMatrixWorld(true)
       }
       alarm = !!s.decision
       const hit = s.decision ? moduleFor(s.decision.console, s.modules) : undefined
@@ -298,9 +330,8 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
       worldMat.color.setHex(WORLD_COLOUR[s.body] ?? WORLD_COLOUR.earth!)
       atmosphere.visible = s.body !== 'moon'
       worldTurn = (s.day / 365) * Math.PI * 2 * 6 // a few turns over a year: you can see it move at speed
-      const craftK = JSON.stringify(s.craft)
-      if (craftK !== craftKey) {
-        craftKey = craftK
+      if (s.craft !== lastCraft) {
+        lastCraft = s.craft
         for (const c of [...craftHolder.children]) {
           craftHolder.remove(c)
           disposeObject(c)
@@ -312,8 +343,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
           craftHolder.add(craft)
         }
       }
-      drawGauges(gaugeScreen, s.gauges)
-      if (storageScreen) drawStorage(storageScreen, s.storage)
+      latest = s // the frame loop redraws the screens from it
       const controls = `${s.paused}|${s.speed}`
       if (controls !== controlsKey) {
         controlsKey = controls

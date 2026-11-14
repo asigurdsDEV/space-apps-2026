@@ -112,13 +112,17 @@ const callWord = (c: ConsoleCall) => (c.call === 'go' ? 'GO' : c.call === 'no-go
 
 export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, 'start' | 'yaw'>): ControlRoom {
   const renderer = new THREE.WebGLRenderer({ antialias: true }) // throws without WebGL; the component shows a fallback
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+  // 1.25× not the screen's 2×: ~60% fewer pixels to fill, and a big room hardly looks softer.
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25))
   renderer.toneMapping = THREE.ACESFilmicToneMapping
   renderer.outputColorSpace = THREE.SRGBColorSpace
   host.appendChild(renderer.domElement)
+  if (import.meta.env.DEV) Object.assign(window, { __renderer: renderer }) // QA: __renderer.info.render.calls
 
   const scene = new THREE.Scene()
   scene.background = new THREE.Color(0x070a12)
+  // Nothing in the room moves by itself: positions are computed once (and again when something is rebuilt), not every frame.
+  scene.matrixWorldAutoUpdate = false
   const camera = new THREE.PerspectiveCamera(70, 1, 0.05, 80)
   const pmrem = new THREE.PMREMGenerator(renderer)
   const envMap = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
@@ -216,6 +220,7 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
     loader.load(`${import.meta.env.BASE_URL}visual-assets/world/${file}`, (gltf) => {
       if (disposed) return disposeObject(gltf.scene)
       place(gltf.scene)
+      scene.updateMatrixWorld(true)
       dirty = true
     }, undefined, () => {})
   prop('console-desk.glb', (model) => {
@@ -233,6 +238,9 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
   scene.add(rackGroup)
   let rackKey = ''
   const plates = new Map<string, { frame: THREE.Mesh; part: THREE.Mesh }>()
+  /** Part models, hidden when you're far from them (most of the room's draw calls); their name strips stay. */
+  const models: THREE.Object3D[] = []
+  const NEAR = 7
   const frameMat = new THREE.MeshBasicMaterial({ color: 0x63dbad, toneMapped: false })
   const cabinetMat = new THREE.MeshStandardMaterial({ color: 0x232b3d, roughness: 0.7 })
 
@@ -242,6 +250,7 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
       disposeObject(child)
     }
     plates.clear()
+    models.length = 0
     for (const rack of racks) {
       const rot = Math.atan2(rack.face[0], rack.face[1])
       const cab = new THREE.Mesh(new THREE.BoxGeometry(rack.length + 0.2, 2.1, 0.5), cabinetMat)
@@ -312,6 +321,7 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
           shelf.position.set(item.at[0] + item.face[0] * 0.2, item.at[1] - 0.1, item.at[2] + item.face[1] * 0.2)
           shelf.rotation.y = rot
           rackGroup.add(model, shelf)
+          models.push(model)
         }
         rackGroup.add(frame, part)
         plates.set(`${rack.key}:${item.part.id}`, { frame, part })
@@ -415,6 +425,7 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
     })
 
   // ---- Walking.
+  scene.updateMatrixWorld(true)
   const fps = createFps(renderer.domElement, camera, { ...options, start: START.pos, yaw: START.yaw })
   let dirty = true
   const resize = () => {
@@ -433,6 +444,7 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
   let frame = requestAnimationFrame(function loop(now) {
     const moved = fps.update((now - last) / 1000)
     last = now
+    if (moved || dirty) for (const m of models) m.visible = m.position.distanceTo(camera.position) < NEAR
     if (moved || dirty) renderer.render(scene, camera)
     dirty = false
     frame = requestAnimationFrame(loop)
@@ -469,6 +481,7 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
       drawWall(s)
       drawGauges(s.bars)
       drawDesks(s.calls)
+      scene.updateMatrixWorld(true) // racks or the craft may have been rebuilt
       dirty = true
     },
     dispose() {

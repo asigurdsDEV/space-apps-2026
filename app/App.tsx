@@ -26,7 +26,7 @@ import '../ui/learn/learn.css'
 import { Crew, Notice, RoomCode } from './Crew'
 import { ErrorBoundary } from './ErrorBoundary'
 import { StoryLayer } from './StoryLayer'
-import { Walk, WalkTo } from './Walk'
+import { WalkTo } from './Walk'
 import { World, WORLD_3D } from './World'
 import { startDriver, timerClock } from './driver'
 import { createGame, type Game } from './game'
@@ -324,11 +324,11 @@ export function Room({ active, onExit }: { active: Active; onExit: () => void })
       />
     )
   }
-  // Decision 007: the first-person 3D game (app/World.tsx), behind ?world=3d until it is the default.
+  // Decision 007: the game is first-person 3D (app/World.tsx). ?world=classic, the Classic view button or no WebGL: these 2D screens.
   if (WORLD_3D) return <World active={active} config={config} onExit={onExit} />
-  // The hall stays mounted under every screen from here on, so each screen change is a walk (app/Walk.tsx).
+  // shortcut: the WalkTo lines below do nothing without the old walk-behind-the-screens hall (removed: it hid each screen for up to 2.4 s and drew a second 3D scene); delete them once nobody needs classic's history.
   return (
-    <Walk state={state} title={config.title}>
+    <>
       {/* Someone who joins after launch goes straight to the flight. */}
       {briefing ? (
         <>
@@ -339,7 +339,7 @@ export function Room({ active, onExit }: { active: Active; onExit: () => void })
       ) : (
         <GameScreen session={session} config={config} onExit={onExit} roomCode={roomCode} daily={active.daily} />
       )}
-    </Walk>
+    </>
   )
 }
 
