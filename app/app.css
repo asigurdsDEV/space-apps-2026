@@ -1,0 +1,143 @@
+/* The shell only: page, start screen, top bar and notice. Every class starts with .app.
+   The builder (.mb) and mission screens (.mv) bring their own styles. */
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+body {
+  background: #0b1020;
+}
+
+.app-start,
+.app-bar,
+.app-notice {
+  --app-bg: #0b1020;
+  --app-card: #141b33;
+  --app-line: #26304f;
+  --app-text: #e8ecf8;
+  --app-muted: #9aa5c4;
+  --app-accent: #5b8cff;
+  --app-warn: #f5a524;
+
+  color: var(--app-text);
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  line-height: 1.45;
+  box-sizing: border-box;
+}
+
+/* ---------- start screen */
+.app-start {
+  min-height: 100vh;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+}
+.app-start p,
+.app-start h1 {
+  margin: 0;
+}
+.app-kicker {
+  color: var(--app-accent);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.app-start-title {
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  line-height: 1.15;
+}
+.app-objective {
+  font-size: 1.1rem;
+  color: var(--app-text);
+}
+.app-start-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+.app-start-note {
+  color: var(--app-muted);
+  font-size: 0.85rem;
+}
+
+/* ---------- buttons */
+.app-button {
+  font: inherit;
+  font-weight: 600;
+  color: var(--app-text);
+  background: var(--app-card);
+  border: 1px solid var(--app-line);
+  border-radius: 10px;
+  padding: 12px 18px;
+  min-height: 44px;
+  cursor: pointer;
+}
+.app-button:hover:not(:disabled) {
+  border-color: var(--app-accent);
+}
+.app-button:focus-visible {
+  outline: 2px solid var(--app-accent);
+  outline-offset: 2px;
+}
+.app-button:disabled {
+  color: var(--app-muted);
+  border-style: dashed;
+  cursor: not-allowed;
+}
+.app-button-primary {
+  background: var(--app-accent);
+  border-color: var(--app-accent);
+  color: #08101f;
+}
+.app-button-primary:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+.app-button-small {
+  padding: 6px 12px;
+  min-height: 36px;
+  font-size: 0.85rem;
+}
+.app-soon {
+  margin-left: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--app-line);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ---------- in-game top bar + notice */
+.app-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 16px;
+  background: var(--app-bg);
+  border-bottom: 1px solid var(--app-line);
+}
+.app-bar-title {
+  font-weight: 600;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.app-notice {
+  margin: 0;
+  padding: 10px 16px;
+  background: var(--app-card);
+  border-bottom: 1px solid var(--app-line);
+  border-left: 4px solid var(--app-warn);
+}
