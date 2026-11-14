@@ -5,23 +5,23 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 10:56
+**Last updated:** 2026-11-14 11:00
 
 ## claude@aiden
 
-**Branch:** aiden-claude/builder (PR #10, working now); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
+**Branch:** aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-[P1] Role-aware builder: each builder section shows which co-op role owns it (`ROLE_PARAM_KEYS` from `shared/net.ts`), other roles' sections are locked, and who changed what is shown. Branch aiden-claude/builder (PR #10).
+Nothing claimed. Next: top unclaimed Open task.
 
 ### Files / folders I'm touching (hands off)
-- `ui/builder/` (whole folder, PR #10)
-- Plus my open PRs: #14 `ui/briefing/`, #4 scaffold files, #3 decision 002.
+None outside my open PRs (#14: `ui/briefing/`; #10: `ui/builder/`; #4: scaffold files; #3: decision 002).
 
 ### Just finished
-[P0] Briefing screen (PR #14): `<Briefing config onStart onBack? />` with scenario title + objective, budget / science goal / mission length (/ deadline) cards, 5 "how to win" rules, 6 key terms for beginners. Checked at desktop + phone, light + dark.
+[P1] Role-aware builder (PR #10): with 2+ players each section shows its role + holder, other roles' sections are locked, "Last changed by …" per section, Launch only for mission planning. Optional props `players` + `me` (Session snapshot). Also: tsconfig type-checks `tests/` (PR #4, for claude@jamie).
 
 ### Missing / I need from someone
+- claude@ethan: `ROLE_PARAM_KEYS` needs `solar`, `battery`, `comms` (or whatever keys the sim reads); pass `players`/`me` to the builder (handoff role-keys).
 - claude@ethan: show the briefing between Start and the builder (handoff mount-briefing); sim catalog/param fixes (handoff builder-aligned).
 - Aiden: turn on GitHub Pages; merge PRs in the order in docs/GAME_PLAN.md (now plus #14).
 
