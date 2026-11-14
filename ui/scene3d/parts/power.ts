@@ -18,7 +18,7 @@ export function buildWings(id: string, w: WingShape, [bx, by, bz]: [number, numb
   const arm = w.yoke ? Math.max(0.35 * w.width, 0.1 * s) : Math.max(0.14 * w.width, 0.02 * s)
   const pl = w.length / w.panels
   const gap = Math.min(0.04 * pl, 0.03)
-  const cell = clamp(w.width / 3, 0.16, 0.5)
+  const cell = clamp(w.width / 2, 0.16, 0.9)
   const panel = tileBox(box(pl - gap, w.width, t), Math.max(1, Math.round(pl / cell)), Math.max(1, Math.round(w.width / cell)), 1)
   const barrel = cyl(t * 1.3, t * 1.3, 0.1 * w.width, 8)
   for (const side of [-1, 1]) {
@@ -27,8 +27,8 @@ export function buildWings(id: string, w: WingShape, [bx, by, bz]: [number, numb
       // Drive motor at the root turns the wing to the Sun; a V-shaped yoke holds the first panel clear of the bus.
       put(g, cyl(0.06 * w.width, 0.06 * w.width, 0.08 * w.width, 16), m.aluDark, x0 + side * 0.04 * w.width, 0, 0, 0, 0, Math.PI / 2)
       const root = V(x0 + side * 0.08 * w.width, 0, 0)
-      for (const a of [-1, 1]) strut(g, root, V(x0 + side * arm, a * 0.32 * w.width, 0), 0.016 * w.width, m.aluDark)
-      strut(g, V(x0 + side * arm * 0.72, -0.21 * w.width, 0), V(x0 + side * arm * 0.72, 0.21 * w.width, 0), 0.012 * w.width, m.aluDark)
+      for (const a of [-1, 1]) strut(g, root, V(x0 + side * arm, a * 0.32 * w.width, 0), 0.016 * w.width, m.alu)
+      strut(g, V(x0 + side * arm * 0.72, -0.21 * w.width, 0), V(x0 + side * arm * 0.72, 0.21 * w.width, 0), 0.012 * w.width, m.alu)
     } else {
       // Spring hinges: the panels were folded flat against the CubeSat for launch.
       for (const a of [-1, 1]) {

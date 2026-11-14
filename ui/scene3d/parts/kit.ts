@@ -244,11 +244,13 @@ function build() {
   const foil = (color: number, roughness: number, metalness = 1) =>
     std({ color, metalness, roughness, map: quilt, normalMap, normalScale: new THREE.Vector2(0.9, 0.9) })
   return {
-    goldMLI: foil(0xe2ab45, 0.3),
-    blackMLI: foil(0x1b1c21, 0.38, 0.7),
+    goldMLI: foil(0xf0b84a, 0.26),
+    goldDouble: Object.assign(foil(0xf0b84a, 0.26), { side: THREE.DoubleSide }),
+    blackMLI: foil(0x2b2d35, 0.3, 0.85),
     silverMLI: foil(0xd4d8df, 0.27),
     alu: std({ color: 0xc3c7cf, metalness: 0.9, roughness: 0.34 }),
     aluDark: std({ color: 0x24262c, metalness: 0.6, roughness: 0.5 }),
+    tape: std({ color: 0xd8d2b4, metalness: 0.45, roughness: 0.4 }),
     steel: std({ color: 0x8c919b, metalness: 1, roughness: 0.25 }),
     white: std({ color: 0xe6e8ec, metalness: 0, roughness: 0.65 }),
     whiteDouble: std({ color: 0xe6e8ec, metalness: 0, roughness: 0.6, side: THREE.DoubleSide }),

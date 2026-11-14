@@ -20,7 +20,7 @@ function turnstile(g: THREE.Group, s: number, foot: number) {
   const tape = box(len * 0.05, len, len * 0.006).translate(0, len / 2, 0)
   for (const a of [-1, 1]) for (const c of [-1, 1]) {
     put(g, box(b * 0.16, b * 0.1, b * 0.16), m.alu, a * b * 0.42, b * 0.13, c * b * 0.42)
-    const t = aim(put(g, tape, m.steel, a * b * 0.42, b * 0.17, c * b * 0.42), V(a, 0.3, c))
+    const t = aim(put(g, tape, m.tape, a * b * 0.42, b * 0.17, c * b * 0.42), V(a, 0.3, c))
     t.rotateY(Math.PI / 4)
   }
   g.userData.anchor = V(0, b * 0.15, 0)
@@ -86,14 +86,17 @@ function dish(g: THREE.Group, d: number, foot: number, o: DishStyle) {
   put(head, dishGeometry(R, f), o.grey ? m.greyDouble : m.whiteDouble, 0, hub, 0)
   put(head, new THREE.TorusGeometry(R, 0.012 * d, 6, 40), m.alu, 0, hub + depth, 0, Math.PI / 2)
   // Stiffening ribs behind the reflector.
-  const rib = box(0.012 * d, 0.05 * d, R * 0.82).translate(0, -0.034 * d, R * 0.52)
+  // A straight rib under a curved dish: it follows the tangent at half radius, a quarter of the depth below the vertex.
+  const rib = box(0.012 * d, 0.05 * d, R * 0.82).translate(0, -depth / 4 - 0.032 * d, R * 0.52)
   for (let i = 0; i < o.ribs; i++) {
     const r = new THREE.Group()
     r.position.y = hub
     r.rotation.y = (i / o.ribs) * Math.PI * 2
     head.add(r)
-    put(r, rib, m.aluDark).rotation.x = -Math.atan2(depth, R) * 0.95
+    put(r, rib, m.aluDark).rotation.x = -Math.atan2(depth, R)
   }
+  // The Mars dish wears a gold blanket on its back, against the cold of deep space.
+  if (o.amps) put(head, dishGeometry(R * 0.99, f), m.goldDouble, 0, hub - 0.006 * d, 0)
   if (o.amps) for (const a of [-1, 1]) put(head, box(0.14 * d, 0.07 * d, 0.2 * d), m.goldMLI, a * 0.2 * d, hub * 0.2, 0)
   const top = o.cassegrain ? hub + f * 0.78 : hub + f
   if (o.cassegrain) {
