@@ -13,13 +13,12 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 ### Interactive 3D overhaul (Aiden: both modes, spacecraft flight first; plan PR #69)
 These are new work packages, not active claims. Suggested owners claim only their isolated scope with the normal lock push. Ethan keeps ui/scene3d/, part models, launch/fly branches, app/sim/shared/e2e. No immediate change or response is needed from him; V7 is a later integration checkpoint. Existing Start/Lobby/Tutorial graphics remain codex@jamie's current task.
 
-- [ ] (heavy) [P1] V7 Integrate at a checkpoint chosen by existing owners: player-craft control/chase camera + one large scene + HUD; preserve published SpaceView and sim authority — ui/scene3d/ + app/ owner: claude@ethan; ui/mission/ owner: claude@sarah; cache/config owner: claude@aiden — needs: reviewed V1/V2/V4, optional V3; owner agreement on additive API; no current 3D work takeover
 
 
 
 ### First-person story (decision 005, Aiden 14:45: walk through the mission tasks, cutscenes, pop-outs; GAME_DESIGN.md §4.9)
 <!-- Split 15:50 at Aiden's request ("split it so we get as much done as we can within usage limits"): nothing here waits on claude@ethan. His claimed ui/scene3d/ work (part models, launch sequence, fly scene) stays his. New folders, so nobody collides. -->
-- [ ] (light) [P1] → The 3D rooms + guided walk are now **V6** (`ui/hangar/`, claude@aiden, In progress): same thing as decision 005's rooms, so one task
+- [x] (light) [P1] → The 3D rooms + guided walk are now **V6** (`ui/hangar/`, claude@aiden, Done, PR #80): same thing as decision 005's rooms, so one task
 
 ### Playtest 14:15 (claude@aiden played main start → results; details in handoff 20261114-1420 playtest)
 
@@ -37,19 +36,19 @@ These are new work packages, not active claims. Suggested owners claim only thei
 ### Game design (decision 004, proposed, see docs/game-design/GAME_DESIGN.md §8)
 
 ### Accuracy audit + awards push (claude@sarah 18:45, Sarah's request; full report: docs/game-design/ACCURACY_AUDIT.md)
-- [ ] (light) [P0] **Submission fixes for judging rules:** demo must be a **30-second video** (plan says ~3 min) or **≤ 7 slides**; replace "does not download a measured NASA dataset" (false now: NASA OMNI space weather, sourced real missions, real anomaly stories); update the "scaffold" status; add the full **References** list (three.js, PeerJS, React, Vite, NASA SPDF OMNI + GFZ Kp / WDC Kyoto Dst / NRCan F10.7 / SILSO sunspots, every NASA page in data + cards, GLB assets) — docs/SUBMISSION.md — owner: cursor@caleb
-- [ ] (light) [P0] **Science fix: solar power falls with distance from the Sun.** Mars gets ~43% of Earth's sunlight (1/1.524² = 0.43); sim gives full power at Mars. Multiply solar `power_w` by orbit `solar_flux_factor` (RTG unaffected) — sim/design.ts — owner: claude@ethan (or claude@aiden if Ethan is at his limit, as with what-if) — needs the data column below
 - [ ] (light) [P0] **Data fixes:** add orbit `solar_flux_factor` (earth/moon 1.0, mars 0.43); Falcon 9 `payload_tli_kg` must exceed `payload_tmi_kg` (TLI needs less energy than Mars; now 3,500 < 4,000); 3U CubeSat total 4.5 kg > 4 kg CubeSat limit (set max_added 1.0); verify LRO launch mass (1,846 vs 1,916 kg); keep the Mars reference design winnable — data/ — owner: claude@jamie
 - [ ] (light) [P1] **Sandbox mode** (brief lists it): a 4th scenario with no science goal, a huge budget and random failures off, labelled Sandbox on Start — data/scenarios/ (+ PROGRAM) — owner: claude@jamie
 - [ ] (light) [P1] **Development time** (brief: Time = development + lifetime): give parts `build_months` and scenarios `deadline_months` so `behind_schedule` is live — data/ — owner: claude@jamie
-- [ ] (light) [P1] **Orbit coverage** (brief: orbit affects coverage): sim ignores `coverage_fraction`; scale imaging science by it (GEO sees ~42% of Earth) — sim/ — owner: claude@ethan (or claude@aiden)
 - [ ] (light) [P1] **Onboard computer + attitude control** (brief's component list): say in each bus description what flight computer / pointing it includes; builder shows it — data/catalogs/spacecraft-buses.json — owner: claude@jamie
 - [ ] (light) [P2] Rocket nozzle drawn on buses with `propulsion_delta_v_ms: 0` (3U, 6U) — ui/scene3d/ — owner: claude@ethan
 - [ ] (light) [P2] Glossary: Deep Space Network priority "such as a launch or landing" (card source says launches); add terms rtg, solar-flux, coverage — ui/learn/ — owner: cursor@kaipo
-- [ ] (light) [P1] **Source link check:** every `source_url` in data/, docs/game-design/, ui/learn resolves (HTTP 200) and says what we claim; list failures — docs/qa/sources.md (new) — owner: codex@aiden
 - [ ] (light) [P1] Show each console's **priority** on the GO / NO-GO poll so co-op players negotiate before launch (GAME_DESIGN §4.7) — ui/gonogo/ — owner: claude@jamie
 
 ## Missing / needed
+
+- claude@ethan: Jamie wants all planets extremely realistic. May claude@jamie (1) build small NASA maps into ui/scene3d (inline, offline-safe) and (2) take the Earth/cloud/atmosphere shaders? Handoff 20261114-1830 real-planet-maps — [found by claude@jamie]
+
+- Source audit PR #90: catalog references are background for exact game values; add Spirit completed-repair/SOHO longevity citations, reconcile conflicting GRAIL launch masses, add GOES launch-year evidence and glossary provenance. LRO 1,846 kg is supported by cited NSSDCA source. Owners: data claude@jamie, story claude@sarah, glossary cursor@kaipo; report/source-audit handoff contains evidence — [found by codex@aiden]
 
 - Current-main integration check (8c0f3cb): V1/V2/V3/V4, rooms, cutscenes and launch are merged; app still does not mount PilotInput/FlightHud or Hangar, StoryLayer supplies no non-launch 3D children, public GLBs are absent from explicit PWA precache. Claude owns active room mounting; Caleb's 1340 handoff covers cutscene mounting. Ethan: Codex offers new ui/flight-training/ screen assembly to reduce V7b work, pending your exact scope/public FlightView API approval (handoff readiness-next). No claim or app/scene3d takeover — [found by codex@aiden]
 
@@ -83,8 +82,8 @@ These are new work packages, not active claims. Suggested owners claim only thei
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
-- [ ] (medium) [P2] Moon and Mars surface shaders + cruise transfer view in `SpaceView` — ui/scene3d/ (shaders.ts Moon/Mars branches, new cruise.ts, additive `cruise` mode) — owner: claude@jamie, yes from claude@ethan 14:20 (scope in handoff 20261114-1745) — [claude@jamie]
-- [ ] (medium) [P1] Walk between stations instead of switching screens: mount the V6 rooms behind the screens, walk on each screen change, task panels pop out at each station (falls back to today's screens with no WebGL) — app/ — needs: V6 — owner: claude@aiden (split from claude@ethan at Aiden's request 15:50) — [claude@aiden]
+- [ ] (light) [P1] Offline cache covers everything in public/ (the flight models from cursor@kaipo's V3 pack are not cached today), so flight training works on bad venue wifi — pwa/, vite.config.ts — owner: claude@aiden — [claude@aiden]
+- [ ] (heavy) [P1] V7 Integrate at a checkpoint chosen by existing owners: player-craft control/chase camera + one large scene + HUD; preserve published SpaceView and sim authority — ui/scene3d/ + app/ owner: claude@ethan; ui/mission/ owner: claude@sarah; cache/config owner: claude@aiden — needs: reviewed V1/V2/V4, optional V3; owner agreement on additive API; no current 3D work takeover — **claimed 15:25 by claude@ethan for the ui/scene3d/ + app/ part**, two PRs: V7a `ui/scene3d/flight/` (new folder: `FlightView`, player craft with chase camera, V4 targets, takes V1 intent, gives V2 `focus`), branch `ethan-claude/flight-view`; then V7b mount in `app/` (a "Flight training" button on the flight screen opens it over the mission with `<FlightHud>` + `<PilotInput>`; local training only, no sim commands) — [claude@ethan]
 - [ ] (light) [P1] Re-run the four-device multiplayer rehearsal once Host online and Join are on the live site. Fill docs/MULTIPLAYER_TEST.md again (venue wifi, then a phone hotspot if wifi fails) — docs/MULTIPLAYER_TEST.md — needs: app loop merged and Pages serving Start — owner: cursor@kaipo — [cursor@kaipo]
 
 
@@ -108,6 +107,12 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 
 ## Done
+- [x] (light) [P0] **Science fix: solar power falls with distance from the Sun** — sim/design.ts — [claude@ethan] — in PR #92: solar power × orbit `solar_flux_factor` (optional column, default 1, RTG unaffected). It takes effect when claude@jamie's data column lands.
+- [x] (light) [P1] **Orbit coverage** — sim/design.ts — [claude@ethan] — in PR #92: an imager off its `best_orbit` earns half its science × the orbit's `coverage_fraction`. `orbitScienceFactor` is exported from `sim` for the builder badge.
+
+- [x] (light) [P1] **Source link check:** every `source_url` in data/, docs/game-design/, ui/learn resolves (HTTP 200) and says what we claim; list failures — docs/qa/sources.md (new) — owner: codex@aiden — [codex@aiden] — in PR #90: 37 links checked (34 HTTP200, 3 HTTP403 readable via web), 1 template; complete evidence + owner findings
+- [x] (medium) [P1] Walk between stations instead of switching screens: mount the V6 rooms behind the screens, walk on each screen change, task panels pop out at each station (falls back to today's screens with no WebGL) — app/ — needs: V6 — owner: claude@aiden (split from claude@ethan at Aiden's request 15:50) — [claude@aiden] — in PR #87: hall behind every screen (`app/Walk.tsx`), walk on each screen change incl. the pad during launch, screens as panels; plain screens with no WebGL; full solo game played desktop + phone
+- [x] (light) [P0] **Submission fixes for judging rules** — docs/SUBMISSION.md — [cursor@caleb] — in PR #88: 30-second video or 7 slides, OMNI called measured data, live site is the game, full references list. URL checks stay with codex@aiden.
 - [x] (light) [P0] **30-second demo script + NASA data story** in PITCH/DEMO/NASA_SOURCES: real space weather drives storms, real missions on the debrief, real anomaly stories; audit report §Awards has the beat list — docs/PITCH.md, docs/DEMO.md, docs/NASA_SOURCES.md — owner: codex@jamie — [codex@jamie] — in PR #86: timed shots, 63-word narration, real NASA provenance and display-only weather boundary; 35 focused tests pass
 
 - [x] (medium) Accuracy + requirements + awards audit (docs/game-design/ACCURACY_AUDIT.md) and Team priorities card on the debrief (ui/mission/) — [claude@sarah] — in PR #85; findings are the 13 tasks under Open → "Accuracy audit + awards push"

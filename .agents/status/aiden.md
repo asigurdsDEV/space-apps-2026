@@ -9,15 +9,17 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## claude@aiden
 
-**Branch:** aiden-claude/hangar (PR #80); aiden-claude/story-app (PR #74, after #70); aiden-claude/story-popouts (PR #70); aiden-claude/launch-visible (PR #68); aiden-claude/debrief-fixes (PR #65); aiden-claude/risk-meter (PR #57); aiden-claude/what-if (PR #55); aiden-claude/app-safety (PR #53); aiden-claude/bundle-check (PR #54); aiden-claude/briefing-bonus (PR #49); aiden-claude/mobile-budgets (PR #46); aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
+**Branch:** aiden-claude/app-walk (PR #87); aiden-claude/hangar (PR #80); aiden-claude/story-app (PR #74, after #70); aiden-claude/story-popouts (PR #70); aiden-claude/launch-visible (PR #68); aiden-claude/debrief-fixes (PR #65); aiden-claude/risk-meter (PR #57); aiden-claude/what-if (PR #55); aiden-claude/app-safety (PR #53); aiden-claude/bundle-check (PR #54); aiden-claude/briefing-bonus (PR #49); aiden-claude/mobile-budgets (PR #46); aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-app/ walk between stations (board task, branch aiden-claude/app-walk): ui/hangar behind the screens, each screen a panel over the hall.
+Offline cache for everything in public/ (flight models), branch aiden-claude/offline-public. Files: `pwa/`, `vite.config.ts`.
 
 ### Files / folders I'm touching (hands off)
-`app/Walk.tsx` (new), `app/Walk.test.tsx` (new), the `<Walk>` / `<WalkTo>` lines in `app/App.tsx`, the walk block in `app/app.css`. Otherwise none outside my open PRs #65 (`sim/analysis.ts`, one argument in `app/App.tsx` Flight) #68 (`ui/builder/builder.css`) #70 (`ui/story/`) and #80 (`ui/hangar/`), #74 (`app/StoryLayer.tsx`, `<StoryLayer>` lines + `online`/clock hold in `app/App.tsx`).
+PR #87: `app/Walk.tsx`, `app/Walk.test.tsx`, the `<Walk>` / `<WalkTo>` lines in `app/App.tsx`, the walk block in `app/app.css`. Otherwise none outside my open PRs #65 (`sim/analysis.ts`, one argument in `app/App.tsx` Flight) #68 (`ui/builder/builder.css`) #70 (`ui/story/`) and #80 (`ui/hangar/`), #74 (`app/StoryLayer.tsx`, `<StoryLayer>` lines + `online`/clock hold in `app/App.tsx`).
 
 ### Just finished
+3D scenes inside the cutscene frame (cursor@caleb's handoff 1340, branch aiden-claude/cutscene-scenes): arrival, orbit, anomaly, ending in `app/StoryLayer.tsx`. Seen in the game: arrival, anomaly, ending (loss). Not seen in the game: Moon/Mars orbit, ending (success).
+Walk between stations (PR #87): `ui/hangar` behind every screen, each screen a panel over the hall; no WebGL = today's screens. Not checked: co-op in two browsers, a real phone, a screen reader.
 Walkable mission control in 3D (PR #80, V6 = decision 005's rooms), after splitting the 3D story work at Aiden's request.
 Story wired into the game (PR #74): CAPCOM on every station, cutscenes at arrival/launch/Moon-Mars orbit/anomaly/ending.
 First-person story direction from Aiden: decision 005, GAME_DESIGN §4.9, 5 board tasks, handoff to all. Story pop-outs + cutscene frame (PR #70, `ui/story/`).
@@ -50,27 +52,20 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** main (done coordination); aiden-codex/pilot-input (PR #78); aiden-codex/visual-overhaul-plan (PR #69)
-**Last updated:** 2026-11-14 13:52
+**Branch:** main (done coordination); aiden-codex/source-audit (PR #90)
+**Last updated:** 2026-11-14 14:02
 
 ### Working on right now
-
-Read-only GitHub/current-main readiness check completed: PRs #69/#73–#78/#80–#84 merged, zero open PRs at inspection, latest main deploy 43644876990 succeeded (8c0f3cb). Claude's app-walk stays exclusively its own. No implementation claimed. Newest board assigns codex@aiden a P1 source-link/claim audit in docs/qa/sources.md; this is the next independent task, not yet claimed. Optional later V7 UI assembly remains only an offer pending Ethan scope/API agreement.
+Source audit complete in PR #90. No new implementation claimed. Source/data/content fixes stay with their owners; optional V7 screen assembly still needs Ethan's scope/API agreement. Claude app-walk landed during this audit; no overlapping source work taken.
 
 ### Files / folders I'm touching (hands off)
-
-No active production edits. PR #78 and #69 are merged; ui/pilot-input remains my module for follow-ups. No production file scope claimed by this assessment. Own coordination only on main. Ethan's source/branches, Claude's section/branches, app/story/HUD/data/sim/shared/config untouched. Unrelated docs/CHALLENGE 2.md untouched.
+No active source edits. PR #90: docs/qa/sources.md + sources.json only; review follow-ups mine. Own coordination only. Claude section/branches and all data/UI/app/sim source untouched; unrelated docs/CHALLENGE 2.md untouched.
 
 ### Just finished
-
-PR #78: plain craft-relative movement/brake/held-interaction intent, one-shot interaction callback, keyboard/native buttons/independent pointer sources, Escape/focus/blur/hidden/disabled/unmount release. Published labels and scan timing semantics to match Sarah's PR #76. Standalone themed preview; 364 tests, typecheck/build, size 125.1 kB gzip /150 pass before latest asset-only main merge; final merged head also covered by CI when green.
-
-Browser: keyboard press/release/repeat, Enter/Space buttons, outside text typing, pointer hold/drag-off, Escape/Tab, pause/unmount, dark/light and 390px no overflow. Clean final scan preview has no console errors. PR #69 decision renumbered 006, linked 005, latest room assignment reconciled.
+38 URL strings / 43 references at ef93ded snapshot: 37 literal GETs, 34 HTTP200, 3 HTTP403 (all readable via web retrieval); 1 shell template. Reviewed support by URL, recorded partial/background/conflicting evidence. No confirmed dead link. JSON/count/location assertions and diff check pass; no gameplay test rerun for docs-only change.
 
 ### Missing / I need from someone
-
-V7 owners must mount controls with scene movement/aiming and V2/V4 route feedback; use held intent for scan duration, not the press callback. Real multi-touch, held-input window-hidden transitions, screen reader and integrated 3D flight remain unverified. Kaipo's GLBs are now on main; PWA cache adoption remains Claude's task.
+Data owner: row-specific provenance; GRAIL primary-source mass conflict; GOES year; MMRTG source. Sarah: Spirit completed repair, SOHO longevity and Curiosity power citations. Kaipo: glossary sources/DSN wording. LRO cited source supports 1,846 kg; do not change on audit suspicion alone. Report and handoff list details. Integrated V7/device QA still pending owner work.
 
 ### Heads up for other agents
-
-Use PILOT_CONTROLS for final hints; intent.interact OR HUD scan hold drives local timing with pause/exit clearing both. No scored or network commands invented. Ethan remains merge coordinator. V6/rooms now one Claude Aiden task (1555 handoff); Caleb owns cutscenes. Source-link audit is now explicitly owned by codex@aiden and can be claimed separately. Jamie has Ethan’s approval for Moon/Mars shaders. My optional V7 shell offer remains pending; do not infer ownership transfer.
+Sol audit finished. PR #90 does not change scientific values or claim full data/physics/license validation. Page availability can differ by client. Ethan remains merge coordinator; no source/branch takeover. Astra remains preferred when new model/visual design work begins.

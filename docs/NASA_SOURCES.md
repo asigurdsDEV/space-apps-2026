@@ -1,6 +1,6 @@
 # NASA references and data provenance
 
-Checked 2026-11-14. These are engineering references; they are not evidence that the game ingests a measured NASA dataset.
+Checked against repository source on 2026-11-14. The game bundles measured NASA SPDF OMNI space-weather data, a sourced real-mission table and historical anomaly stories. The engineering catalogs remain team-authored educational approximations.
 
 | Source | What it supports | How to describe its use |
 |---|---|---|
@@ -17,11 +17,28 @@ Each Dataset must carry the contract's `source`, `source_url`, `license`, `retri
 
 If a value is extracted later, record its document edition, page/table, original unit and conversion, plus any gameplay adjustment. Preserve the original citation. Mark synthetic values explicitly; keep SI units internally. Do not assume that every linked image, commercial table or third-party reference has NASA's reuse terms.
 
+## Measured data: NASA SPDF OMNI
+
+- Primary archive: [NASA SPDF low-resolution OMNI](https://spdf.gsfc.nasa.gov/pub/data/omni/low_res_omni/); [OMNI documentation and acknowledgements](https://omniweb.gsfc.nasa.gov/html/ow_data.html).
+- Bundled file: `data/space-weather/space-weather.json`; rebuild: `data/space-weather/build.mjs`; date helpers: `data/space-weather/index.ts`. The snapshot contains 11,260 daily rows, 1996-01-01 through 2026-10-29; retrieval timestamp is recorded in its Dataset metadata.
+- Transformation: hourly OMNI2 records become daily maximum Kp (scaled from Kp×10), minimum Dst, and daily F10.7 and sunspot values. The builder derives an approximate G-level from Kp and carries missing index values forward. These are team transformations, not an unmodified NASA daily product. See the builder and subfolder README for field positions, units and gap handling.
+- Credit NASA/GSFC SPDF OMNIWeb and the contributing index providers: **GFZ Potsdam** (Kp), **WDC Kyoto** (Dst), **Natural Resources Canada** (F10.7), **SILSO** (sunspots). Follow the archive's acknowledgements and provider terms rather than treating every provider as NASA.
+- Shipped use: `app/App.tsx` maps mission days to historical dates and lazy-loads the dataset for the operations weather strip. A scenario's `weather_start` overrides a seeded start date. The strip displays the date and real indices.
+- Current boundary: `app/README.md` explicitly describes weather as display-only, and the checked sim does not consume this dataset. Weather-driven storm cards and F10.7-driven drag remain integration work. Recheck those owners' changes before strengthening this claim.
+
+## Real missions and historical anomaly stories
+
+`data/real-missions.json` contains a sourced comparison table for the debrief. Each row has a mission, year, body, orbit class, mass, objective, fact and source URL. For example, [NASA's MarCO mission page](https://science.nasa.gov/mission/marco/) supports the deep-space CubeSat relay story. The matching algorithm is our educational comparison, not a NASA assessment or mission reconstruction. Row-level masses and descriptions remain subject to the team's accuracy audit.
+
+`sim/cards.ts` carries each anomaly's historical story and `source_url`; `docs/game-design/ANOMALY_CARDS.md` explains the deck. Sources include NASA, JPL, NOAA and ESA. Historical incidents motivate the choices, while thresholds, probabilities and science penalties are simplified team-authored mechanics. Do not imply that every card is a measured NASA event replay.
+
 ## Submission wording
 
-“NASA CubeSat and small-spacecraft references informed the mission-design concepts. The prototype uses team-authored educational catalogs to make resource trade-offs playable.”
+“GO / NO-GO uses historical NASA SPDF OMNI space-weather measurements, sourced real-mission comparisons and anomaly stories to connect spacecraft design choices to real exploration. Team-authored educational catalogs make mass, power, cost and communications trade-offs playable.”
 
-Only add “uses NASA data” with the exact dataset, imported file and transformation documented. Confirm this wording with the catalog owner before submission. No live NASA service or API key is required for the proposed static catalogs.
+For the present build, add when discussing causality: “Historical weather is displayed alongside the mission; simulated anomaly effects use a separate simplified model.” No runtime NASA API request or API key is required; the bundled dataset loads as a static application asset.
+
+Software and asset credits belong in the submission's complete References list, including React, Vite, three.js, PeerJS and the original flight GLBs documented in `docs/visual-assets/flight.md`. This NASA-use note does not replace those credits.
 
 ## Additional references confirmed with the catalog owner
 

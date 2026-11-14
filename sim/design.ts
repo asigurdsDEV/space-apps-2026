@@ -11,6 +11,18 @@ import { busClassRank, findPart, has, num, partsOf, str } from './parts'
 
 /** An instrument flown outside its `best_orbit` earns this share of its science. */
 export const OFF_ORBIT_SCIENCE_FACTOR = 0.5
+
+/**
+ * Share of an instrument's science it earns in this orbit: all of it in its `best_orbit`, half
+ * elsewhere. An imager off its best orbit also misses the part of the planet that orbit never
+ * passes over (`coverage_fraction`: an ISS-like orbit sees 80% of Earth, geostationary 42%).
+ */
+export function orbitScienceFactor(part: Entity, orbit: Entity | undefined): number {
+  const best = str(part.props, 'best_orbit', 'any')
+  if (!orbit || best === 'any' || best === '' || best === orbit.id) return 1
+  const coverage = str(part.props, 'category') === 'imager' ? clamp01(num(orbit.props, 'coverage_fraction', 1)) : 1
+  return OFF_ORBIT_SCIENCE_FACTOR * coverage
+}
 /** Warn when the spacecraft uses more than this share of what the launcher can lift. */
 export const MASS_MARGIN_WARNING = 0.9
 /**
@@ -375,7 +387,10 @@ export function evaluateDesign(rawParams: Params, entities: Entity[]): DesignRep
   // ---- Power: solar arrays only make power in sunlight, and an RTG makes it all the time.
   const eclipse = clamp01(prop(orbit, 'eclipse_fraction'))
   const isRtg = solar !== undefined && str(solar.props, 'type') === 'rtg'
-  const power_available_w = prop(solar, 'power_w') * (isRtg ? 1 : 1 - eclipse)
+  // Sunlight thins with distance from the Sun (1 / distance squared): Mars gets about 43% of Earth's.
+  const sunlight = isRtg ? 1 : prop(orbit, 'solar_flux_factor', 1)
+  const power_available_w = prop(solar, 'power_w') * (isRtg ? 1 : 1 - eclipse) * sunlight
+  const dimSun = sunlight < 1 && orbit ? ` Sunlight at ${orbit.name} is only ${pct(sunlight)} as strong as at Earth.` : ''
   const base_load_w = prop(bus, 'base_power_w') + prop(comms, 'power_w')
   const instrument_load_w = sum(instruments, 'power_w')
   const power_w = base_load_w + instrument_load_w
@@ -408,13 +423,13 @@ export function evaluateDesign(rawParams: Params, entities: Entity[]): DesignRep
       error(
         'power_negative',
         'power',
-        `The bus and radio need ${n1(base_load_w)} W, but ${solar.name} averages ${n1(power_available_w)} W over an orbit. The spacecraft cannot stay alive. Pick a bigger power source.`,
+        `The bus and radio need ${n1(base_load_w)} W, but ${solar.name} averages ${n1(power_available_w)} W over an orbit. The spacecraft cannot stay alive.${dimSun} Pick a bigger power source.`,
       )
     } else if (power_w > power_available_w) {
       warning(
         'power_short',
         'power',
-        `Everything on at once needs ${n1(power_w)} W, but ${solar.name} averages ${n1(power_available_w)} W over an orbit. The instruments will take turns and run ${pct(instrument_uptime)} of the time. Pick a bigger power source or fewer instruments.`,
+        `Everything on at once needs ${n1(power_w)} W, but ${solar.name} averages ${n1(power_available_w)} W over an orbit. The instruments will take turns and run ${pct(instrument_uptime)} of the time.${dimSun} Pick a bigger power source or fewer instruments.`,
       )
     } else if (power_w > endOfLife_w) {
       warning(
@@ -429,19 +444,19 @@ export function evaluateDesign(rawParams: Params, entities: Entity[]): DesignRep
   let scienceFull = 0
   const offOrbit: string[] = []
   for (const part of instruments) {
-    const best = str(part.props, 'best_orbit', 'any')
-    const suited = !orbit || best === 'any' || best === '' || best === orbit.id
-    if (!suited) {
+    const factor = orbitScienceFactor(part, orbit)
+    if (factor < 1) {
+      const best = str(part.props, 'best_orbit', 'any')
       const bestOrbit = findPart(entities, 'orbit', best)
-      offOrbit.push(`${part.name} (best in ${bestOrbit ? bestOrbit.name : best})`)
+      offOrbit.push(`${part.name} (${pct(factor)} of its science, best in ${bestOrbit ? bestOrbit.name : best})`)
     }
-    scienceFull += num(part.props, 'science_value') * (suited ? 1 : OFF_ORBIT_SCIENCE_FACTOR)
+    scienceFull += num(part.props, 'science_value') * factor
   }
   if (orbit && offOrbit.length > 0) {
     warning(
       'off_best_orbit',
       'design',
-      `${list(offOrbit)} ${offOrbit.length === 1 ? 'earns' : 'earn'} only half the science in ${orbit.name}. Fly ${offOrbit.length === 1 ? 'it' : 'them'} in the right orbit or swap ${offOrbit.length === 1 ? 'it' : 'them'} out.`,
+      `${list(offOrbit)} ${offOrbit.length === 1 ? 'earns' : 'earn'} less science in ${orbit.name}. Fly ${offOrbit.length === 1 ? 'it' : 'them'} in the right orbit or swap ${offOrbit.length === 1 ? 'it' : 'them'} out.`,
     )
   }
   const science_per_day_full = mission_days > 0 ? scienceFull / mission_days : 0
@@ -449,10 +464,8 @@ export function evaluateDesign(rawParams: Params, entities: Entity[]): DesignRep
   const streams = instruments
     .filter((part) => instrumentGbPerDay(part) > 0 && mission_days > 0)
     .map((part) => {
-      const best = str(part.props, 'best_orbit', 'any')
-      const suited = !orbit || best === 'any' || best === '' || best === orbit.id
       const gb_per_day = instrumentGbPerDay(part)
-      return { gb_per_day, science_per_gb: (num(part.props, 'science_value') * (suited ? 1 : OFF_ORBIT_SCIENCE_FACTOR)) / mission_days / gb_per_day }
+      return { gb_per_day, science_per_gb: (num(part.props, 'science_value') * orbitScienceFactor(part, orbit)) / mission_days / gb_per_day }
     })
     .sort((a, b) => b.science_per_gb - a.science_per_gb)
 

@@ -37,13 +37,13 @@ Six `table` Datasets. Every row needs an `id` and a `name`; all other columns en
 | Dataset id | Entity `kind` | Columns the sim reads |
 |---|---|---|
 | `launch-vehicles` | `launch_vehicle` | `cost_usd`, `cost_per_kg_usd`, `reliability`, and the `payload_*_kg` column named by the orbit (0 = cannot reach) |
-| `orbits` | `orbit` | `central_body`, `altitude_m`, `period_s`, `launch_capacity_column`, `delta_v_required_ms`, `eclipse_fraction`, `contact_s_per_day`, `comm_range_m`, `radiation_factor`, `max_lifetime_s`. Optional: `cruise_days` or `cruise_s` |
+| `orbits` | `orbit` | `central_body`, `altitude_m`, `period_s`, `launch_capacity_column`, `delta_v_required_ms`, `eclipse_fraction`, `contact_s_per_day`, `comm_range_m`, `radiation_factor`, `max_lifetime_s`. Optional: `cruise_days` or `cruise_s`, `solar_flux_factor` (sunlight relative to Earth, default 1; multiplies solar power, not an RTG), `coverage_fraction` (share of the planet the orbit passes over, default 1; an imager off its `best_orbit` earns half its science times this) |
 | `spacecraft-buses` | `bus` | `class`, `dry_mass_kg`, `max_added_mass_kg`, `max_instruments`, `base_power_w`, `propulsion_delta_v_ms`, `cost_usd`, `design_life_s`, `reliability`. Optional: `storage_gb`, `build_months` |
 | `instruments` | `instrument` | `mass_kg`, `power_w`, `cost_usd`, `data_rate_bps`, `duty_cycle`, `science_value`, `best_orbit` (orbit id or `any`), `min_bus_class`. Optional: `build_months` |
 | `power-systems` | `power_system` | `type` (`solar`, `rtg` or `battery`), `mass_kg`, `cost_usd`, `power_w`, `capacity_wh`, `degradation_per_year`, `min_bus_class`. Optional: `build_months` |
 | `comms-systems` | `comms_system` | `mass_kg`, `power_w`, `cost_usd`, `data_rate_bps`, `reference_range_m`, `min_bus_class`. Optional: `build_months` |
 
-Not used: `inclination_rad`, `coverage_fraction`, `category`, `band`, `provider`, `description`.
+Not used: `inclination_rad`, `band`, `provider`, `description`.
 
 Every catalog row becomes an Entity in `state.entities`, so the UI can list the parts from there. Orbit entities also get `props.altitude_km` (from `altitude_m`), which the mission view reads.
 

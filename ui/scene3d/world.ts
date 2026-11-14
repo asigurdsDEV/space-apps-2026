@@ -8,10 +8,12 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js'
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js'
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { buildCraft, disposeObject } from './craft'
+import { cruiseLayout, transferArc, transferPoint } from './cruise'
 import { lapSeconds, orbitRadius, type Body, type SceneSpec } from './model'
 import { atmosphereShader, cloudShader, planetShader } from './shaders'
 
-export type ViewMode = 'spacecraft' | 'orbit'
+/** "cruise" shows Earth → the Moon or Mars on the transfer arc; with an Earth orbit it shows "orbit". */
+export type ViewMode = 'spacecraft' | 'orbit' | 'cruise'
 
 export interface WorldOptions {
   mode: ViewMode
@@ -26,6 +28,8 @@ export interface WorldOptions {
 export interface World {
   setSpec(spec: SceneSpec): void
   setMode(mode: ViewMode): void
+  /** Cruise mode: 0–1 along the transfer. null: the craft loops along it on its own. */
+  setProgress(progress: number | null): void
   dispose(): void
 }
 
@@ -34,7 +38,8 @@ const ATMOSPHERE_R = 1.06
 const BODY_INDEX: Record<Body, number> = { earth: 0, moon: 1, mars: 2 }
 const ATMOSPHERE: Record<Body, THREE.Color | null> = { earth: new THREE.Color(0.28, 0.55, 1.0), mars: new THREE.Color(0.85, 0.48, 0.3), moon: null }
 const SPIN_S: Record<Body, number> = { earth: 80, moon: 400, mars: 90 }
-const CRAFT_SIZE: Record<ViewMode, number> = { spacecraft: 0.05, orbit: 0.04 }
+const CRAFT_SIZE: Record<ViewMode, number> = { spacecraft: 0.05, orbit: 0.04, cruise: 0.08 }
+const CRUISE_LOOP_S = 18
 
 function spriteTexture(draw: (g: CanvasRenderingContext2D, size: number) => void): THREE.CanvasTexture {
   const size = 128
@@ -137,6 +142,14 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
   globe.add(planet, clouds)
   scene.add(globe, atmosphere)
 
+  // Cruise mode: Earth behind us and the transfer arc to the destination (the globe above).
+  const home = new THREE.Mesh(planet.geometry, new THREE.ShaderMaterial({ ...planetShader, uniforms: { uSun, uBody: { value: 0 } } }))
+  const arc = new THREE.Line(
+    new THREE.BufferGeometry(),
+    new THREE.LineDashedMaterial({ color: 0xbcd2ff, dashSize: 0.22, gapSize: 0.12, transparent: true, opacity: 0.95, depthWrite: false }),
+  )
+  scene.add(home, arc)
+
   // Orbit ring, tilted by the inclination.
   const orbitPivot = new THREE.Group()
   const ringPoints: THREE.Vector3[] = []
@@ -191,13 +204,18 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
   let radius = orbitRadius(spec)
   let angle = 0.6
   let inShadow: boolean | null = null
+  let progress: number | null = null
+  let looped = 0.5
+  // What is drawn: cruise needs somewhere to go, so an Earth orbit falls back to the orbit view.
+  let shown: ViewMode = mode
 
   // Close-up: the craft hangs nearer the planet than the squashed orbit ring, so the horizon is in
   // frame; higher orbits still show a smaller planet.
   const closeRadius = () => 1 + 0.25 * (radius - 1)
 
   function craftPosition(out: THREE.Vector3): THREE.Vector3 {
-    if (mode === 'spacecraft') return out.set(0, closeRadius(), 0)
+    if (shown === 'spacecraft') return out.set(0, closeRadius(), 0)
+    if (shown === 'cruise' && spec.body !== 'earth') return out.set(...transferPoint(spec.body, progress ?? looped))
     return out.set(Math.cos(angle) * radius, 0, Math.sin(angle) * radius).applyEuler(orbitPivot.rotation)
   }
 
@@ -221,13 +239,32 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
   }
 
   function applyMode() {
-    holder.scale.setScalar(CRAFT_SIZE[mode])
-    globe.rotation.x = mode === 'spacecraft' ? 1.1 : 0
-    ring.visible = mode === 'orbit'
-    marker.visible = mode === 'orbit'
-    const target = mode === 'spacecraft' ? new THREE.Vector3(0, closeRadius(), 0) : new THREE.Vector3()
+    shown = mode === 'cruise' && spec.body === 'earth' ? 'orbit' : mode
+    holder.scale.setScalar(CRAFT_SIZE[shown])
+    globe.rotation.x = shown === 'spacecraft' ? 1.1 : 0
+    ring.visible = shown === 'orbit'
+    marker.visible = shown !== 'spacecraft'
+    home.visible = arc.visible = shown === 'cruise'
+    const target = shown === 'spacecraft' ? new THREE.Vector3(0, closeRadius(), 0) : new THREE.Vector3()
+    if (shown === 'cruise' && spec.body !== 'earth') {
+      const { earthRadius, distance } = cruiseLayout(spec.body)
+      home.position.set(-distance, 0, 0)
+      home.scale.setScalar(earthRadius)
+      arc.geometry.dispose()
+      arc.geometry = new THREE.BufferGeometry().setFromPoints(transferArc(spec.body).map(([x, y, z]) => new THREE.Vector3(x, y, z)))
+      arc.computeLineDistances()
+      // Centre on the whole scene, from Earth's far edge to the destination's.
+      target.set((1 - distance - earthRadius) / 2, 0, 0)
+    }
     controls.target.copy(target)
-    if (mode === 'spacecraft') {
+    if (shown === 'cruise') {
+      const { earthRadius, distance } = cruiseLayout(spec.body as Exclude<Body, 'earth'>)
+      const halfWidth = (distance + earthRadius + 1) / 2
+      camera.position.copy(target).add(new THREE.Vector3(-0.1, 0.8, 1).setLength(3.3 * halfWidth))
+      controls.minDistance = 2
+      controls.maxDistance = 80
+      controls.autoRotateSpeed = 0.15
+    } else if (shown === 'spacecraft') {
       camera.position.copy(target).add(new THREE.Vector3(0.11, 0.045, 0.16))
       controls.minDistance = 0.07
       controls.maxDistance = 0.9
@@ -263,7 +300,8 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
     earthshine.target.position.copy(pos)
 
     const along = pos.dot(SUN)
-    const shadow = along < 0 && pos.clone().addScaledVector(SUN, -along).length() < 1
+    // The shadow test assumes the planet at the origin with the craft near it; in cruise it is in sunlight.
+    const shadow = shown !== 'cruise' && along < 0 && pos.clone().addScaledVector(SUN, -along).length() < 1
     sunLight.intensity = shadow ? 0 : 2.6
     earthshine.intensity = shadow ? 0.04 : spec.body === 'earth' ? 0.6 : 0.25
     marker.position.copy(pos)
@@ -282,7 +320,11 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
     uTime.value += dt
     planet.rotation.y += ((dt * Math.PI * 2) / SPIN_S[spec.body]) * motion
     clouds.rotation.y += ((dt * Math.PI * 2) / (SPIN_S[spec.body] * 0.85)) * motion
-    if (mode === 'orbit') angle += ((dt * Math.PI * 2) / lapSeconds(spec.period_s)) * motion
+    if (shown === 'cruise') {
+      home.rotation.y += ((dt * Math.PI * 2) / SPIN_S.earth) * motion
+      looped = (looped + (dt / CRUISE_LOOP_S) * motion) % 1
+    }
+    if (shown === 'orbit') angle += ((dt * Math.PI * 2) / lapSeconds(spec.period_s)) * motion
     placeCraft()
     controls.update(dt)
     composer.render(dt)
@@ -319,6 +361,9 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
       if (next === mode) return
       mode = next
       applyMode()
+    },
+    setProgress(next) {
+      progress = next === null ? null : Math.min(1, Math.max(0, next))
     },
     dispose() {
       renderer.setAnimationLoop(null)

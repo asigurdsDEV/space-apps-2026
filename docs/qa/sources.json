@@ -1,0 +1,681 @@
+{
+  "checked_utc": "2026-11-14T21:58:57.688605+00:00",
+  "results": [
+    {
+      "id": 1,
+      "url": "https://www.nasa.gov/missions/tech-demonstration/deep-space-atomic-clock/how-an-atomic-clock-will-get-humans-to-mars-on-time/",
+      "locations": [
+        {
+          "file": "docs/game-design/STORY.md",
+          "line": 35
+        }
+      ],
+      "status": 200,
+      "final_url": "https://www.nasa.gov/missions/tech-demonstration/deep-space-atomic-clock/how-an-atomic-clock-will-get-humans-to-mars-on-time/",
+      "content_type": "text/html; charset=UTF-8",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "supported",
+      "review_note": "NASA article explicitly gives 4\u201320 minutes one-way Earth\u2013Mars light time."
+    },
+    {
+      "id": 2,
+      "url": "https://mars.nasa.gov/mgs/faqs/faq_mplan.html",
+      "locations": [
+        {
+          "file": "docs/game-design/STORY.md",
+          "line": 35
+        }
+      ],
+      "status": 200,
+      "final_url": "https://science.nasa.gov/mission/mars-global-surveyor/",
+      "content_type": "text/html; charset=UTF-8",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "citation drift",
+      "review_note": "Old Mars FAQ redirects to Mars Global Surveyor overview; not a direct citation for radio delay. Use source 1."
+    },
+    {
+      "id": 3,
+      "url": "https://science.nasa.gov/mission/kepler/",
+      "locations": [
+        {
+          "file": "docs/game-design/ANOMALY_CARDS.md",
+          "line": 26
+        }
+      ],
+      "status": 200,
+      "final_url": "https://science.nasa.gov/mission/kepler/",
+      "content_type": "text/html; charset=UTF-8",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "supported",
+      "review_note": "Kepler page describes second reaction-wheel loss in 2013 and K2 using sunlight pressure."
+    },
+    {
+      "id": 4,
+      "url": "https://science.nasa.gov/mission/galileo/",
+      "locations": [
+        {
+          "file": "docs/game-design/ANOMALY_CARDS.md",
+          "line": 36
+        }
+      ],
+      "status": 200,
+      "final_url": "https://science.nasa.gov/mission/galileo/",
+      "content_type": "text/html; charset=UTF-8",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "supported",
+      "review_note": "Galileo mission page supports jammed high-gain antenna and low-gain/software recovery; engineering details supplemented by source 5."
+    },
+    {
+      "id": 5,
+      "url": "https://descanso.jpl.nasa.gov/DPSummary/Descanso5--Galileo_new.pdf",
+      "locations": [
+        {
+          "file": "docs/game-design/ANOMALY_CARDS.md",
+          "line": 36
+        }
+      ],
+      "status": 200,
+      "final_url": "https://descanso.jpl.nasa.gov/DPSummary/Descanso5--Galileo_new.pdf",
+      "content_type": "application/pdf",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "supported",
+      "review_note": "Galileo telecommunications report explicitly records over 13,000 motor hammer pulses; supports card motor-pulse detail."
+    },
+    {
+      "id": 6,
+      "url": "https://repository.library.noaa.gov/view/noaa/53091",
+      "locations": [
+        {
+          "file": "docs/game-design/ANOMALY_CARDS.md",
+          "line": 46
+        }
+      ],
+      "status": 403,
+      "final_url": "https://repository.library.noaa.gov/view/noaa/53091",
+      "content_type": "text/html",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "supported; access-dependent",
+      "review_note": "curl 403, web retrieval readable. NOAA abstract explicitly reports 38 of 49 satellites lost after 3 February 2022 storm.",
+      "alternate_retrieval": "web tool opened same URL successfully; no alternate HTTP code exposed"
+    },
+    {
+      "id": 7,
+      "url": "https://www.jpl.nasa.gov/news/mars-rover-spirit-restored-to-health/",
+      "locations": [
+        {
+          "file": "docs/game-design/ANOMALY_CARDS.md",
+          "line": 56
+        }
+      ],
+      "status": 403,
+      "final_url": "https://www.jpl.nasa.gov/news/mars-rover-spirit-restored-to-health/",
+      "content_type": "text/html",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "partial; access-dependent",
+      "review_note": "curl 403, web retrieval readable. Article confirms flash-memory reboot problem and planned reformat, not completed reformat. Add Spirit mission history.",
+      "alternate_retrieval": "web tool opened same URL successfully; no alternate HTTP code exposed"
+    },
+    {
+      "id": 8,
+      "url": "https://science.nasa.gov/missions/mer/nasas-opportunity-rover-mission-on-mars-comes-to-end/",
+      "locations": [
+        {
+          "file": "docs/game-design/ANOMALY_CARDS.md",
+          "line": 66
+        }
+      ],
+      "status": 200,
+      "final_url": "https://science.nasa.gov/missions/mer/nasas-opportunity-rover-mission-on-mars-comes-to-end/",
+      "content_type": "text/html; charset=UTF-8",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "partial",
+      "review_note": "Supports June 2018 dust storm, lost contact and nearly 15 years. Curiosity nuclear-power/same-storm sentence needs another direct citation."
+    },
+    {
+      "id": 9,
+      "url": "https://www.esa.int/Newsroom/Press_Releases/SOHO_spacecraft_located_with_ground-based_radar",
+      "locations": [
+        {
+          "file": "docs/game-design/ANOMALY_CARDS.md",
+          "line": 76
+        }
+      ],
+      "status": 200,
+      "final_url": "https://www.esa.int/media-advisories/news-media/media/media-advisories/n-27-1998-soho-spacecraft-located-with-ground-based-radar",
+      "content_type": "text/html; charset=UTF-8",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "supported",
+      "review_note": "ESA radar-location announcement supports 1998 SOHO recovery episode; redirects to new ESA URL."
+    },
+    {
+      "id": 10,
+      "url": "https://soho.nascom.nasa.gov/operations/Recovery/recovery_diary.html",
+      "locations": [
+        {
+          "file": "docs/game-design/ANOMALY_CARDS.md",
+          "line": 76
+        }
+      ],
+      "status": 200,
+      "final_url": "https://soho.nascom.nasa.gov/operations/Recovery/recovery_diary.html",
+      "content_type": "text/html",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "partial",
+      "review_note": "Recovery diary supports loss of orientation/contact and instrument restart in 1998; not the 30-year longevity claim."
+    },
+    {
+      "id": 11,
+      "url": "https://www.nasa.gov/missions/icon/nasa-researchers-track-slowly-splitting-dent-in-earths-magnetic-field/",
+      "locations": [
+        {
+          "file": "docs/game-design/ANOMALY_CARDS.md",
+          "line": 86
+        }
+      ],
+      "status": 200,
+      "final_url": "https://www.nasa.gov/missions/icon/nasa-researchers-track-slowly-splitting-dent-in-earths-magnetic-field/",
+      "content_type": "text/html; charset=UTF-8",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "supported",
+      "review_note": "NASA article describes weak-field SAA region, particle effects on computers and data collection."
+    },
+    {
+      "id": 12,
+      "url": "https://hst-docs.stsci.edu/archives/hspcycle30/the-hubble-space-telescope-primer-for-cycle-30/hst-primer-orbital-constraints",
+      "locations": [
+        {
+          "file": "docs/game-design/ANOMALY_CARDS.md",
+          "line": 86
+        }
+      ],
+      "status": 200,
+      "final_url": "https://hst-docs.stsci.edu/archives/hspcycle30/the-hubble-space-telescope-primer-for-cycle-30/hst-primer-orbital-constraints",
+      "content_type": "text/html;charset=utf-8",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "supported",
+      "review_note": "HST primer describes SAA interruption of observations; supports sensitive-work interruption, not blanket shutdown of all instruments."
+    },
+    {
+      "id": 13,
+      "url": "https://www.nasa.gov/directorates/somd/space-communications-navigation-program/what-is-the-deep-space-network/",
+      "locations": [
+        {
+          "file": "docs/game-design/ANOMALY_CARDS.md",
+          "line": 96
+        }
+      ],
+      "status": 200,
+      "final_url": "https://www.nasa.gov/directorates/somd/space-communications-navigation-program/what-is-the-deep-space-network/",
+      "content_type": "text/html; charset=UTF-8",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "supported",
+      "review_note": "NASA explains three DSN sites in California, Spain and Australia and their shared communications role."
+    },
+    {
+      "id": 14,
+      "url": "https://oig.nasa.gov/wp-content/uploads/2023/12/ig-23-016.pdf",
+      "locations": [
+        {
+          "file": "docs/game-design/ANOMALY_CARDS.md",
+          "line": 96
+        }
+      ],
+      "status": 200,
+      "final_url": "https://oig.nasa.gov/wp-content/uploads/2023/12/ig-23-016.pdf",
+      "content_type": "application/pdf",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "supported",
+      "review_note": "NASA OIG report discusses negotiated scheduling and critical phases such as launches receiving priority; no need to invent event probabilities."
+    },
+    {
+      "id": 15,
+      "url": "https://www.jpl.nasa.gov/news/mars-climate-orbiter-team-finds-likely-cause-of-loss/",
+      "locations": [
+        {
+          "file": "docs/game-design/ANOMALY_CARDS.md",
+          "line": 104
+        }
+      ],
+      "status": 403,
+      "final_url": "https://www.jpl.nasa.gov/news/mars-climate-orbiter-team-finds-likely-cause-of-loss/",
+      "content_type": "text/html",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "supported; access-dependent",
+      "review_note": "curl 403, web retrieval readable. JPL preliminary findings explicitly contrast English versus metric units.",
+      "alternate_retrieval": "web tool opened same URL successfully; no alternate HTTP code exposed"
+    },
+    {
+      "id": 16,
+      "url": "https://www.earthdata.nasa.gov/data/instruments/modis",
+      "locations": [
+        {
+          "file": "data/pilot-training/route.json",
+          "line": 23
+        }
+      ],
+      "status": 200,
+      "final_url": "https://www.earthdata.nasa.gov/data/instruments/modis",
+      "content_type": "text/html; charset=UTF-8",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "supported",
+      "review_note": "Earthdata content describes 36 spectral channels and global coverage every 1\u20132 days; curl succeeds despite web-tool 403."
+    },
+    {
+      "id": 17,
+      "url": "https://www.earthdata.nasa.gov/data/tools/firms",
+      "locations": [
+        {
+          "file": "data/pilot-training/route.json",
+          "line": 40
+        }
+      ],
+      "status": 200,
+      "final_url": "https://www.earthdata.nasa.gov/data/tools/firms",
+      "content_type": "text/html; charset=UTF-8",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "supported for fact; feedback broader",
+      "review_note": "Earthdata says global fire detections available within 3 hours. Exact smoke/edge detection claims in game feedback need instrument-specific caveats."
+    },
+    {
+      "id": 18,
+      "url": "https://www.nasa.gov/mission/tracking-and-data-relay-satellites/",
+      "locations": [
+        {
+          "file": "data/pilot-training/route.json",
+          "line": 57
+        }
+      ],
+      "status": 200,
+      "final_url": "https://www.nasa.gov/mission/tracking-and-data-relay-satellites/",
+      "content_type": "text/html; charset=UTF-8",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "supported",
+      "review_note": "NASA page describes geosynchronous relays serving more than 25 missions including ISS and Hubble; time-sensitive count should retain retrieval date."
+    },
+    {
+      "id": 19,
+      "url": "https://nssdc.gsfc.nasa.gov/",
+      "locations": [
+        {
+          "file": "data/real-missions.json",
+          "line": 4
+        }
+      ],
+      "status": 200,
+      "final_url": "https://nssdc.gsfc.nasa.gov/",
+      "content_type": "text/html; charset=UTF-8",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "background",
+      "review_note": "NSSDCA landing page is general archive context; row-specific mission URLs provide evidence."
+    },
+    {
+      "id": 20,
+      "url": "https://ntrs.nasa.gov/api/citations/20180005634/downloads/20180005634.pdf",
+      "locations": [
+        {
+          "file": "data/real-missions.json",
+          "line": 15
+        }
+      ],
+      "status": 200,
+      "final_url": "https://ntrs.nasa.gov/api/citations/20180005634/downloads/20180005634.pdf",
+      "content_type": "application/pdf",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "supported",
+      "review_note": "NASA IceCube paper supports 2017 launch/deployment, 883 GHz demonstration/global cloud-ice mapping and 4.5 kg total mass."
+    },
+    {
+      "id": 21,
+      "url": "https://terra.nasa.gov/about",
+      "locations": [
+        {
+          "file": "data/real-missions.json",
+          "line": 16
+        }
+      ],
+      "status": 200,
+      "final_url": "https://terra.nasa.gov/about",
+      "content_type": "text/html; charset=UTF-8",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "supported",
+      "review_note": "Terra page gives 1999 launch, 5,190 kg launch mass and five coincident instruments. Historical quick facts, not a current health assessment."
+    },
+    {
+      "id": 22,
+      "url": "https://www.nesdis.noaa.gov/GOES-R-Spacecraft",
+      "locations": [
+        {
+          "file": "data/real-missions.json",
+          "line": 17
+        }
+      ],
+      "status": 200,
+      "final_url": "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
+      "content_type": "text/html; charset=utf-8",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "partial",
+      "review_note": "NOAA page supports 5,192 kg fueled GOES-R/S/T mass and instrument context; launch year 2016 absent from retrieved page."
+    },
+    {
+      "id": 23,
+      "url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1998-001A",
+      "locations": [
+        {
+          "file": "data/real-missions.json",
+          "line": 18
+        }
+      ],
+      "status": 200,
+      "final_url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1998-001A",
+      "content_type": "text/xml;charset=UTF-8",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "supported",
+      "review_note": "NSSDCA gives 1998 launch and 296.4 kg fully fueled Lunar Prospector mass plus polar mapping objectives."
+    },
+    {
+      "id": 24,
+      "url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2009-031A",
+      "locations": [
+        {
+          "file": "data/real-missions.json",
+          "line": 19
+        }
+      ],
+      "status": 200,
+      "final_url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2009-031A",
+      "content_type": "text/xml;charset=UTF-8",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "supported by cited source",
+      "review_note": "NSSDCA explicitly gives about 1,846 kg launch mass and 2009 launch. Do not replace solely because a different source reports another value."
+    },
+    {
+      "id": 25,
+      "url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2013-047A",
+      "locations": [
+        {
+          "file": "data/real-missions.json",
+          "line": 20
+        }
+      ],
+      "status": 200,
+      "final_url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2013-047A",
+      "content_type": "text/xml;charset=UTF-8",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "supported",
+      "review_note": "NSSDCA gives 2013 launch, about 383 kg including fuel and thin-atmosphere/dust objectives."
+    },
+    {
+      "id": 26,
+      "url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2011-046A",
+      "locations": [
+        {
+          "file": "data/real-missions.json",
+          "line": 21
+        }
+      ],
+      "status": 200,
+      "final_url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2011-046A",
+      "content_type": "text/xml;charset=UTF-8",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "conflicting primary sources",
+      "review_note": "NSSDCA gives 202.4 kg fully fueled; JPL launch press kit gives 307 kg launch/201 kg dry per craft. Owner must reconcile before calling launch mass authoritative."
+    },
+    {
+      "id": 27,
+      "url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2022-070A",
+      "locations": [
+        {
+          "file": "data/real-missions.json",
+          "line": 22
+        }
+      ],
+      "status": 200,
+      "final_url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2022-070A",
+      "content_type": "text/xml;charset=UTF-8",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "supported",
+      "review_note": "NSSDCA gives 2022 launch, approximately 25 kg and halo-orbit technology demonstration."
+    },
+    {
+      "id": 28,
+      "url": "https://science.nasa.gov/mission/maven/",
+      "locations": [
+        {
+          "file": "data/real-missions.json",
+          "line": 23
+        }
+      ],
+      "status": 200,
+      "final_url": "https://science.nasa.gov/mission/maven/",
+      "content_type": "text/html; charset=UTF-8",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "supported",
+      "review_note": "MAVEN page gives 2013 launch and 2,454 kg wet mass, atmospheric-escape objective."
+    },
+    {
+      "id": 29,
+      "url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2005-029A",
+      "locations": [
+        {
+          "file": "data/real-missions.json",
+          "line": 24
+        }
+      ],
+      "status": 200,
+      "final_url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2005-029A",
+      "content_type": "text/xml;charset=UTF-8",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "supported",
+      "review_note": "NSSDCA gives 2005 launch and maximum mass 2,180 kg including propellant; radar and communications roles described."
+    },
+    {
+      "id": 30,
+      "url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2001-013A",
+      "locations": [
+        {
+          "file": "data/real-missions.json",
+          "line": 25
+        }
+      ],
+      "status": 200,
+      "final_url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2001-013A",
+      "content_type": "text/xml;charset=UTF-8",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "supported",
+      "review_note": "NSSDCA gives 2001 launch, 725.0 kg launch mass and near-surface hydrogen/water-ice mission context."
+    },
+    {
+      "id": 31,
+      "url": "https://science.nasa.gov/mission/marco/",
+      "locations": [
+        {
+          "file": "data/real-missions.json",
+          "line": 26
+        }
+      ],
+      "status": 200,
+      "final_url": "https://science.nasa.gov/mission/marco/",
+      "content_type": "text/html; charset=UTF-8",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "supported",
+      "review_note": "NASA MarCO page gives 2018 launch, 13.5 kg each and InSight communications-relay flyby."
+    },
+    {
+      "id": 32,
+      "url": "https://www.nasa.gov/wp-content/uploads/2025/04/250323-design-and-develop-science-mission.pdf",
+      "locations": [
+        {
+          "file": "data/catalogs/launch-vehicles.json",
+          "line": 4
+        }
+      ],
+      "status": 200,
+      "final_url": "https://www.nasa.gov/wp-content/uploads/2025/04/250323-design-and-develop-science-mission.pdf",
+      "content_type": "application/pdf",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "background only",
+      "review_note": "NASA mission-design webinar is design context, not a table of the game\u2019s rocket capacities, prices or reliability. Those are explicitly hand-tuned."
+    },
+    {
+      "id": 33,
+      "url": "https://software.nasa.gov/software/GSC-19468-1",
+      "locations": [
+        {
+          "file": "data/catalogs/orbits.json",
+          "line": 4
+        }
+      ],
+      "status": 200,
+      "final_url": "https://software.nasa.gov/software/GSC-19468-1",
+      "content_type": "text/html; charset=utf-8",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "background only",
+      "review_note": "GMAT software catalog describes mission analysis software; it does not substantiate this orbit table\u2019s exact altitude/period columns."
+    },
+    {
+      "id": 34,
+      "url": "https://www3.nasa.gov/sites/default/files/atoms/files/nasa_csli_cubesat_101_508.pdf",
+      "locations": [
+        {
+          "file": "data/catalogs/power-systems.json",
+          "line": 4
+        },
+        {
+          "file": "data/catalogs/spacecraft-buses.json",
+          "line": 4
+        },
+        {
+          "file": "data/catalogs/comms-systems.json",
+          "line": 4
+        }
+      ],
+      "status": 200,
+      "final_url": "https://www3.nasa.gov/sites/default/files/atoms/files/nasa_csli_cubesat_101_508.pdf",
+      "content_type": "application/pdf",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "partial catalog provenance",
+      "review_note": "CubeSat 101 is relevant to CubeSat development/buses/comms. No MMRTG occurrence in extracted PDF; add MMRTG-specific source for power catalog claim."
+    },
+    {
+      "id": 35,
+      "url": "https://etd.gsfc.nasa.gov/capabilities/integrated-design-center/mission-design-lab/",
+      "locations": [
+        {
+          "file": "data/catalogs/instruments.json",
+          "line": 4
+        }
+      ],
+      "status": 200,
+      "final_url": "https://etd.gsfc.nasa.gov/capabilities/integrated-design-center/mission-design-lab/",
+      "content_type": "text/html; charset=UTF-8",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "background only",
+      "review_note": "Mission Design Lab describes collaborative study services, not the particular instrument masses, power, prices or science points in this catalog."
+    },
+    {
+      "id": 36,
+      "url": "https://spdf.gsfc.nasa.gov/pub/data/omni/low_res_omni/omni2_$y.dat",
+      "locations": [
+        {
+          "file": "data/space-weather/build.mjs",
+          "line": 4
+        },
+        {
+          "file": "data/space-weather/README.md",
+          "line": 42
+        }
+      ],
+      "classification": "template; not a literal request",
+      "status": null,
+      "claim_review": "template; not requested",
+      "review_note": "Shell template omni2_$y.dat is not a literal source_url; 1996\u20132026 downloads were not re-requested. Directory and format checked separately."
+    },
+    {
+      "id": 37,
+      "url": "https://spdf.gsfc.nasa.gov/pub/data/omni/low_res_omni/omni2.text",
+      "locations": [
+        {
+          "file": "data/space-weather/build.mjs",
+          "line": 7
+        }
+      ],
+      "status": 200,
+      "final_url": "https://spdf.gsfc.nasa.gov/pub/data/omni/low_res_omni/omni2.text",
+      "content_type": "text/plain; charset=UTF-8",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "supported for format",
+      "review_note": "OMNI format specifies fields 39 Kp, 40 sunspots v2, 41 Dst and 51 F10.7, matching build script indexing. Not a full data-rebuild audit."
+    },
+    {
+      "id": 38,
+      "url": "https://spdf.gsfc.nasa.gov/pub/data/omni/low_res_omni/",
+      "locations": [
+        {
+          "file": "data/space-weather/build.mjs",
+          "line": 64
+        },
+        {
+          "file": "data/space-weather/README.md",
+          "line": 18
+        },
+        {
+          "file": "data/space-weather/space-weather.json",
+          "line": 1
+        }
+      ],
+      "status": 200,
+      "final_url": "https://spdf.gsfc.nasa.gov/pub/data/omni/low_res_omni/",
+      "content_type": "text/html;charset=ISO-8859-1",
+      "curl_exit": 0,
+      "error": "",
+      "claim_review": "supported for origin",
+      "review_note": "SPDF directory lists annual OMNI2 files and format specification. Confirms data origin; not a fresh end-to-end validation of every daily value."
+    }
+  ],
+  "snapshot_commit": "ef93ded474291fdb7301829978a8df90b25db4e9",
+  "scope": "Tracked text files in data/, docs/game-design/, ui/learn; all HTTP(S) strings, including every source_url; no ignored/raw files or unmerged PR content.",
+  "method": "curl GET with redirects, TLS verification, 25 second timeout and 15 MB cap. Response bodies reviewed locally (HTML stripped; PDFs pdftotext). Bodies not committed. Three 403 responses cross-checked through web retrieval.",
+  "counts": {
+    "url_strings": 38,
+    "literal_urls_requested": 37,
+    "http_200": 34,
+    "http_403": 3,
+    "templates_not_requested": 1
+  }
+}
