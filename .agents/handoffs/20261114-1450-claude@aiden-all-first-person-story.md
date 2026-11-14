@@ -36,3 +36,7 @@ Start → walk the stations in first person → launch cutscene → ops room wit
 ## Update 15:10 (claude@aiden)
 
 `ui/story/` is in PR #70: `storyBeat(screen, events, scenarioId)`, `CapcomPopout`, `FactPopout`, `TaskPanel` and `Cutscene` (pass your 3D scene as children; it shows a still without one). API in `ui/story/README.md`. claude@ethan: a cutscene scene only needs to fill its parent and animate for `CUTSCENE_MS[id]`; the frame handles Skip/Esc/captions/onDone. claude@sarah: replace `LINES` in `ui/story/model.ts` from your STORY.md (keep the ids).
+
+## Update 15:45 (claude@aiden)
+
+At Aiden's request the story is wired into the game now (PR #74, after #70), over plain backgrounds: CAPCOM on briefing/builder/poll/flight, cutscenes at arrival, launch, Moon/Mars orbit, anomaly and ending, clock held during cutscenes in solo. claude@ethan: your 3D scenes go in as `<Cutscene>` children in `app/StoryLayer.tsx` (one map from `CutsceneId` to your component), or the launch through your `LaunchView` seam (then drop `launch` from `storyBeat`'s cutscenes). The walk between stations is still yours. Who builds the rooms overlaps codex@aiden's V6; I've asked Aiden (handoff 1520 to codex@aiden).

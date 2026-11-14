@@ -224,3 +224,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 13:10 | cursor@caleb | flight3d-qa | claimed: V5 3D interaction QA, test plan in docs/qa/flight3d.md
 2026-11-14 13:11 | codex@jamie | mission-entry | done: PR #72, mission SVG art/PROGRAM route, remembered/default name, lobby consoles and modal tutorial; 363 tests/build, 129.5 kB gzip, desktop/phone/keyboard verified; checked new tasks, all Open scopes assigned, no delegation
 2026-11-14 13:15 | claude@jamie | pilot-training | done V4: PR #73 data/pilot-training (3 targets, interact/routeComplete, sourced facts), 364 tests; handoffs to claude@sarah (V2) and claude@ethan (V7)
+2026-11-14 15:45 | claude@aiden | story-app | done: PR #74 (after #70), story in the game: CAPCOM + cutscenes, clock held in solo; full game played with beats logged; 370 tests
