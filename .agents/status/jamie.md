@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 10:32
+**Last updated:** 2026-11-14 10:34
 
 
 ## claude@jamie
@@ -36,27 +36,28 @@ Nothing claimed. Waiting for Jamie to pick the next task.
 
 ## codex@jamie
 
-**Branch:** jamie-codex/transport-demo (claim pushed on main first)
+**Branch:** jamie-codex/transport-demo — PR #9
 
 ### Working on right now
 
-Transport + lobby implementation ready for PR review. Remaining network work: align finalized shared envelopes/permissions and integrate with app owner; live venue test still required. Beginning read-only integration audit of pending branches.
+Transport + shared-protocol rooms implemented; awaiting scaffold dependency, app integration and live browser verification. Read-only integration audit complete for the recorded snapshot; follow-up after sim adapter lands. No extra app/UI/data scope claimed.
 
 ### Files / folders I'm touching (hands off)
 
-- `net/` (whole folder): PeerJS transport, local fallback, room lifecycle, tests and integration notes.
-- `docs/PITCH.md`, `docs/DEMO.md`, `docs/NASA_SOURCES.md`, `docs/INTEGRATION_REPORT.md` (audit report; no edits to other owners’ source files).
-- Own status section, own board entries, append-only log, and handoffs from codex@jamie.
-- No package/scaffold, shared/, app/, sim/, data/, ui/, or claude@jamie challenge files.
+- `net/` (whole folder): transport, concrete room API, runtime validators, lobby authority, tests and integration notes.
+- `docs/PITCH.md`, `docs/DEMO.md`, `docs/NASA_SOURCES.md`, `docs/INTEGRATION_REPORT.md`.
+- Own status section, own board entries, append-only log, and own handoffs. No edits to others’ source.
 
 ### Just finished
 
-Implemented generic PeerTransport, LocalTransport and HostRoom role/lobby authority; 16 Vitest tests pass, strict TS passes, real PeerJS type compatibility passes. Wrote pitch, demo rehearsal plan and verified NASA source reference list. No live browser/venue connection test yet.
+PR #9: PeerTransport, LocalTransport, HostRoom; concrete createLocalRoom/hostRoom/joinRoom requested by Ethan; shared NetMessage runtime validation, role release, authoritative roster, canSend enforcement. 22 owned net tests pass; 58 module tests pass in combined snapshot. Build passes after adding peerjs in temporary snapshot. Integrated actual-data probes both fail (documented in report). Claude supplied First Light designs and NASA sources, now included in docs.
 
 ### Missing / I need from someone
 
-Ethan: finalized NetMessage/roles and app integration; Aiden: PeerJS dependency in scaffold. Existing merge/Pages blockers remain on BOARD.
+- Aiden: add peerjs dependency + lockfile to scaffold (request handoff on main).
+- Ethan: app integration using Room API; catalog/sim adapter. Snapshot fails on bus dataset id, power/comms params, launcher capacity, science goal and objective mapping. Exact reproduction in docs/INTEGRATION_REPORT.md on PR #9.
+- Team: merge/review PRs, enable Pages, then live two-browser/venue rehearsal. Network stays In progress until verified; demo winning design remains a candidate until integrated sim confirms it.
 
 ### Heads up for other agents
 
-Preserve claude@jamie's section. Branches use jamie-codex/<short-task>. Network implementation will expose Transport from decision 002, isolate PeerJS behind an adapter, and keep sim execution in app/ on the host only.
+Jamie authorized autonomous remaining-work selection and heavier tasks. Other owners keep their scopes. The concrete API now follows Ethan’s requested signatures; no need to implement a duplicate room layer in app/. All changes pushed; paused at integration boundaries pending their source updates, not claiming a working live session.

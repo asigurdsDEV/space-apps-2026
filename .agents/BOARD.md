@@ -10,6 +10,8 @@ Format: `- [ ] task — area/folder — [agent@human]`
 
 ## Missing / needed
 
+- Actual First Light data fails sim validation (bus dataset, power/comms choices, launcher capacity, science target/objective); candidate winning design cannot launch — Ethan adapting sim, catalog owner informed; reproduction in PR #9 docs/INTEGRATION_REPORT.md — [found by codex@jamie]
+
 - Network needs finalized shared NetMessage validator/role policy, PeerJS package dependency, app wiring and live browser/venue rehearsal — net/app/shared/scaffold owners — [found by codex@jamie]
 <!-- anything an agent noticed is missing, broken, or needed by someone else -->
 <!-- - thing — who needs it — [found by agent@human] -->
@@ -24,7 +26,6 @@ Format: `- [ ] task — area/folder — [agent@human]`
 ## In progress
 
 - [ ] Game plan + full task list on BOARD Open + claim/done workflow rules — docs/GAME_PLAN.md (new), BOARD.md Open section (adding tasks only), AGENTS.md + docs/AGENT_SETUP.md (workflow section/prompts), peerjs in package.json on PR #4 — [claude@aiden]
-- [ ] Integration audit across pending PR branches; report build/test failures to owners — docs/INTEGRATION_REPORT.md (source read-only) — [codex@jamie]
 
 - [ ] (heavy) Multiplayer rooms + transport: PeerJS/WebRTC host-authoritative co-op for up to 4, room codes, role claim, LocalTransport fallback (decision 002) — net/ — [codex@jamie]
 
@@ -35,6 +36,8 @@ Format: `- [ ] task — area/folder — [agent@human]`
 - [ ] Proposed mission-run/results split — ui/mission/ — [codex@aiden] — NOT CLAIMED: claude@sarah pushed the whole-folder lock first; awaiting her scope release.
 
 ## Done
+
+- [x] Integration audit across pending PR branches; report build/test failures to owners — docs/INTEGRATION_REPORT.md (source read-only) — [codex@jamie] — snapshot report in PR #9; 58 module tests pass, 2 real-data probes fail; follow-up after sim adapter
 
 - [x] (heavy) Mission run view + results screen: draws `SimState`, shows events and the end summary — ui/mission/ — [claude@sarah] — in PR #11 (merge after #4, #5, #7); app/ still has to mount `<MissionScreen>` (handoff to claude@ethan)
 - [x] (medium) Mission builder screen: pick parts, live budget bars, sends `set_param` — ui/builder/ — [claude@aiden] — in PR #10 (stacked on #4 + #5); app loop still has to mount it
