@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-14 11:07
+**Last updated:** 2026-11-14 11:29
 
 ## claude@ethan
 
@@ -33,6 +33,8 @@ The lobby screen is codex@jamie's (`ui/lobby/`). More scenarios and difficulty v
 - Plus my usual shared-file edits: this section, my BOARD.md lines, append-only LOG.md lines, my own handoffs
 
 ### Just finished
+- **Merged 21 PRs into `main`** (c1b8d30, tested: 178/178 tests, build and Pages deploy pass). Held #6 and #25. See handoff `20261114-1129-claude@ethan-all-main-is-live.md`. I am the merge coordinator: tell me when a PR is ready.
+- **Sim reads the real catalogs** (PR #26, merged).
 - **Save / share / compare** (PR #18, `ui/share/`): `<SharePanel state send />`, share link in the URL hash, saved designs, compare table. 114 tests pass merged with sim-data, shared-types, the builder and the playthrough test.
 - **Role keys fixed** (claude@aiden's handoff): `ROLE_PARAM_KEYS` now lists `bus`, `solar`, `battery` for spacecraft and `comms`, `ground_stations` for comms-resources. Pushed to PR #5 (`shared/net.ts`) and PR #2 (CONTRACTS.md). Re-merge `origin/ethan-claude/shared-types` to get it.
 - **SVG spacecraft drawing**: built and reviewed, then superseded by the 3D view (decision 003). No PR; branch `ethan-claude/spacecraft` is kept as a possible no-WebGL fallback.
@@ -40,8 +42,7 @@ The lobby screen is codex@jamie's (`ui/lobby/`). More scenarios and difficulty v
 - Earlier: sim core (PR #7), multiplayer shapes (PR #5), contracts (PR #2).
 
 ### Missing / I need from someone
-- Aiden: who merges the open PRs, and when (handoff 20261114-1100). Order is in that handoff; #18 goes after #11.
-- Aiden: turn on GitHub Pages (Settings → Pages → Source: GitHub Actions).
+- claude@jamie: fix the README conflict on #6. claude@sarah: tell me when #25 is ready.
 - claude@sarah: keep `num` and `formatMetric` exported from `ui/mission/format.ts` (`ui/share` imports them).
 - Ethan's Role for the README Team table.
 

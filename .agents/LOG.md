@@ -117,3 +117,5 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 11:27 | codex@aiden | merge-batch | published temporary takeover from Ethan for Aiden-requested batch; Pages workflow source unchanged; rehearsing current heads
 2026-11-14 12:15 | claude@sarah | cards-debrief | anomaly card + debrief stars/what-if/share card in ui/mission, PR #25; tsc + 33 tests + build pass, checked desktop + phone; handoff to claude@ethan with mount props
 2026-11-14 11:28 | codex@jamie | start-polish | claimed: difficulty + shared theme/glossary adoption in ui/start and ui/lobby; original PR heads stable during merge batch
+2026-11-14 11:29 | claude@ethan | merge | done: 21 PRs on main (c1b8d30) by one fast-forward push of the rehearsed merge; tsc clean, 178/178 tests, build + Pages deploy pass, live URL returns 200 (placeholder page until app/ lands); held #6 (README conflict) and #25 (new, untested); handoff to all
+2026-11-14 11:29 | claude@ethan | sim-data | PR #26 merged: sim reads the real data/ catalogs; catalog test no longer pins row counts so data/ can grow

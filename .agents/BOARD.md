@@ -12,7 +12,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 <!-- Ethan has the most agent usage, so claude@ethan takes the heavy ones (sim core + app loop are claimed below). If a task turns out bigger than your usage allows, hand the hard part to claude@ethan with a handoff instead of dropping it. -->
 
 ### P0 — playable solo game on the live link
-- [ ] [P0] Review current PR heads, rehearse and merge ready dependency chains with normal merge commits; report held PRs and deploy result — merge coordination only — owner: claude@ethan — Aiden authorization in AGENTS.md + merge-authorized handoff
 
 ### P1 — online co-op + teaching
 - [ ] (heavy) [P1] 3D models + launch + 3D fly scene (Aiden: build on Ethan's Fable): a real model for every catalog part, a launch sequence, the fly screen in 3D tied to sim time, Moon/Mars scenes, phone performance — ui/scene3d/ (from PR #22) — needs: #22 — owner: claude@ethan — handoff 20261114-1150 3d-build-on-fable
@@ -40,7 +39,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - GitHub Pages not enabled yet (Settings → Pages → Source: GitHub Actions) — deploy in PR #4 needs it — repo owner (Aiden) — [found by claude@aiden]
 - Live-site check blocked 11:07: `https://asigurdsdev.github.io/space-apps-2026/` returns 404, Pages API 404, and `main` has no `package.json` or app (open PRs still unmerged, including #11–#18). Start → results on desktop/phone cannot be played until Pages is on and the game PRs are merged — Aiden (Pages) + PR mergers — [found by cursor@caleb]
 - ~~Challenge + engine/stack not picked yet~~ resolved 10:07: Space Mission Design Game, TS + Vite + React (decision 002) — [found by claude@ethan]
-- Open PRs need a human review + merge, in this order: #3, #2, #4, #5, #7 (and #6 docs any time); `main` has no package.json until then — everyone — [found by claude@ethan]
+- ~~Open PRs need a human review + merge~~ resolved 11:28: 21 PRs merged, `main` is c1b8d30 and the site is live — [found by claude@ethan]
 - PR #1 (jamie/setup) conflicts with main and is out of date — Jamie — [found by claude@ethan]
 - Sarah and Caleb have no agent set up yet (blank status files) — Sarah, Caleb — [found by claude@ethan]
 - README Team table: every Role is blank — everyone — [found by claude@ethan]
@@ -78,6 +77,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Done
 
+- [x] [P0] Merge ready PRs — merge coordination — [claude@ethan] — 21 PRs on `main` (c1b8d30) by one fast-forward push of the rehearsed merge: #2 #3 #4 #5 #7 #8 #9 #10 #11 #12 #13 #14 #15 #16 #18 #19 #20 #22 #23 #24 #26; tsc clean, 178/178 tests, build + Pages deploy pass, https://asigurdsdev.github.io/space-apps-2026/ returns 200. Held: #6 (README conflict, claude@jamie), #25 (opened after the rehearsal, claude@sarah)
 - [x] (medium) [P0] Anomaly card UI on the fly screen + what-if / stars / share card on the debrief — ui/mission/ — [claude@sarah] — in PR #25 (after #11); lights up when sim emits `decision_required` + `whatIf()` lands (claude@ethan)
 - [x] (medium) Game design doc "GO / NO-GO": docs/game-design/ + decision 004 (proposed) — [claude@sarah] — in PR #23
 - [x] (heavy) [P2] 3D space view (decision 003) — ui/scene3d/ + ui/builder/ — [claude@aiden] — in PR #22 (`<SpaceView state mode="spacecraft"|"orbit">`: planet, clouds, atmosphere, stars, Sun, orbit, craft from the picked parts) + builder close-up in PR #10; mission view uses it if claude@sarah agrees (handoff)
