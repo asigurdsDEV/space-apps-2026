@@ -16,10 +16,14 @@ function play(config: Config, design: Record<string, ParamValue> = {}) {
   const designIssues = state.issues.filter((i) => i.severity === 'error').map((i) => `${i.code}: ${i.message}`)
   ;({ state } = step(state, [{ type: 'launch', payload: {} }], config.dt_s))
   const launched = state.metrics.phase !== 'design'
+  // Anomaly cards stop the clock until answered; take option `a` (the safe one), like the sim's own what-if reruns.
+  let waiting: string | undefined
   for (let n = 0; state.status !== 'ended' && n < MAX_STEPS; n++) {
-    const r = step(state, [], config.dt_s)
+    const answer: Command[] = waiting ? [{ type: 'resolve_decision', payload: { decision_id: waiting, option_id: 'a' } }] : []
+    const r = step(state, answer, config.dt_s)
     state = r.state
     events.push(...r.events)
+    waiting = r.events.find((e) => e.type === 'decision_required')?.payload.decision_id as string | undefined
   }
   return { state, events, designIssues, launched, ended: events.find((e) => e.type === 'scenario_ended') }
 }
@@ -33,7 +37,8 @@ const sandbox = (id: string, level: Difficulty = 'normal'): Config => {
 // One known win per scenario: the proof each one is winnable. Changes from the scenario's starting design.
 const WINS: Record<string, Record<string, ParamValue>> = {
   demo: { bus: 'cubesat-12u', instruments: 'camera-basic,ir-spectrometer', solar: 'solar-deployable-large', comms: 'x-band-transmitter' },
-  moon: { bus: 'medium-bus', instruments: 'laser-altimeter,radiation-detector,ir-spectrometer', comms: 'high-gain-dish' },
+  // camera + magnetometer: the science margin that survives the reaction-wheel card (drawn on Normal and Hard).
+  moon: { bus: 'medium-bus', instruments: 'laser-altimeter,radiation-detector,ir-spectrometer,camera-basic,magnetometer', comms: 'high-gain-dish' },
   mars: { instruments: 'subsurface-radar,ir-spectrometer', comms: 'mars-hga' },
 }
 
@@ -46,6 +51,17 @@ describe('playthrough (real sim + real data)', () => {
       const r = play(sandbox(id, level), WINS[id])
       expect(r.designIssues).toEqual([])
       expect(r.launched).toBe(true)
+      expect(r.ended?.payload).toMatchObject({ reason: 'success' })
+    },
+  )
+
+  // The app draws DIFFICULTIES[level].anomaly_cards cards. Answering the safe option every time must still win.
+  it.each(Object.keys(WINS).flatMap((id) => LEVELS.map((level) => [id, level] as const)))(
+    '%s (%s, with its anomaly cards): the reference design wins',
+    (id, level) => {
+      const c = sandbox(id, level)
+      const r = play({ ...c, params: { ...c.params, anomaly_cards: DIFFICULTIES[level].anomaly_cards } }, WINS[id])
+      expect(r.events.filter((e) => e.type === 'decision_required')).toHaveLength(DIFFICULTIES[level].anomaly_cards)
       expect(r.ended?.payload).toMatchObject({ reason: 'success' })
     },
   )

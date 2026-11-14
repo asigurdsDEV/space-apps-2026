@@ -66,18 +66,18 @@ Each one is proven winnable in the real sim by `tests/playthrough.test.ts` (PR #
 | id | Title | Goal | Starting design teaches | A tested win |
 |---|---|---|---|---|
 | `demo` | *First Light* | 30 pts, 1 year, $8M, Earth orbit (SSO) | Flies, but earns 10 pts: the S-band radio can't send home what the camera makes | 12U + camera + IR spectrometer + large wings + X-band, about $7.3M |
-| `moon` | *Moon Mapper* | 75 pts, 2 years, $300M, low lunar orbit | Refused at launch: a smallsat can't brake into lunar orbit (`delta_v_short`) | medium bus + laser altimeter + radiation detector + IR spectrometer + high-gain dish, about $238M |
+| `moon` | *Moon Mapper* | 75 pts, 2 years, $300M, low lunar orbit | Refused at launch: a smallsat can't brake into lunar orbit (`delta_v_short`) | medium bus + laser altimeter + radiation detector + IR spectrometer + camera + magnetometer + high-gain dish, about $238M |
 | `mars` | *Red Planet Radar* | 65 pts, 3 years incl. a 210-day cruise, $500M, low Mars orbit | Flies, but earns ~0: the deep-space transponder is far too slow at Mars range | add IR spectrometer, swap to the Mars high-gain dish, about $272M |
 
 **Difficulty:** `getScenario(id, 'easy' | 'normal' | 'hard')`, or `withDifficulty(config, level)`. Normal is the file as written. The other levels change only params the sim reads:
 
-| Level | Budget | Science goal | Random failures | Random events |
-|---|---|---|---|---|
-| easy | ×1.5 | ×0.8 | off | off |
-| normal | as written | as written | off (as written) | off |
-| hard | ×0.95 | as written | on | 3% chance per day |
+| Level | Budget | Science goal | Random failures | Random events | Anomaly cards |
+|---|---|---|---|---|---|
+| easy | ×1.5 | ×0.8 | off | off | 1 |
+| normal | as written | as written | off (as written) | off | 2 |
+| hard | ×0.95 | as written | on | 3% chance per day | 3 |
 
-Easy and hard get their own `scenario_id` (`moon-hard`), a title suffix (`… (Hard)`) and `params.difficulty`. Every reference win in the table above still wins at all three levels (tested). With random failures on, each reference win also survives Hard at its scenario's seed (tested). The demo uses seed 1 because seed 42 loses every demo design to a bus failure on day 193. There's no deadline knob yet, because the sim's schedule rule needs `build_months` columns. `objective_text` never states numbers; show `budget_usd` / `target_science_score` from params.
+Easy and hard get their own `scenario_id` (`moon-hard`), a title suffix (`… (Hard)`) and `params.difficulty`. Every reference win in the table above still wins at all three levels (tested). With random failures on, each reference win also survives Hard at its scenario's seed (tested). `anomaly_cards` is data only: `getScenario()` leaves it out (headless callers never answer a card), and app/ draws that many. Each reference win also wins with its level's cards, answering the safe option `a` every time (tested). The Moon reference carries a camera and magnetometer for this: without them the reaction-wheel card (drawn on Normal and Hard) leaves it short of science. The demo uses seed 1 because seed 42 loses every demo design to a bus failure on day 193. There's no deadline knob yet, because the sim's schedule rule needs `build_months` columns. `objective_text` never states numbers; show `budget_usd` / `target_science_score` from params.
 
 **Real missions:** `realMissions` (`real-missions.json`) is a `table` of 12 real spacecraft for the debrief's "your mission is most like…" match (GAME_DESIGN.md §4.4). It is not a sim Dataset, so never pass it to `init`.
 
