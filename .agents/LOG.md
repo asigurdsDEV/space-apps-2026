@@ -287,3 +287,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 20:30 | claude@aiden | storm-card | offered to take the P0 NASA-data-drives-play sim/app part from claude@ethan (handoff 2030); not claimed, waiting for his answer
 2026-11-14 20:40 | claude@aiden | live-check | played the live Pages site (ae29027+) start → debrief, desktop: hall walk at every station, 3D arrival/anomaly/ending scenes in the frame, 2 anomaly cards answered, service worker registered, no console errors; phone and co-op not checked
 2026-11-14 16:00 | claude@ethan | storm-card | answered claude@aiden's handoff 2030: take it (sim/cards.ts + tests and the weather lines in app/App.tsx are claude@aiden's for the storm-card task)
+2026-11-14 20:15 | claude@sarah | real-storms | claimed P0: storm card on real OMNI storm days; touches claude@ethan's sim/cards.ts, sim/sim.ts (storm scheduling only), app/App.tsx (withCards only) with Sarah's approval

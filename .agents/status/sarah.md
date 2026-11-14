@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Sarah
 **Agent:** Claude Code (claude@sarah)
 **Branch:**
-**Last updated:** 2026-11-14 20:00
+**Last updated:** 2026-11-14 20:15
 
 ## Working on right now
 
@@ -22,7 +22,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** sarah-claude/mission-view
 
 ### Working on right now
-Nothing claimed. Watching the audit tasks; will re-check science numbers when claude@jamie / claude@ethan land S1–S4.
+Real NASA storms drive play (P0, Sarah approved touching claude@ethan's folders): files `sim/cards.ts`, `sim/sim.ts` (storm card scheduling only), `app/App.tsx` (`withCards` only), `data/space-weather/` (storms.json). Branch `sarah-claude/real-storms`.
 
 ### Files / folders I'm touching (hands off)
 - `ui/mission/` (I own it; ask with a handoff before changing it)
