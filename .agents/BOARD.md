@@ -59,6 +59,7 @@ These are new work packages, not active claims. Suggested owners claim only thei
 <!-- - thing — who needs it — [found by agent@human] -->
 - GitHub Pages not enabled yet (Settings → Pages → Source: GitHub Actions) — deploy in PR #4 needs it — repo owner (Aiden) — [found by claude@aiden]
 - ~~Live-site phone screens opened mid-page~~ resolved 12:45: after scrolling the start page to the bottom, briefing and builder on a 390px view both open at scrollY 0 (h1 on screen). https://asigurdsdev.github.io/space-apps-2026/ — [found by cursor@caleb]
+- V5 flight checks are not run. Fill the result column in docs/qa/flight3d.md (PR #77) when V7 is on a build — cursor@caleb — [found by cursor@caleb]
 - ~~Challenge + engine/stack not picked yet~~ resolved 10:07: Space Mission Design Game, TS + Vite + React (decision 002) — [found by claude@ethan]
 - ~~Open PRs need a human review + merge~~ resolved 11:28: 21 PRs merged, `main` is c1b8d30 and the site is live — [found by claude@ethan]
 - PR #1 (jamie/setup) conflicts with main and is out of date — Jamie — [found by claude@ethan]
@@ -69,7 +70,6 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 ## In progress
 - [ ] (medium) [P1] V1 Flight input kit: focused keyboard + touch movement intent, brake/interact, Escape/blur release; isolated preview + tests — ui/pilot-input/ (new) — needs: plan PR #69 — owner: codex@aiden — [codex@aiden]
-- [ ] (light) [P1] V5 3D interaction QA: movement/target loop, touch/focus/Escape, loading/WebGL fallback, offline and measured phone FPS — docs/qa/flight3d.md (new); source read-only — needs: test plan now, V7 for execution — owner: cursor@caleb — [cursor@caleb]
 
 
 
@@ -95,6 +95,7 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 ## Done
 
+- [x] (light) [P1] V5 3D interaction QA: movement/target loop, touch/focus/Escape, loading/WebGL fallback, offline and measured phone FPS — docs/qa/flight3d.md (new); source read-only — [cursor@caleb] — in PR #77: test plan only. Result column is still "not run" until V7 is on a build you can open.
 - [x] (medium) [P1] V2 Flight HUD: objectives/checklist, aimed-target scan bar + V4 feedback, result + real fact/source, hints prop for V1, hold-to-scan/recenter/pause/exit; preview on V4 data — ui/flight-hud/ — [claude@sarah] — in PR #76 (merge after #73); V7 mounts it (handoff to claude@ethan)
 - [x] (medium) [P1] Story in the game now (decision 005): CAPCOM pop-outs on briefing/builder/poll/flight + cutscenes (arrival, launch, Moon/Mars orbit, anomaly, ending), clock held in solo — app/StoryLayer.tsx + app/App.tsx (additive), ui/story/ — [claude@aiden] (part of Ethan's app/ walk task, at Aiden's request) — in PR #74 (after #70): whole game played with every beat logged; phone pop-out moved to the top
 - [x] (medium) [P1] V4 Training route: 3 target descriptors, observation/relay rules and educational feedback, local schema + tests; no score/command changes — data/pilot-training/ (new) — needs: plan PR #69; coordinate V1/V2/V7 interfaces — owner: claude@jamie — [claude@jamie] — in PR #73: hurricane / wildfire / tdrs-relay descriptors, interact() → done|partial|blocked, routeComplete(); local only, no sim/score change
