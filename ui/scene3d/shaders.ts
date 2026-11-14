@@ -1,6 +1,7 @@
 // GLSL for the planet, its clouds and its atmosphere. Everything is procedural (value-noise fbm),
-// so there are no texture files to download. Colors are written in linear space; OutputPass does
-// tone mapping and sRGB.
+// so there are no texture files to download. Colors are written in linear space. The two includes
+// that end each shader do tone mapping and sRGB when drawing straight to the screen and nothing
+// when drawing into the bloom composer (its OutputPass does both). OCTAVES is set per device.
 
 const NOISE = /* glsl */ `
 float hash(vec3 p) {
@@ -20,7 +21,7 @@ float noise(vec3 x) {
 float fbm(vec3 p) {
   float sum = 0.0;
   float amp = 0.5;
-  for (int i = 0; i < 6; i++) {
+  for (int i = 0; i < OCTAVES; i++) {
     sum += amp * noise(p);
     p = p * 2.03 + 0.17;
     amp *= 0.5;
@@ -29,6 +30,10 @@ float fbm(vec3 p) {
 }
 vec3 lin(vec3 c) { return pow(c, vec3(2.2)); }
 `
+
+const OUTPUT = /* glsl */ `
+  #include <tonemapping_fragment>
+  #include <colorspace_fragment>`
 
 const VERTEX = /* glsl */ `
 varying vec3 vObj;
@@ -112,6 +117,7 @@ void main() {
   lit += rim * fres * smoothstep(-0.2, 0.4, d) * mix(0.12, 0.9, far);
 
   gl_FragColor = vec4(lit, 1.0);
+${OUTPUT}
 }
 `,
 }
@@ -135,6 +141,7 @@ void main() {
   float d = dot(normalize(vWorldN), uSun);
   float light = 0.01 + 1.1 * smoothstep(-0.08, 0.35, d);
   gl_FragColor = vec4(vec3(light), c * 0.8);
+${OUTPUT}
 }
 `,
 }
@@ -157,6 +164,7 @@ void main() {
   float glow = pow(depth, 2.2);
   float day = 0.08 + 0.92 * smoothstep(-0.35, 0.45, dot(n, uSun));
   gl_FragColor = vec4(uColor * glow * day * 1.8, 1.0);
+${OUTPUT}
 }
 `,
 }
