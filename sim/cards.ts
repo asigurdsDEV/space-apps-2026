@@ -35,6 +35,27 @@ export interface CardContext {
   battery: 'none' | 'small' | 'mid' | 'large'
   /** The chosen radio is faster than the slowest in the catalog. */
   fast_radio: boolean
+  /** NOAA level (3 to 5) of the real storm that triggered the storm card, 0 when storms are not real data. */
+  storm_g: number
+}
+
+/**
+ * Real storm days from NASA OMNI (app/ sets `real_storms` = "day:G,…" from data/space-weather, day =
+ * whole days since launch, and `weather_start` = the real date of launch day). Empty when not set.
+ */
+export function realStormList(params: Params): { day: number; g: number }[] {
+  return str(params, 'real_storms')
+    .split(',')
+    .filter(Boolean)
+    .map((pair) => pair.split(':').map(Number))
+    .filter(([day, g]) => Number.isFinite(day) && Number.isFinite(g))
+    .map(([day, g]) => ({ day: day!, g: g! }))
+}
+
+/** The real date of mission day `day` (YYYY-MM-DD), or '' when `weather_start` is not set. */
+export function realDate(params: Params, day: number): string {
+  const start = Date.parse(str(params, 'weather_start').slice(0, 10))
+  return Number.isNaN(start) ? '' : new Date(start + day * 86_400_000).toISOString().slice(0, 10)
 }
 
 interface CardOption {
@@ -55,7 +76,7 @@ export interface Card {
   story: NonNullable<Decision['story']>
 }
 
-export function cardContext(params: Params, entities: Entity[], ops_day: number, stored_gb: number, budget_usd: number): CardContext {
+export function cardContext(params: Params, entities: Entity[], ops_day: number, stored_gb: number, budget_usd: number, storm_g = 0): CardContext {
   const orbit = findPart(entities, 'orbit', str(params, 'orbit'))
   const bus = findPart(entities, 'bus', str(params, 'bus'))
   const best = Math.max(0, ...partsOf(entities, 'bus').map((b) => num(b.props, 'reliability')))
@@ -75,6 +96,7 @@ export function cardContext(params: Params, entities: Entity[], ops_day: number,
     solar_type: str(findPart(entities, 'power_system', str(params, 'solar'))?.props ?? {}, 'type'),
     battery: !battery || wh <= sizes[0] ? (battery ? 'small' : 'none') : wh >= sizes[sizes.length - 1] ? 'large' : 'mid',
     fast_radio: !!radio && radios.length > 0 && num(radio.props, 'data_rate_bps') > Math.min(...radios),
+    storm_g,
   }
 }
 
@@ -159,7 +181,8 @@ export const CARDS: Card[] = [
         effects: (c) => [
           {
             kind: 'chance',
-            p: c.altitude_km < 400 ? 0.25 : c.altitude_km <= 600 ? 0.08 : 0.01,
+            // A real storm's NOAA level scales the drag risk: G3 half, G4 as is, G5 one and a half.
+            p: (c.altitude_km < 400 ? 0.25 : c.altitude_km <= 600 ? 0.08 : 0.01) * (c.storm_g >= 3 ? (c.storm_g - 2) / 2 : 1),
             then: [{ kind: 'end_mission', reason: 'reentry', message: 'Drag pulled the spacecraft down and it re-entered the atmosphere.' }],
             otherwise: [],
             then_text: 'The extra drag was too much: the spacecraft re-entered.',
@@ -194,7 +217,7 @@ export const CARDS: Card[] = [
       mission: 'Spirit rover',
       year: 2004,
       text: "Two weeks after landing on Mars, NASA's Spirit rover got stuck rebooting because of a problem with its flash memory. Engineers diagnosed it from Earth and fixed it by reformatting the memory, and Spirit went on to drive for years.",
-      source_url: 'https://www.jpl.nasa.gov/news/mars-rover-spirit-restored-to-health/',
+      source_url: 'https://science.nasa.gov/mission/mer-spirit/',
     },
   },
   {
@@ -318,8 +341,8 @@ export function cardById(id: string): Card | undefined {
   return CARDS.find((card) => card.id === id)
 }
 
-/** The `decision_required` payload for a card. */
-export function decisionOf(card: Card, decision_id: string): Decision {
+/** The `decision_required` payload for a card. A storm card from real data names its real date. */
+export function decisionOf(card: Card, decision_id: string, params?: Params): Decision {
   return {
     decision_id,
     card_id: card.id,
@@ -327,7 +350,22 @@ export function decisionOf(card: Card, decision_id: string): Decision {
     body: card.body,
     console: card.console,
     options: card.options.map(({ id, label, effect_text }) => ({ id, label, effect_text })),
-    story: card.story,
+    story: (params && realStoryOf(card, decision_id, params)) ?? card.story,
+  }
+}
+
+/** For the storm card on a real storm day: the real date and NOAA level, sourced to NASA OMNI. */
+function realStoryOf(card: Card, decision_id: string, params: Params): Decision['story'] | undefined {
+  if (card.id !== 'geomagnetic-storm') return undefined
+  const day = Number(decision_id.slice(card.id.length + 1))
+  const storm = realStormList(params).find((s) => s.day === day)
+  const date = realDate(params, day)
+  if (!storm || !date) return undefined
+  return {
+    mission: 'NASA OMNI space weather',
+    year: date,
+    text: `This storm really happened: NASA's OMNI data shows a G${storm.g} geomagnetic storm on ${date}, and your mission is flying through it. In February 2022 a much weaker G1 storm raised drag enough to bring down 38 of 49 new Starlink satellites.`,
+    source_url: 'https://spdf.gsfc.nasa.gov/pub/data/omni/low_res_omni/',
   }
 }
 
@@ -342,8 +380,8 @@ export function cardSchedule(count: number, opsStartDay: number, endDay: number,
 }
 
 /** The card waiting for an answer, rebuilt from the state alone (so a late joiner or a reload still sees it). */
-export function pendingDecision(state: Pick<SimState, 'metrics'>): Decision | null {
+export function pendingDecision(state: Pick<SimState, 'metrics'> & Partial<Pick<SimState, 'params'>>): Decision | null {
   const id = state.metrics.decision_id
   const card = cardById(String(state.metrics.decision_card ?? ''))
-  return card && typeof id === 'string' && id ? decisionOf(card, id) : null
+  return card && typeof id === 'string' && id ? decisionOf(card, id, state.params) : null
 }

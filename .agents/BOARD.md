@@ -8,6 +8,8 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Open
 
+- [ ] (light) [P1] Investigate first-use offline lazy scene import failure in local production preview (Start/GLBs cached, Builder error boundary); compare Pages headers before asserting live impact — pwa/ + config owner: claude@aiden — needs: reproduction in docs/qa/offline-cache.md PR #101; no source claim transferred
+
 - [ ] (medium) [P2] Fly scene tied to sim time (craft position from `t_s`, ground stations, downlink beam, part highlight) — ui/scene3d/ — released by claude@ethan 13:55 so it does not block anyone; unfinished work is on branch `ethan-claude/scene3d-fly`. Ask claude@ethan before taking it (the folder is his)
 
 ### Interactive 3D overhaul (Aiden: both modes, spacecraft flight first; plan PR #69)
@@ -35,22 +37,26 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 ### Game design (decision 004, proposed, see docs/game-design/GAME_DESIGN.md §8)
 
+### Submission readiness (added by claude@aiden 20:50 after playing the live site start → debrief; deadline Sun 15 Nov 23:59)
+- [ ] (light) [P0] **Record the 30-second demo** on the live site and fill "Recording evidence" in docs/DEMO.md (take length, build commit, link). Live site plays clean start → debrief as of ae29027 — docs/DEMO.md — owner: a human (Aiden or team) with codex@jamie (DEMO.md)
+- [ ] (light) [P0] **Submit:** judging form filled from docs/SUBMISSION.md, video link, every external resource in References, project page link checked in a private window — docs/SUBMISSION.md — owner: cursor@caleb (+ a human to press Submit)
+- [ ] (light) [P1] **Code freeze** Sun 15 Nov 18:00: after that only fixes for things that break the demo path, so the recorded video matches the live site — merge coordinator: claude@ethan
+- [ ] (light) [P1] **Launch cutscene is ~20 s**, decision 005 says cutscenes ≤ 10 s (Skip exists). Shorten it or record the exception in decision 005 — ui/scene3d/ — owner: claude@ethan
+
 ### Accuracy audit + awards push (claude@sarah 18:45, Sarah's request; full report: docs/game-design/ACCURACY_AUDIT.md)
-- [ ] (light) [P0] **Data fixes:** add orbit `solar_flux_factor` (earth/moon 1.0, mars 0.43); Falcon 9 `payload_tli_kg` must exceed `payload_tmi_kg` (TLI needs less energy than Mars; now 3,500 < 4,000); 3U CubeSat total 4.5 kg > 4 kg CubeSat limit (set max_added 1.0); verify LRO launch mass (1,846 vs 1,916 kg); keep the Mars reference design winnable — data/ — owner: claude@jamie
-- [ ] (light) [P1] **Sandbox mode** (brief lists it): a 4th scenario with no science goal, a huge budget and random failures off, labelled Sandbox on Start — data/scenarios/ (+ PROGRAM) — owner: claude@jamie
-- [ ] (light) [P1] **Development time** (brief: Time = development + lifetime): give parts `build_months` and scenarios `deadline_months` so `behind_schedule` is live — data/ — owner: claude@jamie
-- [ ] (light) [P1] **Onboard computer + attitude control** (brief's component list): say in each bus description what flight computer / pointing it includes; builder shows it — data/catalogs/spacecraft-buses.json — owner: claude@jamie
-- [ ] (light) [P2] Rocket nozzle drawn on buses with `propulsion_delta_v_ms: 0` (3U, 6U) — ui/scene3d/ — owner: claude@ethan
 - [ ] (light) [P2] Glossary: Deep Space Network priority "such as a launch or landing" (card source says launches); add terms rtg, solar-flux, coverage — ui/learn/ — owner: cursor@kaipo
 - [ ] (light) [P1] Show each console's **priority** on the GO / NO-GO poll so co-op players negotiate before launch (GAME_DESIGN §4.7) — ui/gonogo/ — owner: claude@jamie
 
 ## Missing / needed
 
-- claude@ethan: Jamie wants all planets extremely realistic. May claude@jamie (1) build small NASA maps into ui/scene3d (inline, offline-safe) and (2) take the Earth/cloud/atmosphere shaders? Handoff 20261114-1830 real-planet-maps — [found by claude@jamie]
+- Jamie reached Claude usage limit; codex@jamie takes over Jamie follow-ups. Sarah already owns active audit data fixes; handoff 1446 requests exact remaining scope and confirms whether solar_flux_factor + Mars balance are included. No duplicate source claim — [found by codex@jamie]
+
+- Offline QA PR #101: local preview fresh-cache offline Builder fails on lazy Hangar/canvas/SpaceView imports; online control succeeds. All six public files pass offline. Root cause and Pages impact unconfirmed; PWA owner claude@aiden follow-up — [found by codex@aiden]
+
 
 - Source audit PR #90: catalog references are background for exact game values; add Spirit completed-repair/SOHO longevity citations, reconcile conflicting GRAIL launch masses, add GOES launch-year evidence and glossary provenance. LRO 1,846 kg is supported by cited NSSDCA source. Owners: data claude@jamie, story claude@sarah, glossary cursor@kaipo; report/source-audit handoff contains evidence — [found by codex@aiden]
 
-- Current-main integration check (8c0f3cb): V1/V2/V3/V4, rooms, cutscenes and launch are merged; app still does not mount PilotInput/FlightHud or Hangar, StoryLayer supplies no non-launch 3D children, public GLBs are absent from explicit PWA precache. Claude owns active room mounting; Caleb's 1340 handoff covers cutscene mounting. Ethan: Codex offers new ui/flight-training/ screen assembly to reduce V7b work, pending your exact scope/public FlightView API approval (handoff readiness-next). No claim or app/scene3d takeover — [found by codex@aiden]
+- Updated after 8c0f3cb snapshot: rooms, non-launch cutscene mounting and all public-file precache landed (#87/#91/#93). Ethan has claimed both V7a scene + V7b app mount; earlier optional Codex assembly offer is withdrawn to avoid duplicate ownership. V7/device acceptance remains with owners; separate offline preview finding in PR #101 — [found by codex@aiden]
 
 
 - V1 input kit PR #78, V2 HUD #76, V3 assets #75 and V4 route #73 are available; V7 still must connect real craft movement/aiming, held target scans and scene feedback. V5 #77 is a test plan, not executed flight QA. V6 rooms now belong to Claude Aiden per 1555 split. Scored maneuvers still require agreed sim/CONTRACTS work — [found by codex@aiden]
@@ -82,7 +88,10 @@ These are new work packages, not active claims. Suggested owners claim only thei
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
-- [ ] (light) [P1] Offline cache covers everything in public/ (the flight models from cursor@kaipo's V3 pack are not cached today), so flight training works on bad venue wifi — pwa/, vite.config.ts — owner: claude@aiden — [claude@aiden]
+- [ ] (medium) [P0/P1] Audit data fixes, **taken over from claude@jamie** (unclaimed since 18:45; Sarah asked to improve): Falcon 9 TLI > TMI, 3U ≤ 4 kg, bus descriptions name flight computer + attitude control, `build_months` on parts + `deadline_months` per scenario (behind_schedule live), Sandbox scenario — data/catalogs/*.json, data/scenarios/ (+ sandbox.json), data/index.ts (scenarios list only) — [claude@sarah]
+- [ ] (light) [P0] README: game-first header for judges (what it is, live link, NASA data, how to play, team); repo/agent section kept below — README.md (top only) — [claude@sarah]
+- [ ] (light) [P1] **Walk + cutscenes on a phone and with reduced motion / a screen reader:** hall and panels at 375 px, reduced motion cuts straight to each station, screen reader hears the screens not the hall, cutscene Skip/Escape works — app/Walk.tsx, app/StoryLayer.tsx, app/app.css — owner: claude@aiden — [claude@aiden]
+- [ ] (medium) [P1] Rockets fully rendered (Ethan's request): surface detail on every launch vehicle (panel seams, weld lines, markings, engine detail), shadows, exhaust and pad effects — ui/scene3d/launch/ — branch `ethan-claude/rocket-render` — [claude@ethan]
 - [ ] (heavy) [P1] V7 Integrate at a checkpoint chosen by existing owners: player-craft control/chase camera + one large scene + HUD; preserve published SpaceView and sim authority — ui/scene3d/ + app/ owner: claude@ethan; ui/mission/ owner: claude@sarah; cache/config owner: claude@aiden — needs: reviewed V1/V2/V4, optional V3; owner agreement on additive API; no current 3D work takeover — **claimed 15:25 by claude@ethan for the ui/scene3d/ + app/ part**, two PRs: V7a `ui/scene3d/flight/` (new folder: `FlightView`, player craft with chase camera, V4 targets, takes V1 intent, gives V2 `focus`), branch `ethan-claude/flight-view`; then V7b mount in `app/` (a "Flight training" button on the flight screen opens it over the mission with `<FlightHud>` + `<PilotInput>`; local training only, no sim commands) — [claude@ethan]
 - [ ] (light) [P1] Re-run the four-device multiplayer rehearsal once Host online and Join are on the live site. Fill docs/MULTIPLAYER_TEST.md again (venue wifi, then a phone hotspot if wifi fails) — docs/MULTIPLAYER_TEST.md — needs: app loop merged and Pages serving Start — owner: cursor@kaipo — [cursor@kaipo]
 
@@ -93,8 +102,6 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 
 
-- [ ] (medium) [P1] Realistic rockets (Ethan's request): every launch vehicle modelled on the real rocket NASA has flown missions on (real dimensions, stages, engines, boosters, livery), with a source for each; models ready for more NASA-used rockets if data/ adds rows — ui/scene3d/launch/ (rocket.ts, vehicles.ts, new REFERENCES.md) — [claude@ethan]
-- [ ] (medium) [P1] Realistic spacecraft parts (Ethan's request): every bus, power, comms and instrument model patterned on real NASA hardware (named reference, real proportions and features), with a source for each — ui/scene3d/parts/ (+ new REFERENCES.md) — [claude@ethan]
 - [ ] (heavy) [P1] Browser end-to-end tests of the assembled game: full solo mission, and two browsers in one co-op room — e2e/ (new); uses playwright-core installed outside the repo, so no package.json change — solo and co-op scripts written on branch `ethan-claude/app-fixes`, review fixes being verified — [claude@ethan]
 
 
@@ -107,6 +114,15 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 
 ## Done
+- [x] (medium) [P1] Planet relief from real elevation (Ethan's request) — ui/scene3d/shaders.ts, maps/, world.ts — [claude@ethan] — in PR #104, on top of claude@jamie's maps (PR #102): LOLA (Moon) and MOLA (Mars) elevation shade real crater walls, basins, Olympus Mons, Tharsis and Valles Marineris at the day/night line (drawn 5x steeper, said in maps/README.md); Earth seen from the Moon and the Moon seen from Earth use the NASA maps. Sources in `ui/scene3d/maps/README.md` (cursor@caleb: two new rows for the References list).
+- [x] (light) [P1] **Walk + cutscenes on a phone and with reduced motion / a screen reader:** hall and panels at 375 px, reduced motion cuts straight to each station, screen reader hears the screens not the hall, cutscene Skip/Escape works — app/Walk.tsx, app/StoryLayer.tsx, app/app.css — owner: claude@aiden — [claude@aiden] — checked on the live site, no change needed: 375 px panel fits (no sideways scroll), hall inert + aria-hidden, Skip focused on open (44 px) and Escape skips; reduced motion by code (walk wait 0, hall cuts, cutscene shows its still). Small leftovers: phone CAPCOM overlaps the panel top 14 px for ≤ 9 s; during a walk (≤ 2.4 s) the hidden panel is still tabbable. Not checked: a real phone, a real screen reader
+- [x] (medium) [P1] Cloudflare TURN relay for cross-network rooms — api/ice.js, app/room.ts, vercel.json — [cursor@kaipo] — live at https://kimchispacemission.vercel.app (`/api/ice` returns turns:443). GitHub Pages keeps the direct PeerJS path. Four-player cap unchanged.
+- [x] (light) [P1] Browser verification of merged offline public-asset cache: fresh install, offline reload, lazy scenes and all flight GLBs; evidence only — docs/qa/offline-cache.md (new), source read-only — [codex@aiden] — in PR #101: Start reload + all six public files pass with origin stopped; local preview first-use offline lazy imports fail, online control passes; Pages not reproduced
+- [x] (medium) [P1] Realistic rockets (Ethan's request) — ui/scene3d/launch/ — [claude@ethan] — in PR #98: Falcon 9, rideshare Falcon 9, Electron, Pegasus XL, Vulcan Centaur, SLS Block 1 modelled on the real rockets at real size; Atlas V 401, Delta IV Heavy and Falcon Heavy are modelled too and wait for catalog rows (`atlas-v`, `delta-iv-heavy`, `falcon-heavy`, handoff 20261114-1415 to claude@jamie). Sources: `ui/scene3d/launch/REFERENCES.md`.
+- [x] (medium) [P1] Realistic spacecraft parts (Ethan's request) — ui/scene3d/parts/ — [claude@ethan] — in PR #97: every bus, power, radio and instrument model patterned on named NASA hardware (MarCO, CAPSTONE, GRAIL, MAVEN, MRO, MMRTG, LRO, NISAR, ...). Sources and which numbers are estimates: `ui/scene3d/parts/REFERENCES.md`.
+- [x] (light) [P2] No rocket nozzle on buses with `propulsion_delta_v_ms: 0` (3U, 6U) — ui/scene3d/parts/ — [claude@ethan] — in PR #97, with a test.
+- [x] (medium) [P1] More of the real sky (Ethan's request) — ui/scene3d/world.ts, sky.ts — [claude@ethan] — in PR #96: the Moon from Earth orbit, Earth from lunar orbit (fixed over the near side), Phobos and Deimos at Mars, all at real size, distance and pace (NASA fact sheets). Axial tilt not changed: the scene's Sun already stands 20° north of the equator, close to Earth's and Mars's summer tilt.
+- [x] (light) [P1] Offline cache covers everything in public/ (the flight models from cursor@kaipo's V3 pack are not cached today), so flight training works on bad venue wifi — pwa/, vite.config.ts — owner: claude@aiden — [claude@aiden] — in PR #93: `pwa/public-files.ts` lists all six public files, a test fails when one is missed; not checked with an offline reload in a browser
 - [x] (light) [P0] **Science fix: solar power falls with distance from the Sun** — sim/design.ts — [claude@ethan] — in PR #92: solar power × orbit `solar_flux_factor` (optional column, default 1, RTG unaffected). It takes effect when claude@jamie's data column lands.
 - [x] (light) [P1] **Orbit coverage** — sim/design.ts — [claude@ethan] — in PR #92: an imager off its `best_orbit` earns half its science × the orbit's `coverage_fraction`. `orbitScienceFactor` is exported from `sim` for the builder badge.
 

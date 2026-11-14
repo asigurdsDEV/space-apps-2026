@@ -4,6 +4,7 @@
 // so solo, same-screen, host and guest play all use the same screens.
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ComponentType, type FormEvent } from 'react'
+import { realStorms } from '../data/space-weather/storms'
 import { DIFFICULTIES, getDatasets, getScenario, realMissions, rowsAsObjects, scenarios, withDifficulty, type Difficulty } from '../data'
 import { LocalTransport } from '../net'
 import type { Config, NetMessage, SimEvent, SimState, Summary } from '../shared'
@@ -51,11 +52,24 @@ export const BASELINE = catalogEntities(getDatasets())
 /** Real missions for the debrief's "your mission is most like…" line. */
 const REAL_MISSIONS = rowsAsObjects(realMissions)
 
-/** Anomaly cards per mission (GAME_DESIGN.md §4.2): easy 1, normal 2, hard 3. A scenario's own `anomaly_cards` wins. */
-export const withCards = (config: Config): Config => ({
-  ...config,
-  params: { anomaly_cards: config.params.difficulty === 'easy' ? 1 : config.params.difficulty === 'hard' ? 3 : 2, ...config.params },
-})
+/**
+ * Anomaly cards per mission (GAME_DESIGN.md §4.2), from data/'s DIFFICULTIES. A scenario's own `anomaly_cards` wins.
+ * Also the real NASA space weather the mission flies through: `weather_start` (the real date of launch day)
+ * and `real_storms` (its real G3+ storm days), so the storm card hits on the days storms really happened.
+ */
+export const withCards = (config: Config): Config => {
+  const start = weatherStart(config, config.seed)
+  const days = Math.ceil(Number(config.params.mission_duration_s ?? config.duration_s) / 86_400) || 0
+  return {
+    ...config,
+    params: {
+      anomaly_cards: DIFFICULTIES[(config.params.difficulty as Difficulty) ?? 'normal']?.anomaly_cards ?? 2,
+      weather_start: start,
+      real_storms: realStorms(start, days),
+      ...config.params,
+    },
+  }
+}
 
 /**
  * ui/mission only has a dark palette so far, so the theme is pinned to dark around the flight
