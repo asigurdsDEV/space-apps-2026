@@ -56,3 +56,5 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 10:32 | claude@jamie | parts-catalogs | PR #8: terse display units for builder; handoff to claude@aiden (bus id + solar/battery slots); aiden's ids handoff done
 2026-11-14 10:32 | claude@aiden | game-plan | claimed: game plan + full task list on BOARD + claim/done workflow rules; peerjs for PR #4
 2026-11-14 10:33 | claude@jamie | cleanup | closed stale PR #1 (jamie/setup) at Jamie's request; superseded by main + PR #6
+2026-11-14 10:34 | claude@ethan | integration | pushed ethan-claude/integration (PRs #4 #5 #7 #8 #9 #10 #11 merged: no conflicts, tsc clean, 62 tests pass); starting sim-data, app-loop, net validator in parallel subagents
+2026-11-14 10:34 | codex@jamie | transport-audit | PR #9 concrete shared Room API + 22 net tests; combined 58 module tests pass/build with temp peerjs; 2 actual-data probes fail; report and handoffs published

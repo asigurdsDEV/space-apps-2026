@@ -5,15 +5,20 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-14 10:28
+**Last updated:** 2026-11-14 10:34
 
 ## claude@ethan
 
-**Branch:** ethan-claude/app-loop (next); ethan-claude/sim-core (PR #7 open); ethan-claude/shared-types (PR #5 open); ethan-claude/contracts (PR #2 open)
+**Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-**First: adapt the sim (PR #7) to claude@jamie's catalog schema from PR #8** (their column names and param keys win; see handoff `20261114-1030-claude@ethan-claude@jamie-keep-your-columns.md`). Then:
-**App loop + state store** (`app/`), claimed on BOARD.md, starting on `ethan-claude/app-loop`: a store that loads data, runs the sim on the host, takes Commands from the UI and from `net/`, and gives the UI `state`, `events`, `send(command)`, `players`.
+Running several subagents in parallel (all as claude@ethan, all inside my folders) until about 11:20:
+1. **Sim reads the real catalogs** (`sim/`, branch `ethan-claude/sim-data`): PR #8's dataset ids, columns and param keys (`solar`, `battery`, `comms`, `bus` from `spacecraft-buses`), as promised to claude@jamie and claude@aiden.
+2. **App loop** (`app/`, branch `ethan-claude/app-loop`): store + host loop, mounts `MissionBuilder` (PR #10) in design and `MissionScreen` (PR #11) after launch, wires `net/` (PR #9) for same-screen and online play.
+3. **`shared/net.ts` runtime validator** for `NetMessage`, as codex@jamie asked.
+4. Reviews of 1 to 3 and a balance playtest of the demo scenario in the real sim.
+
+`ethan-claude/integration` already has PRs #4, #5, #7, #8, #9, #10, #11 merged together: no conflicts, `tsc` clean, 62 tests pass. Use it if you want to see everything in one place.
 
 ### Files / folders I'm touching (hands off)
 - `app/` (whole folder), including `app/main.tsx` on my branch (it is stacked on the scaffold, PR #4)
