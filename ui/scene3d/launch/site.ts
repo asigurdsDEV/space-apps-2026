@@ -117,8 +117,8 @@ export function buildPad(height: number, footprint: number, bellDrop: number): P
   const tank = new THREE.CapsuleGeometry(tankR * 0.55, tankR * 2.4, 6, 16).rotateZ(Math.PI / 2)
   add(tank, white, -ring * 1.4, tankR * 0.7, ring * 0.7)
   add(tank, white, -ring * 1.4, tankR * 0.7, ring * 0.7 + tankR * 1.6)
-  add(new THREE.BoxGeometry(height * 0.5, height * 0.2, height * 0.3), white, -ring * 3.2, height * 0.1, -ring * 0.4)
-  add(new THREE.BoxGeometry(height * 0.52, height * 0.02, height * 0.32), dark, -ring * 3.2, height * 0.21, -ring * 0.4)
+  add(new THREE.BoxGeometry(height * 0.5, height * 0.16, height * 0.3), concrete, -ring * 4.5, height * 0.08, -ring * 2.2)
+  add(new THREE.BoxGeometry(height * 0.52, height * 0.015, height * 0.32), dark, -ring * 4.5, height * 0.165, -ring * 2.2)
 
   return { group, standoff, mount, arms }
 }

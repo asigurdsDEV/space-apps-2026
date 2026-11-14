@@ -1,11 +1,10 @@
 /* The launch plays over sky and space, so its overlay text is light in both themes. */
+/* :where keeps the default size weak, so any class the screen passes can override it. */
+:where(.s3d-launch) { height: min(78vh, 720px); min-height: 320px; border-radius: var(--game-radius, 12px); }
 .s3d-launch {
   position: relative;
   margin: 0;
-  height: min(78vh, 720px);
-  min-height: 320px;
   overflow: hidden;
-  border-radius: var(--game-radius, 12px);
   background: #000002;
   color: #eef2fc;
   font: 1rem/1.4 var(--game-font, system-ui, sans-serif);

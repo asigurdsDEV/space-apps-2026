@@ -28,6 +28,7 @@ vec3 lin(vec3 c) { return pow(c, vec3(2.2)); }
 const SKY = /* glsl */ `
 uniform vec3 uSun;
 uniform float uSpace;
+uniform float uTime;
 vec3 skyColor(vec3 d) {
   float toSun = max(dot(normalize(d.xz + 1e-5), normalize(uSun.xz)), 0.0);
   vec3 zenith = mix(lin(vec3(0.16, 0.27, 0.52)), vec3(0.0005, 0.001, 0.004), uSpace);
@@ -105,14 +106,15 @@ void main() {
   float mid = fbm2(p * 0.0021);
   float fine = fbm2(p * 0.07);
   // Sea to the east, behind a wavy shoreline; a lagoon or two inland.
-  float shore = p.x - uPad * 9.0 - 1500.0 + (big - 0.5) * 9000.0 + (mid - 0.5) * 500.0;
-  float sea = max(smoothstep(-30.0, 30.0, shore), smoothstep(0.66, 0.68, fbm2(p * 0.00035 + 20.0)));
+  float r = length(p);
+  // The pad always stands on dry land, about 2 km from the beach.
+  float shore = p.x - 2200.0 + (big - 0.5) * 9000.0 * smoothstep(1500.0, 9000.0, r) + (mid - 0.5) * 500.0;
+  float sea = max(smoothstep(-30.0, 30.0, shore), smoothstep(0.66, 0.68, fbm2(p * 0.00035 + 20.0)) * smoothstep(2500.0, 5000.0, r));
   float sand = smoothstep(-160.0, -30.0, shore) * (1.0 - sea);
   vec3 scrub = mix(lin(vec3(0.20, 0.25, 0.14)), lin(vec3(0.33, 0.33, 0.20)), mid) * (0.7 + 0.6 * fine);
   scrub = mix(scrub, lin(vec3(0.30, 0.29, 0.22)), smoothstep(0.55, 0.7, big));
   vec3 col = mix(scrub, lin(vec3(0.66, 0.60, 0.48)), sand);
   // Apron, a crawlerway to the west and a perimeter road.
-  float r = length(p);
   float road = (1.0 - smoothstep(uPad * 0.10, uPad * 0.12, abs(p.y + 0.0))) * step(p.x, 0.0) * step(-uPad * 14.0, p.x);
   road = max(road, 1.0 - smoothstep(uPad * 0.035, uPad * 0.05, abs(r - uPad * 2.4)));
   float apron = max(1.0 - smoothstep(uPad * 0.96, uPad, r + (fine - 0.5) * uPad * 0.05), road);
@@ -182,10 +184,10 @@ void main() {
 // ---------------------------------------------------------------- Plumes
 
 const PLUME_COLORS: Record<Propellant, { core: [number, number, number]; edge: [number, number, number]; diamonds: number; length: number }> = {
-  kerolox: { core: [5, 3.6, 2.2], edge: [2.4, 0.8, 0.18], diamonds: 0.5, length: 1 },
-  methalox: { core: [3.4, 3.2, 4.2], edge: [1.2, 0.7, 1.8], diamonds: 1, length: 0.9 },
-  hydrolox: { core: [2.2, 2.6, 3.6], edge: [0.35, 0.5, 1.1], diamonds: 1, length: 0.7 },
-  solid: { core: [6, 4.6, 2.8], edge: [3.2, 1.5, 0.45], diamonds: 0, length: 1.25 },
+  kerolox: { core: [3.2, 2.0, 0.9], edge: [1.8, 0.55, 0.1], diamonds: 0.5, length: 1 },
+  methalox: { core: [2.2, 2.0, 3.0], edge: [0.9, 0.5, 1.5], diamonds: 1, length: 0.9 },
+  hydrolox: { core: [1.5, 1.9, 2.8], edge: [0.3, 0.45, 1.0], diamonds: 1, length: 0.7 },
+  solid: { core: [3.6, 2.5, 1.2], edge: [2.4, 1.0, 0.25], diamonds: 0, length: 1.25 },
 }
 
 export interface Plume {
@@ -408,7 +410,7 @@ export function makeStars(radius: number): THREE.Points {
   const geo = new THREE.BufferGeometry()
   geo.setAttribute('position', new THREE.BufferAttribute(pos, 3))
   geo.setAttribute('color', new THREE.BufferAttribute(col, 3))
-  return new THREE.Points(geo, new THREE.PointsMaterial({ size: 1.6, sizeAttenuation: false, vertexColors: true, depthWrite: false, depthTest: false, transparent: true }))
+  return new THREE.Points(geo, new THREE.PointsMaterial({ size: 1.6, sizeAttenuation: false, vertexColors: true, depthWrite: false, depthTest: false }))
 }
 
 // ------------------------------------------------------------ Above the air

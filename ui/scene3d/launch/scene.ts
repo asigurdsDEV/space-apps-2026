@@ -73,7 +73,7 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
   const sunLight = new THREE.DirectionalLight(0xffffff, 2)
   const hemi = new THREE.HemisphereLight(0x8fa8de, 0x54483c, 1)
   // The flame lights the pad, the tower and the rocket's own tail.
-  const flame = new THREE.PointLight(0xffa860, 0, 0, 0)
+  const flame = new THREE.PointLight(0xff8a3c, 0, 0, 0)
   scene.add(sunLight, sunLight.target, hemi, flame)
 
   // ---- The vehicle, with the player's spacecraft under the fairing.
@@ -133,7 +133,8 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
   )
   const clouds = new THREE.Mesh(
     new THREE.SphereGeometry(EARTH_R + 9_000, 256, 128),
-    new THREE.ShaderMaterial({ ...cloudShader, uniforms: { uSun: spaceU.uSun, uTime: skyU.uTime }, transparent: true, ...backdrop }),
+    // Blended but not "transparent": it must draw with the backdrop, before the rocket, not over it.
+    new THREE.ShaderMaterial({ ...cloudShader, uniforms: { uSun: spaceU.uSun, uTime: skyU.uTime }, blending: THREE.CustomBlending, ...backdrop }),
   )
   planet.renderOrder = -8
   clouds.renderOrder = -7
@@ -287,7 +288,7 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
     }
     const thrust = Math.max(p1, pBoost)
     onAxis(-0.08, flame.position)
-    flame.intensity = space ? 0 : thrust * 2.2 * (1 - 0.6 * thin)
+    flame.intensity = space ? 0 : thrust * 1.1 * (1 - 0.6 * thin)
 
     // ---- Light.
     const sun = space ? SUN_SPACE : SUN_GROUND
@@ -413,6 +414,9 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
     camera.fov = Math.min(fov * Math.min(tall, widen), 80)
     camera.near = Math.max(0.05, dist * 0.02)
     camera.updateProjectionMatrix()
+    // Slide the picture up a little: the caption covers the bottom of the frame.
+    camera.projectionMatrix.elements[9] = -0.16
+    camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert()
     camera.updateMatrixWorld()
 
     // ---- Backdrop.
@@ -478,15 +482,6 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
             p3.z += (hash(first - j + 0.6) - 0.5) * size * 0.5
             puffs.add(p3.x, p3.y, p3.z, size, 0.6 * Math.min(1, j / 3 + 0.2) * (1 - j / 70) * lerp(1, 0.55, thin), Math.exp(-age * 5) * 0.6, hash(first - j + 0.9))
           }
-        }
-      }
-      if (id === 'maxq') {
-        // The misty collar that forms around a rocket near the speed of sound.
-        const k = Math.sin(clamp01((p - 0.25) / 0.5) * Math.PI)
-        for (let i = 0; i < 10; i++) {
-          const a = (i / 10) * Math.PI * 2
-          onAxis(0.78, p3)
-          puffs.add(p3.x + Math.cos(a) * W * 1.5 * axis.y, p3.y - Math.cos(a) * W * 1.5 * axis.x, p3.z + Math.sin(a) * W * 1.5, W * 2.2, 0.28 * k, 0, hash(i))
         }
       }
       if (id === 'failure' && p > 0.3) {
