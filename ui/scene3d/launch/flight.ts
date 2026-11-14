@@ -23,7 +23,8 @@ function through(keys: readonly Key[], t: number): number {
 
 const ALTITUDE: Key[] = [[0, 0], [8, 110], [20, 1_100], [40, 4_200], [72, 12_000], [110, 36_000], [145, 68_000], [195, 110_000], [300, 160_000], [520, 200_000]]
 const PITCH_DEG: Key[] = [[12, 0], [22, 7], [72, 38], [145, 64], [300, 82], [520, 90]]
-const SPEED: Key[] = [[0, 0], [72, 450], [145, 2_100], [300, 4_300], [520, 7_800]]
+const AIR_PITCH_DEG: Key[] = [[5, 90], [12, 62], [25, 48], [72, 45], [145, 64], [300, 82], [520, 90]]
+const DOWNRANGE: Key[] = [[12, 0], [22, 60], [40, 700], [72, 6_000], [145, 70_000], [195, 170_000], [300, 500_000], [520, 1_900_000]]
 const AIR_LAUNCH_M = 12_000
 
 /** Height above the ground, meters. An air launch starts at the carrier aircraft's altitude. */
@@ -32,13 +33,13 @@ export function altitudeM(met: number, airLaunch = false): number {
 }
 
 /** Tilt away from straight up, radians: 0 on the pad, a quarter turn (flying level) in orbit. */
-export function pitchRad(met: number): number {
-  return (through(PITCH_DEG, met) * Math.PI) / 180
+export function pitchRad(met: number, airLaunch = false): number {
+  return (through(airLaunch ? AIR_PITCH_DEG : PITCH_DEG, met) * Math.PI) / 180
 }
 
-/** Speed, m/s. */
-export function speedMs(met: number): number {
-  return through(SPEED, met)
+/** Distance flown over the ground, meters; orbital speed once in orbit. */
+export function downrangeM(met: number): number {
+  return through(DOWNRANGE, met) + 7_800 * Math.max(met - 520, 0)
 }
 
 /** 0 in thick air, 1 where there is practically none (about 60 km up): how far the exhaust spreads. */

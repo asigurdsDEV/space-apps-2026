@@ -21,8 +21,10 @@ describe('launchTimeline', () => {
       tl.stages.forEach((s, i) => {
         expect(s.end).toBeGreaterThan(s.start)
         if (i > 0) expect(s.start).toBe(tl.stages[i - 1]!.end)
-        expect(s.caption.length, `${v.id} ${s.id}`).toBeGreaterThan(40)
-        expect(s.caption.length, `${v.id} ${s.id}`).toBeLessThan(230)
+        // The short line must be readable while its shot lasts; the detail is for paused reading.
+        expect(s.caption.split(' ').length, `${v.id} ${s.id}`).toBeLessThanOrEqual(18)
+        expect(s.detail.length, `${v.id} ${s.id}`).toBeGreaterThan(s.caption.length * 0.8)
+        expect(s.detail.length, `${v.id} ${s.id}`).toBeLessThan(230)
       })
       expect(tl.stages.at(-1)!.end).toBe(tl.duration)
       expect(tl.stages.at(-1)!.id).toBe('deploy')
@@ -45,7 +47,7 @@ describe('launchTimeline', () => {
     const tl = launchTimeline(byId('electron'), { failed: true })
     expect(tl.failed).toBe(true)
     expect(tl.stages.at(-1)!.id).toBe('failure')
-    expect(tl.stages.at(-1)!.caption).toContain('92%')
+    expect(tl.stages.at(-1)!.detail).toContain('92%')
     expect(ids('electron', true)).not.toContain('deploy')
   })
 

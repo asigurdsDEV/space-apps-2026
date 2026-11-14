@@ -51,14 +51,14 @@ void main() {
 }
 `
 
-export interface SkyUniforms { uSun: { value: THREE.Vector3 }; uSpace: { value: number }; uTime: { value: number } }
+export type SkyUniforms = { uSun: { value: THREE.Vector3 }; uSpace: { value: number }; uTime: { value: number } }
 
 /** A dome that follows the camera. */
 export function makeSky(u: SkyUniforms): THREE.Mesh {
   const sky = new THREE.Mesh(
     new THREE.SphereGeometry(1, 32, 20),
     new THREE.ShaderMaterial({
-      uniforms: u,
+      uniforms: { ...u },
       vertexShader: WORLD_VERTEX,
       fragmentShader: /* glsl */ `
 varying vec3 vWorld;
@@ -144,7 +144,7 @@ export function makeCloudDeck(u: SkyUniforms, altitude: number): THREE.Mesh {
   const deck = new THREE.Mesh(
     new THREE.PlaneGeometry(400_000, 400_000).rotateX(-Math.PI / 2),
     new THREE.ShaderMaterial({
-      uniforms: u,
+      uniforms: { ...u },
       vertexShader: WORLD_VERTEX,
       fragmentShader: /* glsl */ `
 varying vec3 vWorld;
@@ -408,5 +408,49 @@ export function makeStars(radius: number): THREE.Points {
   const geo = new THREE.BufferGeometry()
   geo.setAttribute('position', new THREE.BufferAttribute(pos, 3))
   geo.setAttribute('color', new THREE.BufferAttribute(col, 3))
-  return new THREE.Points(geo, new THREE.PointsMaterial({ size: 1.6, sizeAttenuation: false, vertexColors: true, depthWrite: false }))
+  return new THREE.Points(geo, new THREE.PointsMaterial({ size: 1.6, sizeAttenuation: false, vertexColors: true, depthWrite: false, depthTest: false, transparent: true }))
+}
+
+// ------------------------------------------------------------ Above the air
+
+export type SpaceSkyUniforms = { uSun: { value: THREE.Vector3 }; uAltitude: { value: number } }
+
+/**
+ * The sky from high up: black above, a thin band of blue air hugging the horizon. A dome that follows the camera;
+ * world +y is "up" and the planet's centre is straight down. The air is drawn thicker than life so the band reads on a phone.
+ */
+export function makeSpaceSky(u: SpaceSkyUniforms, planetRadius: number): THREE.Mesh {
+  const sky = new THREE.Mesh(
+    new THREE.SphereGeometry(1, 32, 20),
+    new THREE.ShaderMaterial({
+      uniforms: { ...u, uRadius: { value: planetRadius } },
+      vertexShader: WORLD_VERTEX,
+      fragmentShader: /* glsl */ `
+uniform vec3 uSun;
+uniform float uAltitude;
+uniform float uRadius;
+varying vec3 vWorld;
+void main() {
+  vec3 d = normalize(vWorld - cameraPosition);
+  float r0 = uRadius + uAltitude;
+  // Lowest height the view ray reaches: the camera's own for rays going up, the grazing height for rays going down.
+  float graze = r0 * sqrt(max(1.0 - d.y * d.y, 0.0)) - uRadius;
+  float h = d.y >= 0.0 ? uAltitude : max(graze, 0.0);
+  float air = exp(-h / 16000.0) / (max(d.y, 0.0) + 0.06) * (1.0 + smoothstep(0.0, -0.03, d.y));
+  float glow = 1.0 - exp(-air * 0.45);
+  float day = 0.15 + 0.85 * smoothstep(-0.2, 0.3, uSun.y + 0.5 * dot(normalize(d.xz + 1e-5), normalize(uSun.xz + 1e-5)));
+  vec3 col = mix(vec3(0.07, 0.2, 0.62), vec3(0.5, 0.74, 1.0), glow * glow) * glow * day * 1.3;
+  float s = max(dot(d, uSun), 0.0);
+  col += vec3(1.0, 0.9, 0.75) * (pow(s, 600.0) * 2.0 + smoothstep(0.99985, 0.99995, s) * 40.0);
+  gl_FragColor = vec4(col, 1.0);
+}
+`,
+      side: THREE.BackSide,
+      depthWrite: false,
+      depthTest: false,
+    }),
+  )
+  sky.renderOrder = -10
+  sky.frustumCulled = false
+  return sky
 }
