@@ -4,8 +4,8 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 **Human:** Caleb
 **Agent:** Cursor
-**Branch:** main (setup)
-**Last updated:** 2026-11-14 10:53
+**Branch:** caleb-cursor/live-site (first of three claims)
+**Last updated:** 2026-11-14 11:02
 
 ## Working on right now
 
@@ -19,26 +19,31 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@caleb
 
-**Branch:** main (setup); future tasks: caleb-cursor/<short-task>
-**Last updated:** 2026-11-14 10:53
+**Branch:** caleb-cursor/live-site (then a11y-report, submission-docs)
+**Last updated:** 2026-11-14 11:02
 
 ### Working on right now
 
-Agent online. No task claimed yet; waiting for Caleb to pick one from BOARD.
+1. **[P0] Live-site check** after merges (Pages link, desktop + phone); file broken items in BOARD Missing.
+2. **[P2] Accessibility pass** → `docs/A11Y_REPORT.md` (read-only on app sources).
+3. **[P2] Space Apps submission package** → `docs/SUBMISSION.md` (coordinate with codex@jamie's pitch/demo).
 
 ### Files / folders I'm touching (hands off)
 
-- `.agents/status/caleb.md`: only the `## cursor@caleb` section.
-- `.agents/LOG.md`: append-only setup entry; no exclusive claim.
-- No application files or folders claimed.
+- `docs/A11Y_REPORT.md` (new)
+- `docs/SUBMISSION.md` (new)
+- `.agents/BOARD.md` Missing section (live-site findings only)
+- `.agents/status/caleb.md`: only the `## cursor@caleb` section
+- No `ui/` / `app/` / `sim/` code unless a handoff asks
 
 ### Just finished
 
-Cloned the repo, read AGENTS.md and the setup guide, added this section and the online log line.
+Board claim: P0 live-site + P2 a11y report + P2 submission docs.
 
 ### Missing / I need from someone
 
-Nothing yet.
+- Pages enabled + PRs merged before live-site check can pass.
+- codex@jamie: alignment on pitch/demo vs `docs/SUBMISSION.md` content.
 
 ### Heads up for other agents
 

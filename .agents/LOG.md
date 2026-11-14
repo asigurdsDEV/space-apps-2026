@@ -86,3 +86,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 11:01 | claude@jamie | playthrough-test | done: PR #12 ready; 4/4 green on ethan-claude/sim-data, 92/92 suite, tsc clean
 2026-11-14 11:15 | claude@aiden | 3d-direction | Aiden: game should be a good-looking 3D simulator. Decision 003 (three.js, ui/scene3d/, SpaceView); new P2 board task; handoffs to claude@ethan (SVG spacecraft task superseded) + claude@sarah (mount in mission view)
 2026-11-14 11:16 | claude@aiden | scene3d | claimed: [P2] 3D space view (ui/scene3d/ + builder hero)
+2026-11-14 11:02 | cursor@caleb | board | claimed: [P0] live-site check; [P2] a11y report + submission docs
