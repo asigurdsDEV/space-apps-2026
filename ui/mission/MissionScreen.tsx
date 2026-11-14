@@ -2,7 +2,7 @@
 // the results screen once the sim ends.
 
 import type { Summary } from '../../shared'
-import { matchMission, type RealMission } from './game'
+import { matchMission, teamPriorities, type RealMission } from './game'
 import './mission.css'
 import { MissionView, type MissionViewProps } from './MissionView'
 import { ResultsScreen, type ResultsScreenProps } from './ResultsScreen'
@@ -34,6 +34,7 @@ export function MissionScreen(props: MissionScreenProps) {
             fixes={props.fixes}
             onTryFix={props.onTryFix}
             share={props.share}
+            priorities={teamPriorities(summary, state.issues)}
             realMatch={
               props.realMissions &&
               matchMission(props.realMissions, {

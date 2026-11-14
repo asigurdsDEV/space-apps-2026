@@ -8,7 +8,7 @@
 **Live link:** https://asigurdsdev.github.io/space-apps-2026/
 **License:** MIT
 
-This page is the text to paste into the Space Apps project form. It follows `docs/PITCH.md`, `docs/DEMO.md`, and `docs/NASA_SOURCES.md`. Those files stay the source for the spoken pitch, the rehearsal gates, and catalog provenance. Do not describe a feature as playable on the live link until `docs/DEMO.md` says that rehearsal passed.
+This page is the text to paste into the Space Apps project form. The project form takes a **30-second video** or a slide deck of **at most 7 slides**. `docs/PITCH.md`, `docs/DEMO.md`, and `docs/NASA_SOURCES.md` stay with their owners. codex@jamie is writing the spoken 30-second script (PR #86). Use that narration when it is on `main`. This page does not replace those files.
 
 ## Project summary
 
@@ -16,64 +16,116 @@ Students can name a satellite's instruments without seeing why a real mission ca
 
 The player picks a launch vehicle, an orbit, a spacecraft bus, instruments, power, and a radio. The simulation connects those choices to mass, power, cost, data, and communications. A better instrument can still lose if it is too heavy for the rocket, too expensive, or makes more data than the radio can send home. The teaching line for the beginner mission, First Light, is: "Your radio is part of your science."
 
-The intended play path is Start, then Briefing, Build, Fly, and Results. Online play is for up to four people in roles (mission planning, spacecraft, science, communications/resources). One browser runs the simulation. If the venue network fails, the same mission can be played on one device.
+The play path on the live site is Start, Briefing, Build, GO/NO-GO, launch, Fly, and Results. Online play is for up to four people in roles (mission planning, spacecraft, science, communications/resources). One browser runs the simulation. The same mission can be played on one device.
 
-**What is true at the time of this draft:** the catalogs, simulator, screens, and GitHub Pages deploy are in the repo, and the live URL returns the site. The page still shows the scaffold ("Scaffold is running") because the app loop that mounts Start through Results is not merged yet. Record the demo video after that loop is on the live link and the run sheet in `docs/DEMO.md` is filled in. Until then, show the local build (`npm ci`, `npm run dev`) or say the integrated play-through is in progress.
+**What is true now:** the live link is the game, not a scaffold page. A solo First Light run on 2026-11-14 went from Start to Results on desktop and on a phone. Host and Join are on the start screen. The four-device venue rehearsal is still open. Read the result text on screen when you record. Do not recite a score from an older check.
 
 ## NASA resources used
 
-NASA CubeSat and small-spacecraft references informed the mission-design concepts. The prototype uses team-authored educational catalogs to make resource trade-offs playable. It does not download a measured NASA dataset, call a NASA API, or run the General Mission Analysis Tool.
+NASA CubeSat and small-spacecraft references informed the mission-design concepts. Part masses, prices, power, data rates, and science scores in the catalogs are team-authored educational approximations, not quotations from a NASA price list.
 
-| Resource | How we used it |
-|---|---|
-| [NASA CubeSat 101](https://www.nasa.gov/wp-content/uploads/2017/03/nasa_csli_cubesat_101_508.pdf) | Background for a beginner CubeSat mission. Part numbers in the game are not quotations from this PDF. |
-| [CubeSat Launch Initiative resources](https://www.nasa.gov/kennedy/launch-services-program/cubesat-launch-initiative/cubesat-launch-initiative-resources/) | Pointer for students to primary CubeSat documents. |
-| [Small Spacecraft State-of-the-Art](https://www.nasa.gov/smallsat-institute/sst-soa/) | Background for subsystem categories (power, comms, bus), not validation of our part statistics. |
-| [Small Spacecraft Systems Virtual Institute](https://www.nasa.gov/smallsat-institute/) | Further reading. |
-| [Design and Develop Science Missions (2025 PDF)](https://www.nasa.gov/wp-content/uploads/2025/04/250323-design-and-develop-science-mission.pdf) | Framing: launch, space, ground, and user segments. |
-| [Goddard Mission Design Lab](https://etd.gsfc.nasa.gov/capabilities/integrated-design-center/mission-design-lab/) | Why a small team trades mass, power, and data together. |
-| [General Mission Analysis Tool](https://software.nasa.gov/software/GSC-19468-1) | Cited as NASA's orbit tool. The game does not run GMAT and does not claim GMAT-validated trajectories. |
+The game does ship one measured NASA dataset. Daily space weather from 1996 through 2026 is built from NASA SPDF OMNI2 hourly files and bundled in `data/space-weather/`. Play does not call a NASA API. Kp, Dst, F10.7, and sunspot numbers inside that file come from GFZ Potsdam, WDC Kyoto, NRCan, and SILSO, as credited in `data/space-weather/build.mjs`.
 
-The challenge page also lists Concept Maturity Levels, NASA Mission Viz, the Webb "build it yourself" telescope game, a 2023 VR challenge, and CSA classroom games. We did not integrate those products. Catalog masses, prices, power, data rates, and science scores are hand-tuned for play and marked as educational approximations in `data/README.md` and `docs/NASA_SOURCES.md`.
+Real-mission rows in `data/real-missions.json` and the anomaly-card stories in `sim/cards.ts` each cite a page for the fact they tell. The game does not run the General Mission Analysis Tool and does not claim GMAT-validated trajectories.
 
-**Form sentence (agreed wording from `docs/NASA_SOURCES.md`):** "NASA CubeSat and small-spacecraft references informed the mission-design concepts. The prototype uses team-authored educational catalogs to make resource trade-offs playable."
+**Form sentences:** "NASA CubeSat and small-spacecraft references informed the mission-design concepts. The prototype uses team-authored educational catalogs to make resource trade-offs playable. Space weather in the mission is measured NASA OMNI data, bundled with the game. Real-mission matches and anomaly stories cite the pages in References."
 
 ## AI-use note
 
 People on the team each ran an AI coding agent in this shared repo (Claude Code, Codex, and Cursor). Agents wrote code, tests, and docs. Humans picked the challenge, set the rules in `AGENTS.md`, and merge through pull requests. The log of which agent did which piece is `.agents/LOG.md`.
 
-This submission page was drafted by cursor@caleb from documents already on `main` (`docs/PITCH.md`, `docs/DEMO.md`, `docs/NASA_SOURCES.md`, `docs/CHALLENGE.md`, `data/README.md`, `data/scenarios/demo.json`). No model was asked to invent NASA measurements. No NASA API key is used.
+This submission page was drafted and corrected by cursor@caleb from documents and data already on `main`. No model was asked to invent NASA measurements. No NASA API key is used.
 
-## Demo video and slides plan
+## Demo video and slides
 
-Coordinate the spoken words with `docs/PITCH.md` (60 seconds) and the clicks with `docs/DEMO.md` (three minutes). codex@jamie owns those files. This plan does not change them.
+Use one of these for the project form. Do not submit the old three-minute cut.
 
-### Slides (backup if the live demo fails)
+### Slides (7, the maximum)
 
-1. Title: Space Mission Design Game, Kimchi Trenchers, Seattle 2026, link to the repo.
-2. Problem: naming instruments is not the same as fitting them on a mission (pitch, first two sentences).
-3. Loop: design, fly, explain. One shared sim for up to four roles, plus local play.
-4. One trade-off, labeled as a catalog example until the integrated sim confirms it: First Light starts on a 6U CubeSat with a basic camera and an S-band radio that cannot return enough data. A larger bus, a second instrument, more solar, and an X-band radio is the catalog owner's candidate win. Say the dollar and science figures only after `docs/DEMO.md` run sheet is filled.
-5. NASA line: references informed the concepts; catalogs are team-authored approximations.
+1. Title: Space Mission Design Game, Kimchi Trenchers, Seattle 2026, link to the repo and the live site.
+2. Problem: naming instruments is not the same as fitting them on a mission.
+3. Loop: design, poll, launch, fly, explain. One shared sim for up to four roles, plus local play.
+4. One trade-off on screen: First Light starts with a basic camera and a radio that cannot return all of the data. Point at the warning. Do not quote a dollar or science figure the current build does not show.
+5. NASA line: OMNI space weather is measured NASA data. Catalog numbers are team-authored approximations. Real missions and anomaly stories cite their pages. The game does not run GMAT.
 6. AI use: agents drafted code under the team rules; humans merge.
 7. Close: "Adding this instrument improves science, but we need to pay for its power, mass, and data."
 
-### Video (about three minutes)
+### Video (30 seconds)
 
-Record only after the app loop is deployed and these `docs/DEMO.md` checks pass: Pages URL loads the real Start screen, an invalid design explains why it cannot launch, a valid design reaches Results, and the same seed repeats.
+Record the live link. If `docs/PITCH.md` on `main` already has codex@jamie's 30-second narration, say that. Otherwise say the lines in this table.
 
 | Time | What to show | What to say |
 |---|---|---|
-| 0:00–0:20 | Open the mission | "We're making spacecraft trade-offs visible to students." |
-| 0:20–0:50 | Baseline parts and the budget bars | Point at mass, power, cost, and data actually on screen. |
-| 0:50–1:20 | One rehearsed change | Ask the room to predict it, then show the new bar and the explanation. |
-| 1:20–1:45 | Repair the design | The point is the compromise, not maxing every bar. |
-| 1:45–2:20 | Launch and advance | One event tied to the design. Use pause and speed. |
-| 2:20–2:45 | Results | Why it succeeded or failed, from the text on screen. |
-| 2:45–3:00 | Sources and roles | Educational approximations, not a flight design. |
+| 0:00–0:05 | Open the live site and start First Light. | "Students design a space mission and see the trade-off." |
+| 0:05–0:18 | The builder. Point at the downlink warning on the starting design. | "This camera makes more data than the radio can send home." |
+| 0:18–0:26 | Launch, then the results text. | "The result says why. Science counts only after the data gets home." |
+| 0:26–0:30 | Leave a real weather date or a real-mission match on screen if one is showing. | "Space weather is measured NASA data. The part catalog is ours." |
 
-If online co-op has not passed its rehearsal, show local play and call co-op in progress. Do not promise that a dropped host reconnects. Do not require a live NASA download in the video.
+If online co-op has not passed its four-device rehearsal, do not spend the 30 seconds on a room. Do not promise that a dropped host reconnects.
 
-### Before anyone hits record
+## References
 
-Copy the run sheet from `docs/DEMO.md` and fill the "pending" lines from a tested build: commit, URL, scenario, seed, baseline result, one failing change, and the repair. First Light in `data/scenarios/demo.json` is the beginner Earth mission (one year, $8M, science goal 30). Use that file's seed (1 on `main` as of this update; it is no longer 42). Treat the winning part list in `docs/DEMO.md` as the catalog owner's candidate until the sim owners confirm the score on that build.
+### Software
+
+| Name | Page | Use |
+|---|---|---|
+| [three.js](https://threejs.org/) | MIT | 3D spacecraft, planets, launch, and cutscenes |
+| [PeerJS](https://peerjs.com/) | MIT | WebRTC rooms for up to four players |
+| [React](https://react.dev/) | MIT | User interface |
+| [Vite](https://vite.dev/) | MIT | Build and GitHub Pages deploy |
+
+### Measured space weather
+
+The series in `data/space-weather/` was built from NASA files. The index providers below are the ones named in that file's credit. Play reads the bundled file. It does not contact these sites.
+
+| Source | Page |
+|---|---|
+| NASA GSFC Space Physics Data Facility, OMNI2 hourly files | https://spdf.gsfc.nasa.gov/pub/data/omni/low_res_omni/ |
+| OMNIWeb | https://omniweb.gsfc.nasa.gov/ |
+| Kp, GFZ Potsdam | https://kp.gfz.de/en/ |
+| Dst, World Data Center for Geomagnetism, Kyoto | https://wdc.kugi.kyoto-u.ac.jp/dstdir/ |
+| 10.7 cm solar flux, Natural Resources Canada | https://www.spaceweather.gc.ca/forecast-prevision/solar-solaire/solarflux/sx-en.php |
+| Sunspot number, SILSO (Royal Observatory of Belgium) | https://www.sidc.be/SILSO/ |
+
+### NASA and agency pages cited by the catalogs, missions, cards, and training route
+
+| Page | Where the game cites it |
+|---|---|
+| https://www.nasa.gov/wp-content/uploads/2017/03/nasa_csli_cubesat_101_508.pdf | Beginner CubeSat background. Also the current host for the CubeSat 101 PDF. |
+| https://www3.nasa.gov/sites/default/files/atoms/files/nasa_csli_cubesat_101_508.pdf | `source_url` on the bus, power, and comms catalogs |
+| https://www.nasa.gov/kennedy/launch-services-program/cubesat-launch-initiative/cubesat-launch-initiative-resources/ | Pointer to primary CubeSat documents |
+| https://www.nasa.gov/smallsat-institute/sst-soa/ | Background for subsystem categories |
+| https://www.nasa.gov/smallsat-institute/ | Further reading |
+| https://www.nasa.gov/wp-content/uploads/2025/04/250323-design-and-develop-science-mission.pdf | Launch, space, ground, and user segments. `source_url` on the launch-vehicle catalog |
+| https://etd.gsfc.nasa.gov/capabilities/integrated-design-center/mission-design-lab/ | Why a team trades mass, power, and data together. `source_url` on the instrument catalog |
+| https://software.nasa.gov/software/GSC-19468-1 | GMAT, cited only. The game does not run it. `source_url` on the orbit catalog |
+| https://nssdc.gsfc.nasa.gov/ | Master catalog home for the real-mission table |
+| https://ntrs.nasa.gov/api/citations/20180005634/downloads/20180005634.pdf | IceCube |
+| https://terra.nasa.gov/about | Terra |
+| https://www.nesdis.noaa.gov/GOES-R-Spacecraft | GOES-16 |
+| https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1998-001A | Lunar Prospector |
+| https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2009-031A | Lunar Reconnaissance Orbiter |
+| https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2013-047A | LADEE |
+| https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2011-046A | GRAIL |
+| https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2022-070A | CAPSTONE |
+| https://science.nasa.gov/mission/maven/ | MAVEN |
+| https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2005-029A | Mars Reconnaissance Orbiter |
+| https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2001-013A | 2001 Mars Odyssey |
+| https://science.nasa.gov/mission/marco/ | MarCO |
+| https://science.nasa.gov/mission/kepler/ | Anomaly card: reaction wheel, Kepler |
+| https://science.nasa.gov/mission/galileo/ | Anomaly card: high-gain antenna, Galileo |
+| https://repository.library.noaa.gov/view/noaa/53091 | Anomaly card: solar storm |
+| https://www.jpl.nasa.gov/news/mars-rover-spirit-restored-to-health/ | Anomaly card: memory errors, Spirit |
+| https://science.nasa.gov/missions/mer/nasas-opportunity-rover-mission-on-mars-comes-to-end/ | Anomaly card: dust storm, Opportunity |
+| https://www.esa.int/Newsroom/Press_Releases/SOHO_spacecraft_located_with_ground-based_radar | Anomaly card: SOHO goes silent |
+| https://www.nasa.gov/missions/icon/nasa-researchers-track-slowly-splitting-dent-in-earths-magnetic-field/ | Anomaly card: South Atlantic Anomaly |
+| https://www.nasa.gov/directorates/somd/space-communications-navigation-program/what-is-the-deep-space-network/ | Anomaly card: ground-station time |
+| https://www.earthdata.nasa.gov/data/instruments/modis | Flight-training fact, hurricane / MODIS |
+| https://www.earthdata.nasa.gov/data/tools/firms | Flight-training fact, wildfire / FIRMS |
+| https://www.nasa.gov/mission/tracking-and-data-relay-satellites/ | Flight-training fact, TDRS relay |
+| https://www.nasa.gov/missions/tech-demonstration/deep-space-atomic-clock/how-an-atomic-clock-will-get-humans-to-mars-on-time/ | Story line: Earth–Mars light time |
+| https://mars.nasa.gov/mgs/faqs/faq_mplan.html | Same light-time fact, Mars Global Surveyor FAQ |
+
+### 3D model files
+
+The three flight-training GLB files in `public/visual-assets/flight/` (`hurricane.glb`, `wildfire.glb`, `tdrs-relay.glb`) are original geometry made for this project. They are not NASA meshes. Credits are in `docs/visual-assets/flight.md`. [NASA's 3D resource collection](https://science.nasa.gov/3d-resources/) was considered and not shipped. Spacecraft parts and rockets in `ui/scene3d/` are drawn in code.

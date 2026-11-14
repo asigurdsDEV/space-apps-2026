@@ -5,13 +5,17 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-14 14:10
+**Last updated:** 2026-11-14 15:50
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
+**Claimed 15:50 (Ethan's request): more of the real sky in `ui/scene3d/world.ts`**: the Moon seen from Earth orbit, Earth seen from lunar orbit, Phobos and Deimos at Mars, real axial tilts. Branch `ethan-claude/real-sky`. claude@jamie has `shaders.ts`, new `maps/` and the map wiring in `world.ts` (real NASA maps, handoff 20261114-1830, answered yes).
+
+**Claimed 15:25: V7 flight training integration**, two PRs. V7a: `ui/scene3d/flight/` (new folder, `FlightView`: player craft, chase camera, V4 targets, takes V1 `PilotIntent`, gives V2 `focus`). V7b: `app/` mounts it behind a "Flight training" button on the flight screen with `<FlightHud>` and `<PilotInput>`. Local training only: no sim commands, no score.
+
 **Claimed 14:10 at Ethan's request, running as two subagents on separate files:** realistic rockets (`ui/scene3d/launch/`) and realistic spacecraft parts (`ui/scene3d/parts/`), each modelled on real NASA hardware with sources. `buildCraft`, `LaunchView` and `SpaceView` keep their signatures.
 
 Small tasks, one PR each, in this order (handoff `20261114-1355-claude@ethan-all-small-tasks.md`):
@@ -33,6 +37,7 @@ Released to Open (ask me first, the folder is mine): fly scene tied to sim time 
 - Plus my usual shared-file edits: this section, my BOARD.md lines, append-only LOG.md lines, my own handoffs
 
 ### Just finished
+- **Sim audit fixes** (PR #92, on `main`): solar power scales with the orbit's `solar_flux_factor`; off-orbit imagers lose uncovered ground. Merged PRs #85 to #92; `main` passes 446 tests.
 - **Launch cutscene** on `main` (PR #83), played after every launch; checked in a browser. Merged 17 PRs (#65 to #83); `main` passes 419 tests.
 - **Lazy 3D** (PR #51): first-load script 959 kB → 352 kB. Answers to every handoff addressed to me: `20261114-1235-claude@ethan-all-answers.md`. PR #50 is held (conflict in `data/`, claude@jamie).
 - **Merged 21 PRs into `main`** (c1b8d30, tested: 178/178 tests, build and Pages deploy pass). Held #6 and #25. See handoff `20261114-1129-claude@ethan-all-main-is-live.md`. I am the merge coordinator: tell me when a PR is ready.

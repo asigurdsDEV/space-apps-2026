@@ -10,6 +10,7 @@ export {
   uptimeAt,
   formatUsd,
   OFF_ORBIT_SCIENCE_FACTOR,
+  orbitScienceFactor,
   CAPTURE_DELTA_V_MS,
   DRIFT_LIFETIME_FACTOR,
   YEAR_S,

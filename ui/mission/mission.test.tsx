@@ -153,7 +153,7 @@ function findButton(node: any, text: string): any {
 // ------------------------------------------------- decision 004: game layer
 
 import { DecisionCard, DecisionCardBody } from './DecisionCard'
-import { bestFixes, matchMission, shareText, stars, type Decision } from './game'
+import { bestFixes, matchMission, shareText, stars, teamPriorities, type Decision } from './game'
 
 const card: Decision = {
   decision_id: 'd1',
@@ -283,5 +283,23 @@ describe('card story header', () => {
     expect(html).toContain('<strong>Inspired by the Deep Space Network</strong>')
     expect(html).not.toContain('Based on a real event')
     expect(renderToStaticMarkup(<DecisionCard decision={card} onDecide={noop} />)).toContain('Based on a real event: Kepler (2013)')
+  })
+})
+
+describe('team priorities', () => {
+  const won = { outcome: 'success', score: 90, science_score: 40, science_goal: 30, mass_kg: 22, mass_limit_kg: 200, data_lost_gb: 0, cost_usd: 7e6, budget_usd: 8e6 }
+
+  it('judges each console goal from the summary and issues', () => {
+    expect(teamPriorities(won, []).map((p) => p.met)).toEqual([true, true, true, true])
+    const tight = { ...won, mass_kg: 190, science_score: 33, data_lost_gb: 5 }
+    expect(teamPriorities(tight, [{ resource: 'power' }]).map((p) => p.met)).toEqual([false, false, false, false])
+  })
+
+  it('shows the team card with the bonus line on the debrief', () => {
+    const { state, events } = fly({ toEnd: true, sandbox: true })
+    const html = renderToStaticMarkup(<MissionScreen state={state} events={events} onCommand={noop} />)
+    expect(html).toContain('Team priorities')
+    expect(html).toContain('<strong>COMMS</strong>')
+    expect(html).toMatch(/Team bonus: \d of 4|\d of 4 priorities met/)
   })
 })

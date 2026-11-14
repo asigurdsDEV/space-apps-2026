@@ -32,7 +32,7 @@ Rules (GAME_DESIGN.md §4.8, §7): one or two short sentences, spoken to "Flight
 | `debrief-success` | results, success | Good flight. Here's the full report, and one change that would have made it even better. | none |
 | `debrief-loss` | results, loss | Here's what happened, and the one change that would have saved it. Fix it and fly again. | none |
 
-The Mars call's "every message takes minutes to arrive" is the only real-world claim in the lines. Radio signals between Earth and Mars take about 4 to 20 minutes one way, depending on where the planets are. Source: [NASA, Deep Space Atomic Clock](https://www.nasa.gov/missions/tech-demonstration/deep-space-atomic-clock/how-an-atomic-clock-will-get-humans-to-mars-on-time/), and the [Mars Global Surveyor FAQ](https://mars.nasa.gov/mgs/faqs/faq_mplan.html) (4 to 21 minutes).
+The Mars call's "every message takes minutes to arrive" is the only real-world claim in the lines. Radio signals between Earth and Mars take about 4 to 20 minutes one way, depending on where the planets are. Source: [NASA, Deep Space Atomic Clock](https://www.nasa.gov/missions/tech-demonstration/deep-space-atomic-clock/how-an-atomic-clock-will-get-humans-to-mars-on-time/).
 
 These lines are live in `ui/story/model.ts` `LINES`. Change them here first.
 
