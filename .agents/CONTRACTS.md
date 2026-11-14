@@ -188,9 +188,9 @@ Each command has one owning role. A player may send it if they hold that role, *
 | Role | `set_param` keys it owns | Other commands it owns |
 |------|--------------------------|------------------------|
 | `mission-planning` | `orbit`, `launch_vehicle`, `spacecraft_name`, and any key not listed below | `launch`, `pause`, `resume`, `set_speed`, `reset` |
-| `spacecraft` | `bus`, `power_system` | |
+| `spacecraft` | `bus`, `solar`, `battery` | |
 | `science` | `instruments` | |
-| `comms-resources` | `comms_system`, `ground_stations` | |
+| `comms-resources` | `comms`, `ground_stations` | |
 
 `select_entity` is local to each player and is never sent to the host.
 
