@@ -82,16 +82,56 @@ export function resolveAliases(params: Params, isBattery: (id: string) => boolea
 }
 
 /** Apply one `set_param` to `params` (changed in place; pass a copy). Aliases write through to the real key. */
-export function applyParam(params: Params, key: string, value: ParamValue, isBattery: (id: string) => boolean): void {
+export function applyParam(params: Params, key: string, rawValue: unknown, isBattery: (id: string) => boolean): boolean {
+  const value = cleanParam(key, rawValue)
+  if (value === undefined) return false
   params[key] = value
   const entry = PARAM_ALIASES.find((a) => a.alias === key)
-  if (entry) {
-    params[targetKey(entry.key, value, isBattery)] = value
-    return
+  const real = entry ? targetKey(entry.key, value, isBattery) : key
+  if (entry) params[real] = value
+  for (const { alias, key: mirrored, mirror } of PARAM_ALIASES) {
+    if (mirror && mirrored === real) params[alias] = value
   }
-  for (const { alias, key: real, mirror } of PARAM_ALIASES) {
-    if (mirror && real === key) params[alias] = value
+  return true
+}
+
+/** Keys the sim reads as numbers. A number sent as a string ("100") is converted, because `num()` would read it as missing. */
+const NUMERIC_KEYS = new Set([
+  'budget_usd',
+  'target_science_score',
+  'science_goal',
+  'mission_duration_s',
+  'mission_days',
+  'ground_stations',
+  'deadline_months',
+  'ops_cost_usd_per_day',
+  'ground_station_cost_usd_per_day',
+  'integration_months_per_instrument',
+  'event_rate_per_day',
+])
+
+/**
+ * Params arrive from scenario files and from guests over net/, so they are checked here.
+ * Returns the value to store, or undefined when it must be refused (NaN, null, objects,
+ * or text where a number is needed).
+ */
+export function cleanParam(key: string, value: unknown): ParamValue | undefined {
+  if (typeof value === 'boolean') return value
+  if (typeof value === 'number') return Number.isFinite(value) ? value : undefined
+  if (typeof value !== 'string') return undefined
+  if (key === 'random_failures' && (value === 'true' || value === 'false')) return value === 'true'
+  if (!NUMERIC_KEYS.has(key)) return value
+  return value.trim() !== '' && Number.isFinite(Number(value)) ? Number(value) : undefined
+}
+
+/** A copy of `params` without the values `cleanParam` refuses. */
+export function cleanParams(params: Record<string, unknown>): Params {
+  const out: Params = {}
+  for (const [key, raw] of Object.entries(params ?? {})) {
+    const value = cleanParam(key, raw)
+    if (value !== undefined) out[key] = value
   }
+  return out
 }
 
 /** The `instruments` param is a comma-separated list of instrument ids, e.g. "camera-basic,magnetometer". */
