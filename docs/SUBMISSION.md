@@ -8,7 +8,26 @@
 **Live link:** https://asigurdsdev.github.io/space-apps-2026/
 **License:** MIT
 
-This page is the text to paste into the Space Apps project form. The project form takes a **30-second video** or a slide deck of **at most 7 slides**. `docs/PITCH.md`, `docs/DEMO.md`, and `docs/NASA_SOURCES.md` stay with their owners. codex@jamie is writing the spoken 30-second script (PR #86). Use that narration when it is on `main`. This page does not replace those files.
+This page is the text to paste into the Space Apps project form. The project form takes a **30-second video** or a slide deck of **at most 7 slides**. Spoken words are the narration in `docs/PITCH.md`. Shot timing is in `docs/DEMO.md`. Those files stay with their owners. This page does not replace them.
+
+## Paste into the form
+
+| Field | What to paste |
+|---|---|
+| Project name | Space Mission Design Game |
+| Team | Kimchi Trenchers |
+| Challenge | Space Mission Design Game |
+| Project link | https://asigurdsdev.github.io/space-apps-2026/ |
+| Repository | https://github.com/asigurdsDEV/space-apps-2026 |
+| Description | The Project summary below |
+| NASA data | The Form sentences in NASA resources used |
+| Demo | A 30-second video, or the 7 slides below. Video URL: not recorded yet. Paste it here after the recording task fills `docs/DEMO.md`. Do not submit the old three-minute cut. |
+| AI use | The AI-use note below |
+| References | Every row in References below |
+
+A person on the team still has to press Submit. This page cannot file the form.
+
+**Project link check, 2026-11-14 14:56:** https://asigurdsdev.github.io/space-apps-2026/ opens the game. The page title is Space Mission Design Game. The start screen shows First Light, Moon Mapper, and Red Planet Radar, plus Play solo, Host online, and Join a room. It is not a scaffold page. Sandbox is not on that screen. This check used a fresh browser tab, not a private window. The page is static, so a private window shows the same start screen.
 
 ## Project summary
 
@@ -18,7 +37,7 @@ The player picks a launch vehicle, an orbit, a spacecraft bus, instruments, powe
 
 The play path on the live site is Start, Briefing, Build, GO/NO-GO, launch, Fly, and Results. Online play is for up to four people in roles (mission planning, spacecraft, science, communications/resources). One browser runs the simulation. The same mission can be played on one device.
 
-**What is true now:** the live link is the game, not a scaffold page. A solo First Light run on 2026-11-14 went from Start to Results on desktop and on a phone. Host and Join are on the start screen. The four-device venue rehearsal is still open. Read the result text on screen when you record. Do not recite a score from an older check.
+**What is true now:** the live link is the game, not a scaffold page. A solo First Light run on 2026-11-14 went from Start to Results on desktop and on a phone. Host and Join are on the start screen. Earth, the Moon, and Mars use the public-domain maps in References. The four-device venue rehearsal is still open. Sandbox mode and part build-times are in PR #105 and are not on this live site until that pull request merges, so leave them out of the form until then. Read the result text on screen when you record. Do not recite a score from an older check.
 
 ## NASA resources used
 
@@ -28,7 +47,7 @@ The game does ship one measured NASA dataset. Daily space weather from 1996 thro
 
 Real-mission rows in `data/real-missions.json` and the anomaly-card stories in `sim/cards.ts` each cite a page for the fact they tell. The game does not run the General Mission Analysis Tool and does not claim GMAT-validated trajectories.
 
-**Form sentences:** "NASA CubeSat and small-spacecraft references informed the mission-design concepts. The prototype uses team-authored educational catalogs to make resource trade-offs playable. Space weather in the mission is measured NASA OMNI data, bundled with the game, and solar storms hit on the real days they happened. Real-mission matches and anomaly stories cite the pages in References."
+**Form sentences:** "NASA CubeSat and small-spacecraft references informed the mission-design concepts. The prototype uses team-authored educational catalogs to make resource trade-offs playable. Space weather in the mission is measured NASA OMNI data, bundled with the game, and solar storms hit on the real days they happened. Earth, the Moon, and Mars are drawn from public-domain NASA and USGS maps, including LRO LOLA and MGS MOLA elevation. Real-mission matches and anomaly stories cite the pages in References."
 
 ## AI-use note
 
@@ -52,14 +71,14 @@ Use one of these for the project form. Do not submit the old three-minute cut.
 
 ### Video (30 seconds)
 
-Record the live link. If `docs/PITCH.md` on `main` already has codex@jamie's 30-second narration, say that. Otherwise say the lines in this table.
+Record the live link. Say the narration in `docs/PITCH.md`. The table is only the picture order.
 
-| Time | What to show | What to say |
+| Time | What to show | On-screen point |
 |---|---|---|
-| 0:00–0:05 | Open the live site and start First Light. | "Students design a space mission and see the trade-off." |
-| 0:05–0:18 | The builder. Point at the downlink warning on the starting design. | "This camera makes more data than the radio can send home." |
-| 0:18–0:26 | Launch, then the results text. | "The result says why. Science counts only after the data gets home." |
-| 0:26–0:30 | The storm card on a real storm day (First Light seed 1: G4, 7 Sep 2017), or a real-mission match. | "That storm really happened. Space weather is measured NASA data. The part catalog is ours." |
+| 0:00–0:05 | Open the live site and start First Light. | The start screen is the game. |
+| 0:05–0:18 | The builder. Point at the downlink warning on the starting design. | The camera makes more data than the radio can send home. |
+| 0:18–0:26 | Launch, then the results text. | The result says why. Science counts only after the data gets home. |
+| 0:26–0:30 | The storm card on a real storm day (First Light, Normal, seed 1: G4, 7 Sep 2017), or a real-mission match. | That storm really happened. |
 
 If online co-op has not passed its four-device rehearsal, do not spend the 30 seconds on a room. Do not promise that a dropped host reconnects.
 
@@ -73,6 +92,7 @@ If online co-op has not passed its four-device rehearsal, do not spend the 30 se
 | [PeerJS](https://peerjs.com/) | MIT | WebRTC rooms for up to four players |
 | [React](https://react.dev/) | MIT | User interface |
 | [Vite](https://vite.dev/) | MIT | Build and GitHub Pages deploy |
+| [Cloudflare TURN relay](https://kimchispacemission.vercel.app/api/ice) | team host on Vercel | Cross-network rooms. The GitHub Pages build still uses direct PeerJS. |
 
 ### Measured space weather
 
@@ -115,7 +135,7 @@ The series in `data/space-weather/` was built from NASA files. The index provide
 | https://science.nasa.gov/mission/kepler/ | Anomaly card: reaction wheel, Kepler |
 | https://science.nasa.gov/mission/galileo/ | Anomaly card: high-gain antenna, Galileo |
 | https://repository.library.noaa.gov/view/noaa/53091 | Anomaly card: solar storm |
-| https://www.jpl.nasa.gov/news/mars-rover-spirit-restored-to-health/ | Anomaly card: memory errors, Spirit |
+| https://science.nasa.gov/mission/mer-spirit/ | Anomaly card: memory errors, Spirit |
 | https://science.nasa.gov/missions/mer/nasas-opportunity-rover-mission-on-mars-comes-to-end/ | Anomaly card: dust storm, Opportunity |
 | https://www.esa.int/Newsroom/Press_Releases/SOHO_spacecraft_located_with_ground-based_radar | Anomaly card: SOHO goes silent |
 | https://www.nasa.gov/missions/icon/nasa-researchers-track-slowly-splitting-dent-in-earths-magnetic-field/ | Anomaly card: South Atlantic Anomaly |
@@ -125,6 +145,78 @@ The series in `data/space-weather/` was built from NASA files. The index provide
 | https://www.nasa.gov/mission/tracking-and-data-relay-satellites/ | Flight-training fact, TDRS relay |
 | https://www.nasa.gov/missions/tech-demonstration/deep-space-atomic-clock/how-an-atomic-clock-will-get-humans-to-mars-on-time/ | Story line: Earth–Mars light time |
 | https://mars.nasa.gov/mgs/faqs/faq_mplan.html | Same light-time fact, Mars Global Surveyor FAQ |
+
+### Planet maps
+
+The pixels in the game are small copies of these public-domain maps, imported inside the 3D code. Credits and the file that was resized are in `ui/scene3d/maps/README.md`. Relief is drawn steeper than the real ground so craters and canyons read from orbit.
+
+| Map | Page |
+|---|---|
+| Earth day, NASA Visible Earth, Blue Marble | https://visibleearth.nasa.gov/images/57752 |
+| Earth day file that was resized | https://commons.wikimedia.org/wiki/File:Land_shallow_topo_2048.jpg |
+| Earth night, NASA Earth Observatory, Black Marble 2012 | https://earthobservatory.nasa.gov/features/NightLights |
+| Earth night file that was resized | https://commons.wikimedia.org/wiki/File:The_earth_at_night.jpg |
+| Moon color, NASA SVS CGI Moon Kit, LRO LROC | https://svs.gsfc.nasa.gov/4720 |
+| Moon elevation, same kit, LRO LOLA | https://svs.gsfc.nasa.gov/4720 |
+| Mars color, USGS / NASA Viking MDIM 2.1 | https://astrogeology.usgs.gov/search/map/mars_viking_mdim21_clrmosaic_global_232m |
+| Mars color file that was resized | https://commons.wikimedia.org/wiki/File:Mars_Viking_MDIM21_ClrMosaic_1km.jpg |
+| Mars elevation, USGS / NASA MGS MOLA DEM | https://astrogeology.usgs.gov/search/map/mars_mgs_mola_dem_463m |
+
+### Spacecraft shapes and rockets
+
+Spacecraft parts and rockets are drawn in code. They are not downloaded meshes. The pages those shapes were checked against are listed in `ui/scene3d/parts/REFERENCES.md` and `ui/scene3d/launch/REFERENCES.md`, and again here so the form has every URL.
+
+| Page | Used for |
+|---|---|
+| https://www.nasa.gov/wp-content/uploads/2018/01/cubesatdesignspecificationrev14_12022-02-09.pdf | 3U rail size |
+| https://www.jpl.nasa.gov/news/press_kits/insight/launch/appendix/mars-cube-one/ | MarCO bus, panels, radio, camera |
+| https://www.jpl.nasa.gov/news/press_kits/graiLaunch.pdf | GRAIL bus |
+| https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2013-063A | MAVEN bus |
+| https://www.jpl.nasa.gov/news/press_kits/mro-arrival.pdf | MRO bus, arrays, high-gain antenna |
+| https://www.nasa.gov/smallsat-institute/sst-soa/power-subsystems/ | Body-mounted cells and 18650 cells |
+| https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2022-156J | LunaH-Map wings |
+| https://www.nasa.gov/wp-content/uploads/2015/03/maven_presskit_final2.pdf | MAVEN arrays and magnetometer |
+| https://science.nasa.gov/wp-content/uploads/2024/02/mmrtg-factsheet-updated-5-18-20-1.pdf | MMRTG |
+| https://www.jpl.nasa.gov/news/press_kits/mars_2020/launch/mission/spacecraft/power/ | Rover lithium-ion battery |
+| https://www.nasa.gov/smallsat-institute/sst-soa/soa-communications/ | UHF tape antenna and S-band patch |
+| https://ipnpr.jpl.nasa.gov/progress_report/42-211/211A.pdf | LRO Ka-band dish |
+| https://www.jpl.nasa.gov/news/press_kits/odysseylaunch.pdf | Mars Odyssey dish |
+| https://science.nasa.gov/mission/lro/science-and-data/ | CRaTER |
+| https://pds.nasa.gov/data/pds4/test-data/registry/orex.otes/document/otes_inst_paper.pdf | OTES |
+| https://www.earthdata.nasa.gov/data/instruments/atms | ATMS |
+| https://science.nasa.gov/wp-content/uploads/2024/01/lola-fact-sheet.pdf | LOLA |
+| https://science.nasa.gov/mission/landsat/oli/ | OLI |
+| https://science.nasa.gov/mission/mars-reconnaissance-orbiter/science-instruments/ | SHARAD |
+| https://www.earthdata.nasa.gov/data/instruments/abi | ABI |
+| https://www.jpl.nasa.gov/news/press_kits/galex.pdf | GALEX |
+| https://science.nasa.gov/mission/nisar/about-the-satellite/ | NISAR |
+| https://www.spacex.com/vehicles/falcon-9/ | Falcon 9 shape |
+| https://www.space.com/18962-spacex-falcon-9.html | Falcon 9 size cross-check |
+| https://science.nasa.gov/mission/dart/ | Falcon 9 / DART |
+| https://science.nasa.gov/mission/tess/ | TESS page. It does not name the rocket. |
+| https://science.nasa.gov/mission/swot/ | SWOT page. It does not name the rocket. |
+| https://science.nasa.gov/mission/pace/ | PACE page. It does not name the rocket. |
+| https://www.nasa.gov/kennedy/launch-services-program/cubesat-launch-initiative/ | Rideshare / CSLI |
+| https://www.spacex.com/vehicles/falcon-heavy/ | Falcon Heavy shape |
+| https://science.nasa.gov/mission/psyche/ | Psyche |
+| https://science.nasa.gov/blogs/psyche/2023/10 | Psyche launch blog |
+| https://spaceflightnow.com/2023/10/13/falcon-heavy-launches-nasas-psyche-asteroid-probe/ | Falcon Heavy center core |
+| https://rocketlabcorp.com/launch/electron/ | Electron |
+| https://www.nasa.gov/press-release/capstone-launches-to-test-new-orbit-for-nasa-s-artemis-moon-missions | CAPSTONE launch |
+| https://rocketlabcorp.com/updates/rocket-lab-prepares-to-launch-capstone-mission-to-the-moon-for-nasa/ | Electron height |
+| https://science.nasa.gov/blogs/icon/2018/11/07/stargazer-aircraft-airborne-with-pegasus-xl-icon-satellite | Pegasus XL |
+| https://www.ulalaunch.com/rockets/vulcan-centaur | Vulcan Centaur |
+| https://www.nasaspaceflight.com/2024/01/vulcan-flight-one-preps/ | Vulcan height |
+| https://science.nasa.gov/resource/atlas-v-401-rocket/ | Atlas V 401 |
+| https://www.ulalaunch.com/rockets/atlas-v | Atlas V |
+| https://www.ulalaunch.com/missions/2018/08/12/united-launch-alliance-successfully-launches-nasa-s-parker-solar-probe-spacecraft | Parker Solar Probe launch |
+| https://science.nasa.gov/blogs/parker-solar-probe/2018/04/26/parker-solar-probes-launch-vehicle-rises-at-space-launch-complex-37 | Delta IV Heavy on the pad |
+| https://www.ulalaunch.com/rockets/delta-iv | Delta IV |
+| https://www.nasa.gov/reference/space-launch-system/ | SLS |
+| https://www.nasa.gov/reference/space-launch-system-launch-vehicle-stage-adapter-lvsa | SLS stage adapter |
+| https://www.nasa.gov/reference/space-launch-system-interim-cryogenic-propulsion-stage-icps/ | SLS ICPS |
+| https://www.nasa.gov/sites/default/files/atoms/files/orionfacilities_factsheet_2018.pdf | Orion launch abort system |
+| https://www.nasa.gov/humans-in-space/orion-spacecraft/orion-fact-sheets/ | Orion fact-sheet index |
 
 ### 3D model files
 
