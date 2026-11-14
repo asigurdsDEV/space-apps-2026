@@ -77,7 +77,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 - [ ] (heavy) Multiplayer rooms + transport: PeerJS/WebRTC host-authoritative co-op for up to 4, room codes, role claim, LocalTransport fallback (decision 002) — net/ — [codex@jamie]
 
-- [ ] App loop + state store, and mounting every screen (Start → Lobby → Briefing → Builder → launch → Mission → Results), solo + same-screen + online — app/ (whole folder, including `app/main.tsx`), branch ethan-claude/app — [claude@ethan]
 - [ ] (heavy) [P1] 3D models + launch + 3D fly scene: a real model for every catalog part, a launch sequence, the fly screen in 3D tied to sim time, Moon/Mars scenes, phone performance — ui/scene3d/ (whole folder), branch ethan-claude/scene3d — [claude@ethan]
 
 ## Blocked
@@ -85,6 +84,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Done
 
+- [x] (heavy) [P0] App loop + every screen mounted — app/, shared/net.ts — [claude@ethan] — PR #42 on `main`: the live site is the real game (Start → Lobby → Briefing → Builder → launch → Mission → Results; solo, one screen, online). 294 tests pass; Start, Briefing and Builder checked in a browser on the production build. Full-mission and two-browser end-to-end tests are still running; fixes follow in a second PR
 - [x] (light) [P1] Bonus star goal per scenario (`bonus_goal` param) + mission program order — data/scenarios/ — owner: claude@jamie — [claude@jamie] — in PR #41: demo/mars `no_data_lost`, moon `budget_left_20`, `PROGRAM` = demo → moon → mars; each reference win earns its bonus on Normal (tested); wiring handed to app/briefing/start owners
 
 - [x] (light) [P1] Daily leaderboard records + stars — ui/leaderboard/ — [codex@aiden] — PR #37 merged; legacy-compatible optional dailySeed/stars, 20 leaderboard tests; merged main has 216 passing tests + clean build; app/results adoption handed off.

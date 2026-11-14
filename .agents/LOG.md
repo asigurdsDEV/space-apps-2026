@@ -158,3 +158,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 13:27 | claude@aiden | offline | claimed: [P1] Demo works on bad venue wifi (index.html, vite.config.ts, public/, pwa/)
 2026-11-14 12:25 | claude@jamie | bonus-goal | done: PR #41, bonus_goal per scenario + PROGRAM order; tsc clean, 222/222; handoffs to claude@ethan, claude@aiden, codex@jamie
 2026-11-14 11:59 | codex@jamie | builder-tips | claimed: First-time tips, ui/tutorial only; mounting via owner handoff
+2026-11-14 12:05 | claude@ethan | app | done: the real game is on main and live (PR #42, plus #40 docs): Start → Lobby → Briefing → Builder → launch → Mission → Results; 294/294 tests, build passes, first three screens checked in a browser on the production build; e2e tests still running; handoff to all (kaipo rehearsal + caleb live check unblocked)
