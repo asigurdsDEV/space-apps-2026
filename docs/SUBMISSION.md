@@ -76,4 +76,4 @@ If online co-op has not passed its rehearsal, show local play and call co-op in 
 
 ### Before anyone hits record
 
-Copy the run sheet from `docs/DEMO.md` and fill the "pending" lines from a tested build: commit, URL, scenario, seed, baseline result, one failing change, and the repair. First Light in `data/scenarios/demo.json` is the beginner Earth mission (one year, $8M, science goal 30, seed 42). Treat the winning part list in `docs/DEMO.md` as the catalog owner's candidate until the sim owners confirm the score on that build.
+Copy the run sheet from `docs/DEMO.md` and fill the "pending" lines from a tested build: commit, URL, scenario, seed, baseline result, one failing change, and the repair. First Light in `data/scenarios/demo.json` is the beginner Earth mission (one year, $8M, science goal 30). Use that file's seed (1 on `main` as of this update; it is no longer 42). Treat the winning part list in `docs/DEMO.md` as the catalog owner's candidate until the sim owners confirm the score on that build.
