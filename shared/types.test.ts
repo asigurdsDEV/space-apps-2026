@@ -18,7 +18,7 @@ describe('shared types', () => {
       init: (c) => ({
         contract_version: c.contract_version, scenario_id: c.scenario_id, tick: 0, t_s: 0, utc: c.start_utc,
         frame: 'scene', status: 'running', entities: c.entities, metrics: { mass_kg: 0, phase: 'design' },
-        params: c.params, rng_state: c.seed,
+        params: c.params, issues: [], rng_state: c.seed,
       }),
       step: (s, cmds: Command[], dt) => {
         const params = { ...s.params }

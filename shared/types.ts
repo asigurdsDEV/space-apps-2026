@@ -108,6 +108,21 @@ export interface Entity {
   props: Params
 }
 
+// ----------------------------------------------------------------- Issue
+
+/**
+ * A problem with the current design, written so a student can read it.
+ * `error` blocks launch; `warning` lets the mission fly but costs performance.
+ */
+export interface Issue {
+  /** Stable machine-readable code, e.g. "mass_over_limit". */
+  code: string
+  severity: 'error' | 'warning'
+  /** Which resource it is about: "mass" | "power" | "budget" | "data" | "comms" | "time" | "design". */
+  resource: string
+  message: string
+}
+
 // -------------------------------------------------------------- SimState
 
 export type SimStatus = 'running' | 'paused' | 'ended'
@@ -146,6 +161,8 @@ export interface SimState {
   metrics: Metrics
   /** Current design choices and tunables; starts as Config.params, changed by `set_param`. */
   params: Params
+  /** Problems with the current design, re-checked every step. Empty when the design is clean. */
+  issues: Issue[]
   /** Seeded RNG state carried between steps. Only sim/ reads or writes it. */
   rng_state: number
 }
@@ -159,6 +176,8 @@ export type Command =
   | { type: 'reset'; payload: Record<string, never> }
   | { type: 'set_param'; payload: { key: string; value: ParamValue } }
   | { type: 'select_entity'; payload: { id: Id | null } }
+  /** Leave the design phase and fly the mission. Refused (with a `warning` event) while there are `error` issues. */
+  | { type: 'launch'; payload: Record<string, never> }
 
 export type CommandType = Command['type']
 
@@ -180,6 +199,7 @@ export type SimEvent = SimEventBase &
         type: 'threshold_crossed'
         payload: { metric: string; value: number; threshold: number; direction: 'up' | 'down' }
       }
+    | { type: 'phase_changed'; payload: { from: string; to: string } }
     | { type: 'scenario_ended'; payload: { reason: string; summary: Summary } }
     | { type: 'warning'; payload: { message: string } }
   )
