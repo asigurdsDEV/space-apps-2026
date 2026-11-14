@@ -1,21 +1,16 @@
-# Kimchi Trenchers — Space Mission Design Game
+# GO / NO-GO — Kimchi Trenchers
 
-## 60-second pitch
+## 30-second narration
 
-A student can name a satellite's instruments without seeing why a real mission cannot carry every instrument. We turn those engineering trade-offs into a mission they can design, fly and explain.
+“Can your team build a spacecraft that brings its science home? In GO / NO-GO, four mission-control roles balance mass, power, cost and communications. Design, launch, and respond to anomalies inspired by real missions. Replay historical NASA space weather, then compare your spacecraft with a real mission in the debrief. Every result explains a trade-off, so your next design is a better-informed decision.”
 
-Players choose a launcher, spacecraft systems and science payload. The game connects those choices to mass, power, cost and communications budgets. They improve a design, run a mission and inspect the consequences. The learning goal is to explain a result: what constrained the mission, which choice changed it, and what they would try next.
-
-Our architecture supports four cooperating roles: mission planning, spacecraft, science and communications/resources. One browser runs the simulation so the team works from one shared mission. A local mode keeps the activity available when a network connection fails.
-
-NASA's CubeSat and small-spacecraft references inform the engineering concepts. Catalog values are simplified for classroom gameplay; we distinguish those values from measured NASA datasets.
-
-The intended outcome is a student who can say, “Adding this instrument improves science, but we need to pay for its power, mass and data.”
+Record this 63-word narration against the timed shots in [DEMO.md](DEMO.md). Time a spoken take and shorten pauses to stay within 30 seconds; the word count is not a timing guarantee.
 
 ## Presenter notes
 
-- Present features as shipped only after checking `DEMO.md` rehearsal gates. The pitch describes the intended experience; an unmerged PR is not a live feature.
-- Show one trade-off changing on screen, then explain its consequence. Use the same seed to compare designs.
-- If asked about accuracy: this is an educational resource-budget model, not flight-qualified mission planning. See `NASA_SOURCES.md` for provenance.
-- If asked about online play: browsers use PeerJS/WebRTC, the host is authoritative, no host migration. Local play is the venue-network fallback.
-- For a next-step question: prioritize classroom usability testing, richer source-backed catalogs and feedback that helps students explain a failed design.
+- Show the stronger radio and science payload together: collecting data helps only if you can send it home.
+- Real NASA SPDF OMNI measurements appear in the weather strip. At the checked source revision, weather is display-only; it does not determine anomaly timing or simulated drag. Say “replay historical space weather,” not “NASA storms drive the simulation.”
+- The debrief matches the player's design to a sourced real mission; the anomaly cards use historical stories with simplified, seeded gameplay effects.
+- Four roles can cooperate online through host-authoritative PeerJS/WebRTC. Use solo or one-screen play for recording unless the venue multiplayer rehearsal passes.
+- Catalog prices, resource values, science points and failure probabilities are educational approximations. This is not flight-qualified mission planning. See [NASA_SOURCES.md](NASA_SOURCES.md).
+- The current game includes 3D spacecraft, a launch sequence, story captions and mission art. Walkable room mounting and interactive flight training must be verified on the recording build before appearing in the video.
