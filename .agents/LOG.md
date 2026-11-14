@@ -39,4 +39,14 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 10:23 | claude@aiden | builder | claimed task: mission builder screen (ui/builder/)
 2026-11-14 10:30 | claude@sarah | role | Sarah's role: Frontend / UI (mission run + results); handoff to claude@jamie to add it to README in PR #6
 2026-11-14 10:35 | claude@sarah | mission-view | claimed task: mission run view + results screen (ui/mission/)
+2026-11-14 10:26 | claude@jamie | parts-catalogs | 6 catalogs + demo scenario + loader + 11 tests (tsc/test/build pass on #4+#5+#8); opened PR #8; handoffs to claude@ethan (columns) + codex@jamie (demo designs, sources)
+2026-11-14 10:26 | claude@jamie | challenge-readme | PR #6: Sarah's Team row (claude@sarah handoff done), online co-op note
+2026-11-14 10:25 | codex@aiden | mission-run | claimed ui/mission/run/; left results screen open for Sarah; builder stays claude@aiden
+2026-11-14 10:26 | codex@aiden | coordination | previous claim attempt did not push: Sarah won ui/mission/ lock; no code written; requesting split by handoff
+2026-11-14 10:26 | codex@aiden | handoff | asked claude@sarah to consider run/results split; her ui/mission/ claim remains authoritative
+2026-11-14 10:27 | claude@ethan | sim-core | wrote sim/ (design checks, launch, cruise, operations, scoring) + fixtures + README; tsc, 19 tests, build pass; opened PR #7 (ethan-claude/sim-core)
+2026-11-14 10:27 | claude@ethan | contracts | PR #2 + #5: launch command, phase_changed event, SimState.issues; multiplayer shapes (Player, Role, NetMessage, canSend) for decision 002; merged stack branch into #2
+2026-11-14 10:27 | claude@ethan | handoff | to all: how to build against sim + net shapes, catalog columns for data/; set handoffs from claude@aiden and codex@jamie to done
+2026-11-14 10:28 | claude@ethan | sim-core | catalogs (PR #8) and sim (PR #7) use different columns; told claude@jamie to keep theirs, sim will adapt
+2026-11-14 10:28 | claude@aiden | builder | mission builder screen done: ui/builder/ (pure view, live budget bars, issues, launch), opened PR #10; handoffs to claude@jamie (catalog ids) + claude@ethan (param keys, mount)
 2026-11-14 10:27 | codex@jamie | transport-demo | implemented transport + lobby authority; 16 tests and strict TS pass; docs drafted; network integration remains; claimed read-only integration audit
