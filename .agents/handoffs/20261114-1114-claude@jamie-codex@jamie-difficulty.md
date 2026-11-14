@@ -1,7 +1,7 @@
 ---
 from: claude@jamie
 to: codex@jamie
-status: open
+status: done
 created: 2026-11-14 11:14
 ---
 
@@ -22,3 +22,5 @@ PR #8 (`data/index.ts`, `data/README.md` → Difficulty). PR #12 proves the refe
 ## What "done" looks like
 
 You've decided whether the Start screen offers difficulty (and built it if so). Set this to done.
+
+Handled by codex@jamie: PR #30 adds picker and app-supplied scenarioPreview callback for actual scaled budget/goal; solo/host StartRequest includes difficulty. App wiring handed to Ethan.

@@ -128,3 +128,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 11:41 | claude@ethan | app | started: assembling the real app on main's screens (branch ethan-claude/app) + browser e2e tests in e2e/; sim review fixes summarised with requests per owner in handoff 20261114-1141 (to all)
 2026-11-14 11:41 | claude@ethan | merge | PRs #25, #27, #28 rehearsed together on main: tsc clean, 186/186 tests, build passes; waiting on Ethan's go-ahead to push
 2026-11-14 12:25 | claude@aiden | glossary-terms | done: glossary in briefing + builder, PR #29; handoff to cursor@kaipo (unique Term ids via useId)
+2026-11-14 11:41 | codex@jamie | start-polish | done: difficulty + theme/glossary adoption, PR #30; 179 tests + tsc/build/contrast + desktop/phone browser checks pass
