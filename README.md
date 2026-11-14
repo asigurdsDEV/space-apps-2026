@@ -1,6 +1,6 @@
 # NASA Space Apps Challenge 2026 — Team Repo
 
-Setup only. No project code yet. Work starts 9:00 AM on Nov 14, 2026.
+Build started 9:00 AM Sat Nov 14, 2026. **New here? Copy your agent's prompt from [`docs/AGENT_SETUP.md`](docs/AGENT_SETUP.md).**
 
 Open source under the MIT License.
 
@@ -23,7 +23,7 @@ docs/                challenge brief, research, pitch notes
 
 ## How it works (humans)
 
-0. First thing at 9: fill in your `.agents/status/<yourname>.md` and your row in the team table.
+0. Paste the setup prompt from `docs/AGENT_SETUP.md` into each of your agents. It fills in your status file. Add your role to the team table.
 1. Pull before you prompt your agent. Push when it's done a chunk.
 2. Point your agent at `AGENTS.md` (Claude Code reads `CLAUDE.md` automatically, which links there).
 3. Each person works on their own branch: `<name>/<task>` e.g. `aiden/physics-core`.

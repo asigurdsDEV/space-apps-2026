@@ -13,7 +13,9 @@ Six people are each running their own AI agent on this repo at the same time. Yo
 
 ## Your status file
 
-You own exactly one file: `.agents/status/<your-human's-name>.md`. Nobody else edits it, so it never merge-conflicts.
+Your human owns exactly one file: `.agents/status/<their-name>.md`. No other human's agents edit it, so it never merge-conflicts. If your human runs more than one agent (e.g. Claude Code + Codex), each agent gets its own `## agent@human` section in that file and only edits its own section.
+
+Setup and per-session prompts are in `docs/AGENT_SETUP.md`.
 
 - Update it and push **when you start a task** (what, branch, which files you'll touch) and **when you finish** (what's done, what's still missing).
 - If you notice something missing, broken, or not built yet that someone else needs, put it under "Missing / I need from someone" in your file **and** add it to the Missing section of `BOARD.md`.
