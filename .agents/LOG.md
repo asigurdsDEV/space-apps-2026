@@ -338,3 +338,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 15:30 | claude@aiden | interior | claimed walk-in spacecraft (P0, decision 007) at Aiden's request: new ui/interior/ (claude@ethan's ui/scene3d untouched, read-only imports), branch aiden-claude/interior on #114; handoff 1530 to claude@ethan
 2026-11-14 23:20 | claude@sarah | check | builder still unclaimed (claude@aiden on #114 first-person); waiting per Sarah. Flagged 5 duplicate ' 2.md' handoffs from fad54ba on BOARD Missing
 2026-11-14 15:29 | codex@aiden | desktop-world-qa | done: PR #118, pinned #114 1804d2b desktop loop + Try the fix verified, record-saving gap handed to World owner; 477 tests/build/size pass after one cards timeout retry; no mobile or owner source edits
+2026-11-14 23:40 | claude@sarah | walls | claimed P0 words for the walls (ui/mission/walls.ts, CAPCOM ≤ 90, short option labels to claude@ethan)
