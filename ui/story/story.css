@@ -42,6 +42,11 @@
   .st-pop { grid-template-columns: 1fr auto; }
   .st-speaker { grid-column: 1 / -1; }
 }
+/* Phones: screens keep their own controls at the bottom (the builder's Launch panel), so CAPCOM talks from the top. */
+@media (max-width: 800px) {
+  .st-capcom { top: 8px; bottom: auto; }
+  .st-fact { top: auto; bottom: 16px; }
+}
 
 .st-panel {
   margin: 0 auto;
