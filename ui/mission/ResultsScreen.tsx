@@ -58,27 +58,32 @@ export function ResultsScreen({ summary, onCommand, title, bonusGoal, fixes, onT
   const won = outcome === 'success'
   const text = shareText(summary, { title, bonusGoal, ...share })
 
+  const met = priorities ? priorities.filter((p) => p.met).length : 0
+
   return (
-    <section className={`mv mv-results mv-tone-${tone}`} aria-label="Mission results">
+    <section className={`mv mv-results mv-tone-${tone}${won ? ' mv-celebrate' : ''}`} aria-label="Mission results">
       <header className="mv-results__head">
         <div className="mv-grade" aria-label={`Grade ${grade}`}>
           {grade}
         </div>
-        <div>
-          {title && <p className="mv-muted">{title}</p>}
+        <div className="mv-results__title">
           <h2 className="mv-title">{outcomeLabel(outcome)}</h2>
           <p className="mv-score">
-            <strong>{Math.round(score)}</strong> / 100 points
+            <strong>{Math.round(score)}</strong> / 100
             {days > 0 && <span className="mv-muted"> · {Math.floor(days)} days flown</span>}
           </p>
           <ul className="mv-stars" aria-label={`${starList.filter((s) => s.earned).length} of ${starList.length} stars`}>
-            {starList.map((star) => (
-              <li key={star.label} className={star.earned ? 'is-earned' : undefined}>
-                <span aria-hidden="true">{star.earned ? '★' : '☆'}</span> {star.label}
+            {starList.map((star, i) => (
+              <li key={star.label} className={star.earned ? 'is-earned' : undefined} style={{ ['--i' as string]: i }} title={star.label}>
+                <span aria-hidden="true">{star.earned ? '★' : '☆'}</span> <span className="mv-star__label">{star.label}</span>
               </li>
             ))}
           </ul>
+          {why[0] && <p className="mv-headline">{why[0]}</p>}
         </div>
+        <button type="button" className="mv-primary" onClick={() => onCommand({ type: 'reset', payload: {} })}>
+          ↺ Design a new mission
+        </button>
       </header>
 
       {top.length > 0 && (
@@ -89,15 +94,15 @@ export function ResultsScreen({ summary, onCommand, title, bonusGoal, fixes, onT
               <li key={fix.change}>
                 <span>
                   <strong>{fix.change}</strong>: this exact mission scores{' '}
-                  <strong>
+                  <strong className="mv-fixes__score">
                     {Math.round(fix.score)}
                     {fix.grade ? ` (${fix.grade})` : ''}
                   </strong>{' '}
                   instead of {Math.round(score)}.
                 </span>
                 {onTryFix && (
-                  <button type="button" onClick={() => onTryFix(fix)}>
-                    Try it
+                  <button type="button" className="mv-primary" onClick={() => onTryFix(fix)}>
+                    Try it ▸
                   </button>
                 )}
               </li>
@@ -106,93 +111,91 @@ export function ResultsScreen({ summary, onCommand, title, bonusGoal, fixes, onT
         </div>
       )}
 
-      {priorities && priorities.length > 0 && (
-        <div className="mv-card mv-team">
-          <h3>Team priorities</h3>
-          <ul>
-            {priorities.map((p) => (
-              <li key={p.console} className={p.met ? 'is-met' : undefined}>
-                <span aria-hidden="true">{p.met ? '✓' : '✗'}</span> <strong>{p.console}</strong> {p.goal}
-                <span className="mv-sr">{p.met ? ' (met)' : ' (missed)'}</span>
-              </li>
-            ))}
-          </ul>
-          <p className="mv-muted mv-small">
-            {priorities.filter((p) => p.met).length >= TEAM_BONUS_AT
-              ? `Team bonus: ${priorities.filter((p) => p.met).length} of ${priorities.length} priorities met. The consoles found a design that worked for everyone.`
-              : `${priorities.filter((p) => p.met).length} of ${priorities.length} priorities met. These goals pull against each other, so the team has to agree which ones to give up.`}
-          </p>
-        </div>
-      )}
-
       {realMatch && (
-        <div className="mv-card mv-real">
-          <h3>Your mission is most like</h3>
-          <p>
-            <strong>{String(realMatch.name)}</strong> ({String(realMatch.agency)}, {String(realMatch.year)}). {String(realMatch.fact)}{' '}
-            {typeof realMatch.source_url === 'string' && (
-              <a href={realMatch.source_url} target="_blank" rel="noreferrer">
-                Source
-              </a>
-            )}
-          </p>
-        </div>
+        <p className="mv-card mv-real">
+          <span className="mv-real__tag">🛰 Your mission is most like</span> <strong>{String(realMatch.name)}</strong> ({String(realMatch.agency)},{' '}
+          {String(realMatch.year)}). {String(realMatch.fact)}{' '}
+          {typeof realMatch.source_url === 'string' && (
+            <a href={realMatch.source_url} target="_blank" rel="noreferrer">
+              Source
+            </a>
+          )}
+        </p>
       )}
 
-      {why.length > 0 && (
+      <details className="mv-more">
+        <summary>
+          Full report{priorities && priorities.length > 0 ? ` · team ${met}/${priorities.length}` : ''} · share
+        </summary>
+
+        {priorities && priorities.length > 0 && (
+          <div className="mv-card mv-team">
+            <h3>Team priorities</h3>
+            <ul>
+              {priorities.map((p) => (
+                <li key={p.console} className={p.met ? 'is-met' : undefined}>
+                  <span aria-hidden="true">{p.met ? '✓' : '✗'}</span> <strong>{p.console}</strong> {p.goal}
+                  <span className="mv-sr">{p.met ? ' (met)' : ' (missed)'}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="mv-muted mv-small">
+              {met >= TEAM_BONUS_AT
+                ? `Team bonus: ${met} of ${priorities.length} priorities met. The consoles found a design that worked for everyone.`
+                : `${met} of ${priorities.length} priorities met. These goals pull against each other, so the team has to agree which ones to give up.`}
+            </p>
+          </div>
+        )}
+
+        {why.length > 1 && (
+          <div className="mv-card">
+            <h3>What happened</h3>
+            <ul className="mv-why">
+              {why.slice(1).map((sentence, i) => (
+                <li key={i}>{sentence}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         <div className="mv-card">
-          <h3>What happened</h3>
-          <ul className="mv-why">
-            {why.map((sentence, i) => (
-              <li key={i}>{sentence}</li>
-            ))}
-          </ul>
+          <h3>The numbers</h3>
+          <Bar
+            label="Science vs. goal"
+            value={science}
+            max={goal}
+            tone={goal > 0 && science >= goal ? 'good' : 'warn'}
+            detail={goal > 0 ? `${formatPoints(science)} / ${formatPoints(goal)} pts` : `${formatPoints(science)} pts`}
+          />
+          <Bar
+            label="Budget used"
+            value={cost}
+            max={budget}
+            tone={budget > 0 && cost > budget ? 'bad' : 'good'}
+            detail={budget > 0 ? `${formatUsd(cost)} of ${formatUsd(budget)}` : formatUsd(cost)}
+          />
+          <Bar
+            label="Launch mass vs. rocket limit"
+            value={mass}
+            max={massLimit}
+            tone={massLimit > 0 && mass > massLimit ? 'bad' : 'info'}
+            detail={massLimit > 0 ? `${formatKg(mass)} of ${formatKg(massLimit)}` : formatKg(mass)}
+          />
+          <Bar
+            label="Data sent home"
+            value={downlinked}
+            max={generated}
+            tone={lost > 0 ? 'warn' : 'good'}
+            detail={
+              generated > 0
+                ? `${formatGb(downlinked)} of ${formatGb(generated)} (${formatPct(downlinked / generated)})`
+                : formatGb(downlinked)
+            }
+          />
         </div>
-      )}
 
-      <div className="mv-card">
-        <h3>The numbers</h3>
-        <Bar
-          label="Science vs. goal"
-          value={science}
-          max={goal}
-          tone={goal > 0 && science >= goal ? 'good' : 'warn'}
-          detail={goal > 0 ? `${formatPoints(science)} / ${formatPoints(goal)} pts` : `${formatPoints(science)} pts`}
-        />
-        <Bar
-          label="Budget used"
-          value={cost}
-          max={budget}
-          tone={budget > 0 && cost > budget ? 'bad' : 'good'}
-          detail={budget > 0 ? `${formatUsd(cost)} of ${formatUsd(budget)}` : formatUsd(cost)}
-        />
-        <Bar
-          label="Launch mass vs. rocket limit"
-          value={mass}
-          max={massLimit}
-          tone={massLimit > 0 && mass > massLimit ? 'bad' : 'info'}
-          detail={massLimit > 0 ? `${formatKg(mass)} of ${formatKg(massLimit)}` : formatKg(mass)}
-        />
-        <Bar
-          label="Data sent home"
-          value={downlinked}
-          max={generated}
-          tone={lost > 0 ? 'warn' : 'good'}
-          detail={
-            generated > 0
-              ? `${formatGb(downlinked)} of ${formatGb(generated)} (${formatPct(downlinked / generated)})`
-              : formatGb(downlinked)
-          }
-        />
-      </div>
-
-      <ShareCard text={text} />
-
-      <div className="mv-controls">
-        <button type="button" className="mv-primary" onClick={() => onCommand({ type: 'reset', payload: {} })}>
-          ↺ Design a new mission
-        </button>
-      </div>
+        <ShareCard text={text} />
+      </details>
     </section>
   )
 }
