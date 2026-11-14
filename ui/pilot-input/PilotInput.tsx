@@ -63,14 +63,14 @@ export function PilotInput({ onIntent, onInteract, disabled = false }: PilotInpu
     const buttonKey = buttonAction && (event.code === 'Space' || event.code === 'Enter')
     if (target !== root.current && !buttonKey) return
     const action = buttonKey ? buttonAction : PILOT_CONTROLS.find(control => control.code === event.code)?.action
-    const interact = target === root.current && event.code === 'KeyE'
-    if (!action && !interact) return
+    if (!action) return
     event.preventDefault()
     if (event.repeat || keys.current.has(event.code)) return
     setFocused(true)
     keys.current.add(event.code)
-    if (interact) callbacks.current.onInteract()
-    if (action) { input.current.press(`key:${event.code}`, action); publish() }
+    input.current.press(`key:${event.code}`, action)
+    publish()
+    if (action === 'interact') callbacks.current.onInteract()
   }
 
   function keyUp(event: KeyboardEvent<HTMLDivElement>) {
@@ -88,6 +88,7 @@ export function PilotInput({ onIntent, onInteract, disabled = false }: PilotInpu
     event.currentTarget.setPointerCapture(event.pointerId)
     input.current.press(`pointer:${event.pointerId}`, action)
     publish()
+    if (action === 'interact') callbacks.current.onInteract()
   }
 
   function pointerUp(event: PointerEvent<HTMLButtonElement>) {
@@ -107,16 +108,16 @@ export function PilotInput({ onIntent, onInteract, disabled = false }: PilotInpu
         {PILOT_CONTROLS.map(control => <button key={control.action} type="button" className="game-button pi-hold"
           disabled={disabled} data-pilot-action={control.action}
           onPointerDown={event => pointerDown(event, control.action)} onPointerUp={pointerUp}
+          onClick={event => { if (control.action === 'interact' && event.detail === 0) callbacks.current.onInteract() }}
           onPointerCancel={pointerUp} onLostPointerCapture={pointerUp}>
           {control.label} <kbd>{control.key}</kbd>
         </button>)}
-        <button type="button" className="game-button" disabled={disabled} onClick={() => callbacks.current.onInteract()}>Interact <kbd>E</kbd></button>
       </div>
     </div>
     <div className="pi-footer">
       <button type="button" className="game-button" disabled={disabled} onClick={() => root.current?.focus()}>Enable keyboard controls</button>
       <button type="button" className="game-button" onClick={releaseAll}>Release controls</button>
     </div>
-    <output className="pi-intent" aria-label="Movement intent">Forward {intent.forward} · Right {intent.right} · Up {intent.up} · Brake {intent.brake ? 'on' : 'off'}</output>
+    <output className="pi-intent" aria-label="Movement intent">Forward {intent.forward} · Right {intent.right} · Up {intent.up} · Brake {intent.brake ? 'on' : 'off'} · Interact {intent.interact ? 'held' : 'off'}</output>
   </section>
 }

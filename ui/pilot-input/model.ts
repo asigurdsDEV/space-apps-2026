@@ -1,4 +1,4 @@
-export type PilotAction = 'forward' | 'backward' | 'left' | 'right' | 'up' | 'down' | 'brake'
+export type PilotAction = 'forward' | 'backward' | 'left' | 'right' | 'up' | 'down' | 'brake' | 'interact'
 
 /** Craft-relative requests, not velocity, world coordinates or sim commands. */
 export interface PilotIntent {
@@ -6,6 +6,7 @@ export interface PilotIntent {
   right: -1 | 0 | 1
   up: -1 | 0 | 1
   brake: boolean
+  interact: boolean
 }
 
 export const PILOT_CONTROLS: ReadonlyArray<{ action: PilotAction; label: string; code: string; key: string }> = [
@@ -16,6 +17,7 @@ export const PILOT_CONTROLS: ReadonlyArray<{ action: PilotAction; label: string;
   { action: 'up', label: 'Up', code: 'KeyR', key: 'R' },
   { action: 'down', label: 'Down', code: 'KeyF', key: 'F' },
   { action: 'brake', label: 'Brake', code: 'Space', key: 'Space' },
+  { action: 'interact', label: 'Interact', code: 'KeyE', key: 'E' },
 ]
 
 export function createPilotInput() {
@@ -28,7 +30,7 @@ export function createPilotInput() {
       const actions = new Set(held.values())
       const axis = (positive: PilotAction, negative: PilotAction) =>
         (Number(actions.has(positive)) - Number(actions.has(negative))) as -1 | 0 | 1
-      return { forward: axis('forward', 'backward'), right: axis('right', 'left'), up: axis('up', 'down'), brake: actions.has('brake') }
+      return { forward: axis('forward', 'backward'), right: axis('right', 'left'), up: axis('up', 'down'), brake: actions.has('brake'), interact: actions.has('interact') }
     },
   }
 }
