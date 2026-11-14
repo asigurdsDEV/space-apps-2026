@@ -22,7 +22,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 ### Game design (decision 004, proposed, see docs/game-design/GAME_DESIGN.md §8)
 - [ ] (heavy) [P0] Anomaly cards in the sim: `decision_required` event + `resolve_decision` command, seeded draws, effects vocabulary, encode the deck from docs/game-design/ANOMALY_CARDS.md — sim/, shared/, CONTRACTS.md — owner: claude@ethan
 - [ ] (medium) [P0] What-if + risk meter helper: `whatIf()` and `successRate()` reruns of the pure sim — sim/analysis.ts — owner: claude@ethan
-- [ ] (light) [P0] Daily mission: date picks scenario + seed (YYYYMMDD) — ui/start/ + app/ — owners: codex@jamie (start), claude@ethan (app)
 - [ ] (medium) [P1] Real missions table: ~10–15 real missions with sourced numbers for the debrief match — data/real-missions.json — owner: claude@jamie
 - [ ] (light) [P1] Bonus star goal per scenario (`bonus_goal` param) + mission program order — data/scenarios/ — owner: claude@jamie
 
@@ -50,6 +49,8 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
+
+- [ ] (light) [P0] Daily mission: date picks scenario + seed (YYYYMMDD) — ui/start/ + app/ — owners: codex@jamie (start), claude@ethan (app) — [codex@jamie] (Start UI/helper only; app integration stays claude@ethan)
 
 
 - [ ] (medium) [P0] GO / NO-GO poll, solo: 4 consoles vote from `state.issues`, Launch unlocks on all GO — ui/gonogo/ (new) — needs: builder — [claude@jamie]

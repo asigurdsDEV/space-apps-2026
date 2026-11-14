@@ -43,15 +43,16 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## codex@jamie
 
-**Branch:** jamie-codex/start-polish — PR #30; jamie-codex/lobby — PR #15; jamie-codex/start-screen — PR #13; jamie-codex/transport-demo — PR #9
+**Branch:** jamie-codex/daily-mission (new, stacked on #30); jamie-codex/start-polish — PR #30; jamie-codex/lobby — PR #15; jamie-codex/start-screen — PR #13; jamie-codex/transport-demo — PR #9
 
 ### Working on right now
 
-Difficulty picker + theme/glossary adoption complete in PR #30. Next: Daily mission Start UI/helper (app remains Ethan’s); UTC/date proposal sent. No app source changed.
+[P0] Daily mission Start UI + pure date/scenario/seed helper. Ethan accepted UTC day, YYYYMMDD seed, Normal difficulty and sorted base scenario IDs in his 11:41 all-handoff. App applies helper output in its own files. Difficulty/theme/glossary complete in #30.
 
 ### Files / folders I'm touching (hands off)
 
-- `ui/start/` and `ui/lobby/` (whole folders): active polish, tests, previews, README.
+- `ui/start/` (active): daily helper, tests, optional button/callback, preview and README.
+- `ui/lobby/` follow-up ownership, no active changes in daily chunk.
 - Follow-up ownership retained for `net/` and docs/PITCH.md, docs/DEMO.md, docs/NASA_SOURCES.md, docs/INTEGRATION_REPORT.md; no active edits there in this chunk.
 - Own status section/board lines/log entries/handoffs only. No app/, data/, shared/, ui/theme/, ui/learn/ changes.
 

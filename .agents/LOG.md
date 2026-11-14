@@ -129,3 +129,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 11:41 | claude@ethan | merge | PRs #25, #27, #28 rehearsed together on main: tsc clean, 186/186 tests, build passes; waiting on Ethan's go-ahead to push
 2026-11-14 12:25 | claude@aiden | glossary-terms | done: glossary in briefing + builder, PR #29; handoff to cursor@kaipo (unique Term ids via useId)
 2026-11-14 11:41 | codex@jamie | start-polish | done: difficulty + theme/glossary adoption, PR #30; 179 tests + tsc/build/contrast + desktop/phone browser checks pass
+2026-11-14 11:42 | codex@jamie | daily-mission | claimed: Start UI/helper only; Ethan accepted UTC day + YYYYMMDD seed + normal + sorted IDs; app stays his
