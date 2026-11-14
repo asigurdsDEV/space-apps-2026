@@ -133,7 +133,8 @@ describe('init', () => {
     expect(m.delta_v_ms).toBe(60)
     expect(m.delta_v_required_ms).toBe(20)
     expect(m.launch_reliability).toBe(0.97)
-    expect(m.bus_reliability).toBeCloseTo(0.87 ** 1.5) // sso radiation_factor 1.5
+    // 0.87 over the 3-year design life, radiation_factor 1.5, flown for 365 days: about 0.93.
+    expect(m.bus_reliability).toBeCloseTo(0.87 ** ((1.5 * 365 * DAY) / 94_672_800))
     expect(m.lifetime_days).toBe(365)
   })
 
@@ -473,10 +474,20 @@ describe('step: flying the mission', () => {
   it('loses the spacecraft on a bus that never survives', () => {
     const datasets = withRows('spacecraft-buses', [['lemon', 'Lemon', 'cubesat', 14, 9, 3, 8, 60, 2_500_000, 94_672_800, 0, 'Always breaks.']])
     const config = { ...configWith({ ...goodDesign, bus: 'lemon', launch_vehicle: 'falcon-9', budget_usd: 0 }), seed: 3 }
+    expect(codes(init(config, datasets))).toEqual(['radiation_risk']) // 0% chance of surviving
+    expect(codes(init(configWith({ random_failures: false }, config), datasets))).toEqual([]) // sandbox: no risk to warn about
     const { state } = run(init(config, datasets), 10, DAY, [launch])
     expect(state.metrics.outcome).toBe('spacecraft_failure')
     expect(state.t_s).toBe(DAY)
     expect(String(summary(state).why)).toMatch(/failed on day 1 of 365/)
+  })
+
+  it('radiation multiplies the failure rate', () => {
+    // Medium spacecraft: 0.95 over a 10-year design life (315,576,000 s), flown for one 365-day mission.
+    const design = { launch_vehicle: 'falcon-9', bus: 'medium-bus', budget_usd: 0 }
+    const year = (365 * DAY) / 315_576_000
+    expect(init(calm({ ...design, orbit: 'leo-iss' }), fixtureDatasets).metrics.bus_reliability).toBeCloseTo(0.95 ** year) // radiation_factor 1
+    expect(init(calm({ ...design, orbit: 'lunar' }), fixtureDatasets).metrics.bus_reliability).toBeCloseTo(0.95 ** (4 * year)) // radiation_factor 4
   })
 
   it('locks the design after launch and does nothing once ended', () => {

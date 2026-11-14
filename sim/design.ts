@@ -80,7 +80,7 @@ export interface Budgets {
   deadline_months: number
   ground_stations: number
   launch_reliability: number
-  /** Chance the bus survives the planned mission in this orbit's radiation. */
+  /** Chance the bus survives this mission, from launch to its planned end, in this orbit's radiation. */
   bus_reliability: number
   cruise_days: number
   /** Planned mission length, counted from launch. */
@@ -105,6 +105,8 @@ export interface FlightModel {
   data_gb_per_day_full: number
   downlink_gb_per_day: number
   storage_gb: number
+  /** Chance the bus gets through one more day in this orbit's radiation. */
+  survival_per_day: number
   /** Why the mission will end: the plan, the bus wearing out, or the orbit decaying. */
   end_reason: 'mission' | 'bus_life' | 'orbit_life'
 }
@@ -149,14 +151,13 @@ function n1(value: number): string {
 }
 
 function pct(share: number): string {
-  const percent = share * 100
-  return `${percent > 0 && percent < 1 ? n1(percent) : Math.round(percent)}%`
+  return `${Math.round(share * 100)}%`
 }
 
 function formatBps(bps: number): string {
   if (bps >= 1e6) return `${n1(bps / 1e6)} Mbps`
   if (bps >= 1e3) return `${n1(bps / 1e3)} kbps`
-  return `${Math.round(bps)} bps`
+  return bps > 0 && bps < 1 ? 'less than 1 bps' : `${Math.round(bps)} bps`
 }
 
 function formatGb(gb: number): string {
@@ -421,7 +422,7 @@ export function evaluateDesign(rawParams: Params, entities: Entity[]): DesignRep
     warning(
       'link_weak',
       'comms',
-      `${comms.name} is built for links up to ${n1(prop(comms, 'reference_range_m') / 1000)} km, but in ${orbit.name} the ground is ${n1(prop(orbit, 'comm_range_m') / 1000)} km away. At that range it runs at ${pct(link_factor)} of its speed (${formatBps(data_rate_bps)}). Pick a radio with a longer range.`,
+      `${comms.name} is built for links up to ${n1(prop(comms, 'reference_range_m') / 1000)} km, but in ${orbit.name} the ground is ${n1(prop(orbit, 'comm_range_m') / 1000)} km away. At that range it runs at ${link_factor < 0.005 ? 'less than 1%' : pct(link_factor)} of its speed (${formatBps(data_rate_bps)}). Pick a radio with a longer range.`,
     )
   }
   const returnedShare = data_generated_gb_per_day > 0 ? Math.min(1, downlink_gb_per_day / data_generated_gb_per_day) : 1
@@ -429,19 +430,12 @@ export function evaluateDesign(rawParams: Params, entities: Entity[]): DesignRep
     warning(
       'downlink_short',
       'comms',
-      `Your instruments make ${formatGb(data_generated_gb_per_day)} a day, but ${comms.name} can only send ${formatGb(downlink_gb_per_day)} a day home from ${orbit.name}. Only ${pct(returnedShare)} of the science arrives. Pick a faster radio, an orbit with more contact time, or instruments that make less data.`,
+      `Your instruments make ${formatGb(data_generated_gb_per_day)} a day, but ${comms.name} can only send ${formatGb(downlink_gb_per_day)} a day home from ${orbit.name}. ${returnedShare < 0.005 ? 'Almost none' : `Only ${pct(returnedShare)}`} of the science arrives. Pick a faster radio, an orbit with more contact time, or instruments that make less data.`,
     )
   }
   const science_per_day = science_per_day_full * instrument_uptime
   const science_expected = science_per_day * returnedShare * Math.max(0, lifetime_days - cruise_days)
   const science_goal = Math.max(0, num(params, 'target_science_score'))
-  if (science_goal > 0 && instruments.length > 0 && launcher && orbit && bus && solar && comms && science_expected < science_goal) {
-    warning(
-      'science_short',
-      'design',
-      `This design can return about ${n1(science_expected)} of the ${n1(science_goal)} science points the mission needs. ${returnedShare < 1 - 1e-9 ? 'Most of its data never gets home, so fix the downlink first.' : 'Add instruments, or pick ones that earn more science in this orbit.'}`,
-    )
-  }
 
   // ---- Budget: parts + launch (some rockets also charge per kilogram) + running the mission.
   const build_cost_usd = sum([bus, ...added], 'cost_usd')
@@ -475,14 +469,31 @@ export function evaluateDesign(rawParams: Params, entities: Entity[]): DesignRep
     )
   }
 
-  // ---- Risk: radiation makes failures more likely.
+  // ---- Risk: `reliability` is the chance of lasting the whole design life near Earth; radiation multiplies the failure rate.
   const radiation = Math.max(0, prop(orbit, 'radiation_factor', 1))
-  const bus_reliability = Math.pow(clamp01(prop(bus, 'reliability', 1)), radiation)
+  const ratedLife_s = Number.isFinite(busLife_s) ? busLife_s : mission_s
+  const survival_per_day = ratedLife_s > 0 ? Math.pow(clamp01(prop(bus, 'reliability', 1)), (radiation * DAY_S) / ratedLife_s) : 1
+  const bus_reliability = Math.pow(survival_per_day, lifetime_days)
   if (params.random_failures !== false && bus && orbit && radiation > 1 && bus_reliability < SURVIVAL_WARNING) {
     warning(
       'radiation_risk',
       'design',
-      `Radiation in ${orbit.name} is ${n1(radiation)} times as strong as in low Earth orbit, so ${bus.name} has only a ${pct(bus_reliability)} chance of surviving the mission. A more reliable bus or a calmer orbit improves the odds.`,
+      `Radiation in ${orbit.name} is ${n1(radiation)} times as strong as in low Earth orbit, so the chance of ${bus.name} surviving the mission is only ${pct(bus_reliability)}. A more reliable bus or a calmer orbit improves the odds.`,
+    )
+  }
+
+  // ---- Forecast: only worth showing once the design can launch.
+  if (science_goal > 0 && instruments.length > 0 && !issues.some((issue) => issue.severity === 'error') && science_expected < science_goal) {
+    warning(
+      'science_short',
+      'design',
+      `This design can return about ${n1(science_expected)} of the ${n1(science_goal)} science points the mission needs. ${
+        returnedShare < 1 - 1e-9
+          ? 'Not all of its data gets home, so fix the downlink first.'
+          : instrument_uptime < 1
+            ? 'The instruments are switched off part of the time, so fix the power first.'
+            : 'Add instruments, or pick ones that earn more science in this orbit.'
+      }`,
     )
   }
 
@@ -530,6 +541,7 @@ export function evaluateDesign(rawParams: Params, entities: Entity[]): DesignRep
     data_gb_per_day_full,
     downlink_gb_per_day,
     storage_gb,
+    survival_per_day,
     end_reason,
   }
   return { budgets, flight, issues, ready: !issues.some((issue) => issue.severity === 'error') }

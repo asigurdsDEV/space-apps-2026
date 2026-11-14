@@ -310,9 +310,7 @@ export function step(state: SimState, commands: Command[], dt_s: number): StepRe
         })
       }
 
-      // `bus_reliability` is the chance of surviving the whole planned mission.
-      const failureChance =
-        budgets.mission_days > 0 ? 1 - Math.pow(budgets.bus_reliability, days / budgets.mission_days) : 0
+      const failureChance = 1 - Math.pow(flight.survival_per_day, days)
       if (randomFailures && failureRoll.value < failureChance) {
         outcome = 'spacecraft_failure'
         changePhase('ended')
@@ -421,7 +419,7 @@ export function summary(state: SimState): Summary {
   } else if (outcome === 'launch_failure') {
     why.push(`The launch failed. ${launcher ? launcher.name : 'This launch vehicle'} succeeds about ${Math.round(metric(m, 'launch_reliability') * 100)}% of the time. More reliable launch vehicles cost more.`)
   } else if (outcome === 'spacecraft_failure') {
-    why.push(`The spacecraft failed on day ${Math.floor(day)} of ${Math.round(planned)}. ${bus ? bus.name : 'This bus'} has about a ${Math.round(metric(m, 'bus_reliability') * 100)}% chance of surviving a mission like this one. A more reliable bus or an orbit with less radiation improves the odds.`)
+    why.push(`The spacecraft failed on day ${Math.floor(day)} of ${Math.round(planned)}. The chance of ${bus ? bus.name : 'this bus'} surviving a mission like this one is about ${Math.round(metric(m, 'bus_reliability') * 100)}%. A more reliable bus or an orbit with less radiation improves the odds.`)
   } else if (outcome === 'in_flight') {
     why.push(`The mission is on day ${Math.floor(day)} of ${Math.round(planned)}.`)
   } else {
