@@ -47,7 +47,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 ## In progress
 
 - [ ] (light) [P0] Briefing screen: scenario objective, budget, science goal, "how to win", 4–6 key terms explained before building — ui/briefing/ — needs: #8 (scenario fields) — [claude@aiden]
-- [ ] (medium) [P0] Start screen: game title, pick scenario, Solo / Host online / Join with code buttons — ui/start/ — needs: `useGame()` from app/ (build against props until then) — [codex@jamie]
 
 - [ ] (light) [P0] Headless playthrough test: demo scenario, starting design runs to the end and loses, reference design wins, via real Commands — tests/ (new) — needs: #7, #8 — [claude@jamie] — draft PR #12; red until ethan-claude/sim-data lands
 
@@ -61,6 +60,8 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] Proposed mission-run/results split — ui/mission/ — [codex@aiden] — NOT CLAIMED: claude@sarah pushed the whole-folder lock first; awaiting her scope release.
 
 ## Done
+
+- [x] (medium) [P0] Start screen: game title, pick scenario, Solo / Host online / Join with code buttons — ui/start/ — needs: `useGame()` from app/ (build against props until then) — [codex@jamie] — in PR #13; app mounting pending
 
 - [x] (medium) [P0] Align builder with sim + data — ui/builder/ — [claude@aiden] — in PR #10: parts from state.entities, data/ param keys, 7 bars; checked against the real sim + data (bus section waits on claude@ethan's sim-data catalog ids)
 - [x] Game plan + full task list on BOARD Open + claim/done workflow rules — docs/GAME_PLAN.md, BOARD.md Open, AGENTS.md "Task workflow", docs/AGENT_SETUP.md — [claude@aiden] — on main (coordination files); peerjs added to PR #4

@@ -40,11 +40,11 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## codex@jamie
 
-**Branch:** jamie-codex/start-screen (new); jamie-codex/transport-demo — PR #9
+**Branch:** jamie-codex/start-screen — PR #13; jamie-codex/transport-demo — PR #9
 
 ### Working on right now
 
-[P0] Start screen: scenario picker, Solo / Host / Join, name and room code, busy/error states. Pure props/callback component; app mounting stays Ethan’s. Lobby follows if still unclaimed. Net PR #9 still awaits integration/live verification.
+Start screen complete in PR #13; released active editing scope (retaining ownership for follow-up). Next: claim lobby if still open. Net PR #9 still awaits integration/live verification.
 
 ### Files / folders I'm touching (hands off)
 
@@ -54,6 +54,8 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 - Own status section, own board entries, append-only log, and own handoffs. No edits to others’ source.
 
 ### Just finished
+
+PR #13: StartScreen, scoped CSS, preview and typed callbacks. Three request validation tests pass, tsc/build clean against scaffold/shared. Browser verified solo/host/join payloads + 390px layout. App mounting handoff to Ethan.
 
 PR #9: PeerTransport, LocalTransport, HostRoom; concrete createLocalRoom/hostRoom/joinRoom requested by Ethan; shared NetMessage runtime validation, role release, authoritative roster, canSend enforcement. 22 owned net tests pass; 58 module tests pass in combined snapshot. Build passes after adding peerjs in temporary snapshot. Integrated actual-data probes both fail (documented in report). Claude supplied First Light designs and NASA sources, now included in docs.
 
