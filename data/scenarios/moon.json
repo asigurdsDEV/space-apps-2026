@@ -14,6 +14,7 @@
   "params": {
     "objective": "lunar-mapping",
     "objective_text": "Put a spacecraft in low lunar orbit and send home enough data to reach the science goal over two years, within budget. Hint: getting captured by the Moon needs a real engine.",
+    "bonus_goal": "budget_left_20",
     "budget_usd": 300000000,
     "target_science_score": 75,
     "mission_duration_s": 63072000,
