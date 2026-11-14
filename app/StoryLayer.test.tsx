@@ -9,6 +9,7 @@ describe('StoryLayer', () => {
     const html = renderToStaticMarkup(<StoryLayer screen="briefing" scenarioId="moon-hard" />)
     expect(html).toContain('st-cutscene')
     expect(html).toContain(LINES['call-moon'])
+    expect(html).toContain('class="cs"') // ui/cutscenes' scene is inside the frame
   })
 
   it('has CAPCOM speak on screens without a cutscene', () => {

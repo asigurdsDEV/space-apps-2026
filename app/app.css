@@ -228,3 +228,42 @@ body {
 
 /* Crash screen (ErrorBoundary.tsx). */
 .app-crash-actions { display: flex; flex-wrap: wrap; gap: var(--game-space-2, 8px); justify-content: center; }
+
+/* ---------- the walk (app/Walk.tsx): the hall fills the window, each screen is a panel over it.
+   No transform on the panel: it would re-anchor the story pop-outs and cutscenes (position: fixed). */
+.app-hall {
+  position: fixed;
+  inset: 0;
+}
+.app-hall .hg {
+  height: 100%;
+  border-radius: 0;
+}
+.app-over {
+  position: relative;
+  /* Room above the panel, so the station you walked to stays in view. */
+  margin: clamp(3rem, 16vh, 9rem) clamp(var(--game-space-2), 3vw, 3rem) clamp(var(--game-space-2), 3vw, 3rem);
+  border-radius: var(--game-radius);
+  overflow: clip;
+  background: var(--game-bg);
+  box-shadow: 0 12px 48px rgb(0 0 0 / 0.6);
+  transition: opacity 0.25s;
+}
+.app-over .app-page {
+  min-height: 0;
+}
+.app-over--walking {
+  opacity: 0;
+  pointer-events: none;
+  transition: none;
+}
+/* A modal (the builder tips) sits in the top layer, outside the panel's opacity, so it waits for the walk too. */
+.app-over--walking dialog,
+.app-over--walking dialog::backdrop {
+  opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-over {
+    transition: none;
+  }
+}

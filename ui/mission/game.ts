@@ -150,3 +150,32 @@ export function matchMission(
     (m.objective === mine.objective ? 0 : 0.5)
   return missions.filter((m) => m.body === mine.body).sort((a, b) => rank(a) - rank(b))[0] ?? null
 }
+
+// ------------------------------------------------------- team priorities
+
+/** One console's own goal (GAME_DESIGN.md §4.7). They pull against each other on purpose. */
+export interface Priority {
+  console: 'PLAN' | 'SPACECRAFT' | 'SCIENCE' | 'COMMS'
+  goal: string
+  met: boolean
+}
+
+/** Priorities met needed for the team bonus. */
+export const TEAM_BONUS_AT = 3
+
+/**
+ * The four console priorities, judged from the final summary and the design's issues.
+ * PLAN keeps a 10% launch mass margin, SPACECRAFT flies with no power warnings, SCIENCE beats the
+ * goal by 25%, COMMS loses no data and stays in budget.
+ */
+export function teamPriorities(summary: Summary, issues: readonly { resource: string }[]): Priority[] {
+  const limit = num(summary, 'mass_limit_kg')
+  const goal = num(summary, 'science_goal')
+  const budget = num(summary, 'budget_usd')
+  return [
+    { console: 'PLAN', goal: 'Keep at least 10% launch mass margin', met: limit > 0 && (limit - num(summary, 'mass_kg')) / limit >= 0.1 },
+    { console: 'SPACECRAFT', goal: 'Fly with no power warnings', met: !issues.some((i) => i.resource === 'power') },
+    { console: 'SCIENCE', goal: 'Beat the science goal by 25%', met: goal > 0 && num(summary, 'science_score') >= goal * 1.25 },
+    { console: 'COMMS', goal: 'Lose no data and stay in budget', met: num(summary, 'data_lost_gb') === 0 && (budget <= 0 || num(summary, 'cost_usd') <= budget) },
+  ]
+}

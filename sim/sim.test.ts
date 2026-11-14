@@ -338,6 +338,23 @@ describe('optional features switch on when the column or key exists', () => {
     expect(codes(init(calm({ deadline_months: 12 }), datasets))).toEqual([])
   })
 
+  it('sunlight: solar_flux_factor scales solar power but not an RTG', () => {
+    const mars = withColumn('orbits', 'solar_flux_factor', { sso: 0.43 })
+    const power = (solar: string, datasets: Dataset[]) => init(calm({ solar }), datasets).metrics.power_available_w ?? 0
+    expect(power('solar-deployable-large', mars)).toBeCloseTo(power('solar-deployable-large', fixtureDatasets) * 0.43)
+    expect(power('rtg', mars)).toBe(power('rtg', fixtureDatasets))
+    expect(power('rtg', mars)).toBeGreaterThan(0)
+  })
+
+  it('coverage: an imager off its best orbit also loses the ground that orbit never passes over', () => {
+    // The basic camera (10 points, best in sun-synchronous orbit) in an ISS-like orbit that sees 80% of Earth: 10 x 0.5 x 0.8.
+    const state = init(calm({ orbit: 'leo-iss', launch_vehicle: 'electron', instruments: 'camera-basic' }), fixtureDatasets)
+    expect(state.metrics.science_expected).toBeCloseTo(4)
+    expect(state.issues.find((issue) => issue.code === 'off_best_orbit')?.message).toContain('40% of its science')
+    // The magnetometer works anywhere, so the orbit costs it nothing.
+    expect(init(calm({ orbit: 'leo-iss', launch_vehicle: 'electron', instruments: 'magnetometer' }), fixtureDatasets).metrics.science_expected).toBeCloseTo(5)
+  })
+
   it('operations cost and ground stations', () => {
     const m = init(calm({ ops_cost_usd_per_day: 1000, ground_station_cost_usd_per_day: 500, ground_stations: 2 }), fixtureDatasets).metrics
     expect(m.ops_cost_usd_per_day).toBe(2000)
