@@ -25,6 +25,7 @@ import '../ui/learn/learn.css'
 import { Crew, Notice, RoomCode } from './Crew'
 import { ErrorBoundary } from './ErrorBoundary'
 import { StoryLayer } from './StoryLayer'
+import { Walk, WalkTo } from './Walk'
 import { startDriver, timerClock } from './driver'
 import { createGame, type Game } from './game'
 import { cleanRoomCode, openRoom } from './room'
@@ -270,16 +271,21 @@ export function Room({ active, onExit }: { active: Active; onExit: () => void })
       />
     )
   }
-  // Someone who joins after launch goes straight to the flight.
-  if (!briefed && state.metrics.phase === 'design') {
-    return (
-      <>
-        <Briefing config={config} onStart={() => setBriefed(true)} onBack={onExit} />
-        <StoryLayer screen="briefing" scenarioId={state.scenario_id} />
-      </>
-    )
-  }
-  return <GameScreen session={session} config={config} onExit={onExit} roomCode={roomCode} daily={active.daily} />
+  // The hall stays mounted under every screen from here on, so each screen change is a walk (app/Walk.tsx).
+  return (
+    <Walk state={state} title={config.title}>
+      {/* Someone who joins after launch goes straight to the flight. */}
+      {!briefed && state.metrics.phase === 'design' ? (
+        <>
+          <WalkTo screen="briefing" />
+          <Briefing config={config} onStart={() => setBriefed(true)} onBack={onExit} />
+          <StoryLayer screen="briefing" scenarioId={state.scenario_id} />
+        </>
+      ) : (
+        <GameScreen session={session} config={config} onExit={onExit} roomCode={roomCode} daily={active.daily} />
+      )}
+    </Walk>
+  )
 }
 
 export interface GameScreenProps {
@@ -362,6 +368,7 @@ function Design({ session, config }: { session: Session; config: Config }) {
     return (
       // Focused when it opens, so keyboard and screen-reader players land on the poll, not at the top of the page.
       <main className="app-poll" tabIndex={-1} ref={focusOnMount}>
+        <WalkTo screen="poll" />
         <GoNoGoPoll
           issues={state.issues}
           onLaunch={() => session.send({ type: 'launch', payload: {} })}
@@ -373,6 +380,7 @@ function Design({ session, config }: { session: Session; config: Config }) {
   }
   return (
     <>
+      <WalkTo screen="design" />
       <BuilderTutorial />
       <StoryLayer screen="design" scenarioId={state.scenario_id} />
       <MissionBuilder
@@ -463,7 +471,12 @@ function Flight({ session, config, daily, online }: { session: Session; config: 
       holdClock(false)
       setLaunchDone(true)
     }
-    return <LaunchView state={state} onDone={done} />
+    return (
+      <>
+        <WalkTo screen="launch" />
+        <LaunchView state={state} onDone={done} />
+      </>
+    )
   }
 
   const summary = ended ? finalSummary(events) : undefined
@@ -479,6 +492,7 @@ function Flight({ session, config, daily, online }: { session: Session; config: 
   const decide = (decision_id: string, option_id: string) => session.send({ type: 'resolve_decision', payload: { decision_id, option_id } })
   return (
     <>
+      <WalkTo screen={ended ? 'results' : 'flight'} />
       <MissionScreen
         state={state}
         events={events}
