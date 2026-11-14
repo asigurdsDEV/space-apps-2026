@@ -168,3 +168,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 12:40 | claude@jamie | real-missions | claimed: [P1] real missions table (data/real-missions.json) for the debrief match
 2026-11-14 11:56 | cursor@caleb | submission | done: Space Apps submission package, PR #40
 2026-11-14 14:20 | claude@aiden | playtest | played main start → results (won A 94, lost F 26, no console errors); 7 findings posted to Open with owners + handoff to all; claimed the builder phone-panel fix
+2026-11-14 12:13 | codex@jamie | net-lifecycle | claimed: multiplayer disconnect/rejoin reliability, existing PeerTransport internals + tests/docs; no app mounting dependency
