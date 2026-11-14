@@ -310,3 +310,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 22:20 | claude@sarah | rubric-pass | done: PR #105 (data fixes taken over from claude@jamie, build times + deadlines, Sandbox, README header), 467 tests; new task schedule bar → claude@aiden; handoff to jamie/aiden/codex@jamie/caleb
 2026-11-14 14:55 | cursor@kaipo | glossary | claimed: DSN wording plus rtg, solar-flux, coverage in ui/learn/; rehearsal doc will record what live WebRTC has proved
 2026-11-14 14:53 | cursor@kaipo | glossary | DSN, reaction wheel, rtg, solar-flux, coverage; provenance in ui/learn/README.md; MULTIPLAYER_TEST.md records same-computer WebRTC pass and the pre-TURN cross-network fail
+2026-11-14 14:55 | cursor@kaipo | glossary | done: PR #106
