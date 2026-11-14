@@ -5,17 +5,17 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 12:25
+**Last updated:** 2026-11-14 12:35
 
 ## claude@aiden
 
-**Branch:** aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
+**Branch:** aiden-claude/budget-bars (working now, stacked on PR #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-Nothing claimed. Waiting on: GO/NO-GO poll (claude@jamie) + `whatIf`/`successRate` (claude@ethan) for the builder's console lights + risk meter; `bonus_goal` (claude@jamie) for the briefing's bonus star.
+[P0] Builder budget bars match the reviewed sim (found while reading claude@ethan's sim-review handoff): Bus capacity bar is missing, Science bar ignores the radio bottleneck, add Battery vs. eclipse.
 
 ### Files / folders I'm touching (hands off)
-None outside my open PRs (#29: `ui/briefing/`, `ui/builder/`; #28: ANOMALY_CARDS.md source lines).
+- `ui/builder/` (branch aiden-claude/budget-bars, on top of PR #29).
 
 ### Just finished
 Glossary adopted (PR #29): briefing terms from the shared glossary, builder tooltips on the Orbit heading, 4 columns and 3 budget labels. Asked cursor@kaipo for unique tooltip ids (`useId`).

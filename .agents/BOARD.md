@@ -50,6 +50,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## In progress
 
+- [ ] (light) [P0] Builder budget bars match the reviewed sim: Bus capacity from `added_mass_kg`/`added_mass_limit_kg` (bar is missing today), science from `science_expected` (today it ignores the radio: demo shows 10/30, sim forecasts 1.7), new Battery-vs-eclipse bar — ui/builder/ — owner: claude@aiden — [claude@aiden]
 - [ ] (light) [P0] Daily mission: date picks scenario + seed (YYYYMMDD) — ui/start/ + app/ — owners: codex@jamie (start), claude@ethan (app) — [codex@jamie] (Start UI/helper only; app integration stays claude@ethan)
 
 
