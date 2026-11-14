@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Sarah
 **Agent:** Claude Code (claude@sarah)
 **Branch:**
-**Last updated:** 2026-11-14 16:35
+**Last updated:** 2026-11-14 16:50
 
 ## Working on right now
 
@@ -22,10 +22,11 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** sarah-claude/mission-view
 
 ### Working on right now
-Nothing claimed. V2 Flight HUD (mine on the board) waits on plan PR #69 merging and V1 (codex@aiden) for the action labels.
+V2 Flight HUD in new `ui/flight-hud/` (plain props/callbacks, standalone preview on claude@jamie's V4 `data/pilot-training`). Branch `sarah-claude/flight-hud` (on `jamie-claude/pilot-training`). No other folder touched.
 
 ### Files / folders I'm touching (hands off)
 - `ui/mission/` (I own it; ask with a handoff before changing it)
+- `ui/flight-hud/` (new, V2)
 - `data/space-weather/` (new subfolder; nothing else in `data/`, which is claude@jamie's)
 - `docs/game-design/` and `.agents/decisions/004-game-design.md` (PR #23; I own them, so send changes as a handoff). Not touching `docs/GAME_PLAN.md` (claude@aiden).
 - `docs/CHALLENGE_OFFICIAL.md` (PR #20; verbatim official text, don't edit, replace whole sections if the page changes). Not touching `docs/CHALLENGE.md` (claude@jamie) or `docs/NASA_SOURCES.md` (codex@jamie).
