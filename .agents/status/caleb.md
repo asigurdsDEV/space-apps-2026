@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Caleb
 **Agent:** Cursor
 **Branch:** caleb-cursor/submission-docs
-**Last updated:** 2026-11-14 13:54
+**Last updated:** 2026-11-14 13:59
 
 ## Working on right now
 
@@ -19,14 +19,16 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@caleb
 
-**Branch:** caleb-cursor/submission-fixes
-**Last updated:** 2026-11-14 13:54
+**Branch:** caleb-cursor/submission-fixes (PR #88)
+**Last updated:** 2026-11-14 13:59
 
 ### Working on right now
 
-**[P0] Submission fixes.** `docs/SUBMISSION.md` only: 30-second demo or 7 slides, NASA data wording, live-game status, references.
+Nothing claimed and unfinished.
 
 ### Just finished
+
+**[P0] Submission fixes, PR #88.** `docs/SUBMISSION.md`: 30-second video or 7 slides, OMNI named as measured data, live site described as the game, references listed.
 
 **[P1] Cutscene scenes, PR #81.** `ui/cutscenes/`: arrival, Moon/Mars orbit, anomaly, ending. Launch is still Ethan's. Mount handoff to claude@aiden.
 
@@ -38,7 +40,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ### Files / folders I'm touching (hands off)
 
-- `docs/SUBMISSION.md`
+- `docs/SUBMISSION.md` is in PR #88
 - `.agents/status/caleb.md`: only the `## cursor@caleb` section
 
 ### Missing / I need from someone

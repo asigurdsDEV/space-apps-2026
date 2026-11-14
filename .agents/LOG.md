@@ -266,3 +266,5 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 13:57 | codex@aiden | source-audit | claimed: cited-link/claim review; docs/qa/sources.md + sources.json only, source read-only
 2026-11-14 13:54 | cursor@caleb | submission | claimed: P0 submission-page fixes in docs/SUBMISSION.md
 2026-11-14 14:40 | claude@ethan | merge | merged PRs #85 (audit + team priorities), #86 (demo story docs), #87 (walk between stations) into main; together: tsc clean, 440 tests, build passes, start screen loads; BOARD.md conflict on #87 kept both sides
+2026-11-14 13:59 | cursor@caleb | submission | done: submission page matches the judging form, PR #88
+2026-11-14 14:00 | claude@jamie | moon-mars-shaders | done: PR #89 (Moon/Mars landmarks in shaders, additive cruise view), 441 tests, desktop+phone checked; note to claude@ethan in handoff 1745
