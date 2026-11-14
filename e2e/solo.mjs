@@ -62,6 +62,8 @@ async function openBuilder(page, at, config, level) {
   if (!title.includes(config.title)) throw new Error(`the briefing is for "${title}", not "${config.title}"`)
   await page.getByRole('button', { name: 'Start designing' }).click()
   await page.locator('.mb').waitFor()
+  at('builder: close the first-visit tips')
+  await page.getByRole('button', { name: 'Skip tips' }).click()
 }
 
 /** Pick parts in the builder: a radio per single choice, the checkboxes for instruments. */
@@ -90,7 +92,12 @@ async function toResults(page, ms, players = [page]) {
   const end = Date.now() + ms
   while ((await page.locator('.mv-results').count()) === 0) {
     if (Date.now() > end) throw new Error(`no results after ${Math.round(ms / 1000)} s`)
-    for (const player of players) await player.locator('.mv-decision__option:enabled').first().click({ timeout: 500 }).catch(() => {})
+    for (const player of players) {
+      // A story cutscene covers the screen for a few seconds: skip it, as a player in a hurry would.
+      for (const button of [player.locator('.st-skip'), player.locator('.mv-decision__option:enabled').first()]) {
+        if (await button.count()) await button.click({ timeout: 500 }).catch(() => {})
+      }
+    }
     await page.waitForTimeout(250)
   }
 }
@@ -108,9 +115,14 @@ async function fly(page, at, config) {
   if (await go.isDisabled()) throw new Error(`the poll holds the launch: ${verdict}`)
   await go.click()
 
-  at('flight: switch to 60×')
+  at('launch: skip the 3D launch')
   const top = page.getByRole('button', { name: '60×' })
-  // On Hard a launch failure ends the mission at once, so the results can show instead of the flight.
+  const skip = page.locator('.s3d-launch').getByRole('button', { name: /^(Skip|Continue)$/ })
+  // On Hard a launch failure ends the mission at once, so the results can show instead of the launch and the flight.
+  await skip.or(page.locator('.mv-results')).first().waitFor()
+  if (await skip.isVisible()) await skip.click()
+
+  at('flight: switch to 60×')
   await top.or(page.locator('.mv-results')).first().waitFor()
   if (await top.isVisible()) await top.click()
 
