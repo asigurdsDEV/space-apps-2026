@@ -1,0 +1,71 @@
+/* Tooltips for <Term>. Prefer shared theme tokens; fallbacks keep the control readable before ui/theme is imported. */
+
+.learn-term {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+}
+
+.learn-term-trigger {
+  margin: 0;
+  padding: 0 0.15em;
+  border: none;
+  border-bottom: 1px dashed var(--game-accent, #2557c7);
+  border-radius: var(--game-radius-control, 0.35rem);
+  background: transparent;
+  color: var(--game-accent, #2557c7);
+  font: inherit;
+  font-weight: 650;
+  line-height: inherit;
+  cursor: help;
+  text-align: inherit;
+}
+
+.learn-term-trigger:hover,
+.learn-term-trigger:focus-visible {
+  background: var(--game-selected, #e1eaff);
+  outline: 3px solid var(--game-focus, #2557c7);
+  outline-offset: 2px;
+}
+
+.learn-term-tip {
+  position: absolute;
+  z-index: 30;
+  left: 0;
+  top: calc(100% + 0.35rem);
+  width: min(22rem, 70vw);
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--game-border, #75839a);
+  border-radius: var(--game-radius, 0.75rem);
+  background: var(--game-panel, #ffffff);
+  color: var(--game-text, #17243c);
+  font: 0.92rem/1.45 var(--game-font, system-ui, sans-serif);
+  font-weight: 450;
+  box-shadow: 0 8px 24px rgb(16 27 50 / 18%);
+  text-align: left;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.learn-term:hover .learn-term-tip,
+.learn-term:focus-within .learn-term-tip {
+  opacity: 1;
+  visibility: visible;
+}
+
+.learn-term-tip-title {
+  display: block;
+  margin-bottom: 0.2rem;
+  color: var(--game-text, #17243c);
+  font-weight: 700;
+}
+
+.learn-term-tip-body {
+  display: block;
+  color: var(--game-muted, #4b5c78);
+}
+
+.learn-term-missing {
+  border-bottom: 1px dotted var(--game-danger, #b32341);
+}
