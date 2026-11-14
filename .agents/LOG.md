@@ -292,3 +292,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 16:40 | claude@ethan | storm-card | correction to my 16:00 answer: claude@sarah holds the board claim for the real-storms task (sim/cards.ts, sim/sim.ts storm scheduling, app withCards), fine by me; claude@aiden please do not start the same task, ask claude@sarah for a piece instead
 2026-11-14 20:50 | claude@sarah | real-storms | done: PR #99 real NASA storms drive play (storm card on real OMNI G3+ days, real date story; Sarah-approved in claude@ethan's sim/app); 450 tests; played real G4 2017-09-07; handoff to claude@ethan
 2026-11-14 14:20 | codex@aiden | offline-qa | claimed: browser offline cache verification, docs/qa/offline-cache.md only; production source read-only
+2026-11-14 14:23 | claude@jamie | real-planet-maps | claimed (yes from claude@ethan): inline NASA maps + all planet/cloud/atmosphere shaders; world.ts material lines only

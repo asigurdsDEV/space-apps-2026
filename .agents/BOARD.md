@@ -45,7 +45,6 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 ## Missing / needed
 
-- claude@ethan: Jamie wants all planets extremely realistic. May claude@jamie (1) build small NASA maps into ui/scene3d (inline, offline-safe) and (2) take the Earth/cloud/atmosphere shaders? Handoff 20261114-1830 real-planet-maps — [found by claude@jamie]
 
 - Source audit PR #90: catalog references are background for exact game values; add Spirit completed-repair/SOHO longevity citations, reconcile conflicting GRAIL launch masses, add GOES launch-year evidence and glossary provenance. LRO 1,846 kg is supported by cited NSSDCA source. Owners: data claude@jamie, story claude@sarah, glossary cursor@kaipo; report/source-audit handoff contains evidence — [found by codex@aiden]
 
@@ -82,6 +81,9 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 ## In progress
 - [ ] (light) [P1] Browser verification of merged offline public-asset cache: fresh install, offline reload, lazy scenes and all flight GLBs; evidence only — docs/qa/offline-cache.md (new), source read-only — [codex@aiden]
+- [ ] (medium) [P0] Make the real NASA data drive play: storm card fires on real OMNI storm days (G3+) with the real date; app passes `weather_start` + `real_storms` — sim/cards.ts + sim/sim.ts (storm card only), app/App.tsx (`withCards` only), data/space-weather/ (new storms.json) — [claude@sarah] — **Sarah approved doing this in claude@ethan's sim/app** (Ethan at capacity); handoff to claude@ethan
+- [ ] (medium) [P1] Realistic planets from real NASA maps (Jamie's request): Earth (Blue Marble + night lights), Moon (LRO), Mars (Viking) inline in ui/scene3d/maps/ (< 250 kB, credits README), Earth/cloud/atmosphere + Moon/Mars shaders, procedural fallback — ui/scene3d/shaders.ts, ui/scene3d/maps/ (new), map wiring in world.ts — yes from claude@ethan (handoff 20261114-1830) — [claude@jamie]
+- [ ] (medium) [P1] More of the real sky (Ethan's request): the Moon seen from Earth orbit, Earth seen from lunar orbit, Phobos and Deimos at Mars, real axial tilts, each from real NASA images and numbers — ui/scene3d/world.ts (not shaders.ts or maps/: those are claude@jamie's for the real NASA maps, handoff 20261114-1830 answered yes) — branch `ethan-claude/real-sky` — [claude@ethan]
 - [ ] (heavy) [P1] V7 Integrate at a checkpoint chosen by existing owners: player-craft control/chase camera + one large scene + HUD; preserve published SpaceView and sim authority — ui/scene3d/ + app/ owner: claude@ethan; ui/mission/ owner: claude@sarah; cache/config owner: claude@aiden — needs: reviewed V1/V2/V4, optional V3; owner agreement on additive API; no current 3D work takeover — **claimed 15:25 by claude@ethan for the ui/scene3d/ + app/ part**, two PRs: V7a `ui/scene3d/flight/` (new folder: `FlightView`, player craft with chase camera, V4 targets, takes V1 intent, gives V2 `focus`), branch `ethan-claude/flight-view`; then V7b mount in `app/` (a "Flight training" button on the flight screen opens it over the mission with `<FlightHud>` + `<PilotInput>`; local training only, no sim commands) — [claude@ethan]
 - [ ] (light) [P1] Re-run the four-device multiplayer rehearsal once Host online and Join are on the live site. Fill docs/MULTIPLAYER_TEST.md again (venue wifi, then a phone hotspot if wifi fails) — docs/MULTIPLAYER_TEST.md — needs: app loop merged and Pages serving Start — owner: cursor@kaipo — [cursor@kaipo]
 

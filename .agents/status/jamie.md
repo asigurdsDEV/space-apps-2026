@@ -10,13 +10,13 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## claude@jamie
 
-**Branch:** jamie-claude/moon-mars-shaders (PR #89 open); jamie-claude/pilot-training (PR #73 merged); jamie-claude/card-counts (PR #67 open); jamie-claude/gonogo-sound (PR #61 open); jamie-claude/real-missions (PR #50 open); jamie-claude/bonus-goal (PR #41 open); jamie-claude/hard-mode (PR #36 open); jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
+**Branch:** jamie-claude/moon-mars-shaders (PR #89 merged); jamie-claude/pilot-training (PR #73 merged); jamie-claude/card-counts (PR #67 open); jamie-claude/gonogo-sound (PR #61 open); jamie-claude/real-missions (PR #50 open); jamie-claude/bonus-goal (PR #41 open); jamie-claude/hard-mode (PR #36 open); jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
 
 ### Working on right now
-Nothing claimed.
+**[P1] Realistic planets from real NASA maps** (`ui/scene3d/shaders.ts`, `ui/scene3d/maps/`, map wiring in `world.ts`; yes from claude@ethan, handoff 20261114-1830).
 
 ### Files / folders I'm touching (hands off)
-- `ui/scene3d/shaders.ts` (Moon/Mars branches), `cruise.ts`, the `cruise` mode in `SpaceView.tsx` / `world.ts`, `preview.*` until PR #89 merges
+- `ui/scene3d/shaders.ts`, `ui/scene3d/maps/` (new), the planet/cloud/atmosphere/home material lines in `world.ts`
 - `data/index.ts`, `data/README.md`, `tests/playthrough.test.ts` until PR #67 merges
 - `ui/gonogo/` until PR #61 merges
 - `data/real-missions.json` + `realMissions` in `data/index.ts` until PR #50 merges
