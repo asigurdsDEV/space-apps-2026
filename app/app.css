@@ -45,6 +45,23 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+/* A phone in an online room: crew menu, sound and Main menu fill the row, so the title gets its own. */
+@media (max-width: 560px) {
+  .app-bar {
+    flex-wrap: wrap;
+  }
+  .app-bar-title {
+    flex-basis: 100%;
+  }
+  /* The player's role is in the open menu too; without it the three buttons fit one row. */
+  .app-crew-mine {
+    display: none;
+  }
+}
+h1.app-bar-title {
+  margin: 0;
+  font-size: 1rem;
+}
 .app-notice {
   margin: 0;
   padding: var(--game-space-1) var(--game-space-2) var(--game-space-1) var(--game-space-4);
@@ -158,16 +175,20 @@ body {
 }
 
 /* ---------- under the start screen: play on one screen */
+/* Same width and side padding as ui/start's layout, so the panel lines up with the cards above it. */
 .app-same-screen {
+  max-width: 1120px;
+  box-sizing: content-box;
+  margin: 0 auto;
+  padding: 0 clamp(20px, 5vw, 72px) var(--game-space-8);
+}
+.app-same-screen > .game-panel {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
   gap: var(--game-space-4);
-  max-width: 1120px;
-  margin: 0 auto;
-  padding: var(--game-space-6) clamp(20px, 5vw, 72px) var(--game-space-8);
 }
-.app-same-screen > div {
+.app-same-screen .game-panel > div {
   flex: 1 1 260px;
 }
 .app-same-screen h2 {
@@ -178,7 +199,7 @@ body {
   margin: 0;
 }
 .app-same-screen label {
-  flex: 1 1 220px;
+  flex: 1 1 160px;
   font-size: 0.875rem;
   color: var(--game-muted);
 }
@@ -189,8 +210,24 @@ body {
   margin: 0 auto;
   padding: var(--game-space-6) var(--game-space-4) var(--game-space-8);
 }
-.app-poll:focus {
-  outline: none;
+
+/* ---------- over the builder: ui/tutorial's tips panel, inside the builder's side padding */
+/* ui/builder pads itself 24 px (16 on a phone) and is as wide as the page. */
+.app-tips {
+  padding: 24px 24px 0;
+}
+.app-tips .bt-root {
+  max-width: none;
+}
+/* ui/builder's budgets and Launch panel sticks to the bottom of a phone screen: keep a control
+   that takes keyboard focus above it. */
+@media (max-width: 800px) {
+  .app-tips {
+    padding: 16px 16px 0;
+  }
+  html {
+    scroll-padding-bottom: 220px;
+  }
 }
 
 /* ---------- under the builder: save, share, compare */

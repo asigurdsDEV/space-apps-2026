@@ -202,7 +202,9 @@ function eventPayloadOk(type: unknown, p: Obj): boolean {
     case 'decision_resolved':
       return isStr(p.decision_id, MAX_KEY_LENGTH) && isStr(p.card_id, MAX_KEY_LENGTH) && isStr(p.option_id, MAX_KEY_LENGTH) && isStr(p.message)
     default:
-      return false
+      // CONTRACTS rule 7: a new event type is an additive change, so it must not stop the whole
+      // `state` message. shortcut: only a flat payload passes; an event with a nested payload needs its own case above.
+      return isStr(type, MAX_KEY_LENGTH) && type !== '' && isRecord(p, isParamValue)
   }
 }
 
