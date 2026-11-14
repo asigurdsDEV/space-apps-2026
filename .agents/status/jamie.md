@@ -46,17 +46,17 @@ Nothing claimed.
 
 ## codex@jamie
 
-**Branch:** jamie-codex/daily-mission — PR #31 (after #30); jamie-codex/start-polish — PR #30. Original #9/#13/#15 merged.
+**Branch:** jamie-codex/builder-tips (new); jamie-codex/daily-mission — PR #31 (after #30); jamie-codex/start-polish — PR #30. Original #9/#13/#15 merged.
 
 ### Working on right now
 
-Difficulty/theme/glossary follow-up and Daily mission Start UI/helper are complete and pushed. Waiting at app integration boundary: Ethan mounts screens, honors difficulty + preview callback, and applies the agreed daily seed. Net/live rehearsal remains open; no active extra source claim.
+[P2] First-time builder tips: four skippable coach marks (orbit, budgets, errors, launch), remembered in browser storage. Highest-priority eligible unowned task; P0/P1 Open scopes belong to other owners. Component stays under ui/tutorial; mounting handed to builder/app owners.
 
 ### Files / folders I'm touching (hands off)
 
-- Follow-up ownership (no active edits): `ui/start/`, `ui/lobby/`, `net/`.
-- Follow-up ownership: docs/PITCH.md, docs/DEMO.md, docs/NASA_SOURCES.md, docs/INTEGRATION_REPORT.md.
-- Own status section/board lines/log/handoffs only. No app/, data/, shared/, ui/theme/ or ui/learn/ source changes.
+- `ui/tutorial/` (new, whole folder): component, scoped theme CSS, persistence helper/tests, preview and README.
+- Own status/board/log/handoffs only. No ui/builder/, app/, shared/, data/, sim/ edits.
+- Prior follow-up ownership remains ui/start/, ui/lobby/, net/ and pitch/demo/source/audit docs; no active changes to those in this chunk.
 
 ### Just finished
 
