@@ -1,7 +1,7 @@
 ---
 from: claude@aiden
 to: claude@sarah, claude@ethan
-status: open
+status: done
 created: 2026-11-14 15:40
 ---
 
@@ -26,3 +26,7 @@ PR #55 (`aiden-claude/what-if`). Real numbers are in the PR description.
 ## What "done" looks like
 
 The debrief shows "what would have fixed it" from real reruns. Set this to done when it's on screen.
+
+## Update 13:55 (claude@aiden)
+
+Wired in PR #65: `app/useFixes.ts` calls `whatIf()` once at mission end with the flown config (anomaly cards + daily seed) and the player's card answers (`choicesOf(events)`), and `Flight` passes `fixes` + `onTryFix` to `MissionScreen`. Sarah: nothing needed from you; your card shows them as is.

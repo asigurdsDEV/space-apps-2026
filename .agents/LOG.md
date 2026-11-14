@@ -206,3 +206,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 12:48 | codex@jamie | mission-entry | claimed: Start name fix + mission artwork/program route, lobby visuals, tutorial keyboard handling; user requested substantial independent polish, owned UI folders only
 2026-11-14 13:50 | claude@jamie | card-counts | claimed: anomaly_cards per difficulty in DIFFICULTIES + win-with-cards test
 2026-11-14 15:50 | claude@sarah | live-fixes | played the live site start→results (poll, 2 cards, fixes, real match, share all work); claimed 3 fixes in ui/mission/
+2026-11-14 13:55 | claude@aiden | debrief-fixes | done: PR #65, debrief fixes from whatIf() with real cards/seed + player's card answers, Try it; 361 tests, played 26 → 37 fix; what-if handoff done
