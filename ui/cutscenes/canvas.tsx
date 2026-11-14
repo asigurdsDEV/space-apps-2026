@@ -101,6 +101,8 @@ function makeShot(kind: CutsceneSceneId, body: 'moon' | 'mars', scene: THREE.Sce
   if (kind === 'arrival') return arrival(scene, camera)
   if (kind === 'orbit') return orbit(scene, camera, body)
   if (kind === 'anomaly') return anomaly(scene, camera)
+  if (kind === 'enter-craft') return transit(scene, camera, true)
+  if (kind === 'return-control') return transit(scene, camera, false)
   return ending(scene, camera, kind === 'ending-success')
 }
 
@@ -231,6 +233,79 @@ function anomaly(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Shot {
       craft.rotation.y = 0.7 + progress * 0.25
       camera.position.set(0.35, 0.7, lerp(distance(aspect, 3.2), distance(aspect, 2.3), progress))
       camera.lookAt(0, 0, 0)
+    },
+    dispose() {},
+  }
+}
+
+/** Hall in front of the wall, walk-in spacecraft behind the doorway. */
+function transit(scene: THREE.Scene, camera: THREE.PerspectiveCamera, entering: boolean): Shot {
+  scene.background = new THREE.Color(0x070b14)
+  lights(scene, 0xd7e4ff, 0x8aa4d4)
+  scene.add(new THREE.Mesh(new THREE.BoxGeometry(16, 0.12, 18), new THREE.MeshStandardMaterial({ color: 0x141a28, roughness: 0.9 })))
+  const wallMat = new THREE.MeshStandardMaterial({ color: 0x101622, roughness: 0.8 })
+  for (const x of [-5.6, 5.6]) {
+    const wall = new THREE.Mesh(new THREE.BoxGeometry(4.8, 6, 0.2), wallMat)
+    wall.position.set(x, 2.4, -4.2)
+    scene.add(wall)
+  }
+  const lintel = new THREE.Mesh(new THREE.BoxGeometry(6.4, 2.2, 0.2), wallMat)
+  lintel.position.set(0, 4.3, -4.2)
+  scene.add(lintel)
+  const screens: THREE.Mesh[] = []
+  ;[0x1a6bff, 0x3ec6c6, 0x7fd0ff].forEach((color, i) => {
+    const screen = new THREE.Mesh(
+      new THREE.PlaneGeometry(1.15, 0.7),
+      new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.45, roughness: 0.4 }),
+    )
+    screen.position.set(-5.5 + i * 1.35, 3.3, -4.05)
+    scene.add(screen)
+    screens.push(screen)
+  })
+  for (const x of [-2.4, 2.4]) {
+    const desk = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.72, 0.7), new THREE.MeshStandardMaterial({ color: 0x1c2436, metalness: 0.2, roughness: 0.6 }))
+    desk.position.set(x, 0.36, 0.4)
+    scene.add(desk)
+  }
+  const bay = new THREE.Mesh(new THREE.BoxGeometry(7.2, 3.4, 5.2), new THREE.MeshStandardMaterial({ color: 0x0c1018, roughness: 0.75, side: THREE.BackSide }))
+  bay.position.set(0, 1.7, -7.4)
+  scene.add(bay)
+  const modules: THREE.Mesh[] = []
+  const moduleColors = [0xf0c14a, 0x3ecf8e, 0x4aa3ff, 0xe8eef8]
+  moduleColors.forEach((color, i) => {
+    const side = i < 2 ? -1 : 1
+    const module = new THREE.Mesh(
+      new THREE.BoxGeometry(0.18, 0.7, 0.9),
+      new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.25, metalness: 0.35, roughness: 0.45 }),
+    )
+    module.position.set(side * 2.4, 1.55, -6.6 - (i % 2) * 1.3)
+    scene.add(module)
+    modules.push(module)
+  })
+  const glass = new THREE.Mesh(
+    new THREE.CircleGeometry(0.72, 32),
+    new THREE.MeshStandardMaterial({ color: 0x163a6b, emissive: 0x2f6fd0, emissiveIntensity: 0.7, roughness: 0.2 }),
+  )
+  glass.position.set(0, 1.7, -9.95)
+  scene.add(glass)
+  const earth = new THREE.Mesh(new THREE.SphereGeometry(0.28, 24, 16), new THREE.MeshStandardMaterial({ color: 0x3b78d0, roughness: 0.55 }))
+  earth.position.set(0.12, 1.78, -9.7)
+  scene.add(earth)
+  return {
+    update(progress, _elapsed, aspect) {
+      const travel = entering ? progress : 1 - progress
+      const z = lerp(distance(aspect, 4.6), -6.2, travel)
+      camera.position.set(0, lerp(1.7, 1.6, travel), z)
+      camera.lookAt(0, 1.65, lerp(-4.2, -9.6, travel))
+      screens.forEach((screen, i) => {
+        const mat = screen.material as THREE.MeshStandardMaterial
+        mat.emissiveIntensity = 0.3 + 0.25 * (0.5 + 0.5 * Math.sin(progress * 6 + i))
+      })
+      modules.forEach((module, i) => {
+        const mat = module.material as THREE.MeshStandardMaterial
+        mat.emissiveIntensity = 0.15 + travel * (0.2 + 0.15 * (i % 2))
+      })
+      earth.rotation.y = progress * 0.8
     },
     dispose() {},
   }
