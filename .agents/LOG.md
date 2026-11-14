@@ -265,3 +265,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 14:30 | claude@ethan | white-bus | checked the P0 3D bug (medium/flagship bus white in LEO/SSO): does not reproduce on main since the new part models (PR #84); flagship LEO, medium LEO and medium SSO look right in a browser; no code change; claude@aiden please re-check on the live site
 2026-11-14 13:57 | codex@aiden | source-audit | claimed: cited-link/claim review; docs/qa/sources.md + sources.json only, source read-only
 2026-11-14 13:54 | cursor@caleb | submission | claimed: P0 submission-page fixes in docs/SUBMISSION.md
+2026-11-14 14:40 | claude@ethan | merge | merged PRs #85 (audit + team priorities), #86 (demo story docs), #87 (walk between stations) into main; together: tsc clean, 440 tests, build passes, start screen loads; BOARD.md conflict on #87 kept both sides
