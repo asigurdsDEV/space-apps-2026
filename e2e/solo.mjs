@@ -102,6 +102,25 @@ async function toResults(page, ms, players = [page]) {
   }
 }
 
+/**
+ * Switch the flight to its fastest speed. A real storm day can put an anomaly card on day 1,
+ * and the speed buttons are off until it is answered, so cards are answered first.
+ */
+async function fastest(page, players = [page]) {
+  const top = page.locator('.mv-speeds button').last()
+  for (let tries = 0; tries < 40; tries++) {
+    for (const player of players) {
+      const option = player.locator('.mv-decision__option:enabled').first()
+      if (await option.count()) await option.click({ timeout: 500 }).catch(() => {})
+    }
+    if (!(await top.isVisible())) return // straight to the results (a launch failure on Hard)
+    // Short tries: a card can turn the buttons off between the check and the click.
+    if ((await top.isEnabled()) && (await top.click({ timeout: 500 }).then(() => true, () => false))) return
+    await page.waitForTimeout(250)
+  }
+  throw new Error('the speed buttons stayed off')
+}
+
 /** Launch mission -> GO / NO-GO poll -> Launch -> 60x -> results. Returns what the results screen says. */
 async function fly(page, at, config) {
   at('builder: press Launch mission')
@@ -124,7 +143,7 @@ async function fly(page, at, config) {
 
   at('flight: switch to 60×')
   await top.or(page.locator('.mv-results')).first().waitFor()
-  if (await top.isVisible()) await top.click()
+  await fastest(page)
 
   at('flight: wait for the results')
   // 60× is 60 mission days a second. Three times that, plus half a minute, before giving up.

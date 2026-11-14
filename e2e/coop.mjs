@@ -160,6 +160,25 @@ async function launch(page) {
 }
 
 /**
+ * Switch the flight to its fastest speed. A real storm day can put an anomaly card on day 1,
+ * and the speed buttons are off until it is answered, so cards are answered first.
+ */
+async function fastest(page, players = [page]) {
+  const top = page.locator('.mv-speeds button').last()
+  for (let tries = 0; tries < 40; tries++) {
+    for (const player of players) {
+      const option = player.locator('.mv-decision__option:enabled').first()
+      if (await option.count()) await option.click({ timeout: 500 }).catch(() => {})
+    }
+    if (!(await top.isVisible())) return // straight to the results (a launch failure on Hard)
+    // Short tries: a card can turn the buttons off between the check and the click.
+    if ((await top.isEnabled()) && (await top.click({ timeout: 500 }).then(() => true, () => false))) return
+    await page.waitForTimeout(250)
+  }
+  throw new Error('the speed buttons stayed off')
+}
+
+/**
  * Wait for the results on `page`. An anomaly card stops the mission clock until it is answered,
  * so every card that shows is answered with its first option, by whichever of `players` may answer it.
  */
@@ -339,7 +358,7 @@ await check('flight: the mission keeps running for the guest while the host’s 
 })
 
 await check('results: both players reach the same results', async () => {
-  await host.locator('.mv-speeds button').last().click()
+  await fastest(host, [host, guest])
   await toResults(host, 120_000, [host, guest])
   await guest.waitForSelector('.mv-results', { timeout: 15_000 })
   const results = [await result(host), await result(guest)]
@@ -439,7 +458,7 @@ await check(
   'one screen: the crew launches and reaches the results',
   async () => {
     await launch(local)
-    await local.locator('.mv-speeds button').last().click()
+    await fastest(local)
     await toResults(local, 120_000)
     return result(local)
   },
