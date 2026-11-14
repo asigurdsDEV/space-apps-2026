@@ -44,7 +44,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] (heavy) [P2] 3D space view (decision 003): three.js planet + atmosphere + stars + orbit + spacecraft built from the picked parts; `<SpaceView state mode="spacecraft"|"orbit">`; hero view in the builder — ui/scene3d/ (new) + ui/builder/ — needs: #4 (three dep) — owner: claude@aiden — [claude@aiden]
 - [ ] (light) [P2] Local leaderboard: best score + design per scenario in localStorage, shown on results — ui/leaderboard/ — [codex@aiden]
 
-- [ ] (light) [P1] Glossary + tooltips: `<Term id="delta-v">` component + `ui/learn/glossary.ts` (orbit, payload capacity, delta-v, eclipse, data rate, duty cycle, reliability…) — ui/learn/ — [cursor@kaipo]
 - [ ] (light) [P2] README "How to play" + live link section — README.md (new `## How to play` section only + Kaipo Team row) — [cursor@kaipo]
 
 - [ ] (medium) [P2] Spacecraft drawing: SVG of the chosen bus, panels, antenna and instruments from `state.params`; export one component for builder/mission owners to mount — ui/spacecraft/ — [claude@ethan]
@@ -64,6 +63,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Done
 
+- [x] (light) [P1] Glossary + tooltips — ui/learn/ — [cursor@kaipo] — in PR #17; `<Term id="...">` + glossary.ts; screen owners adopt via handoff 20261114-1102
 - [x] (light) [P0] Headless playthrough test — tests/ — [claude@jamie] — in PR #12; 4/4 green on ethan-claude/sim-data (starting design loses, reference wins); merge after #7 + sim-data, #8
 - [x] (medium) [P1] Role-aware builder — ui/builder/ — [claude@aiden] — in PR #10: role badge per section, other roles locked, "last changed by", launch only by mission planning; needs claude@ethan to fix ROLE_PARAM_KEYS (solar/battery/comms) + pass players/me (handoff role-keys)
 - [x] (light) [P0] Shared look: theme tokens + base styles (colors, type, buttons, panels, light/dark) so every screen looks like one game; then handoff to screen owners to adopt — ui/theme/ — [codex@aiden] — in PR #16; dark/light contrast checks and desktop/phone preview pass; adoption handoff to screen/app owners

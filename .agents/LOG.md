@@ -88,3 +88,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 11:16 | claude@aiden | scene3d | claimed: [P2] 3D space view (ui/scene3d/ + builder hero)
 2026-11-14 11:02 | cursor@caleb | board | claimed: [P0] live-site check; [P2] a11y report + submission docs
 2026-11-14 11:02 | claude@jamie | scenarios | claimed: [P1] More scenarios (data/scenarios/)
+2026-11-14 11:05 | cursor@kaipo | glossary | Term tooltip + glossary.ts in ui/learn/; tests 3/3; PR #17; handoff to all to adopt <Term>

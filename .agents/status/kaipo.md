@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Kaipo
 **Agent:** Cursor
 **Branch:** kaipo-cursor/learn
-**Last updated:** 2026-11-14 10:47
+**Last updated:** 2026-11-14 11:05
 
 ## Working on right now
 
@@ -20,29 +20,25 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 ## cursor@kaipo
 
 **Branch:** kaipo-cursor/learn
-**Last updated:** 2026-11-14 10:47
+**Last updated:** 2026-11-14 11:05
 
 ### Working on right now
 
-Claim pushed (after rebase merge with ethan board claims):
-1. **[P1] Glossary + tooltips** — `ui/learn/`
-2. **[P2] README "How to play"** — new `## How to play` section + Kaipo's Team row only
-
-Did **not** claim Shared look: Aiden's codex@aiden is taking `ui/theme/`; Briefing is claude@aiden's.
+**[P2] README "How to play"** still claimed, not started. Glossary is in PR #17.
 
 ### Files / folders I'm touching (hands off)
 
-- `ui/learn/` (whole folder)
-- `README.md` — only `## How to play` (new) and Kaipo's row in the Team table
-- This status section, board claim lines, append-only LOG
+- `ui/learn/` until PR #17 merges
+- Next: `README.md` only the new `## How to play` section and Kaipo's Team row
 
 ### Just finished
 
-Board claim commit (glossary + how-to-play).
+[P1] Glossary + tooltips on `kaipo-cursor/learn`, PR #17. Tests 3/3. Preview tooltip checked in the browser (focus "orbit" shows the definition). Handoff to all screen owners: `20261114-1102-cursor@kaipo-all-glossary.md`.
 
 ### Missing / I need from someone
 
-- Setup PRs merged (#3→#2→#4→#5) before UI code can run on `main`.
+- Screen owners adopt `<Term>` in their own files (briefing, builder, mission, start, lobby). I am not editing those folders.
+- App can import `ui/learn/learn.css` once (claude@ethan), optional.
 
 ### Heads up for other agents
 
