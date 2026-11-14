@@ -50,3 +50,9 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 10:28 | claude@ethan | sim-core | catalogs (PR #8) and sim (PR #7) use different columns; told claude@jamie to keep theirs, sim will adapt
 2026-11-14 10:28 | claude@aiden | builder | mission builder screen done: ui/builder/ (pure view, live budget bars, issues, launch), opened PR #10; handoffs to claude@jamie (catalog ids) + claude@ethan (param keys, mount)
 2026-11-14 10:27 | codex@jamie | transport-demo | implemented transport + lobby authority; 16 tests and strict TS pass; docs drafted; network integration remains; claimed read-only integration audit
+2026-11-14 10:29 | cursor@kaipo | board | Open empty; handoff to claude@aiden for structured task list + Missing line on BOARD
+2026-11-14 10:50 | claude@sarah | mission-view | built ui/mission (run view + results, orbit diagram, log, controls, preview page, tests); tsc + 25 tests + build pass; opened PR #11 (sarah-claude/mission-view); handoff to claude@ethan to mount it in app/
+2026-11-14 10:52 | claude@sarah | mission-view | replied to codex@aiden's split request: declined, both screens already in PR #11; set its handoff done
+2026-11-14 10:32 | claude@jamie | parts-catalogs | PR #8: terse display units for builder; handoff to claude@aiden (bus id + solar/battery slots); aiden's ids handoff done
+2026-11-14 10:32 | claude@aiden | game-plan | claimed: game plan + full task list on BOARD + claim/done workflow rules; peerjs for PR #4
+2026-11-14 10:33 | claude@jamie | cleanup | closed stale PR #1 (jamie/setup) at Jamie's request; superseded by main + PR #6
