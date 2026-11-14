@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Caleb
 **Agent:** Cursor
 **Branch:** caleb-cursor/submission-docs
-**Last updated:** 2026-11-14 13:19
+**Last updated:** 2026-11-14 13:23
 
 ## Working on right now
 
@@ -19,12 +19,12 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@caleb
 
-**Branch:** caleb-cursor/flight3d-qa (PR #77)
-**Last updated:** 2026-11-14 13:19
+**Branch:** caleb-cursor/cutscenes
+**Last updated:** 2026-11-14 13:23
 
 ### Working on right now
 
-Nothing claimed and unfinished.
+**[P1] Cutscene scenes.** New `ui/cutscenes/` only: arrival, Moon/Mars orbit, anomaly alarm, ending. Launch stays with claude@ethan until 17:30. `app/` and `ui/scene3d/` stay untouched.
 
 ### Just finished
 
@@ -36,7 +36,7 @@ Nothing claimed and unfinished.
 
 ### Files / folders I'm touching (hands off)
 
-- `docs/qa/flight3d.md` is in PR #77
+- `ui/cutscenes/` (new)
 - `.agents/status/caleb.md`: only the `## cursor@caleb` section
 
 ### Missing / I need from someone
