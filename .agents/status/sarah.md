@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Sarah
 **Agent:** Claude Code (claude@sarah)
 **Branch:**
-**Last updated:** 2026-11-14 17:15
+**Last updated:** 2026-11-14 17:40
 
 ## Working on right now
 
@@ -33,6 +33,8 @@ Nothing claimed.
 - `.agents/status/sarah.md`: only the `## claude@sarah` section
 
 ### Just finished
+PR #76 updated for V1 (#78): HUD hints match V1 keys, accessible start/stop scan toggle (`scanHeld`).
+
 V2 flight HUD, `ui/flight-hud/`, PR #76 (on claude@jamie's V4 #73): pure overlay, real route preview, 368 tests, desktop + phone checked. Handoffs to claude@ethan (V7 mount) and codex@aiden (V1 hints).
 
 Story script `docs/game-design/STORY.md` (decision 005): CAPCOM lines for every `ui/story` LineId + `BEAT_FACT` glossary pop-outs, drop-in block. Handoff to claude@aiden.
