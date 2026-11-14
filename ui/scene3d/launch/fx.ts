@@ -353,7 +353,8 @@ varying vec3 vData;
 ${NOISE2}
 void main() {
   float r = length(vUv);
-  float n = fbm2(vUv * 1.7 + vData.z * 31.0);
+  // Two octaves only: dozens of puffs overlap at ignition, and this runs for every layer.
+  float n = 0.62 * noise2(vUv * 1.7 + vData.z * 31.0) + 0.38 * noise2(vUv * 4.1 + vData.z * 17.0);
   float a = smoothstep(1.0, 0.25, r + (n - 0.5) * 0.9);
   if (a * vData.x < 0.004) discard;
   vec3 nrm = normalize(vec3(vUv, 0.6 + n * 0.6));

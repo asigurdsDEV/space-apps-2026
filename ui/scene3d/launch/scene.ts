@@ -364,7 +364,12 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
         shake = 0.45
         break
       case 'failure':
-        basePos(missionTime(timeline, stage.start + 0.36 * (stage.end - stage.start)), target).y += H * 0.4
+        // Follow the rocket until the flight ends, then hold on the spot.
+        if (p < 0.36) onAxis(0.4, target)
+        else {
+          const m = missionTime(timeline, stage.start + 0.36 * (stage.end - stage.start))
+          basePos(m, target).add(tmp.set(Math.sin(tiltAt(m)), Math.cos(tiltAt(m)), 0).multiplyScalar(0.4 * H))
+        }
         eye.copy(target).add(tmp.set(1.5 * H, -1.2 * H, lerp(4.5, 6.5, p) * H))
         fov = 40
         break
@@ -465,7 +470,7 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
       if (thrust > 0 || id === 'failure' || met > 0) {
         // Exhaust trail: puffs left at fixed spots along the path, growing as they age.
         const from = air ? 5 : 0.3
-        const gap = W * 3.2
+        const gap = W * 1.6
         const head = id === 'failure' ? Math.min(met, missionTime(timeline, stage.start + 0.16 * (stage.end - stage.start))) : met
         if (head > from) {
           const s0 = pathS(head) - H * 0.55
@@ -477,7 +482,7 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
             const m = metAtPath(s, from, head)
             const age = met - m + 0.05
             basePos(m, p3)
-            const size = W * (2.2 + 4.5 * Math.sqrt(age)) * (0.8 + 0.4 * hash(first - j))
+            const size = W * (3 + 4.5 * Math.sqrt(age)) * (0.8 + 0.4 * hash(first - j))
             p3.x += (hash(first - j + 0.3) - 0.5) * size * 0.5
             p3.z += (hash(first - j + 0.6) - 0.5) * size * 0.5
             puffs.add(p3.x, p3.y, p3.z, size, 0.6 * Math.min(1, j / 3 + 0.2) * (1 - j / 70) * lerp(1, 0.55, thin), Math.exp(-age * 5) * 0.6, hash(first - j + 0.9))
@@ -524,7 +529,8 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
   let ended = false
   let last = 0
   function frame(stamp: number) {
-    const dt = Math.min((stamp - last) / 1000, 0.1)
+    // Capped so a tab switch does not skip a shot; high enough that a slow phone still runs in real time.
+    const dt = Math.min((stamp - last) / 1000, 0.25)
     last = stamp
     time = Math.min(time + dt, timeline.duration)
     draw(time)

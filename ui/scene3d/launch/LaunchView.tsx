@@ -47,11 +47,13 @@ export function LaunchView({ state, onDone, failed = false, className, reducedMo
   const [noWebGL, setNoWebGL] = useState(false)
 
   const done = useRef(false)
+  const [isDone, setIsDone] = useState(false)
   const onDoneRef = useRef(onDone)
   onDoneRef.current = onDone
   const finish = useCallback(() => {
     if (done.current) return
     done.current = true
+    setIsDone(true)
     onDoneRef.current?.()
   }, [])
 
@@ -124,14 +126,14 @@ export function LaunchView({ state, onDone, failed = false, className, reducedMo
           {still ? (
             <>
               {index > 0 && <button type="button" className="s3d-launch-button" onClick={() => step(index - 1)}>Back</button>}
-              <button type="button" className="s3d-launch-button is-primary" onClick={() => (last ? finish() : step(index + 1))}>{last ? 'Continue' : 'Next'}</button>
+              {!(last && isDone) && <button type="button" className="s3d-launch-button is-primary" onClick={() => (last ? finish() : step(index + 1))}>{last ? 'Continue' : 'Next'}</button>}
             </>
           ) : ended ? (
             <button type="button" className="s3d-launch-button" onClick={replay}>Replay</button>
           ) : (
             <button type="button" className="s3d-launch-button" aria-pressed={!playing} onClick={() => setPlaying(!playing)}>{playing ? 'Pause' : 'Play'}</button>
           )}
-          {!(still && last) && !ended && <button type="button" className="s3d-launch-button" onClick={finish}>Skip</button>}
+          {!(still && last) && !isDone && <button type="button" className="s3d-launch-button" onClick={finish}>Skip</button>}
         </span>
       </div>
       <figcaption className="s3d-launch-caption">
