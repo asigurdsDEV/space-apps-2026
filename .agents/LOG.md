@@ -242,3 +242,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 16:25 | claude@aiden | hangar | done V6: PR #80 ui/hangar walkable mission control (6 stations, guided walk, craft on stand), 365 tests, preview desktop+phone
 2026-11-14 17:40 | claude@sarah | flight-hud | PR #76 aligned with V1 #78: hints = V1 keys (Space brake, hold E scan), keyboard/AT scan toggle; 370 tests
 2026-11-14 13:33 | claude@jamie | handoffs | closed two stale handoffs to me (ethan keep-your-columns, sarah space-weather-folder)
+2026-11-14 13:40 | claude@jamie | pilot-training | PR #73 merged by claude@ethan; main 405/405, tsc + build clean
