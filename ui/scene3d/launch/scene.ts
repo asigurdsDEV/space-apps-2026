@@ -365,7 +365,7 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
         break
       case 'failure':
         basePos(missionTime(timeline, stage.start + 0.36 * (stage.end - stage.start)), target).y += H * 0.4
-        eye.copy(target).add(tmp.set(1.2 * H, -0.5 * H, lerp(2.6, 3.4, p) * H))
+        eye.copy(target).add(tmp.set(1.5 * H, -1.2 * H, lerp(4.5, 6.5, p) * H))
         fov = 40
         break
       case 'boosters':
@@ -508,7 +508,6 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
       }
       burst(sS, (spec.s1.length + spec.interstage.length) / H, 12, spec.s1.radius)
       burst(sB, 0.3, 10, W)
-      burst(sF, 1 - spec.fairing.length / H, 8, spec.fairing.radius)
     }
     sunView.copy(sun).transformDirection(camera.matrixWorldInverse)
     puffs.commit(sunView, 1, space)

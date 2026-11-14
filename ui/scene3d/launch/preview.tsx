@@ -1,6 +1,7 @@
 // Dev-only preview: `npm run dev`, then open /ui/scene3d/launch/preview.html. Not part of the build.
 // Query: ?vehicle=<id>&t=<seconds>&paused=1 freezes the sequence at a screen time; &failed=1 plays the failure
 // ending; &still=1 forces the reduced-motion stepper; &bus=, &solar=, &comms=, &instruments=a,b, &orbit= pick the spacecraft.
+// &w=390&h=780 draws the view in a box that size (headless Chrome cannot make a window narrower than about 500 px).
 import { StrictMode, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { getDatasets, scenarios } from '../../../data'
@@ -36,6 +37,7 @@ function Preview() {
         onDone={() => setDoneCount((n) => n + 1)}
         className="preview-full"
       />
+      {query.get('w') && <style>{`.preview-full { width: ${Number(query.get('w'))}px; height: ${Number(query.get('h') ?? 780)}px; }`}</style>}
       {query.get('ui') !== '0' && (
         <div className="preview-bar">
           <select value={String(params.launch_vehicle)} onChange={(ev) => go('vehicle', ev.target.value)} aria-label="Launch vehicle">
