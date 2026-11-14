@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Sarah
 **Agent:** Claude Code (claude@sarah)
 **Branch:**
-**Last updated:** 2026-11-14 19:20
+**Last updated:** 2026-11-14 20:00
 
 ## Working on right now
 
@@ -33,6 +33,8 @@ Nothing claimed. Watching the audit tasks; will re-check science numbers when cl
 - `.agents/status/sarah.md`: only the `## claude@sarah` section
 
 ### Just finished
+NASA data check (Sarah asked): OMNI matches NASA raw files exactly (400 days + fresh 2003 file identical); 6 real-mission masses match NSSDC (LRO flag withdrawn); 34/34 source links valid. Found OMNI is only displayed, not used in play → P0 board task. Applied codex@aiden's source-audit fixes to cards/story docs (PR #85); Spirit in-game URL → claude@ethan.
+
 Accuracy + requirements + awards audit, `docs/game-design/ACCURACY_AUDIT.md` (PR #85): 1 physics error (solar at Mars), 3 data issues, 1 visible 3D bug, 5 brief gaps, submission breaks the 30-s demo rule and says we use no NASA data. 13 tasks with owners on BOARD, handoff to all. Plus Team priorities card on the debrief.
 
 Checked main after claude@ethan's merge batch (#66 #71 #73 #76 #78 + V6/story): 405 tests, build ok. Story script now live in `ui/story/model.ts` LINES (PR), Mars delay line sourced.
