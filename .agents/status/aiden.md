@@ -47,25 +47,27 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** aiden-codex/visual-overhaul-plan (claim on main first)
-**Last updated:** 2026-11-14 12:57
+**Branch:** main (done coordination); aiden-codex/visual-overhaul-plan (PR #69)
+**Last updated:** 2026-11-14 13:03
 
 ### Working on right now
 
-V0: create non-overlapping visual-overhaul work packages and a sourced import/asset plan. Aiden chose both spacecraft flight and walkable mission-control/hangar, starting with flight. Existing Three.js renderer, launch and part-model branches remain Ethan's; no source implementation is being taken over.
+V0 complete: interactive 3D overhaul plan and seven independent work packages published. PR #69 is open with a green build. No implementation scope claimed; V1 flight input is my proposed next independent task, not yet locked. Aiden chose both spacecraft flight and a walkable mission-control/hangar, starting with flight.
 
 ### Files / folders I'm touching (hands off)
 
-`docs/VISUAL_OVERHAUL.md` (new), `.agents/decisions/005-interactive-3d.md` (new), own status/BOARD entries, append-only LOG and own handoffs. All existing source, CONTRACTS.md, Claude's section/branches and Ethan's scene3d/app/sim/shared/e2e are read-only. Unrelated docs/CHALLENGE 2.md stays untouched.
+No active production source edits. PR #69 changes only `docs/VISUAL_OVERHAUL.md` and `.agents/decisions/005-interactive-3d.md`; own BOARD/status/log/handoffs on main. CONTRACTS.md, all Ethan source/branches, Claude section/branches, existing mission/start/lobby/tutorial/data source untouched. Unrelated docs/CHALLENGE 2.md left untouched.
 
 ### Just finished
 
-Live bundle index-Df1Hs8x_.js matches tested de0d869 build. Daily Moon ignores ordinary Hard picker: Normal budget $300M/goal75. Reference Daily win: 100 points, 3 stars, 730 days. After reload, regular Moon lower design: 69 points/0 stars, separate regular record. After another reload, lower Daily: current 69/0, saved Daily still 100/3 with original three instruments/high-gain dish. Expanded record fits 390px viewport with no horizontal overflow; console error log empty at inspection. 316/316 tests + typecheck/build pass. Exact steps and limitations in PR #56.
+Inspected current Three.js scene, procedural craft/planets, published SpaceView props, fly mounting and PWA asset listing. All six proposed imports (GLTFLoader, FlyControls, PointerLockControls, Raycaster, AnimationMixer, LoadingManager) resolve from installed dependencies; no npm change needed. Plan defines actual player-craft movement and observation/relay interactions, GLB asset pipeline with credits, 7 isolated scopes, a second-milestone hangar, load/device targets and additive owner-led integration. PR #69 CI build is green.
+
+Previous PR #56 Daily-record QA merged; matching score/design/stars survived reload and regular/Daily isolation. Last follow-up test/build run passed 331 tests; this planning PR's newer head is covered by its green CI, not a fresh manual gameplay check.
 
 ### Missing / I need from someone
 
-No Daily/record integration defect found. Ethan merged PR #56 with #52–#55; his merge receipt reports 331 tests/build pass. Live midnight rollover, blocked storage in browser, offline, venue co-op and newer recovery PR #53 are outside this check; Caleb/Kaipo/Claude retain their scopes. The former difficulty/Daily/GO-NO-GO/stars prop gaps are resolved on the tested revision.
+V1–V7 implementation remains. Ethan keeps renderer/launch/part models and chooses the integration checkpoint; no immediate interruption requested. Owners should claim isolated modules on BOARD before coding and publish their actual local exports. New scored piloting must go through sim/shared/CONTRACTS ownership; the current day-step simulator is not a real-time flight controller. New public GLBs need explicit cache/version handling by Claude's PWA owner.
 
 ### Heads up for other agents
 
-Readiness handoff 1156 is closed with observed assembled-app evidence. No app/shared/sim/data/UI source changes. Tests use existing coverage; no duplicate test harness/dependency added. Personal-best stars belong to the matching best-score design, not independent progression. Ethan remains merge coordinator; this QA does not certify later code changes.
+Seven tasks are Open with suggested owners, not silently claimed on their behalf. Codex Jamie's existing mission-entry graphics scope stays separate. Reuse Three.js and existing configurable models; model/texture candidate links are not downloaded assets. Source/API changes were deliberately left for the corresponding implementation tasks. Ethan remains merge coordinator.
