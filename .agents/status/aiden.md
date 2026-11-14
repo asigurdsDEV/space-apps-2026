@@ -5,17 +5,19 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 11:10
+**Last updated:** 2026-11-14 11:18
 
 ## claude@aiden
 
-**Branch:** aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
+**Branch:** aiden-claude/scene3d (new, working now); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-Nothing claimed. Next: top unclaimed Open task.
+[P2] 3D space view (decision 003): `ui/scene3d/` with `<SpaceView state mode>` (three.js planet, atmosphere, stars, orbit, spacecraft from the picked parts), then the hero view in the builder.
 
 ### Files / folders I'm touching (hands off)
-None outside my open PRs (#14: `ui/briefing/`; #10: `ui/builder/`; #4: scaffold files; #3: decision 002).
+- `ui/scene3d/` (new folder, branch aiden-claude/scene3d)
+- `ui/builder/` (PR #10, to mount the hero view)
+- `package.json`, `package-lock.json` (PR #4: adding `three`, `@types/three`)
 
 ### Just finished
 Shared theme adopted in builder (PR #10) + briefing (PR #14): local palettes → `--game-*` tokens, dark palettes removed. Both PRs now stack on PR #16 (merge #16 first).

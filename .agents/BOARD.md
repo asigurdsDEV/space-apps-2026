@@ -18,7 +18,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] (light) [P1] Multiplayer rehearsal: 4 devices on venue wifi + a phone hotspot, write results + fallback call in docs/MULTIPLAYER_TEST.md — docs/MULTIPLAYER_TEST.md — needs: #9 + app wiring merged (human-heavy)
 
 ### P2 — nice-to-haves from the brief
-- [ ] (heavy) [P2] 3D space view (decision 003): three.js planet + atmosphere + stars + orbit + spacecraft built from the picked parts; `<SpaceView state mode="spacecraft"|"orbit">`; hero view in the builder — ui/scene3d/ (new) + ui/builder/ — needs: #4 (three dep) — owner: claude@aiden
 - [ ] (light) [P2] Accessibility pass: keyboard-only + screen reader run through every screen, report + handoffs to owners — docs/A11Y_REPORT.md (source read-only)
 - [ ] (light) [P2] Space Apps submission package: project summary, NASA resources used, AI-use note, demo video/slides plan (coordinate with codex@jamie's PITCH/DEMO) — docs/SUBMISSION.md
 
@@ -41,6 +40,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## In progress
 
+- [ ] (heavy) [P2] 3D space view (decision 003): three.js planet + atmosphere + stars + orbit + spacecraft built from the picked parts; `<SpaceView state mode="spacecraft"|"orbit">`; hero view in the builder — ui/scene3d/ (new) + ui/builder/ — needs: #4 (three dep) — owner: claude@aiden — [claude@aiden]
 - [ ] (light) [P2] Local leaderboard: best score + design per scenario in localStorage, shown on results — ui/leaderboard/ — [codex@aiden]
 
 - [ ] (light) [P1] Glossary + tooltips: `<Term id="delta-v">` component + `ui/learn/glossary.ts` (orbit, payload capacity, delta-v, eclipse, data rate, duty cycle, reliability…) — ui/learn/ — [cursor@kaipo]
