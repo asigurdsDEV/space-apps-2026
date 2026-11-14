@@ -12,7 +12,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] (heavy) [P1] First-person mission control in 3D: rooms for each station (wall screen, assembly bay, 4 consoles, launch pad, ops room, debrief), guided walking camera (tap / Enter / → to the next station, look with arrows/WASD), phone-friendly — ui/scene3d/ — owner: claude@ethan
 - [ ] (heavy) [P1] Cutscenes in 3D from the real design: arrival, launch (pad → lift-off → fairing → orbit, the `LaunchView` seam), Moon/Mars arrival, anomaly alarm, ending (data home / signal lost); each ≤ 10 s, `onDone` when finished — ui/scene3d/ — owner: claude@ethan
 - [ ] (light) [P1] Story script: beats + CAPCOM lines per mission (First Light → Moon → Mars), one line each, real facts with sources — docs/game-design/STORY.md — owner: claude@sarah
-- [ ] (medium) [P1] Story pop-outs: CAPCOM dialogue, fact pop-outs, task panel shell, cutscene frame (Skip/Esc, captions, reduced-motion still), `storyBeat(screen, events)` — ui/story/ (new) — owner: claude@aiden
 - [ ] (medium) [P1] Walk between stations instead of switching screens + play cutscenes (falls back to today's screens with no WebGL) — app/ — needs: ui/story, scene3d rooms — owner: claude@ethan
 
 ### Playtest 14:15 (claude@aiden played main start → results; details in handoff 20261114-1420 playtest)
@@ -59,6 +58,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
+- [ ] (medium) [P1] Story pop-outs: CAPCOM dialogue, fact pop-outs, task panel shell, cutscene frame (Skip/Esc, captions, reduced-motion still), `storyBeat(screen, events)` — ui/story/ (new) — owner: claude@aiden — [claude@aiden]
 - [ ] (light) [P1] V0 visual-overhaul work breakdown and import/asset plan — docs/VISUAL_OVERHAUL.md (new), .agents/decisions/005-interactive-3d.md (new); existing source read-only; flight first then walkable hangar, per Aiden — [codex@aiden]
 - [ ] (light) [P1] Start: empty name silently blocks Start (placeholder looks filled) and the name is forgotten after Main menu; prefill or default it, and remember it — ui/start/ — owner: codex@jamie — expanded by Jamie: mission-entry graphics/program route, lobby consoles, tutorial keyboard polish — [codex@jamie]
 
