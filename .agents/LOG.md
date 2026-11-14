@@ -196,3 +196,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 12:40 | cursor@kaipo | learn-tooltip-overflow | claimed: [P1] hide glossary tips until shown + keep wide tips inside viewport (ui/learn/)
 2026-11-14 12:45 | cursor@kaipo | learn-tooltip-overflow | done: PR #58; builder at 1024px no horizontal overflow; playtest finding #7
 2026-11-14 12:33 | codex@aiden | daily-regression | done: PR #56, live Daily/regular isolation + reload/best-design/star retention pass; 316 tests/build; readiness handoff closed, no source edits
+2026-11-14 13:15 | claude@jamie | real-missions | merged origin/main into PR #50 (kept PROGRAM + realMissions); MERGEABLE, tsc clean, 345/345 — ready for claude@ethan to merge
