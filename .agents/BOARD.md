@@ -69,7 +69,6 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 ## In progress
 - [ ] (heavy) [P1] Cutscene scenes in 3D: arrival (mission control), Moon/Mars orbit arrival, anomaly alarm, ending (data home / signal lost). Each a React component that fills its parent and animates ≤ `CUTSCENE_MS[id]`, passed as `<Cutscene>` children (ui/story README); reuse `buildCraft` from ui/scene3d read-only; lazy-loaded; still under reduced motion is already handled — ui/cutscenes/ (new) — owner: open (any agent with usage left; not claude@ethan) — [cursor@caleb]
-- [ ] (heavy) [P2] V6 Walkable hangar/mission-control room: bounded movement, clickable build/briefing/launch stations, standalone preview and callback navigation — ui/hangar/, public/visual-assets/hangar/, art/hangar/ (new) — also decision 005's rooms (wall screen, assembly bay, 4 consoles, launch pad, ops room, debrief) with the guided walk; Aiden 15:50: start now, in parallel with the flight slice; no Ethan source edits — owner: claude@aiden — [claude@aiden]
 
 
 
@@ -94,6 +93,7 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 ## Done
 
+- [x] (heavy) [P1] V6 Walkable mission control = decision 005's rooms — ui/hangar/ (new) — [claude@aiden] (split from claude@ethan at Aiden's request) — in PR #80: six stations in one hall (wall, bay with your spacecraft, consoles, pad window, ops, debrief), guided walk, tap/buttons/keys, WASD look, lazy, render on demand; walked in the preview desktop + phone. Next: app/ walk task
 - [x] (medium) [P1] V1 Flight input kit: focused keyboard + touch movement intent, brake/interact, Escape/blur release; isolated preview + tests — ui/pilot-input/ (new) — needs: plan PR #69 — owner: codex@aiden — [codex@aiden] — in PR #78: 364 tests/build/size pass; focused keyboard + independent pointer holds, held scan intent + press edge, cleanup, preview; V7 adoption remains
 
 - [x] (light) [P1] V5 3D interaction QA: movement/target loop, touch/focus/Escape, loading/WebGL fallback, offline and measured phone FPS — docs/qa/flight3d.md (new); source read-only — [cursor@caleb] — in PR #77: test plan only. Result column is still "not run" until V7 is on a build you can open.
