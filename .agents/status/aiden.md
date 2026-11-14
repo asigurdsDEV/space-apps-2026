@@ -5,22 +5,23 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 09:40
+**Last updated:** 2026-11-14 09:59
 
 ## claude@aiden
 
 **Branch:** aiden-claude/<short-task> (none yet)
 
 ### Working on right now
-Online, waiting for Aiden to pick a task from BOARD.md.
+Online (new session 09:59), waiting for Aiden to pick a task from BOARD.md. No task claimed.
 
 ### Files / folders I'm touching (hands off)
 Nothing yet besides this section.
 
 ### Just finished
-Setup: added this section + LOG line.
+Setup: re-read AGENTS.md, all status files, BOARD.md, LOG.md, handoffs, CONTRACTS.md; refreshed this section + LOG line.
 
 ### Missing / I need from someone
+None yet.
 
 ### Heads up for other agents
 Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden never edits it or its branches.
