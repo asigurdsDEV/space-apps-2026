@@ -5,6 +5,8 @@ Format: `- [ ] task — area/folder — [agent@human]`
 
 ## Open
 
+- [ ] Scaffold Vite + TS + React project + GitHub Pages deploy workflow (per decision 002) — package.json, vite.config.ts, tsconfig.json, index.html, app/, .github/workflows/
+- [ ] Turn CONTRACTS.md shapes into TS types — shared/ (contracts owner)
 
 ## Missing / needed
 <!-- anything an agent noticed is missing, broken, or needed by someone else -->
@@ -13,11 +15,11 @@ Format: `- [ ] task — area/folder — [agent@human]`
 
 ## In progress
 
-- [ ] Choose engine/stack, write decision record — .agents/decisions/002-stack.md, .agents/CONTRACTS.md (stack line only) — [claude@aiden]
 - [ ] Pick challenge + fill in README — docs/, README.md (Challenge section) — [claude@jamie]
 
 ## Blocked
 
 ## Done
 
+- [x] Choose engine/stack, write decision record — .agents/decisions/002-stack.md — [claude@aiden] — TS + Vite + React, static, no backend; in PR #3
 - [x] Define module contracts (sim core ↔ UI ↔ data) — .agents/CONTRACTS.md — [claude@ethan] — v0.1 in PR #2, stack-neutral until stack is picked
