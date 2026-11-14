@@ -11,22 +11,23 @@
     "cost_usd": "USD",
     "data_rate_bps": "bps",
     "duty_cycle": "",
-    "science_value": "pts"
+    "science_value": "pts",
+    "build_months": "months"
   },
   "data": {
-    "columns": ["id", "name", "category", "mass_kg", "power_w", "cost_usd", "data_rate_bps", "duty_cycle", "science_value", "best_orbit", "min_bus_class", "description"],
+    "columns": ["id", "name", "category", "mass_kg", "power_w", "cost_usd", "data_rate_bps", "duty_cycle", "science_value", "best_orbit", "min_bus_class", "description", "build_months"],
     "rows": [
-      ["camera-basic", "Basic Earth camera", "imager", 0.4, 2.5, 150000, 2000000, 0.1, 10, "sso", "cubesat", "A small color camera. Takes pictures of Earth from orbit."],
-      ["magnetometer", "Magnetometer", "fields", 0.2, 0.5, 50000, 1000, 1, 5, "any", "cubesat", "Measures magnetic fields. Tiny, cheap, always on."],
-      ["radiation-detector", "Radiation detector", "particles", 0.5, 1, 100000, 10000, 1, 8, "lunar", "cubesat", "Counts high-energy particles. More interesting the farther you are from Earth's protective magnetic field."],
-      ["ir-spectrometer", "Infrared spectrometer", "spectrometer", 3, 6, 3000000, 5000000, 0.2, 30, "any", "cubesat", "Splits light into colors to find what things are made of: minerals, gases, ice."],
-      ["microwave-sounder", "Microwave sounder", "radiometer", 15, 30, 4000000, 500000, 1, 25, "sso", "smallsat", "Measures temperature and moisture through the atmosphere. Weather forecasters love these."],
-      ["laser-altimeter", "Laser altimeter", "altimeter", 12, 25, 6000000, 1000000, 0.5, 45, "lunar", "smallsat", "Fires laser pulses at the ground to map its height, perfect for mapping the Moon."],
-      ["multispectral-imager", "Multispectral imager", "imager", 25, 60, 8000000, 50000000, 0.15, 40, "sso", "smallsat", "A high-resolution camera that sees colors humans can't, used for crops, forests and water."],
-      ["subsurface-radar", "Subsurface sounding radar", "radar", 15, 120, 30000000, 1000000, 0.3, 60, "low-mars-orbit", "smallsat", "Sends radio pulses deep into the ground to find buried ice. Works best on Mars."],
-      ["weather-imager", "Geostationary weather imager", "imager", 100, 200, 40000000, 30000000, 1, 50, "geo", "medium", "Watches one whole side of Earth nonstop. Tracks storms as they form."],
-      ["uv-telescope", "Ultraviolet space telescope", "telescope", 150, 120, 60000000, 20000000, 0.5, 70, "any", "medium", "Looks at hot young stars and galaxies in light our atmosphere blocks."],
-      ["synthetic-aperture-radar", "Synthetic aperture radar", "radar", 300, 1500, 80000000, 200000000, 0.1, 80, "sso", "medium", "Sees through clouds and darkness by bouncing radio waves off the ground. Power hungry!"]
+      ["camera-basic", "Basic Earth camera", "imager", 0.4, 2.5, 150000, 2000000, 0.1, 10, "sso", "cubesat", "A small color camera. Takes pictures of Earth from orbit.", 3],
+      ["magnetometer", "Magnetometer", "fields", 0.2, 0.5, 50000, 1000, 1, 5, "any", "cubesat", "Measures magnetic fields. Tiny, cheap, always on.", 3],
+      ["radiation-detector", "Radiation detector", "particles", 0.5, 1, 100000, 10000, 1, 8, "lunar", "cubesat", "Counts high-energy particles. More interesting the farther you are from Earth's protective magnetic field.", 4],
+      ["ir-spectrometer", "Infrared spectrometer", "spectrometer", 3, 6, 3000000, 5000000, 0.2, 30, "any", "cubesat", "Splits light into colors to find what things are made of: minerals, gases, ice.", 12],
+      ["microwave-sounder", "Microwave sounder", "radiometer", 15, 30, 4000000, 500000, 1, 25, "sso", "smallsat", "Measures temperature and moisture through the atmosphere. Weather forecasters love these.", 18],
+      ["laser-altimeter", "Laser altimeter", "altimeter", 12, 25, 6000000, 1000000, 0.5, 45, "lunar", "smallsat", "Fires laser pulses at the ground to map its height, perfect for mapping the Moon.", 18],
+      ["multispectral-imager", "Multispectral imager", "imager", 25, 60, 8000000, 50000000, 0.15, 40, "sso", "smallsat", "A high-resolution camera that sees colors humans can't, used for crops, forests and water.", 18],
+      ["subsurface-radar", "Subsurface sounding radar", "radar", 15, 120, 30000000, 1000000, 0.3, 60, "low-mars-orbit", "smallsat", "Sends radio pulses deep into the ground to find buried ice. Works best on Mars.", 24],
+      ["weather-imager", "Geostationary weather imager", "imager", 100, 200, 40000000, 30000000, 1, 50, "geo", "medium", "Watches one whole side of Earth nonstop. Tracks storms as they form.", 30],
+      ["uv-telescope", "Ultraviolet space telescope", "telescope", 150, 120, 60000000, 20000000, 0.5, 70, "any", "medium", "Looks at hot young stars and galaxies in light our atmosphere blocks.", 36],
+      ["synthetic-aperture-radar", "Synthetic aperture radar", "radar", 300, 1500, 80000000, 200000000, 0.1, 80, "sso", "medium", "Sees through clouds and darkness by bouncing radio waves off the ground. Power hungry!", 36]
     ]
   }
 }

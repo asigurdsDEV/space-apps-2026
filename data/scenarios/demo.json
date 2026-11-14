@@ -16,6 +16,7 @@
     "objective_text": "Photograph Earth from orbit and send home enough data to reach the science goal within one year, without going over budget.",
     "bonus_goal": "no_data_lost",
     "budget_usd": 8000000,
+    "deadline_months": 18,
     "target_science_score": 30,
     "mission_duration_s": 31536000,
     "launch_vehicle": "rideshare",
