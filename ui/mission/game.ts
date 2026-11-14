@@ -135,17 +135,18 @@ export interface RealMission {
 }
 
 /**
- * The real mission most like the player's (GAME_DESIGN.md §4.4): same body first, then same orbit
- * class, then same objective, then the closest launch mass on a log scale. Null if no body matches.
+ * The real mission most like the player's (GAME_DESIGN.md §4.4). Same body is required; then the
+ * size class counts most (each 10× of launch mass apart = 1), an orbit mismatch costs 1 and an
+ * objective mismatch 0.5, so a CubeSat never matches a 5-tonne flagship. Null if no body matches.
  */
 export function matchMission(
   missions: readonly RealMission[],
   mine: { body: string; orbit?: string; objective?: string; mass_kg: number },
 ): RealMission | null {
-  const logMass = Math.log(Math.max(1, mine.mass_kg))
+  const logMass = Math.log10(Math.max(1, mine.mass_kg))
   const rank = (m: RealMission) =>
-    (m.orbit_class === mine.orbit ? 0 : 2) +
-    (m.objective === mine.objective ? 0 : 1) +
-    Math.min(0.99, Math.abs(Math.log(Math.max(1, Number(m.mass_kg) || 1)) - logMass) / 10)
+    Math.abs(Math.log10(Math.max(1, Number(m.mass_kg) || 1)) - logMass) +
+    (m.orbit_class === mine.orbit ? 0 : 1) +
+    (m.objective === mine.objective ? 0 : 0.5)
   return missions.filter((m) => m.body === mine.body).sort((a, b) => rank(a) - rank(b))[0] ?? null
 }

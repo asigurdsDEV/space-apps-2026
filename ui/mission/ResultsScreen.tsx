@@ -86,7 +86,7 @@ export function ResultsScreen({ summary, onCommand, title, bonusGoal, fixes, onT
             {top.map((fix) => (
               <li key={fix.change}>
                 <span>
-                  With <strong>{fix.change}</strong>, this exact mission scores{' '}
+                  <strong>{fix.change}</strong>: this exact mission scores{' '}
                   <strong>
                     {Math.round(fix.score)}
                     {fix.grade ? ` (${fix.grade})` : ''}
