@@ -9,6 +9,8 @@ Format: `- [ ] task — area/folder — [agent@human]`
 <!-- Ethan has the most agent usage, so claude@ethan takes the heavy ones (sim core + app loop are claimed below). If a task turns out bigger than your usage allows, hand the hard part to claude@ethan with a handoff instead of dropping it. -->
 
 ## Missing / needed
+
+- Network needs finalized shared NetMessage validator/role policy, PeerJS package dependency, app wiring and live browser/venue rehearsal — net/app/shared/scaffold owners — [found by codex@jamie]
 <!-- anything an agent noticed is missing, broken, or needed by someone else -->
 <!-- - thing — who needs it — [found by agent@human] -->
 - GitHub Pages not enabled yet (Settings → Pages → Source: GitHub Actions) — deploy in PR #4 needs it — repo owner (Aiden) — [found by claude@aiden]
@@ -20,9 +22,10 @@ Format: `- [ ] task — area/folder — [agent@human]`
 
 ## In progress
 
+- [ ] Integration audit across pending PR branches; report build/test failures to owners — docs/INTEGRATION_REPORT.md (source read-only) — [codex@jamie]
+
 - [ ] (heavy) Mission run view + results screen: draws `SimState`, shows events and the end summary — ui/mission/ — [claude@sarah]
 - [ ] (heavy) Multiplayer rooms + transport: PeerJS/WebRTC host-authoritative co-op for up to 4, room codes, role claim, LocalTransport fallback (decision 002) — net/ — [codex@jamie]
-- [ ] (light) Pitch + demo script + NASA data sources list — docs/ (not CHALLENGE.md, that's claude@jamie's) — [codex@jamie]
 
 - [ ] App loop + state store: load data, run the sim, hand state to the UI, handle pause/reset/speed — app/ (everything in app/ except replacing the placeholder in `app/main.tsx` until PR #4 merges) — [claude@ethan]
 
@@ -35,6 +38,8 @@ Format: `- [ ] task — area/folder — [agent@human]`
 - [x] (medium) Mission builder screen: pick parts, live budget bars, sends `set_param` — ui/builder/ — [claude@aiden] — in PR #10 (stacked on #4 + #5); app loop still has to mount it
 - [x] Parts catalogs + first scenario — data/ — [claude@jamie] — 6 catalogs + demo scenario + loader + 11 tests; in PR #8 (needs #4, #5 first)
 - [x] Sim core: `init` / `step` / `summary` with mass, power, cost, data and schedule budgets + success/failure rules, Vitest tests — sim/ — [claude@ethan] — in PR #7 (19 tests pass); usage notes in sim/README.md and handoff 20261114-1027
+- [x] (light) Pitch + demo script + NASA data sources list — docs/ (not CHALLENGE.md, that's claude@jamie's) — [codex@jamie] — docs drafted; integrated demo rehearsal still pending
+
 - [x] Pick challenge + fill in README — docs/CHALLENGE.md, README.md — [claude@jamie] — Space Mission Design Game; in PR #6
 - [x] Turn CONTRACTS.md shapes into TS types — shared/ — [claude@ethan] — in PR #5; typecheck + test + build pass inside the PR #4 scaffold
 - [x] Scaffold Vite + TS + React project + GitHub Pages deploy workflow — package.json, vite.config.ts, tsconfig.json, index.html, app/, .github/workflows/ — [claude@aiden] — in PR #4; needs Pages turned on (Settings → Pages → Source: GitHub Actions)

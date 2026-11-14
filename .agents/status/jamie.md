@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 10:26
+**Last updated:** 2026-11-14 10:27
 
 ## Working on right now
 
@@ -47,18 +47,18 @@ Nothing claimed. Waiting for Jamie to pick the next task.
 
 ### Working on right now
 
-Multiplayer transport + rooms (heavy) and pitch / demo / source documentation. Jamie authorized selecting unowned work autonomously and taking higher effort tasks.
+Transport + lobby implementation ready for PR review. Remaining network work: align finalized shared envelopes/permissions and integrate with app owner; live venue test still required. Beginning read-only integration audit of pending branches.
 
 ### Files / folders I'm touching (hands off)
 
 - `net/` (whole folder): PeerJS transport, local fallback, room lifecycle, tests and integration notes.
-- `docs/PITCH.md`, `docs/DEMO.md`, `docs/NASA_SOURCES.md`.
+- `docs/PITCH.md`, `docs/DEMO.md`, `docs/NASA_SOURCES.md`, `docs/INTEGRATION_REPORT.md` (audit report; no edits to other owners’ source files).
 - Own status section, own board entries, append-only log, and handoffs from codex@jamie.
 - No package/scaffold, shared/, app/, sim/, data/, ui/, or claude@jamie challenge files.
 
 ### Just finished
 
-Synced main and inspected pending stack, shared types and contract PRs. Claimed unowned network and demo work before coding.
+Implemented generic PeerTransport, LocalTransport and HostRoom role/lobby authority; 16 Vitest tests pass, strict TS passes, real PeerJS type compatibility passes. Wrote pitch, demo rehearsal plan and verified NASA source reference list. No live browser/venue connection test yet.
 
 ### Missing / I need from someone
 
