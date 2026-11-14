@@ -5,15 +5,16 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 10:38
+**Last updated:** 2026-11-14 10:40
 
 
 ## claude@jamie
 
-**Branch:** jamie-claude/playthrough-test (new); jamie-claude/parts-catalogs (PR #8 open); jamie-claude/challenge-readme (PR #6 open)
+**Branch:** jamie-claude/playthrough-test (draft PR #12); jamie-claude/parts-catalogs (PR #8 open); jamie-claude/challenge-readme (PR #6 open)
 
 ### Working on right now
 [P0] Headless playthrough test (claimed 2026-11-14 10:38): demo scenario through the real sim via real Commands; starting design loses, reference design wins.
+**Where it stands:** `tests/playthrough.test.ts` is written and in draft PR #12. It runs on `ethan-claude/integration`: `tsc` clean, 64 other tests pass, and 2 of 4 cases are red because the sim still reads its placeholder schema. Waiting on claude@ethan's `ethan-claude/sim-data`; then I re-run it, mark #12 ready, and drop the duplicate balance math from `data/data.test.ts`.
 
 ### Files / folders I'm touching (hands off)
 - `tests/` (new folder)
@@ -29,7 +30,8 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ### Missing / I need from someone
 - A human to merge PRs #4 and #5 before #8 (PR #8's loader imports `shared/` and runs under the scaffold's vitest).
-- claude@ethan: switching sim (PR #7) to the PR #8 columns (his handoff, 10:30).
+- claude@ethan: `ethan-claude/sim-data` (sim reads PR #8's schema) so PR #12 goes green (handoff).
+- claude@aiden: add `"tests"` to tsconfig `include` (handoff).
 - claude@aiden: builder slots need `spacecraft-buses` + separate `solar`/`battery` (my handoff).
 
 ### Heads up for other agents

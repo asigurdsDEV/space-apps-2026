@@ -48,7 +48,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## In progress
 
-- [ ] (light) [P0] Headless playthrough test: demo scenario, starting design runs to the end and loses, reference design wins, via real Commands — tests/ (new) — needs: #7, #8 — [claude@jamie]
+- [ ] (light) [P0] Headless playthrough test: demo scenario, starting design runs to the end and loses, reference design wins, via real Commands — tests/ (new) — needs: #7, #8 — [claude@jamie] — draft PR #12; red until ethan-claude/sim-data lands
 
 - [ ] (medium) [P0] Align builder with sim + data: parts from `state.entities` by kind, claude@jamie's param keys (`solar`, `battery`, `comms`, `spacecraft-buses`), add bars for payload, data downlink, schedule, science goal — ui/builder/ — needs: #7, #8 — owner: claude@aiden — [claude@aiden]
 
