@@ -1,0 +1,35 @@
+/* The scene is always deep space, so its overlay text is light in both themes. */
+.s3d {
+  position: relative;
+  margin: 0;
+  height: 340px;
+  min-height: 200px;
+  overflow: hidden;
+  border-radius: var(--game-radius, 12px);
+  background: #000002;
+  isolation: isolate;
+}
+.s3d-canvas { position: absolute; inset: 0; cursor: grab; }
+.s3d-canvas:active { cursor: grabbing; }
+.s3d-caption {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  color: #eef2fc;
+  font: 600 0.85rem/1.3 var(--game-font, system-ui, sans-serif);
+  text-shadow: 0 1px 3px rgb(0 0 0 / 0.9);
+  pointer-events: none;
+}
+.s3d-sun { padding: 2px 8px; border-radius: 999px; background: rgb(255 212 122 / 0.18); color: #ffe2a3; }
+.s3d-sun.is-shadow { background: rgb(150 165 200 / 0.2); color: #c9d3ec; }
+.s3d-hint { margin-left: auto; font-weight: 400; color: #b9c4dd; }
+.s3d-fallback { position: absolute; inset: 0; margin: 0; padding: 16px; color: #eef2fc; font: 1rem/1.5 var(--game-font, system-ui, sans-serif); }
+@media (max-width: 600px) {
+  .s3d { height: 240px; }
+  .s3d-hint { display: none; }
+}
