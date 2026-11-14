@@ -22,7 +22,7 @@ group('sceneSpec', () => {
     const spec = sceneSpec({ entities, params })
     expect(spec.body).toBe('earth')
     expect(spec.altitude_m).toBe(600_000)
-    expect(spec.craft).toMatchObject({ bus: [0.2, 0.34, 0.1], cubesat: true, power: 'wings', antenna: 'patch', instruments: ['lens', 'boom'] })
+    expect(spec.craft).toMatchObject({ bus: [0.2263, 0.366, 0.1], cubesat: true, power: 'wings', antenna: 'patch', instruments: ['lens', 'boom'] })
     expect(describe(spec)).toBe(
       '3D view: 6U CubeSat with Small deployable solar wings, S-band patch antenna, 2 instruments (Basic Earth camera, Magnetometer), in Sun-synchronous orbit, 600 km above Earth.',
     )
@@ -56,8 +56,11 @@ group('sceneSpec', () => {
 
 group('helpers', () => {
   it('sizes buses and wings', () => {
-    expect(busSize(e('bus', 'cubesat-3u', '3U CubeSat', { class: 'cubesat' })).size).toEqual([0.1, 0.34, 0.1])
-    expect(busSize(e('bus', 'medium-bus', 'Medium spacecraft', { dry_mass_kg: 800 })).size[0]).toBeCloseTo(1.387, 2)
+    expect(busSize(e('bus', 'cubesat-3u', '3U CubeSat', { class: 'cubesat' })).size).toEqual([0.1, 0.3405, 0.1])
+    // MAVEN's 2.3 m bus at 809 kg, scaled to 800 kg.
+    expect(busSize(e('bus', 'medium-bus', 'Medium spacecraft', { dry_mass_kg: 800 })).size[0]).toBeCloseTo(2.291, 2)
+    expect(busSize(e('bus', 'smallsat', 'Small satellite', { class: 'smallsat', dry_mass_kg: 201 })).size).toEqual([0.95, 1.09, 0.76])
+    expect(busSize(undefined).size).toEqual([0.2263, 0.366, 0.1])
     expect(wingSpan(7)).toBe(0.8)
     expect(wingSpan(1e9)).toBe(3.6)
     expect(wingSpan(1000)).toBeCloseTo(2.3, 5)

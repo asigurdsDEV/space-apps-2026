@@ -237,6 +237,47 @@ function radarMap(): THREE.CanvasTexture | null {
   })
 }
 
+/** Knitted gold wire mesh stretched over a web of triangles (NISAR's reflector): see-through, so it has an alpha channel. */
+function meshMap(): THREE.CanvasTexture | null {
+  return texture(256, (g, s) => {
+    g.clearRect(0, 0, s, s)
+    g.fillStyle = 'rgba(232,190,96,0.2)'
+    g.fillRect(0, 0, s, s)
+    g.strokeStyle = 'rgba(240,205,120,0.55)'
+    g.lineWidth = 1
+    for (let i = 0; i < s; i += 8) {
+      g.strokeRect(i + 0.5, 0, 0, s)
+      g.strokeRect(0, i + 0.5, s, 0)
+    }
+    // The cable web the mesh is tied to: triangles, two per tile.
+    g.strokeStyle = 'rgba(255,236,170,0.95)'
+    g.lineWidth = 2.5
+    g.strokeRect(1, 1, s, s)
+    for (const [x0, y0, x1, y1] of [[0, 0, s, s], [s / 2, 0, s / 2, s], [0, s / 2, s, s / 2], [0, s, s, 0]] as const) {
+      g.beginPath()
+      g.moveTo(x0, y0)
+      g.lineTo(x1, y1)
+      g.stroke()
+    }
+  })
+}
+
+/** MarCO's reflectarray: a circuit board printed with rows of copper patches whose sizes vary to focus the beam. */
+function reflectarrayMap(): THREE.CanvasTexture | null {
+  return texture(256, (g, s) => {
+    g.fillStyle = '#c9b98a'
+    g.fillRect(0, 0, s, s)
+    const n = 16
+    const c = s / n
+    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
+      // Patch size cycles with distance from the feed, which draws the rings seen on the real panel.
+      const k = 0.35 + 0.5 * (0.5 + 0.5 * Math.sin(Math.hypot(i - n / 2 + 0.5, j + 3) * 1.9))
+      g.fillStyle = '#b06a32'
+      g.fillRect(i * c + (c * (1 - k)) / 2, j * c + (c * (1 - k)) / 2, c * k, c * k)
+    }
+  })
+}
+
 function build() {
   const normalMap = crinkleNormal()
   const quilt = quiltMap()
@@ -268,7 +309,9 @@ function build() {
     orange: std({ color: 0xe8731c, metalness: 0, roughness: 0.6 }),
     red: std({ color: 0xb3261e, metalness: 0, roughness: 0.6 }),
     rtgCore: std({ color: 0x2d2f35, metalness: 0.5, roughness: 0.6 }),
-    laser: std({ color: 0x0a2a12, emissive: 0x3dff7a, emissiveIntensity: 1.6, roughness: 0.2 }),
+    mesh: std({ map: meshMap(), color: hasDom ? 0xffffff : 0xe8be60, metalness: 0.6, roughness: 0.4, side: THREE.DoubleSide, transparent: true, depthWrite: false }),
+    reflectarray: std({ map: reflectarrayMap(), color: hasDom ? 0xffffff : 0xc9a060, metalness: 0.35, roughness: 0.5 }),
+    nozzle: std({ color: 0x5a524c, metalness: 0.9, roughness: 0.42, side: THREE.DoubleSide }),
     cells: std({ map: cellMap(), color: hasDom ? 0xffffff : 0x16245a, metalness: 0.45, roughness: 0.3 }),
     cellBack: std({ map: backMap(), color: hasDom ? 0xffffff : 0x22252b, metalness: 0.3, roughness: 0.6 }),
     cubePanel: std({ map: cubePanelMap(), color: hasDom ? 0xffffff : 0x23262d, metalness: 0.55, roughness: 0.5 }),
@@ -361,6 +404,13 @@ export function dishGeometry(radius: number, focal: number, seg = 36): THREE.Lat
     const r = (i / 10) * radius
     pts.push(new THREE.Vector2(r, (r * r) / (4 * focal)))
   }
+  return new THREE.LatheGeometry(pts, seg)
+}
+
+/** Rocket nozzle bell opening toward +y, throat at the origin. */
+export function bellGeometry(rExit: number, len: number, seg = 14): THREE.LatheGeometry {
+  const pts: THREE.Vector2[] = []
+  for (let i = 0; i <= 6; i++) pts.push(new THREE.Vector2(rExit * (0.28 + 0.72 * Math.sqrt(i / 6)), (len * i) / 6))
   return new THREE.LatheGeometry(pts, seg)
 }
 
