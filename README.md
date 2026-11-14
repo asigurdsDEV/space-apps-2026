@@ -38,7 +38,7 @@ docs/                challenge brief, research, pitch notes
 | Jamie | | |
 | Sarah | | |
 | Caleb | | |
-| Kaipo | | |
+| Kaipo | | Cursor |
 
 ## Challenge
 
