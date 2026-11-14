@@ -56,7 +56,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
-- [ ] (medium) [P1] Builder part compatibility: badge each row with what it needs (`min_bus_class`: "needs a SmallSat bus") and where it works best (`best_orbit`), and dim parts that can't fit the picked bus, so students see why before an error — ui/builder/ — owner: claude@aiden — [claude@aiden]
 - [ ] (light) [P1] Daily leaderboard records + stars: isolate records by daily seed, preserve score/design/stars together, compatible with existing regular records — ui/leaderboard/ only — needs: existing score types; optional daily/stars props from app/results owners — [codex@aiden]
 
 
@@ -86,6 +85,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Done
 
+- [x] (medium) [P1] Builder part compatibility — ui/builder/ — [claude@aiden] — in PR #39 (after #35): "Needs a SmallSat bus or bigger" (dimmed) and best-orbit badges from the sim's own rules (bus_too_small, off_best_orbit); checked on real demo data
 - [x] (light) [P2] Glossary terms the anomaly cards use: reaction wheel, high-gain antenna, drag, safe mode, South Atlantic Anomaly, Deep Space Network — ui/learn/ — [cursor@kaipo] — merged in PR #38 (`aeccf8b`). Tooltip ids are unique per use. Rehearsal re-run stays Open until Host/Join is on the live site.
 - [x] (light) [P0] Hard difficulty winnable with random failures on (seed 42 kills every demo design on day 193); Normal row says failures on but sim default is off — data/index.ts, data/README.md, tests/playthrough.test.ts — [claude@jamie] — in PR #36: demo seed 42 → 1, Normal failures off, new failures-on Hard test
 
