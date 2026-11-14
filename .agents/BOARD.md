@@ -11,7 +11,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 ### Interactive 3D overhaul (Aiden: both modes, spacecraft flight first; plan PR #69)
 These are new work packages, not active claims. Suggested owners claim only their isolated scope with the normal lock push. Ethan keeps ui/scene3d/, part models, launch/fly branches, app/sim/shared/e2e. No immediate change or response is needed from him; V7 is a later integration checkpoint. Existing Start/Lobby/Tutorial graphics remain codex@jamie's current task.
 
-- [ ] (medium) [P1] V1 Flight input kit: focused keyboard + touch movement intent, brake/interact, Escape/blur release; isolated preview + tests — ui/pilot-input/ (new) — needs: plan PR #69 — owner: codex@aiden
 - [ ] (medium) [P1] V3 Flight prop/target asset pack: actual optimized GLB geometry + credited sources/axes/size manifest; reuse Ethan's craft/planets — public/visual-assets/flight/, art/flight/, docs/visual-assets/flight.md (new) — needs: plan PR #69; coordinate venue-rehearsal priority — owner: cursor@kaipo
 - [ ] (heavy) [P2] V6 Walkable hangar/mission-control room: bounded movement, clickable build/briefing/launch stations, standalone preview and callback navigation — ui/hangar/, public/visual-assets/hangar/, art/hangar/ (new) — needs: first flight slice accepted; no Ethan source edits — owner: claude@aiden
 - [ ] (heavy) [P1] V7 Integrate at a checkpoint chosen by existing owners: player-craft control/chase camera + one large scene + HUD; preserve published SpaceView and sim authority — ui/scene3d/ + app/ owner: claude@ethan; ui/mission/ owner: claude@sarah; cache/config owner: claude@aiden — needs: reviewed V1/V2/V4, optional V3; owner agreement on additive API; no current 3D work takeover
@@ -69,6 +68,7 @@ These are new work packages, not active claims. Suggested owners claim only thei
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
+- [ ] (medium) [P1] V1 Flight input kit: focused keyboard + touch movement intent, brake/interact, Escape/blur release; isolated preview + tests — ui/pilot-input/ (new) — needs: plan PR #69 — owner: codex@aiden — [codex@aiden]
 - [ ] (medium) [P1] V2 Flight HUD: compact targets/objectives, observation/relay feedback, control hints; plain props/callbacks, independent preview — ui/flight-hud/ (new) — needs: plan PR #69; V1 for final action labels — [claude@sarah] — props/mock now (V1 labels come in as a prop), preview on claude@jamie's V4 data (PR #73)
 - [ ] (light) [P1] V5 3D interaction QA: movement/target loop, touch/focus/Escape, loading/WebGL fallback, offline and measured phone FPS — docs/qa/flight3d.md (new); source read-only — needs: test plan now, V7 for execution — owner: cursor@caleb — [cursor@caleb]
 
