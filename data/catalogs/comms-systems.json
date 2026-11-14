@@ -1,0 +1,26 @@
+{
+  "id": "comms-systems",
+  "source": "Hand-tuned for gameplay; rates are simplified, not a real link budget",
+  "source_url": "https://www3.nasa.gov/sites/default/files/atoms/files/nasa_csli_cubesat_101_508.pdf",
+  "license": "team-authored (CC0)",
+  "retrieved_utc": "2026-11-14T10:20:00Z",
+  "kind": "table",
+  "units": {
+    "mass_kg": "kg",
+    "power_w": "W while transmitting",
+    "cost_usd": "USD",
+    "data_rate_bps": "bit/s at or below reference_range_m",
+    "reference_range_m": "m",
+    "min_bus_class": "smallest bus class that can carry it"
+  },
+  "data": {
+    "columns": ["id", "name", "band", "mass_kg", "power_w", "cost_usd", "data_rate_bps", "reference_range_m", "min_bus_class", "description"],
+    "rows": [
+      ["uhf-radio", "UHF radio", "UHF", 0.1, 2, 20000, 9600, 1000000, "cubesat", "Like a ham radio. Cheap and simple, but very slow."],
+      ["s-band-patch", "S-band patch antenna", "S", 0.4, 8, 100000, 1000000, 1500000, "cubesat", "A flat antenna and radio. The usual choice for small satellites."],
+      ["x-band-transmitter", "X-band transmitter", "X", 2, 30, 800000, 50000000, 2000000, "cubesat", "Fast downlink for imaging satellites in low orbit."],
+      ["high-gain-dish", "High-gain dish antenna", "Ka", 20, 120, 5000000, 300000000, 40000000, "smallsat", "A pointed dish for big data from high orbits."],
+      ["deep-space-transponder", "Deep-space transponder + dish", "X (DSN)", 15, 60, 10000000, 2000000, 400000000, "smallsat", "Talks to NASA's Deep Space Network giant dishes. Slow but reaches the Moon and beyond."]
+    ]
+  }
+}

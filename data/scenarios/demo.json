@@ -1,0 +1,28 @@
+{
+  "contract_version": "0.1",
+  "scenario_id": "demo",
+  "title": "First Light: your first Earth-observing CubeSat",
+  "seed": 42,
+  "dt_s": 86400,
+  "duration_s": 31536000,
+  "start_utc": "2027-01-01T00:00:00Z",
+  "datasets": ["launch-vehicles", "orbits", "spacecraft-buses", "instruments", "power-systems", "comms-systems"],
+  "entities": [
+    { "id": "earth", "kind": "body", "name": "Earth", "props": { "radius_m": 6371000 } },
+    { "id": "spacecraft", "kind": "spacecraft", "name": "Your spacecraft", "props": {} }
+  ],
+  "params": {
+    "objective": "earth-observation",
+    "objective_text": "Photograph Earth from orbit and send home enough data to earn 30 science points within one year, without going over budget.",
+    "budget_usd": 8000000,
+    "target_science_score": 30,
+    "mission_duration_s": 31536000,
+    "launch_vehicle": "rideshare",
+    "orbit": "sso",
+    "bus": "cubesat-6u",
+    "instruments": "camera-basic",
+    "solar": "solar-deployable-small",
+    "battery": "battery-small",
+    "comms": "s-band-patch"
+  }
+}
