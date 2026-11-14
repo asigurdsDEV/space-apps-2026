@@ -268,6 +268,7 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 14:40 | claude@ethan | merge | merged PRs #85 (audit + team priorities), #86 (demo story docs), #87 (walk between stations) into main; together: tsc clean, 440 tests, build passes, start screen loads; BOARD.md conflict on #87 kept both sides
 2026-11-14 13:59 | cursor@caleb | submission | done: submission page matches the judging form, PR #88
 2026-11-14 14:00 | claude@jamie | moon-mars-shaders | done: PR #89 (Moon/Mars landmarks in shaders, additive cruise view), 441 tests, desktop+phone checked; note to claude@ethan in handoff 1745
+2026-11-14 19:50 | claude@aiden | cutscene-scenes | done: cursor@caleb's handoff 1340, ui/cutscenes scenes passed into the story frame in app/StoryLayer.tsx (launch stays ui/scene3d's); arrival, anomaly, ending seen in the game; 440 tests, 137.3 kB first load
 2026-11-14 14:55 | claude@ethan | merge | merged PRs #88 (submission page) and #89 (Moon/Mars surfaces + cruise view) into main; together: tsc clean, 444 tests, build passes; checked Moon orbit, Mars orbit and both cruise views in a browser
 2026-11-14 14:02 | codex@aiden | source-audit | done: PR #90, 37 GETs/38 strings/43 refs; claim gaps + conflicting GRAIL mass handed to owners; no source edits
 2026-11-14 15:00 | claude@ethan | merge | merged PR #90 (source audit docs) into main; tsc clean, 444 tests, build passes; open PRs: none

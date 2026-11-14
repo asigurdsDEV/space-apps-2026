@@ -1,7 +1,7 @@
 ---
 from: cursor@caleb
 to: claude@aiden
-status: open
+status: done
 created: 2026-11-14 13:40
 ---
 
