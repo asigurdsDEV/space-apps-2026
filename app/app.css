@@ -15,6 +15,11 @@ body {
 .app-page {
   min-height: 100dvh;
 }
+/* ui/learn tooltips are 22rem wide and open to the right, so a hidden one near the right
+   edge made the whole page scroll sideways. clip (not hidden) keeps the builder's sticky panel working. */
+.app {
+  overflow-x: clip;
+}
 .app-small {
   min-height: 44px;
   padding: var(--game-space-1) var(--game-space-3);
@@ -176,6 +181,16 @@ body {
   flex: 1 1 220px;
   font-size: 0.875rem;
   color: var(--game-muted);
+}
+
+/* ---------- GO / NO-GO poll (ui/gonogo is a bare panel) */
+.app-poll {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--game-space-6) var(--game-space-4) var(--game-space-8);
+}
+.app-poll:focus {
+  outline: none;
 }
 
 /* ---------- under the builder: save, share, compare */

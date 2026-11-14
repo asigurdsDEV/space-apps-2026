@@ -6,7 +6,7 @@ import type { Command, Config, Player } from '../shared'
 import { simCore } from '../sim'
 import { demoConfig, fixtureDatasets, goodDesign } from '../sim/testing/fixtures'
 import { DIFFICULTIES, scenarios } from '../data'
-import { App, GameScreen, Room, SCENARIOS } from './App'
+import { App, GameScreen, Room, SCENARIOS, weatherStart } from './App'
 import { createGame } from './game'
 import { createSoloSession, type Session, type SessionSnapshot } from './session'
 
@@ -34,10 +34,20 @@ describe('start screen', () => {
     for (const label of ['Play solo', 'Host online', 'Join a room']) expect(html).toContain(label)
   })
 
-  it('offers every scenario in data/ at every difficulty', () => {
+  it('offers every scenario in data/ with the difficulty picker and the numbers for that level', () => {
+    for (const scenario of scenarios) expect(html).toContain(`<option value="${scenario.scenario_id}"`)
+    for (const level of Object.values(DIFFICULTIES)) expect(html).toContain(`>${level.label}</option>`)
+    expect(html).toContain(`${String(scenarios[0].params.target_science_score)} points`) // scenarioPreview is wired
+  })
+
+  it('offers today’s daily mission', () => {
+    expect(html).toContain('Play daily mission')
+    expect(html).toContain(`dateTime="${new Date().toISOString().slice(0, 10)}"`)
+  })
+
+  it('knows every scenario at every difficulty by id, the scenario as written first', () => {
     expect(SCENARIOS).toHaveLength(scenarios.length * Object.keys(DIFFICULTIES).length)
-    for (const scenario of SCENARIOS) expect(html).toContain(`<option value="${scenario.scenario_id}"`)
-    expect(SCENARIOS[0]).toBe(scenarios[0]) // the first scenario as written is the default
+    expect(SCENARIOS[0]).toBe(scenarios[0])
     expect(SCENARIOS.map((scenario) => scenario.scenario_id)).toContain('mars-hard')
   })
 
@@ -83,10 +93,31 @@ describe('game screen', () => {
     expect(session.getSnapshot().state.status).toBe('ended')
     const results = screen(session)
     expect(results).toContain('mv-results')
-    expect(results).toContain('Your mission record') // ui/leaderboard
+    expect(results).toContain('lb-root') // ui/leaderboard
     expect(results).toContain('Design a new mission')
     expect(results).toContain('Main menu')
     expect(results).not.toContain('Save, share and compare designs')
+  })
+
+  it('replays real space weather from a day the seed picks, inside the data for a three-year mission', () => {
+    expect(weatherStart(config, 1)).toBe(weatherStart(config, 1))
+    expect(weatherStart(config, 1)).not.toBe(weatherStart(config, 2))
+    for (const seed of [0, 1, 42, 20261114]) {
+      const start = weatherStart(config, seed)
+      expect(start >= '1996-01-01' && start <= '2022-01-06').toBe(true)
+    }
+    expect(weatherStart({ ...config, params: { ...config.params, weather_start: '2003-10-01' } }, 1)).toBe('2003-10-01')
+  })
+
+  it('keeps a daily mission’s record apart from the regular one', () => {
+    const { game, session } = soloSession()
+    session.send({ type: 'launch', payload: {} })
+    session.send({ type: 'set_speed', payload: { multiplier: 60 } })
+    for (let i = 0; i < 100; i++) game.advance(1000)
+    const daily = { date: '2026-11-14', scenarioId: config.scenario_id, seed: 20261114, difficulty: 'normal' as const }
+    const html = renderToStaticMarkup(<GameScreen session={session} config={config} onExit={() => {}} daily={daily} />)
+    expect(html).toContain('Daily 2026-11-14') // the share card
+    expect(screen(session)).not.toContain('Daily 2026-11-14')
   })
 
   it('goes back to the builder on reset', () => {
