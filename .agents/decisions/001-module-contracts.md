@@ -25,4 +25,4 @@ Split the simulator into `data`, `sim`, `ui` and `app` (glue), plus `shared` for
 ## What this changes (update CONTRACTS.md if needed)
 
 - `CONTRACTS.md` is filled in as v0.1.
-- Proposed top-level folders: `data/`, `sim/`, `ui/`, `app/`, `shared/`. The stack decision record (002) may rename them, and when it does it should update the Modules table and turn the shapes into real types in `shared/`.
+- Proposed top-level folders: `data/`, `sim/`, `ui/`, `app/`, `shared/`. Decision 002 (TypeScript + Vite + React) confirmed these names. The shapes become real types in `shared/types.ts`.

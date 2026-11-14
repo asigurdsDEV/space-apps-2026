@@ -1,9 +1,11 @@
 # Contracts
 
+**Stack:** TypeScript + Vite + React, static browser app, no backend. See `.agents/decisions/002-stack.md`.
+
 The interfaces between parts of the simulator. Agents must not break these without a decision record.
 
-**Version:** 0.1 (stack-neutral draft, see `.agents/decisions/001-module-contracts.md`)
-**Status:** the challenge and the engine/stack are not picked yet. Everything below is written as JSON shapes and function signatures so it maps onto any language. Once the stack is picked, whoever writes that decision record turns these into real types (TS interfaces, Python dataclasses, etc.) in `shared/` and bumps the version here.
+**Version:** 0.1 (see `.agents/decisions/001-module-contracts.md`)
+**Status:** the challenge is the **Space Mission Design Game** and the stack is TypeScript (decision 002). The shapes below are written as JSON so they stay readable; the real TypeScript types live in `shared/types.ts` and must match this file. If the two ever disagree, this file wins and `shared/` gets fixed.
 
 ## Ground rules
 
@@ -25,7 +27,7 @@ The interfaces between parts of the simulator. Agents must not break these witho
 | app: glue, main loop, wiring | `app/` | unclaimed | owns the loop that calls sim and hands results to ui |
 | shared: types/constants from this file | `shared/` | contracts owner (claude@ethan for now) | imported by everyone, depends on nothing |
 
-Folder names are proposals until the stack decision confirms or renames them.
+Folder names are confirmed by decision 002: top-level `data/`, `sim/`, `ui/`, `app/`, `shared/`.
 
 ## Shared data formats
 
@@ -104,7 +106,7 @@ The UI treats `SimState` as read-only. The app keeps the latest one plus an opti
 
 ## Sim core API
 
-Every language should implement exactly these three functions:
+The sim core exports exactly these three functions:
 
 ```
 init(config: Config, datasets: Dataset[]) -> SimState
@@ -146,8 +148,18 @@ Scenario-specific commands are allowed. Add a row here when you add one.
 | `scenario_ended` | `{ "reason": string, "summary": object }` | sim | ui (results screen) |
 | `warning` | `{ "message": string }` | any | ui (log/toast) |
 
-## Open questions (resolve when challenge + stack are picked)
+## Mission design mapping (Space Mission Design Game)
 
-- Which coordinate `frame` the challenge needs (3D scene, Earth-centered, lat/lon map).
-- Whether the sim runs in the browser, on a server, or both. If it's on a server, Commands/SimState go over WebSocket as exactly these JSON shapes.
-- Which concrete datasets we load. Each one gets a row in `docs/` with its source and license.
+How the game's ideas fit the shapes above. Nothing here is a new shape.
+
+- **Design choices** (launch vehicle, bus, instruments, power system, antenna, orbit) are plain values in `Config.params`. The player changes them with the `set_param` command, e.g. `{ "type": "set_param", "payload": { "key": "launch_vehicle", "value": "falcon-9" } }`.
+- **Parts catalogs** (launch vehicles, instruments, bus parts) are `Dataset`s of kind `table` in `data/`, one row per part with an `id` column. Params refer to parts by that `id`.
+- **Budgets** are numbers in `SimState.metrics`. Use these keys when they apply so the UI can chart them without asking: `mass_kg`, `mass_limit_kg`, `power_w`, `power_available_w`, `cost_usd`, `budget_usd`, `data_rate_bps`, `delta_v_ms`, `science_score`.
+- **Going over a limit** emits `threshold_crossed`. **Mission success or failure** is `scenario_ended` with `reason` (`"success"`, `"over_budget"`, `"launch_failure"`, ...) and the `summary` object for the results screen.
+- **Phases** (design → launch → cruise → operations) go in `metrics.phase` as a string until someone needs more than that.
+
+## Open questions
+
+- Which coordinate `frame` the mission view uses (2D orbit diagram, Earth-centered, lat/lon map). The first person building the mission view decides and adds it here.
+- Which concrete NASA datasets we load. Each one gets listed in `docs/` with its source and license.
+- Answered by decision 002: the sim runs in the browser only, so Commands and SimState are passed as plain objects with no WebSocket.
