@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Caleb
 **Agent:** Cursor
 **Branch:** caleb-cursor/submission-docs
-**Last updated:** 2026-11-14 12:45
+**Last updated:** 2026-11-14 13:10
 
 ## Working on right now
 
@@ -19,12 +19,12 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@caleb
 
-**Branch:** caleb-cursor/a11y-report (PR #59)
-**Last updated:** 2026-11-14 12:45
+**Branch:** caleb-cursor/flight3d-qa
+**Last updated:** 2026-11-14 13:10
 
 ### Working on right now
 
-Nothing claimed and unfinished.
+**[P1] V5 3D interaction QA.** Writing the test plan in `docs/qa/flight3d.md`. Source stays read-only. Running the checks waits on V7.
 
 ### Just finished
 
@@ -34,8 +34,7 @@ Nothing claimed and unfinished.
 
 ### Files / folders I'm touching (hands off)
 
-- `docs/A11Y_REPORT.md` is in PR #59
-- `docs/SUBMISSION.md` is in PR #40
+- `docs/qa/flight3d.md` (new)
 - `.agents/status/caleb.md`: only the `## cursor@caleb` section
 
 ### Missing / I need from someone
