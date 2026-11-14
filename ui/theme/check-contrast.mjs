@@ -6,8 +6,9 @@ const css = readFileSync(new URL('./theme.css', import.meta.url), 'utf8')
 const palettes = [...css.matchAll(/\{([^{}]+)\}/g)]
   .map((block) => Object.fromEntries([...block[1].matchAll(/--game-([\w-]+):\s*(#[\da-f]{6})\s*;/gi)].map((match) => [match[1], match[2]])))
   .filter((palette) => palette.bg)
-assert.equal(palettes.length, 3)
-assert.deepEqual(palettes[1], palettes[2], 'Automatic and explicit light palettes must match')
+// Dark is the default (arcade look); light is explicit only, so there are 2 palettes (3 if an automatic light block returns).
+assert.ok(palettes.length >= 2)
+if (palettes.length === 3) assert.deepEqual(palettes[1], palettes[2], 'Automatic and explicit light palettes must match')
 
 function luminance(hex) {
   const rgb = [1, 3, 5].map((index) => parseInt(hex.slice(index, index + 2), 16) / 255)

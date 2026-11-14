@@ -30,10 +30,9 @@ export function Briefing({ config, onStart, onBack }: BriefingProps) {
         {facts.length > 0 && (
           <dl className="bf-facts">
             {facts.map((f) => (
-              <div key={f.label} className="bf-fact">
+              <div key={f.label} className="bf-fact" title={f.detail}>
                 <dt>{f.label}</dt>
                 <dd className="bf-fact-value">{f.value}</dd>
-                <dd className="bf-fact-detail">{f.detail}</dd>
               </div>
             ))}
           </dl>
@@ -42,7 +41,7 @@ export function Briefing({ config, onStart, onBack }: BriefingProps) {
         {bonus && (
           <p className="bf-bonus">
             <span aria-hidden="true">★ </span>
-            <strong>Bonus star:</strong> {bonus.label}. <span className="bf-bonus-hint">Win the mission and do this too for a second star.</span>
+            <strong>Bonus star:</strong> {bonus.label}
           </p>
         )}
 
@@ -55,8 +54,8 @@ export function Briefing({ config, onStart, onBack }: BriefingProps) {
           </ol>
         </section>
 
-        <section aria-labelledby="bf-terms">
-          <h2 id="bf-terms">Words you’ll see</h2>
+        <details className="bf-terms-fold">
+          <summary id="bf-terms">Words you’ll see ({KEY_TERM_IDS.length})</summary>
           <dl className="bf-terms">
             {KEY_TERM_IDS.map((id) => {
               const entry = glossaryEntry(id)
@@ -70,7 +69,7 @@ export function Briefing({ config, onStart, onBack }: BriefingProps) {
               )
             })}
           </dl>
-        </section>
+        </details>
 
         <div className="bf-actions">
           {onBack && (

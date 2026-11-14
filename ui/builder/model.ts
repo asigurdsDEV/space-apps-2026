@@ -24,13 +24,13 @@ export const ORBIT_CAPACITY = '@orbit_capacity'
 
 // Keys follow data/README.md (claude@jamie); kinds follow sim/README.md (claude@ethan).
 export const DEFAULT_SLOTS: Slot[] = [
-  { key: 'orbit', label: 'Orbit', kind: 'orbit', columns: ['altitude_m', 'eclipse_fraction', 'contact_s_per_day', 'radiation_factor'], hint: 'Where the spacecraft flies. It decides how much sunlight you get, how often you can talk to Earth, and which rockets can get you there.' },
-  { key: 'bus', label: 'Spacecraft bus', kind: 'bus', columns: ['dry_mass_kg', 'max_added_mass_kg', 'max_instruments', 'base_power_w', 'cost_usd'], hint: 'The body: structure, computer and pointing. Everything else bolts onto it, up to its mass and instrument limits.' },
-  { key: 'instruments', label: 'Science instruments', kind: 'instrument', multi: true, columns: ['mass_kg', 'power_w', 'data_rate_bps', 'science_value', 'cost_usd'], hint: 'More instruments mean more science, but also more mass, power, data and cost.' },
-  { key: 'solar', label: 'Power source', kind: 'power_system', where: { prop: 'type', values: ['solar', 'rtg'] }, columns: ['mass_kg', 'power_w', 'cost_usd'], hint: 'Must make more power than everything draws. Solar panels make nothing while the spacecraft is in shadow.' },
-  { key: 'battery', label: 'Battery', kind: 'power_system', where: { prop: 'type', values: ['battery'] }, columns: ['mass_kg', 'capacity_wh', 'cost_usd'], hint: 'Keeps everything running through each pass in Earth’s shadow.' },
-  { key: 'comms', label: 'Radio', kind: 'comms_system', columns: ['mass_kg', 'power_w', 'data_rate_bps', 'cost_usd'], hint: 'How fast data gets home. Science only counts once its data reaches the ground.' },
-  { key: 'launch_vehicle', label: 'Launch vehicle', kind: 'launch_vehicle', columns: [ORBIT_CAPACITY, 'cost_usd', 'reliability'], hint: 'Must lift your total mass to your orbit. It’s often the biggest bill.' },
+  { key: 'orbit', label: 'Orbit', kind: 'orbit', columns: ['altitude_m', 'eclipse_fraction', 'contact_s_per_day', 'radiation_factor'], hint: 'Sets sunlight, contact time and which rockets fit.' },
+  { key: 'bus', label: 'Spacecraft bus', kind: 'bus', columns: ['dry_mass_kg', 'max_added_mass_kg', 'max_instruments', 'base_power_w', 'cost_usd'], hint: 'The body. Everything bolts onto it.' },
+  { key: 'instruments', label: 'Science instruments', kind: 'instrument', multi: true, columns: ['mass_kg', 'power_w', 'data_rate_bps', 'science_value', 'cost_usd'], hint: 'More science, but more mass, power and data.' },
+  { key: 'solar', label: 'Power source', kind: 'power_system', where: { prop: 'type', values: ['solar', 'rtg'] }, columns: ['mass_kg', 'power_w', 'cost_usd'], hint: 'Power in must beat power out.' },
+  { key: 'battery', label: 'Battery', kind: 'power_system', where: { prop: 'type', values: ['battery'] }, columns: ['mass_kg', 'capacity_wh', 'cost_usd'], hint: 'Runs everything in the shadow.' },
+  { key: 'comms', label: 'Radio', kind: 'comms_system', columns: ['mass_kg', 'power_w', 'data_rate_bps', 'cost_usd'], hint: 'Gets your data home.' },
+  { key: 'launch_vehicle', label: 'Launch vehicle', kind: 'launch_vehicle', columns: [ORBIT_CAPACITY, 'cost_usd', 'reliability'], hint: 'Lifts it all. Often the biggest bill.' },
 ]
 
 /** Ids picked in a multi slot. */
