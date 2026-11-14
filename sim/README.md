@@ -3,16 +3,20 @@
 Owner: claude@ethan. Pure TypeScript: no React, no DOM, no I/O, no `Math.random()`. Implements `init` / `step` / `summary` from `.agents/CONTRACTS.md`.
 
 ```ts
+import { getDatasets, getScenario } from '../data'
 import { init, step, summary } from '../sim'
 
-let state = init(config, datasets)                                  // design phase, t = 0
-;({ state } = step(state, [{ type: 'set_param', payload: { key: 'bus', value: 'smallsat' } }], dt))
-;({ state, events } = step(state, [{ type: 'launch', payload: {} }], dt))
-while (state.status !== 'ended') ({ state, events } = step(state, [], dt))
+const config = getScenario('demo')!
+let state = init(config, getDatasets(config.datasets))             // design phase, t = 0
+;({ state } = step(state, [{ type: 'set_param', payload: { key: 'bus', value: 'cubesat-12u' } }], config.dt_s))
+;({ state, events } = step(state, [{ type: 'launch', payload: {} }], config.dt_s))
+while (state.status !== 'ended') ({ state, events } = step(state, [], config.dt_s))
 const report = summary(state)                                       // score, grade, why
 ```
 
-Run the tests with `npm test`. `sim/testing/fixtures.ts` has placeholder catalogs and a demo scenario you can use until the real ones are in `data/`.
+The sim reads the catalogs and scenario in `data/` exactly as they are: same dataset ids, columns, units and param keys. It never imports `data/`; the caller passes the `Config` and `Dataset`s in. Run the tests with `npm test`.
+
+`sim/testing/fixtures.ts` exports `fixtureDatasets` (the six real catalogs), `demoConfig` (data's demo scenario) and `goodDesign` (data's reference design, which passes every launch check and wins).
 
 ## How a mission runs
 
@@ -20,75 +24,156 @@ Run the tests with `npm test`. `sim/testing/fixtures.ts` has placeholder catalog
 
 - **design:** time stands still. Every step re-checks the design and refreshes the budgets in `state.metrics` and the problems in `state.issues`. `set_param` changes a choice. `launch` starts the mission, or is refused with a `warning` event while any issue has severity `error`.
 - **launch:** one random roll against the launch vehicle's `reliability`. Failure ends the mission (`launch_failure`).
-- **cruise:** `cruise_days` of the chosen orbit pass. Nothing is collected.
+- **cruise:** lasts the orbit's `cruise_days` (or `cruise_s`). data/ has no such column today, so cruise takes no time: the launch step enters `cruise` and the next step enters `operations`.
 - **operations:** each day the instruments make data, the radio sends what it can, the rest waits in storage, and anything that does not fit is lost. **Science only counts when its data reaches the ground.** The bus can fail (`spacecraft_failure`) and random events can cost a day.
 - **ended:** `success` if `science_score` reached `science_goal`, otherwise `science_shortfall`. A `scenario_ended` event carries `summary(state)`.
 
-After launch the design is locked. After `ended`, `step` returns the same state.
+The mission clock starts at launch and runs for `mission_duration_s`. With the demo's `dt_s` of one day that is the launch step plus 365 steps. After launch the design is locked. After `ended`, `step` returns the same state.
 
-## What data/ must provide
+## Catalogs the sim reads
 
-Six `table` Datasets with exactly these ids. Every row needs a unique kebab-case `id` (unique across all six tables) and a `name`. Extra columns are fine and end up in the part's `props`.
+Six `table` Datasets. Every row needs an `id` and a `name`; all other columns end up unchanged in the part's `props`. A rule whose column is missing is switched off.
 
-| Dataset id | Columns the sim reads |
-|---|---|
-| `launch-vehicles` | `cost_usd`, `reliability` (0 to 1), and one `capacity_<class>_kg` per orbit class it can reach (0 or missing = cannot reach) |
-| `orbits` | `body` (`earth`, `moon`, `mars`), `class` (matches the launcher's `capacity_<class>_kg`), `altitude_km`, `eclipse_fraction` (0 to 1), `contact_min_per_day` (per ground station), `science_multiplier`, `cruise_days` |
-| `buses` | `mass_kg`, `cost_usd`, `max_payload_kg`, `power_draw_w`, `storage_gb`, `reliability` (chance of surviving the planned mission), `build_months` |
-| `power-systems` | `mass_kg`, `cost_usd`, `power_w` (in sunlight), `battery_wh`, `build_months` |
-| `comms-systems` | `mass_kg`, `cost_usd`, `power_draw_w`, `data_rate_mbps`, `build_months` |
-| `instruments` | `mass_kg`, `cost_usd`, `power_draw_w`, `data_gb_per_day`, `science_per_day`, `objective` (tag), `build_months` |
-
-Every catalog row becomes an Entity in `state.entities` with `kind` = `launch_vehicle`, `orbit`, `bus`, `power_system`, `comms_system` or `instrument`. The UI lists the parts from there, so it never imports `data/` directly.
-
-## Config.params
-
-Scenario settings (set by the scenario file):
-
-| key | meaning | default |
+| Dataset id | Entity `kind` | Columns the sim reads |
 |---|---|---|
-| `objective` | tag; instruments with the same `objective` earn 1.5x science | none |
-| `budget_usd` | whole-mission budget | 0 = no limit |
-| `science_goal` | science points needed for success | 0 = any |
-| `deadline_months` | months until the launch window closes | 0 = no limit |
-| `ops_cost_usd_per_day`, `ground_station_cost_usd_per_day` | running costs | 0 |
-| `integration_months_per_instrument` | schedule added per instrument | 1 |
-| `event_rate_per_day` | chance per day of a random event | 0 |
-| `random_failures` | `false` = sandbox: no launch failure, bus failure or random events | `true` |
-| `mission_days` | length of operations | `duration_s / 86400` |
+| `launch-vehicles` | `launch_vehicle` | `cost_usd`, `cost_per_kg_usd`, `reliability`, and the `payload_*_kg` column named by the orbit (0 = cannot reach) |
+| `orbits` | `orbit` | `central_body`, `altitude_m`, `period_s`, `launch_capacity_column`, `delta_v_required_ms`, `eclipse_fraction`, `contact_s_per_day`, `comm_range_m`, `radiation_factor`, `max_lifetime_s`. Optional: `cruise_days` or `cruise_s` |
+| `spacecraft-buses` | `bus` | `class`, `dry_mass_kg`, `max_added_mass_kg`, `max_instruments`, `base_power_w`, `propulsion_delta_v_ms`, `cost_usd`, `design_life_s`, `reliability`. Optional: `storage_gb`, `build_months` |
+| `instruments` | `instrument` | `mass_kg`, `power_w`, `cost_usd`, `data_rate_bps`, `duty_cycle`, `science_value`, `best_orbit` (orbit id or `any`), `min_bus_class`. Optional: `build_months` |
+| `power-systems` | `power_system` | `type` (`solar`, `rtg` or `battery`), `mass_kg`, `cost_usd`, `power_w`, `capacity_wh`, `degradation_per_year`, `min_bus_class`. Optional: `build_months` |
+| `comms-systems` | `comms_system` | `mass_kg`, `power_w`, `cost_usd`, `data_rate_bps`, `reference_range_m`, `min_bus_class`. Optional: `build_months` |
 
-Player choices (changed with `set_param` in the design phase): `launch_vehicle`, `orbit`, `bus`, `power_system`, `comms_system` (each a part `id`), `instruments` (comma-separated ids, e.g. `"mini-camera,magnetometer"`), `ground_stations` (1 to 6), `spacecraft_name`.
+Not used: `inclination_rad`, `coverage_fraction`, `category`, `band`, `provider`, `description`.
+
+Every catalog row becomes an Entity in `state.entities`, so the UI can list the parts from there. Orbit entities also get `props.altitude_km` (from `altitude_m`), which the mission view reads.
+
+## Params
+
+Player choices, changed with `set_param` in the design phase:
+
+| key | value |
+|---|---|
+| `launch_vehicle`, `orbit`, `bus`, `comms` | one part id |
+| `solar` | a `power-systems` id with `type` `solar` or `rtg` |
+| `battery` | a `power-systems` id with `type` `battery`. May be empty |
+| `instruments` | comma-separated instrument ids, e.g. `"camera-basic,ir-spectrometer"` |
+| `spacecraft_name` | optional name for the mission view |
+
+Scenario settings (`Config.params`):
+
+| key | meaning | when absent |
+|---|---|---|
+| `target_science_score` | science points needed for success | any science is a success |
+| `mission_duration_s` | planned mission length from launch | `Config.duration_s` |
+| `budget_usd` | whole-mission budget | no limit |
+| `random_failures` | `false` = sandbox: no launch failure, bus failure or random events | `true` |
+| `event_rate_per_day` | chance per day of a solar storm or ground station outage | 0 (off) |
+| `ops_cost_usd_per_day`, `ground_station_cost_usd_per_day` | running costs | 0 (off) |
+| `ground_stations` | 1 to 6; multiplies the daily contact time | 1 |
+| `deadline_months`, `integration_months_per_instrument` | schedule limit; needs `build_months` columns | off |
+
+`objective` and `objective_text` are for the UI; the sim does not read them.
+
+### Aliases
+
+All in `sim/params.ts` (`PARAM_ALIASES`, `SCENARIO_ALIASES`), nowhere else.
+
+| alias | means | note |
+|---|---|---|
+| `power` | `solar` | what ui/builder sends today. If the part is a battery it sets `battery` instead |
+| `power_system` | `solar` | old sim name |
+| `comms_system` | `comms` | old sim name |
+| `science_goal` | `target_science_score` | old sim name |
+| `mission_days` | `mission_duration_s` / 86400 | old sim name |
+
+In `Config.params` an alias is used only when the real key is unset. A `set_param` on an alias also sets the real key. `state.params.power` is kept equal to `solar`, because the builder reads it back to show the current pick.
+
+## The rules, one sentence each
+
+| Rule | Sentence | Columns |
+|---|---|---|
+| Mass | The spacecraft weighs the bus plus everything bolted onto it. | `dry_mass_kg`, `mass_kg` |
+| Bus capacity | A bus can carry only so many kilograms and so many instruments. | `max_added_mass_kg`, `max_instruments` |
+| Bus size | Big parts need a big enough class of bus (`cubesat` < `smallsat` < `medium` < `flagship`). | `min_bus_class`, `class` |
+| Launch | The rocket must be able to lift the whole spacecraft to the chosen orbit. | the orbit's `launch_capacity_column` |
+| Propulsion | If the orbit needs a burn of more than 100 m/s the bus must be able to do it; a smaller shortfall still flies, but the spacecraft drifts and stays in that orbit half as long. | `delta_v_required_ms`, `propulsion_delta_v_ms`, `max_lifetime_s` |
+| Power | Solar panels only make power in sunlight (an RTG always does), and that average must cover the bus and radio; instruments take turns on whatever is left. | `power_w`, `eclipse_fraction`, `base_power_w` |
+| Battery | The battery must run everything through each eclipse, or the instruments switch off in shadow. | `capacity_wh`, `period_s`, `eclipse_fraction` |
+| Fading | The power source loses `degradation_per_year` of its output each year. | `degradation_per_year` |
+| Cost | You pay for every part and for the launch, and some rockets also charge per kilogram. | `cost_usd`, `cost_per_kg_usd` |
+| Data | Instruments make data while they are on; the radio sends data only while a ground station is in view. | `data_rate_bps`, `duty_cycle`, `contact_s_per_day` |
+| Range | Beyond its reference range a radio slows down with the square of the distance. | `reference_range_m`, `comm_range_m` |
+| Storage | The spacecraft holds one day of observations (or the bus's `storage_gb`); when that is full, new data is lost. | `storage_gb` |
+| Science | Each instrument earns its `science_value` over the full planned mission, in step with how much of the data gets home. | `science_value` |
+| Best orbit | An instrument flown outside its best orbit earns half its science. | `best_orbit` |
+| Lifetime | The mission ends at the planned time, or sooner if the bus wears out or the orbit decays. | `design_life_s`, `max_lifetime_s` |
+| Risk | A bus's `reliability` is its chance of lasting its whole design life near Earth, and radiation multiplies the failure rate. | `reliability`, `design_life_s`, `radiation_factor` |
+| Schedule (off) | The slowest part sets the build time, plus a month per instrument. | `build_months` |
+
+The constants are in `sim/design.ts`: `OFF_ORBIT_SCIENCE_FACTOR` 0.5, `CAPTURE_DELTA_V_MS` 100, `DRIFT_LIFETIME_FACTOR` 0.5, mass margin warning at 90%, survival warning below 70%.
 
 ## state.metrics
 
-Live budgets (design numbers, refreshed every step): `mass_kg` / `mass_limit_kg`, `payload_mass_kg` / `payload_limit_kg`, `power_w` / `power_available_w`, `duty_cycle`, `cost_usd` / `budget_usd` (plus `build_cost_usd`, `launch_cost_usd`, `ops_cost_usd`, `ops_cost_usd_per_day`), `data_generated_gb_per_day` / `downlink_gb_per_day`, `data_rate_bps`, `storage_gb`, `science_per_day` / `science_goal`, `schedule_months` / `deadline_months`, `ground_stations`, `launch_reliability`, `bus_reliability`, `cruise_days`, `mission_days`.
+Budgets, refreshed every step:
 
-Mission progress: `phase`, `outcome`, `mission_day`, `science_score`, `data_generated_gb`, `data_downlinked_gb`, `data_stored_gb`, `data_lost_gb`, `cost_spent_usd`.
+| key | meaning |
+|---|---|
+| `mass_kg` / `mass_limit_kg` | launch mass / what the launch vehicle lifts to this orbit |
+| `added_mass_kg` / `added_mass_limit_kg` | parts bolted onto the bus / the bus's limit |
+| `payload_mass_kg`, `instrument_count` / `instrument_limit` | instruments only |
+| `power_w` / `power_available_w` | draw with everything on / orbit-average generation at launch |
+| `battery_wh` / `battery_needed_wh` | battery size / energy for one eclipse |
+| `instrument_uptime` | share of the time the instruments can run, 0 to 1 |
+| `cost_usd` / `budget_usd` | whole-mission cost / budget. Also `build_cost_usd`, `launch_cost_usd`, `ops_cost_usd`, `ops_cost_usd_per_day` |
+| `data_generated_gb_per_day` / `downlink_gb_per_day` | data made / data the radio can send, per day |
+| `data_rate_bps` | radio rate while in contact, after the range penalty. `link_factor` is that penalty (1 = none) |
+| `storage_gb` | on-board storage |
+| `science_per_day`, `science_expected` / `science_goal` | forecast for this design / the scenario target |
+| `delta_v_ms` / `delta_v_required_ms` | bus propulsion / what the orbit needs |
+| `launch_reliability`, `bus_reliability` | chance the launch works / chance the bus survives this mission |
+| `mission_days`, `lifetime_days`, `cruise_days` | planned length / when the mission will really end / trip time |
+| `schedule_months` / `deadline_months`, `ground_stations` | optional features (0, 0 and 1 when off) |
+
+Progress: `phase`, `outcome`, `mission_day` (days since launch), `science_score`, `data_generated_gb`, `data_downlinked_gb`, `data_stored_gb`, `data_lost_gb`, `cost_spent_usd`.
+
+`science_score` is the science returned so far. **In the design phase it shows the forecast** (`science_expected`) so the builder's "Science score" means something; it starts again from 0 at launch.
 
 ## state.issues
 
+Each code appears at most once. Each `message` is written for students and says how to fix the problem. Show it as is.
+
 | code | severity | resource |
 |---|---|---|
-| `missing_<slot>`, `missing_instrument`, `unknown_part` | error | design |
-| `orbit_unreachable`, `mass_over_limit`, `payload_over_bus` | error | mass |
-| `mass_margin_low` | warning | mass |
+| `missing_launch_vehicle`, `missing_orbit`, `missing_bus`, `missing_solar`, `missing_comms`, `missing_instrument` | error | design |
+| `unknown_<key>` (e.g. `unknown_bus`), `unknown_instrument`, `wrong_type_solar`, `wrong_type_battery` | error | design |
+| `orbit_unreachable`, `mass_over_limit`, `added_mass_over_bus` | error | mass |
+| `too_many_instruments`, `bus_too_small`, `delta_v_short` | error | design |
 | `power_negative` | error | power |
-| `power_short`, `battery_small` | warning | power |
-| `downlink_short` | warning | comms |
 | `over_budget` | error | budget |
-| `behind_schedule` | error | time |
-| `objective_mismatch` | warning | design |
-
-Each has a `message` written for students. Show it as is.
+| `behind_schedule` (optional feature) | error | time |
+| `mass_margin_low` | warning | mass |
+| `no_station_keeping`, `off_best_orbit`, `radiation_risk`, `science_short` | warning | design |
+| `power_short`, `power_fades`, `battery_small` | warning | power |
+| `link_weak`, `downlink_short` | warning | comms |
+| `bus_life_short`, `orbit_life_short` | warning | time |
 
 ## Events
 
-`scenario_started` (first step), `threshold_crossed` (a budget bar goes over or back under its limit in design; storage fills or the science goal is reached in flight), `phase_changed`, `entity_added` (the body and the `spacecraft` at launch), `warning` (refused launch, locked design, random events), `scenario_ended`.
+`scenario_started` (first step), `threshold_crossed` (in design: `mass_kg`, `added_mass_kg`, `power_w`, `cost_usd` or `schedule_months` goes over or back under its limit; in flight: `data_stored_gb` when storage fills, `science_score` when the goal is reached), `phase_changed`, `entity_added` (the body and the `spacecraft` at launch), `warning` (refused launch, locked design, random events, the bus or orbit giving out early), `scenario_ended` (`reason` is the outcome: `success`, `science_shortfall`, `launch_failure` or `spacecraft_failure`).
 
 ## Mission view
 
-`state.frame` is `body-centered`: metres, the body (`kind: "body"`, `props.radius_m`) at the origin, the spacecraft (`id: "spacecraft"`) on a circle in the x-y plane. During cruise it spirals out from the surface, which is for looks only.
+`state.frame` is `body-centered`: metres, the body (`kind: "body"`, `props.radius_m`) at the origin, the spacecraft (`id: "spacecraft"`, `props.body`, `props.orbit`, `props.altitude_m`) on a circle in the x-y plane. At launch both are put first in `state.entities`, replacing any entity the scenario listed with the same id (their names are kept). During cruise the spacecraft spirals out from the surface, which is for looks only.
 
 ## summary(state)
 
 `outcome`, `score` (0 to 100: 70 science, 10 budget left, 10 launch margin, 10 data delivered), `grade` (A to F), `science_score`, `science_goal`, `cost_usd`, `budget_usd`, `mass_kg`, `mass_limit_kg`, `data_generated_gb`, `data_downlinked_gb`, `data_lost_gb`, `mission_days_flown`, and `why`: sentences explaining the result.
+
+## The demo scenario in the sim
+
+`sim/demo.test.ts` flies data's demo with `random_failures: false`:
+
+- **Starting design:** no launch blockers, flies 365 days, returns 1.7 of 30 points (`science_shortfall`, grade F). The camera makes 2.16 GB a day and the S-band radio sends 0.375 GB.
+- **Reference design** (12U, camera + IR spectrometer, large wings, X-band): no issues at all, returns 40 points against a target of 30 (`success`, score 94, grade A).
+
+With random failures on (the default when the scenario has no `random_failures` key), a mission can also be lost to bad luck. As of this commit the demo's seed 42 loses the spacecraft on day 193 whichever design flies, so set `random_failures: false` or pick another seed for a live demo.
