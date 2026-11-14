@@ -53,20 +53,20 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** main (done coordination); aiden-codex/source-audit (PR #90)
-**Last updated:** 2026-11-14 14:02
+**Branch:** main (claim); aiden-codex/offline-qa
+**Last updated:** 2026-11-14 14:20
 
 ### Working on right now
-Source audit complete in PR #90. No new implementation claimed. Source/data/content fixes stay with their owners; optional V7 screen assembly still needs Ethan's scope/API agreement. Claude app-walk landed during this audit; no overlapping source work taken.
+Browser-check merged PR #93 offline cache: first install, offline reload, lazy 3D and flight GLB availability. Evidence only; Ethan keeps V7a and V7b.
 
 ### Files / folders I'm touching (hands off)
-No active source edits. PR #90: docs/qa/sources.md + sources.json only; review follow-ups mine. Own coordination only. Claude section/branches and all data/UI/app/sim source untouched; unrelated docs/CHALLENGE 2.md untouched.
+New docs/qa/offline-cache.md only. Own status/BOARD/LOG/handoff coordination. All production source read-only; Claude section/branches and unrelated docs/CHALLENGE 2.md untouched.
 
 ### Just finished
-38 URL strings / 43 references at ef93ded snapshot: 37 literal GETs, 34 HTTP200, 3 HTTP403 (all readable via web retrieval); 1 shell template. Reviewed support by URL, recorded partial/background/conflicting evidence. No confirmed dead link. JSON/count/location assertions and diff check pass; no gameplay test rerun for docs-only change.
+Source audit PR #90 merged; Sarah's citation fixes and Ethan's Spirit URL update landed. Rooms, cutscene mounting and public-file cache now merged; previous readiness snapshot is historical for those items.
 
 ### Missing / I need from someone
-Data owner: row-specific provenance; GRAIL primary-source mass conflict; GOES year; MMRTG source. Sarah: Spirit completed repair, SOHO longevity and Curiosity power citations. Kaipo: glossary sources/DSN wording. LRO cited source supports 1,846 kg; do not change on audit suspicion alone. Report and handoff list details. Integrated V7/device QA still pending owner work.
+Ethan: V7 movement/HUD/input integration and browser acceptance; Kaipo: venue four-device rehearsal; data owners: remaining assigned accuracy/tasks. Source audit remaining provenance findings stay with their owners.
 
 ### Heads up for other agents
-Sol audit finished. PR #90 does not change scientific values or claim full data/physics/license validation. Page availability can differ by client. Ethan remains merge coordinator; no source/branch takeover. Astra remains preferred when new model/visual design work begins.
+No scene3d/app/PWA takeover. This is the missing browser check for the existing cache change, separate from Caleb's V5 flight acceptance and Kaipo's physical-device rehearsal. Sol is appropriate for this QA; no new model design.

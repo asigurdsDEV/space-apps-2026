@@ -7,19 +7,23 @@ created: 2026-11-14 16:50
 
 ## What I need / what I'm handing off
 
-Change of split for the real planet maps (your handoff 20261114-1830). Ethan has asked me to build the surface maps now, and to hand **one model to you: Earth**, the one you asked for.
+A request from Ethan about your "Realistic planets from real NASA maps" claim. **Your claim stands and I am not touching `shaders.ts`, `maps/` or the map wiring until you answer.**
 
-- **Yours: Earth.** The Earth branch of `planetShader`, `cloudShader` and `atmosphereShader` in `ui/scene3d/shaders.ts`, plus `ui/scene3d/maps/earth*.jpg` (Blue Marble day map, Black Marble city lights if you want them). Real continents, oceans, ice, night lights; keep the sun glint, rim and cloud animation.
-- **Mine, starting now: the Moon and Mars** (their branches of `planetShader`, `maps/moon*.jpg`, `maps/mars*.jpg`) and the shared plumbing: a `uMap` sampler and a `uHasMap` switch on every planet material, loaded in `world.ts` from `ui/scene3d/maps/index.ts`, with today's procedural look as the fallback while a map decodes or if it fails. I will push that plumbing first so Earth only needs a map file, one line in `maps/index.ts` and your shader branch.
-- Same file, different branches: please do not reformat `shaders.ts`, and merge `origin/main` before you push. I merge your PR as soon as it passes `tsc`, tests and build.
-- Size: keep Earth's maps under about 150 kB together (1024x512 is enough; the procedural detail stays on top for close-ups). Put the NASA credit and source URL for each map in `ui/scene3d/maps/README.md` (I will create it with the Moon and Mars rows).
+Ethan asked me to build the planet surface maps and to leave **one model with you**. You claimed all three a few minutes before I read that, so here is the split he is asking for; say yes or no:
 
-If you cannot do Earth today, say so here and I will do it.
+- **You keep Earth** (the one you asked for in handoff 1830): Blue Marble day map, night lights, the Earth branch of `planetShader`, `cloudShader`, `atmosphereShader`, and the shared plumbing (the map sampler on the planet materials in `world.ts`, `maps/index.ts`, the README with credits), since you are already building it.
+- **You release the Moon and Mars to me:** their branches of `planetShader` and `maps/moon*`, `maps/mars*`. I add real elevation for relief shading at the day/night line on top of the colour maps, and carry the maps into the launch scene and the sky companions (Earth seen from the Moon, the Moon seen from Earth).
+
+If you have already built the Moon and Mars, keep them: push the PR, I merge it, and I add the relief and the other scenes afterwards. Nothing of yours gets redone either way.
+
+Reply here with one line: **"split"** (I take the Moon and Mars once your plumbing is pushed) or **"keeping all three"**.
 
 ## Context (files, branches, commits)
 
-My branch: `ethan-claude/planet-maps`. The launch scene (`ui/scene3d/launch/scene.ts`) and the sky companions in `world.ts` also draw planets with `planetShader`; I will pass the maps there.
+- Your claim: BOARD → In progress, "Realistic planets from real NASA maps".
+- I am preparing Moon and Mars colour and elevation maps in a scratch folder only (NASA SVS CGI Moon Kit, USGS Viking MDIM 2.1 and MOLA). Nothing goes into the repo until you answer.
+- Other places that draw a planet with `planetShader` and `{ uSun, uBody }`: `ui/scene3d/launch/scene.ts` and the sky companions in `world.ts`. Please keep those two uniforms working without a map.
 
 ## What "done" looks like
 
-Earth in the game is drawn from real NASA imagery, in a PR from you. Set to `done` then.
+You have answered, and all three bodies are drawn from real NASA imagery on `main`. Set to `done` then.
