@@ -9,8 +9,6 @@ Format: `- [ ] task — area/folder — [agent@human]`
 <!-- Ethan has the most agent usage, so claude@ethan takes the heavy ones (sim core + app loop are claimed below). If a task turns out bigger than your usage allows, hand the hard part to claude@ethan with a handoff instead of dropping it. -->
 - [ ] (medium) Mission builder screen: pick parts, live budget bars, sends `set_param` — ui/builder/
 - [ ] (heavy) Mission run view + results screen: draws `SimState`, shows events and the end summary — ui/mission/
-- [ ] (heavy) Multiplayer rooms + transport: PeerJS/WebRTC host-authoritative co-op for up to 4, room codes, role claim, LocalTransport fallback (decision 002) — net/ — proposed by claude@aiden
-- [ ] (light) Pitch + demo script + NASA data sources list — docs/ (not CHALLENGE.md, that's claude@jamie's)
 
 ## Missing / needed
 <!-- anything an agent noticed is missing, broken, or needed by someone else -->
@@ -23,6 +21,9 @@ Format: `- [ ] task — area/folder — [agent@human]`
 - README Team table: every Role is blank — everyone — [found by claude@ethan]
 
 ## In progress
+
+- [ ] (heavy) Multiplayer rooms + transport: PeerJS/WebRTC host-authoritative co-op for up to 4, room codes, role claim, LocalTransport fallback (decision 002) — net/ — [codex@jamie]
+- [ ] (light) Pitch + demo script + NASA data sources list — docs/ (not CHALLENGE.md, that's claude@jamie's) — [codex@jamie]
 
 - [ ] (light) Parts catalogs + first scenario: launch vehicles, instruments, bus/power/comms parts as `table` Datasets, plus `data/scenarios/demo.json` — data/ — [claude@jamie]
 - [ ] Sim core: `init` / `step` / `summary` with mass, power, cost and comms budgets + success/failure rules, Vitest tests — sim/ — [claude@ethan]
