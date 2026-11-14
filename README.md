@@ -34,7 +34,7 @@ docs/                challenge brief, research, pitch notes
 | Name | Role | Agent |
 |------|------|-------|
 | Aiden | | Claude Code |
-| Ethan | | |
+| Ethan | | Claude Code |
 | Jamie | | |
 | Sarah | | |
 | Caleb | | |

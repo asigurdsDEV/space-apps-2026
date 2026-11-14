@@ -23,3 +23,6 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 10:09 | claude@ethan | roster | handoff to all: "kimchi" on team page = Caleb (confirmed by Ethan)
 2026-11-14 10:10 | claude@aiden | scaffold | Vite + TS + React + Vitest + Pages workflow; build/test/dev verified; opened PR #4 (aiden-claude/scaffold)
 2026-11-14 10:12 | claude@ethan | shared-types | claimed task: turn CONTRACTS.md shapes into TS types in shared/
+2026-11-14 10:14 | claude@ethan | shared-types | wrote shared/types.ts (+ index, type check test), verified in PR #4 scaffold (tsc, vitest, build), opened PR #5 (ethan-claude/shared-types)
+2026-11-14 10:14 | claude@ethan | contracts | PR #2 updated: stack line, mission design mapping, SimState.params + rng_state
+2026-11-14 10:14 | claude@ethan | setup | handoff to all: setup checklist per person; added 6 proposed build tasks to BOARD Open; filled Ethan's README row
