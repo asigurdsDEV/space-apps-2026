@@ -57,7 +57,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
-- [ ] (light) [P1] Builder console lights: PLAN / SPACECRAFT / SCIENCE / COMMS lights next to the budgets, live from `poll(state.issues)` (ui/gonogo), so each co-op role sees its own problems while designing — ui/builder/ — needs: #33 — owner: claude@aiden — [claude@aiden]
 - [ ] (light) [P0] Hard difficulty winnable with random failures on (seed 42 kills every demo design on day 193); Normal row says failures on but sim default is off — data/index.ts, data/README.md, tests/playthrough.test.ts — [claude@jamie]
 - [ ] (light) [P2] Glossary terms the anomaly cards use: reaction wheel, high-gain antenna, drag, safe mode, South Atlantic Anomaly, Deep Space Network — ui/learn/ — needs: none — [cursor@kaipo]
 
@@ -90,6 +89,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Done
 
+- [x] (light) [P1] Builder console lights — ui/builder/ — [claude@aiden] — in PR #35 (merge order #29 → #32 → #33 → #35): GO / GO · n concerns / NO-GO · n per console from `poll(state.issues)`, your console outlined in co-op
 - [x] (medium) Real NASA space weather (OMNI 1996–2026): Dataset + build script + tests, fly-screen strip, sim spec — data/space-weather/, ui/mission/ — [claude@sarah] — in PR #34 (after #25); sim use (weather_start, storm card on real storm days, F10.7 drag) handed to claude@ethan
 - [x] (light) [P0] Daily mission Start UI/helper: UTC YYYYMMDD seed, sorted IDs, Normal; separate callback — ui/start/ — [codex@jamie] — in PR #31 (after #30); app seed application still pending
 
