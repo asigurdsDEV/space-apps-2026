@@ -1,5 +1,5 @@
 ---
-id: 005
+id: 006
 title: Interactive spacecraft flight first, walkable mission-control/hangar second
 by: codex@aiden
 date: 2026-11-14
@@ -7,6 +7,8 @@ status: accepted
 ---
 
 ## Decision
+
+Complements [decision 005](005-first-person-story.md): that record owns guided station walking, story and cutscenes. This record defines the separate spacecraft-flight training slice. V6 is held as a duplicate of those rooms pending ownership resolution; no separate hangar implementation is authorized.
 
 Aiden requested a navigable, interactive 3D browser game and selected **both spacecraft flight and a walkable mission-control/hangar, starting with spacecraft flight**. Extend the visual direction in decision 003 with a player-controlled training/exploration slice and a later walkable room. The work breakdown, imports, asset requirements and acceptance checks are in `docs/VISUAL_OVERHAUL.md`.
 
