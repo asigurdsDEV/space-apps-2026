@@ -16,6 +16,7 @@ import { GoNoGoPoll } from '../ui/gonogo'
 import { LocalLeaderboard } from '../ui/leaderboard'
 import { LobbyScreen } from '../ui/lobby'
 import { MissionScreen, stars } from '../ui/mission'
+import { LaunchView as SceneLaunchView } from '../ui/scene3d'
 import { designFromHash, SharePanel } from '../ui/share'
 import { dailyMissionForDate, StartScreen, type DailyMission, type DailyMissionRequest, type StartRequest } from '../ui/start'
 import { BuilderTutorial } from '../ui/tutorial'
@@ -390,12 +391,13 @@ function Design({ session, config }: { session: Session; config: Config }) {
 }
 
 /**
- * LAUNCH SEAM. ui/scene3d's launch sequence goes here: set this to its `LaunchView` and it is
- * shown after every successful launch, between the builder and the mission screen, until it
- * calls `onDone`. The sim keeps flying underneath (send `pause` and `resume` around it if the
- * sequence should hold the clock). While it is null the game goes straight to the mission screen.
+ * The launch cinematic from ui/scene3d (decision 005's launch cutscene), shown after every
+ * successful launch, between the poll and the mission screen, until it calls `onDone` (it has
+ * its own Skip). Set this to null and the game goes straight to the mission screen.
  */
-const LaunchView = null as ComponentType<{ state: SimState; onDone: () => void }> | null
+const LaunchView = SceneLaunchView as ComponentType<{ state: SimState; onDone: () => void }> | null
+/** The story layer's plain launch cutscene is not played on top of the real one. */
+const SHOWN_BY_APP = ['launch']
 
 /** The summary the sim sent with `scenario_ended`. */
 function finalSummary(events: readonly SimEvent[]): Summary | undefined {
@@ -424,11 +426,13 @@ type SpaceWeatherData = typeof import('../data/space-weather')
 /** Everything after launch: (the launch sequence,) cruise and operations, then the results with the personal best. */
 function Flight({ session, config, daily, online }: { session: Session; config: Config; daily?: DailyMission; online?: boolean }) {
   const { state, events, paused, speed, players, me } = useSession(session)
-  const [launchDone, setLaunchDone] = useState(false)
+  // A late joiner or a reload lands mid-mission: no launch to watch.
+  const [launchDone, setLaunchDone] = useState(() => session.getSnapshot().state.t_s > 86400)
   // 340 kB of real NASA data, so it is loaded only once a mission flies.
   const [weather, setWeather] = useState<SpaceWeatherData | null>(null)
   useEffect(() => {
     if (session.getSnapshot().state.status !== 'ended') playSound('launch') // Flight mounts when the mission leaves design
+    if (LaunchView && !launchDone) holdClock(true) // nothing flies unseen during the launch
     void import('../data/space-weather').then(setWeather, () => {})
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -454,7 +458,13 @@ function Flight({ session, config, daily, online }: { session: Session; config: 
     [ended],
   )
 
-  if (LaunchView && !launchDone && !ended) return <LaunchView state={state} onDone={() => setLaunchDone(true)} />
+  if (LaunchView && !launchDone && !ended) {
+    const done = () => {
+      holdClock(false)
+      setLaunchDone(true)
+    }
+    return <LaunchView state={state} onDone={done} />
+  }
 
   const summary = ended ? finalSummary(events) : undefined
   const bonusGoal = typeof config.params.bonus_goal === 'string' ? config.params.bonus_goal : undefined
@@ -498,7 +508,7 @@ function Flight({ session, config, daily, online }: { session: Session; config: 
           />
         </div>
       )}
-      <StoryLayer screen="flight" events={events} scenarioId={state.scenario_id} onCutscene={holdClock} />
+      <StoryLayer screen="flight" events={events} scenarioId={state.scenario_id} onCutscene={holdClock} shown={SHOWN_BY_APP} />
     </>
   )
 }
