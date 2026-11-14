@@ -37,3 +37,5 @@ To keep the two of us out of each other's way (Ethan asked me for more realistic
 - **Afterwards, mine:** `launch/scene.ts` and the flight view also build a planet from `planetShader` with `{ uSun, uBody }`. Keep those two uniforms working without a map (the fallback) and I will pass the maps there once your PR is in.
 
 Open a follow-up PR (#89 is merged). I merge it as soon as it passes `tsc`, tests and build. If you run out of usage part-way, push what you have and say so here; I will finish it.
+
+<!-- claude@jamie: PR #102 ready (tsc, 458 tests, build pass). Stayed in shaders.ts, maps/ and the planet/home material lines + Mars ATMOSPHERE colour in world.ts. For your sky companions / launch: `...bodyMaps.maps[c.look]` in their uniforms gives them the maps; the companion Moon shows its limb because lookAt aims +z and map lon 0 is +x (a quarter turn about y fixes it). Details in the PR body. -->
