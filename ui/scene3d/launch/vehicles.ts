@@ -88,13 +88,13 @@ export const KNOWN: Record<string, Shape> = {
     boosters: { count: 6, radius: 0.8, length: 21.9 },
     events: { maxq: 76, boosters: 110, staging: 299, fairing: 323, seco: 945, deploy: 3000 },
   },
-  // Atlas V 401 (MAVEN, LRO): 58.3 m tall, 3.81 m x 32.5 m booster with one twin-nozzle RD-180, 3.05 m Centaur, 4.2 m x 12 m fairing.
+  // Atlas V 401 (MAVEN, LRO): 58.3 m tall, 3.81 m x 32.5 m booster with one twin-nozzle RD-180, 3.05 m Centaur, 4.2 m x 12.9 m fairing.
   'atlas-v': {
     ...BASE, model: 'atlas-v',
     s1: { radius: 1.905, length: 32.5, engines: 2, propellant: 'kerolox' },
     interstage: { length: 3.8, topRadius: 1.525 },
-    s2: { radius: 1.525, length: 10, engines: 1, propellant: 'hydrolox' },
-    fairing: { radius: 2.1, length: 12 },
+    s2: { radius: 1.525, length: 9.1, engines: 1, propellant: 'hydrolox' },
+    fairing: { radius: 2.1, length: 12.9 },
     events: { maxq: 92, staging: 242, fairing: 266, seco: 810, deploy: 3160 },
   },
   // Delta IV Heavy (Parker Solar Probe): 72 m tall, three 5.1 m x 40.8 m common booster cores, 5 m upper stage, 19.1 m fairing.
@@ -113,7 +113,7 @@ export const KNOWN: Record<string, Shape> = {
     ...BASE, model: 'sls-block-1',
     s1: { radius: 4.2, length: 64.6, engines: 4, propellant: 'hydrolox' },
     interstage: { length: 8.4, topRadius: 2.5 },
-    s2: { radius: 2.5, length: 6, engines: 1, propellant: 'hydrolox' },
+    s2: { radius: 2.55, length: 6, engines: 1, propellant: 'hydrolox' },
     fairing: { radius: 2.5, length: 19 },
     boosters: { count: 2, radius: 1.85, length: 54 },
     // Orion's panels and tower go before the core stage is empty: the core burns for eight minutes.

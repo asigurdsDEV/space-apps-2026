@@ -230,7 +230,7 @@ function atlas(spec: RocketSpec): RocketModel {
 
   // 4 m fairing: a boat-tail up from the Centaur, a barrel, then a cone with a rounded cap.
   const F = spec.fairing
-  const fairing = fairingHalves(st, [[top, 0], [F.radius, 1], [F.radius, 7.2], [0.55, 11.3], ...dome(0.55, F.length - 11.3, 11.3)], whiteFairing([0.09, 0.6]))
+  const fairing = fairingHalves(st, [[top, 0], [F.radius, 1], [F.radius, 8.1], [0.55, F.length - 0.7], ...dome(0.55, 0.7, F.length - 0.7)], whiteFairing([0.09, 0.6]))
   const bay = payloadBay(st, spec.s2.length, spec.s2.length + F.length, F.radius * 0.9, 1)
   return finish(st, {
     fairing, ...bay,
@@ -320,7 +320,7 @@ function sls(spec: RocketSpec): RocketModel {
 
   // ICPS: the hydrogen tank shows above the cone; the oxygen tank and the RL10 hang down inside it.
   const icps = 4.5
-  put(upper, tube(spec.s2.radius, spec.s2.radius, icps, 48), skin({ base: WHITE, seams: [0.06, 0.94], roughness: 0.5 }, 8, 64))
+  put(upper, tube(spec.s2.radius, spec.s2.radius, icps, 48), skin({ base: '#e8e4da', seams: [0.06, 0.94], roughness: 0.6 }, 8, 64))
   put(upper, new THREE.SphereGeometry(1.6, 20, 12).scale(1, 0.65, 1), k.metal, 0, -1.2)
   put(upper, bell(1.07, 2.4, 22), k.bell, 0, -2.2)
   // Orion stage adapter ring, where Artemis I carried its CubeSats.
@@ -329,11 +329,12 @@ function sls(spec: RocketSpec): RocketModel {
   // Orion's place: panels round the service module that split away, and the launch abort system
   // (the ogive cover and its tower of solid motors) that pulls off forward.
   const F = spec.fairing
-  const panels = 4.8
+  // The launch abort system is 13.4 m (44 ft) from the base of its cover to the tip; the panels fill the rest.
+  const panels = F.length - 13.4
   const fairing = fairingHalves(st, [[F.radius, 0], [F.radius * 1.03, 0.5], [F.radius * 1.03, panels]], whiteFairing([0.1]))
   const escape = new THREE.Group()
   escape.position.y = spec.s2.length + panels
-  const coverTop = 5.6
+  const coverTop = 5.2
   const cover: Profile = [[F.radius * 1.03, 0]]
   for (let i = 0; i <= 8; i++) cover.push([0.46 + (F.radius * 1.03 - 0.46) * Math.cos((i / 8) * (Math.PI / 2)), 0.5 + (i / 8) * (coverTop - 0.5)])
   put(escape, lathe(cover, 40), skin({ base: WHITE, seams: [0.09], shell: true, roughness: 0.42 }))
