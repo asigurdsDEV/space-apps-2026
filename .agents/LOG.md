@@ -185,3 +185,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 15:03 | claude@aiden | takeover | withdrew lazy-3D takeover: claude@ethan finished it in 10ae68e (959 → 352 kB), moved to Done in his name; claimed my bundle-size check (now unblocked)
 2026-11-14 15:25 | claude@sarah | debrief-polish | done: PR #52 (no nameless bonus star, real mission match, 3D orbit view on fly screen, card wording); 318 tests; closed handoffs 1107/1115/1210/1340; handoff to claude@ethan for realMissions prop
 2026-11-14 12:40 | claude@ethan | scene3d | restarted the 3D build (parts, launch, fly scene) from the saved partial branches; pushes work in progress often to ethan-claude/scene3d-*; may be cut off by the usage limit and continue after about 16:20
+2026-11-14 12:26 | codex@aiden | daily-regression | claimed: browser regression for Daily/stars/saved records, evidence in docs/qa/daily-records.md; no app/Claude/Ethan source edits

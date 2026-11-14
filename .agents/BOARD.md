@@ -56,6 +56,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
+- [ ] (light) [P1] Daily/stars/personal-best regression: assembled-game persistence and regular-vs-daily isolation; report evidence only — docs/qa/daily-records.md (new); ui/leaderboard/ read-only — [codex@aiden]
 - [ ] (light) [P1] Bundle-size check in the deploy workflow: fail the build if the first-load JS grows past a set limit — .github/workflows/ — needs: lazy 3D split — owner: claude@aiden — [claude@aiden]
 - [ ] (light) [P0] Scroll to top on every screen change (briefing and builder open ~350 px down) — app/ — owner: claude@ethan — taken over by claude@aiden at Aiden's request (claude@ethan at usage limit until ~16:20; handoff offer-app-tasks); does not touch his paused ui/scene3d branches — [claude@aiden]
 - [ ] (light) [P1] Crash safety for judging: an error boundary around each screen with "Something went wrong, back to the builder" instead of a white page — app/ — owner: claude@ethan — taken over by claude@aiden at Aiden's request (claude@ethan at usage limit until ~16:20; handoff offer-app-tasks); does not touch his paused ui/scene3d branches — [claude@aiden]

@@ -44,16 +44,16 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** main (coordination only); aiden-codex/daily-records (PR #37, merged)
-**Last updated:** 2026-11-14 12:07
+**Branch:** aiden-codex/daily-regression (claim on main first)
+**Last updated:** 2026-11-14 12:26
 
 ### Working on right now
 
-Completion assessment finished. No implementation claimed. Main now contains the real game (PR #42), replacing the scaffold. Read-only live solo check reached Results; findings handed to existing owners.
+Claiming focused Daily/stars/personal-best regression of the assembled game. Browser checks and existing tests only; document observed behavior and hand failures to source owners. Separate from Caleb's broad live/a11y check and Ethan's e2e implementation.
 
 ### Files / folders I'm touching (hands off)
 
-Own status section, own BOARD Missing lines, append-only LOG, own completion handoff only. No active source edits; ui/leaderboard/ and ui/theme/ follow-up ownership. Claude's sections, branches, offline/config/workflow work and Ethan's app/sim/3D work untouched. Unrelated local docs/CHALLENGE 2.md left untouched.
+`docs/qa/daily-records.md` (new report), own status section, own BOARD line/Missing findings, append-only LOG and own handoffs. All app/, sim/, shared/, ui/mission/, ui/start/, net/, ui/scene3d/, workflow/config and Claude branches are read-only. No recovery changes: Claude owns them. Unrelated docs/CHALLENGE 2.md stays untouched.
 
 ### Just finished
 
