@@ -12,6 +12,7 @@ import {
   termFor,
   columnLabel,
   formatValue,
+  partFit,
   parseIds,
   slotColumns,
   slotParts,
@@ -125,8 +126,10 @@ export function MissionBuilder({ state, send, slots = DEFAULT_SLOTS, players = N
                         const inputId = `mb-${slot.key}-${part.id}`
                         const checked = picked.includes(part.id)
                         const description = part.props.description
+                        const fit = partFit(part, state)
+                        const rowClass = [checked && 'is-picked', fit.dim && 'is-dim'].filter(Boolean).join(' ')
                         return (
-                          <tr key={part.id} className={checked ? 'is-picked' : undefined}>
+                          <tr key={part.id} className={rowClass || undefined}>
                             <td>
                               <input
                                 id={inputId}
@@ -138,6 +141,11 @@ export function MissionBuilder({ state, send, slots = DEFAULT_SLOTS, players = N
                             </td>
                             <td>
                               <label htmlFor={inputId} className="mb-name">{part.name}</label>
+                              {fit.badges.map((b) => (
+                                <span key={b.text} className={`mb-badge is-${b.tone}`}>
+                                  {b.text}
+                                </span>
+                              ))}
                               {typeof description === 'string' && <div className="mb-hint">{description}</div>}
                             </td>
                             {columns.map((c) => {
