@@ -51,10 +51,10 @@ export const BASELINE = catalogEntities(getDatasets())
 /** Real missions for the debrief's "your mission is most like…" line. */
 const REAL_MISSIONS = rowsAsObjects(realMissions)
 
-/** Anomaly cards per mission (GAME_DESIGN.md §4.2): easy 1, normal 2, hard 3. A scenario's own `anomaly_cards` wins. */
+/** Anomaly cards per mission (GAME_DESIGN.md §4.2), from data/'s DIFFICULTIES. A scenario's own `anomaly_cards` wins. */
 export const withCards = (config: Config): Config => ({
   ...config,
-  params: { anomaly_cards: config.params.difficulty === 'easy' ? 1 : config.params.difficulty === 'hard' ? 3 : 2, ...config.params },
+  params: { anomaly_cards: DIFFICULTIES[(config.params.difficulty as Difficulty) ?? 'normal']?.anomaly_cards ?? 2, ...config.params },
 })
 
 /**
