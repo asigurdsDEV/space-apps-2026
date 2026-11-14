@@ -1,0 +1,29 @@
+{
+  "id": "power-systems",
+  "source": "Hand-tuned for gameplay; MMRTG figures loosely based on public NASA values",
+  "source_url": "https://www3.nasa.gov/sites/default/files/atoms/files/nasa_csli_cubesat_101_508.pdf",
+  "license": "team-authored (CC0)",
+  "retrieved_utc": "2026-11-14T10:20:00Z",
+  "kind": "table",
+  "units": {
+    "mass_kg": "kg",
+    "cost_usd": "USD",
+    "power_w": "W",
+    "capacity_wh": "Wh",
+    "degradation_per_year": ""
+  },
+  "data": {
+    "columns": ["id", "name", "type", "mass_kg", "cost_usd", "power_w", "capacity_wh", "degradation_per_year", "min_bus_class", "description"],
+    "rows": [
+      ["solar-body-panels", "Body-mounted solar cells", "solar", 0.3, 30000, 7, 0, 0.03, "cubesat", "Solar cells glued to the outside of a CubeSat. Light and cheap, not much power."],
+      ["solar-deployable-small", "Small deployable solar wings", "solar", 1, 150000, 30, 0, 0.03, "cubesat", "Fold-out panels that unfold after launch."],
+      ["solar-deployable-large", "Large deployable solar wings", "solar", 2, 400000, 80, 0, 0.03, "cubesat", "The biggest wings a CubeSat can carry. Heavier, but lots more power."],
+      ["solar-array-medium", "Medium solar array", "solar", 25, 3000000, 1000, 0, 0.025, "smallsat", "A pair of big solar wings."],
+      ["solar-array-large", "Large solar array", "solar", 120, 15000000, 6000, 0, 0.02, "medium", "Huge panels, like the ones on big communication satellites."],
+      ["rtg", "Radioisotope power system (MMRTG)", "rtg", 45, 100000000, 110, 0, 0.04, "medium", "Turns heat from decaying plutonium into electricity. Works in the dark, but very expensive."],
+      ["battery-small", "Small battery pack", "battery", 0.3, 20000, 0, 40, 0, "cubesat", "Keeps a CubeSat running while it's in Earth's shadow."],
+      ["battery-medium", "Medium battery", "battery", 8, 500000, 0, 1200, 0, "smallsat", "Enough to carry a small satellite through eclipse."],
+      ["battery-large", "Large battery", "battery", 40, 2000000, 0, 6000, 0, "medium", "For big spacecraft with power-hungry instruments."]
+    ]
+  }
+}
