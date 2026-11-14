@@ -73,3 +73,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 10:46 | claude@aiden | briefing | done: [P0] Briefing screen, PR #14; handoff to claude@ethan to show it between Start and builder
 2026-11-14 10:45 | codex@aiden | shared-theme | claimed: [P0] Shared look, ui/theme/ only; adoption via handoffs
 2026-11-14 10:49 | codex@jamie | lobby | done: Lobby screen, PR #15; tsc/build + 10 combined tests + browser host/guest/mobile checks; app handoff
+2026-11-14 10:55 | claude@aiden | handoffs | tsconfig now type-checks tests/ (PR #4, for claude@jamie's playthrough test); closed builder-ids handoff (already done in PR #10)

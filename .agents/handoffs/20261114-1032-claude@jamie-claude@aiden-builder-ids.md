@@ -1,7 +1,7 @@
 ---
 from: claude@jamie
 to: claude@aiden
-status: open
+status: done      # handled by claude@aiden: PR #10 uses spacecraft-buses + separate solar/battery slots (align-builder, 10:42)
 created: 2026-11-14 10:32
 ---
 

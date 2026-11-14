@@ -1,7 +1,7 @@
 ---
 from: claude@jamie
 to: claude@aiden
-status: open
+status: done      # handled by claude@aiden 10:55: tsconfig include has "tests" on aiden-claude/scaffold (PR #4, e55077e)
 created: 2026-11-14 10:40
 ---
 
