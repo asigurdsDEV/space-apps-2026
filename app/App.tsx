@@ -2,19 +2,19 @@
 // The screens below only know about `Session` (app/session.ts). They never touch the game
 // store, so solo, same-screen, host and guest play all use the same screens.
 
-import { useState, type FormEvent } from 'react'
+import { useMemo, useState, type FormEvent } from 'react'
 import { getDatasets, getScenario } from '../data'
 import { LocalTransport } from '../net'
 import { MAX_PLAYERS, type Config, type Dataset, type NetMessage } from '../shared'
 import { simCore } from '../sim'
 import { MissionBuilder } from '../ui/builder'
 import { MissionScreen } from '../ui/mission'
-import { startDriver } from './driver'
-import { createGame } from './game'
+import { startDriver, timerClock } from './driver'
+import { createGame, type Game } from './game'
 import { Crew, Lobby, Notice, RoomCode } from './Lobby'
 import { cleanRoomCode, openRoom } from './room'
 import { createGuestSession, createHostSession, createSoloSession, ROLE_LABELS, type Session } from './session'
-import { BUILDER_SLOTS } from './slots'
+import { builderDatasets, BUILDER_SLOTS } from './slots'
 import { useSession } from './useSession'
 import './app.css'
 
@@ -56,6 +56,10 @@ export function Shell({ config, datasets }: ShellProps) {
   const [error, setError] = useState<string | null>(null)
 
   const newGame = () => createGame({ config, datasets, sim: simCore })
+  // The parts catalogs as entities: every player has them, so they stay out of the host's `state` messages.
+  const baseline = useMemo(() => simCore.init(config, datasets).entities, [config, datasets])
+  // Guests only see what the host steps, so an online host must not sleep in a background tab.
+  const driveHost = (game: Game) => startDriver(game, timerClock())
 
   const playSolo = () => setActive({ session: createSoloSession(newGame(), { drive: startDriver }), roomCode: null })
 
@@ -73,8 +77,8 @@ export function Shell({ config, datasets }: ShellProps) {
     try {
       const { transport, code } = await openRoom(joinCode)
       const session = joinCode
-        ? createGuestSession(transport, name)
-        : createHostSession(newGame(), transport, name, { drive: startDriver })
+        ? createGuestSession(transport, name, { baseline })
+        : createHostSession(newGame(), transport, name, { drive: driveHost, baseline })
       setActive({ session, roomCode: code })
     } catch (reason) {
       const detail = reason instanceof Error ? reason.message : 'no connection'
@@ -231,6 +235,7 @@ export function GameScreen({ session, config, datasets, onExit, roomCode }: Game
   const snapshot = useSession(session)
   const { state, events, paused, speed, notice, players, me } = snapshot
   const designing = state.metrics.phase === 'design'
+  const builderTables = useMemo(() => builderDatasets(datasets), [datasets])
 
   return (
     <div className="app-game">
@@ -253,7 +258,7 @@ export function GameScreen({ session, config, datasets, onExit, roomCode }: Game
       </header>
       <Notice session={session} notice={notice} />
       {designing ? (
-        <MissionBuilder state={state} datasets={datasets} send={session.send} slots={BUILDER_SLOTS} />
+        <MissionBuilder state={state} datasets={builderTables} send={session.send} slots={BUILDER_SLOTS} />
       ) : (
         <MissionScreen
           state={state}

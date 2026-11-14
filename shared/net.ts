@@ -39,12 +39,21 @@ export type NetMessage =
 
 export type NetMessageType = NetMessage['type']
 
-/** Which role owns each design choice (`set_param` key). Keys not listed belong to mission planning. */
+/**
+ * Which role owns each design choice (`set_param` key). These are the only keys a host accepts
+ * (see isDesignKey). `solar`, `battery` and `comms` are the keys data/ and sim/ use; `power`,
+ * `power_system` and `comms_system` are aliases the sim still takes.
+ */
 export const ROLE_PARAM_KEYS: Record<Role, readonly string[]> = {
   'mission-planning': ['orbit', 'launch_vehicle', 'spacecraft_name'],
-  spacecraft: ['bus', 'power_system'],
+  spacecraft: ['bus', 'solar', 'battery', 'power', 'power_system'],
   science: ['instruments'],
-  'comms-resources': ['comms_system', 'ground_stations'],
+  'comms-resources': ['comms', 'comms_system', 'ground_stations'],
+}
+
+/** Is `key` a design choice some role owns? Scenario settings such as `budget_usd` are not: players cannot change them. */
+export function isDesignKey(key: string): boolean {
+  return ROLES.some((role) => ROLE_PARAM_KEYS[role].includes(key))
 }
 
 /**
@@ -76,6 +85,12 @@ export function canSend(role: Role | null, command: Command, claimedRoles: reado
 
 const MAX_NAME_LENGTH = 80
 const MAX_KEY_LENGTH = 64
+/**
+ * Longest `set_param` text value: room for a list of part ids. The sim repeats the value in
+ * issue and warning texts, which must stay under MAX_TEXT_LENGTH or the host's own `state`
+ * message would be refused.
+ */
+export const MAX_PARAM_TEXT_LENGTH = 200
 const MAX_TEXT_LENGTH = 2000
 
 type Obj = Record<string, unknown>
@@ -105,7 +120,12 @@ function commandOk(v: unknown): boolean {
     case 'set_speed':
       return isObj(p) && isNum(p.multiplier)
     case 'set_param':
-      return isObj(p) && isStr(p.key, MAX_KEY_LENGTH) && p.key !== '' && isParamValue(p.value)
+      return (
+        isObj(p) &&
+        isStr(p.key, MAX_KEY_LENGTH) &&
+        p.key !== '' &&
+        (isNum(p.value) || typeof p.value === 'boolean' || isStr(p.value, MAX_PARAM_TEXT_LENGTH))
+      )
     case 'select_entity':
       return isObj(p) && (p.id === null || isStr(p.id, MAX_KEY_LENGTH))
     default:

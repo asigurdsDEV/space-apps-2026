@@ -253,9 +253,9 @@ describe('commands', () => {
     ana.claimRole!('science')
     await settle()
     ana.send(set('orbit')) // mission planning: unclaimed
-    ben.send(set('comms_system')) // Ben has no role at all
+    ben.send(set('comms')) // Ben has no role at all
     await settle()
-    expect(game.getSnapshot().state.params).toMatchObject({ orbit: goodDesign.orbit, comms_system: goodDesign.comms_system })
+    expect(game.getSnapshot().state.params).toMatchObject({ orbit: goodDesign.orbit, comms: goodDesign.comms })
     ben.send(set('instruments')) // science is Ana's
     await settle()
     expect(game.getSnapshot().state.params.instruments).not.toBe(goodDesign.instruments)

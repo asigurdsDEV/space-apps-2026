@@ -3,8 +3,8 @@
 // guest (net/ + shared/net.ts). All three implement the same interface.
 
 import { HostRoom, type Transport } from '../net'
-import type { Command, NetMessage, Player, Role, SimEvent, SimState } from '../shared'
-import { canSend, CONTRACT_VERSION, isNetMessage, ownerRole, ROLES } from '../shared'
+import type { Command, Entity, NetMessage, Player, Role, SimEvent, SimState } from '../shared'
+import { canSend, CONTRACT_VERSION, isDesignKey, isNetMessage, ownerRole, ROLES } from '../shared'
 import type { Game, GameSnapshot } from './game'
 
 export interface SessionSnapshot {
@@ -53,6 +53,16 @@ export interface SoloSessionOptions {
 }
 
 export const SOLO_PLAYER_ID = 'solo'
+
+/** The message of the latest warning in `after` that was not in `before`, or null. */
+function newWarning(before: readonly SimEvent[], after: readonly SimEvent[]): string | null {
+  for (let i = after.length - 1; i >= 0; i--) {
+    const event = after[i]
+    if (before.includes(event)) return null
+    if (event.type === 'warning') return event.payload.message
+  }
+  return null
+}
 
 /** One player, in this browser, holding no role (so `canSend` lets them send everything). No net/ involved. */
 export function createSoloSession(game: Game, options: SoloSessionOptions = {}): Session {
@@ -106,12 +116,7 @@ export function createSoloSession(game: Game, options: SoloSessionOptions = {}):
       const after = game.getSnapshot()
       // A warning the sim raised in answer to this command (a refused launch) becomes the
       // notice. Any other command clears it.
-      let next: string | null = null
-      if (after.events.length >= before.events.length) {
-        for (const event of after.events.slice(before.events.length)) {
-          if (event.type === 'warning') next = event.payload.message
-        }
-      }
+      const next = newWarning(before.events, after.events)
       const changed = after !== before || next !== notice
       notice = next
       if (changed) emit()
@@ -160,6 +165,21 @@ export const STATE_INTERVAL_MS = 100
  */
 const SPEED_METRIC = 'speed_multiplier'
 
+// PeerJS refuses a JSON message of 16,300 bytes and net/ then drops the guest, and the real
+// scenario's SimState alone is larger than that (its entities hold every catalog row). So a
+// `state` message leaves out what the guests already have, and says so in three more metrics:
+/** How many `baseline` entities the guest must put back (all those whose id is not in the message). */
+const BASE_METRIC = 'base_entities'
+/** How many of the events it already holds the guest keeps; the message's events follow them. */
+const EVENTS_KEEP_METRIC = 'events_keep'
+/** Length of the host's event list after this message. */
+const EVENTS_TOTAL_METRIC = 'events_total'
+
+/** Most bytes of events in one `state` message. Older events are left out (late joiners get the newest). */
+export const MAX_EVENT_BYTES = 8000
+
+const SEND_FAILED = 'The latest game state could not be sent to the other players. Try “Reset”, or host a new room.'
+
 const ACTIONS: Record<Command['type'], string> = {
   launch: 'launch the mission',
   pause: 'pause the mission',
@@ -181,6 +201,12 @@ function refusal(command: Command, players: readonly Player[]): string {
 export interface HostSessionOptions {
   /** Same as SoloSessionOptions.drive. */
   drive?: (game: Game) => () => void
+  /**
+   * Entities every guest already has, e.g. `sim.init(config, datasets).entities` (the parts
+   * catalogs). Unchanged ones are left out of `state` messages; guests must be created with
+   * the same list. Without it the whole state is sent, which only suits small scenarios.
+   */
+  baseline?: readonly Entity[]
 }
 
 /**
@@ -203,10 +229,16 @@ export function createHostSession(
   let players: Player[] = room.players
   let stage: SessionSnapshot['stage'] = 'lobby'
   let notice: string | null = null
+  /** A notice about the room itself (room lost, state not sent). Stays until dismissed; commands do not clear it. */
+  let sticky: string | null = null
   let snapshot = build()
   let timer: ReturnType<typeof setTimeout> | undefined
   let lastSent = -Infinity
   let sentPhase: unknown
+  /** The game's event list as of the last `state` message. Empty = the next message starts the guests' list again. */
+  let sentEvents: readonly SimEvent[] = []
+  const baseline = options.baseline
+  const baselineJson = new Map(baseline?.map((entity) => [entity.id, JSON.stringify(entity)]))
   let closed = false
 
   function build(): SessionSnapshot {
@@ -218,11 +250,13 @@ export function createHostSession(
     for (const listener of [...listeners]) listener()
   }
 
-  function broadcast(message: NetMessage): void {
+  /** False when the transport is closing or refused the message. The host's own game carries on. */
+  function broadcast(message: NetMessage): boolean {
     try {
       transport.send(message)
+      return true
     } catch {
-      // The transport is closing or refused the message. The host's own game carries on.
+      return false
     }
   }
 
@@ -232,14 +266,46 @@ export function createHostSession(
     lastSent = Date.now()
     const { state, events, paused, speed } = game.getSnapshot()
     sentPhase = state.metrics.phase
+    // Events: only those the guests do not hold yet, newest first until the byte budget is spent.
+    let keep = 0
+    while (keep < sentEvents.length && keep < events.length && sentEvents[keep] === events[keep]) keep++
+    let start = events.length
+    for (let bytes = 0; start > keep; start--) {
+      bytes += JSON.stringify(events[start - 1]).length
+      if (bytes > MAX_EVENT_BYTES) break
+    }
+    // Entities: leave out the baseline ones that have not changed. (If the sim ever removes a
+    // baseline entity the whole list goes out, as there is no way to say "removed".)
+    const ids = new Set(state.entities.map((entity) => entity.id))
+    const compact = baseline !== undefined && baseline.every((entity) => ids.has(entity.id))
     const shown: SimState = {
       ...state,
       status: paused && state.status === 'running' ? 'paused' : state.status,
-      metrics: { ...state.metrics, [SPEED_METRIC]: speed },
+      entities: compact
+        ? state.entities.filter((entity) => baselineJson.get(entity.id) !== JSON.stringify(entity))
+        : state.entities,
+      metrics: {
+        ...state.metrics,
+        [SPEED_METRIC]: speed,
+        [EVENTS_KEEP_METRIC]: keep,
+        [EVENTS_TOTAL_METRIC]: events.length,
+        ...(compact ? { [BASE_METRIC]: baseline.length } : {}),
+      },
     }
-    // shortcut: every message carries the whole event list, so late joiners and resets need
-    // no bookkeeping. Send only the new events if a mission ever produces hundreds.
-    broadcast({ type: 'state', payload: { state: shown, events: [...events] } })
+    const message: NetMessage = { type: 'state', payload: { state: shown, events: events.slice(start) } }
+    // Checked here too, because not every transport validates: a state the guests would refuse must not pass silently.
+    if (isNetMessage(message) && broadcast(message)) {
+      sentEvents = events
+      if (sticky === SEND_FAILED) setSticky(null)
+    } else if (!closed) {
+      setSticky(SEND_FAILED)
+    }
+  }
+
+  function setSticky(text: string | null): void {
+    if (notice === sticky) notice = text
+    sticky = text
+    refresh()
   }
 
   function scheduleState(): void {
@@ -274,16 +340,16 @@ export function createHostSession(
 
   /** Check the sender's role, then run the command. Returns why it was refused, or null. */
   function attempt(player: Player, command: Command): string | null {
+    if (command.type === 'set_param') {
+      // The sim stores any key it is given, so scenario settings (the budget) and made-up keys stop here.
+      if (!isDesignKey(command.payload.key)) return 'That is not a part of the design that players can change.'
+      if (game.getSnapshot().state.metrics.phase !== 'design') return 'The design is locked after launch.'
+    }
     if (!canSend(player.role, command, players.map((p) => p.role))) return refusal(command, players)
     const before = game.getSnapshot().events
     game.send(command)
-    const after = game.getSnapshot().events
     // A warning the sim raised in answer (a refused launch) goes back to whoever sent the command.
-    let warning: string | null = null
-    if (after.length >= before.length) {
-      for (const event of after.slice(before.length)) if (event.type === 'warning') warning = event.payload.message
-    }
-    return warning
+    return newWarning(before, game.getSnapshot().events)
   }
 
   const stopListening = game.subscribe(() => {
@@ -299,7 +365,10 @@ export function createHostSession(
         const result = room.join(from, message.payload.name)
         if (!result.ok) return reject(from, result.reason)
         rosterChanged()
-        if (stage === 'playing') sendState()
+        if (stage === 'playing') {
+          sentEvents = [] // the newcomer holds no events yet
+          sendState()
+        }
         return
       }
       case 'claim_role': {
@@ -339,8 +408,7 @@ export function createHostSession(
     if (closed || (status !== 'error' && status !== 'closed')) return
     for (const player of players) if (!player.is_host) room.leave(player.player_id)
     players = room.players
-    notice = `The online room was lost (${error?.message ?? 'connection closed'}). You can keep playing on this device.`
-    refresh()
+    setSticky(`The online room was lost (${error?.message ?? 'connection closed'}). You can keep playing on this device.`)
   })
 
   const stopDriving = options.drive?.(game)
@@ -355,17 +423,18 @@ export function createHostSession(
     },
     send(command) {
       if (closed) return
-      notice = attempt(players[0], command)
+      notice = attempt(players[0], command) ?? sticky
       refresh()
     },
     dismissNotice() {
       if (notice === null) return
       notice = null
+      sticky = null
       refresh()
     },
     claimRole(role) {
       if (closed) return
-      notice = null
+      notice = sticky
       if (role === null) release(hostId)
       else {
         const result = room.claimRole(hostId, role)
@@ -376,6 +445,7 @@ export function createHostSession(
     start() {
       if (closed || stage !== 'lobby') return
       stage = 'playing'
+      sentEvents = []
       sendState()
       refresh()
     },
@@ -412,12 +482,20 @@ const WAITING_STATE: SimState = {
   rng_state: 0,
 }
 
+export interface GuestSessionOptions {
+  /** The same list the host was given as HostSessionOptions.baseline. */
+  baseline?: readonly Entity[]
+}
+
 /**
  * A guest: no Game and no sim. Sends `join`, then shows whatever the host broadcasts and
  * turns send() into `command` messages. The transport must be ready (connected to the host).
  */
-export function createGuestSession(transport: SessionTransport, name: string): Session {
+export function createGuestSession(transport: SessionTransport, name: string, options: GuestSessionOptions = {}): Session {
   const myId = transport.playerId
+  const baseline = options.baseline ?? []
+  /** The host's event-list length as of the last `state` message. */
+  let eventsTotal = 0
   const listeners = new Set<() => void>()
   let me: Player = { player_id: myId, name, role: null, is_host: false }
   let players: Player[] = []
@@ -468,11 +546,29 @@ export function createGuestSession(transport: SessionTransport, name: string): S
       }
       case 'state': {
         if (!joined) return
-        state = message.payload.state
-        events = message.payload.events
+        const sent = message.payload.state
+        const { [BASE_METRIC]: base, [EVENTS_KEEP_METRIC]: keep, [EVENTS_TOTAL_METRIC]: total } = sent.metrics
+        if (base === undefined) state = sent
+        else if (base !== baseline.length) {
+          roomClosed('This room is playing a different version of the game. Reload the page and join again.')
+          break
+        } else {
+          const changed = new Map(sent.entities.map((entity) => [entity.id, entity]))
+          const merged = baseline.map((entity) => changed.get(entity.id) ?? entity)
+          const known = new Set(baseline.map((entity) => entity.id))
+          state = { ...sent, entities: [...merged, ...sent.entities.filter((entity) => !known.has(entity.id))] }
+        }
+        if (typeof keep === 'number' && typeof total === 'number') {
+          // Drop the events the host has replaced (all of them after a reset), then add the new ones.
+          const stale = Math.max(0, eventsTotal - keep)
+          events = [...events.slice(0, Math.max(0, events.length - stale)), ...message.payload.events]
+          eventsTotal = total
+        } else {
+          events = message.payload.events
+        }
         paused = state.status === 'paused'
-        const sent = state.metrics[SPEED_METRIC]
-        speed = typeof sent === 'number' ? sent : 1
+        const sentSpeed = state.metrics[SPEED_METRIC]
+        speed = typeof sentSpeed === 'number' ? sentSpeed : 1
         stage = 'playing'
         break
       }

@@ -72,7 +72,13 @@ export function createGame({ config, datasets, sim }: GameOptions): Game {
       added.push(...result.events)
     }
     if (state === snapshot.state && added.length === 0) return
-    set({ ...snapshot, state, events: added.length > 0 ? [...snapshot.events, ...added] : snapshot.events })
+    // A refused launch raises a warning, which the session shows as the notice. Only the latest
+    // one is kept while designing and none survive the launch, so the flight log starts clean.
+    const kept =
+      added.length > 0 && snapshot.state.metrics.phase === 'design'
+        ? snapshot.events.filter((event) => event.type !== 'warning')
+        : snapshot.events
+    set({ ...snapshot, state, events: added.length > 0 ? [...kept, ...added] : snapshot.events })
   }
 
   function reset(): void {

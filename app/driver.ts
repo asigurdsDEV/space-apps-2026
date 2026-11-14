@@ -10,16 +10,25 @@ export interface DriverClock {
   cancel(id: number): void
 }
 
-/** requestAnimationFrame where there is one (it sleeps in background tabs), otherwise a 50 ms timer. */
-export function browserClock(): DriverClock {
-  const now = () => performance.now()
-  if (typeof requestAnimationFrame === 'function') {
-    return { now, request: (callback) => requestAnimationFrame(callback), cancel: (id) => cancelAnimationFrame(id) }
-  }
+/**
+ * A 50 ms timer. For an online host: guests only see what the host steps, and a timer keeps
+ * running in a background tab (browsers slow it to about once a second, which advance() handles).
+ */
+export function timerClock(): DriverClock {
   return {
-    now,
+    now: () => performance.now(),
     request: (callback) => setTimeout(callback, 50) as unknown as number,
     cancel: (id) => clearTimeout(id),
+  }
+}
+
+/** requestAnimationFrame where there is one (it sleeps in background tabs), otherwise timerClock. */
+export function browserClock(): DriverClock {
+  if (typeof requestAnimationFrame !== 'function') return timerClock()
+  return {
+    now: () => performance.now(),
+    request: (callback) => requestAnimationFrame(callback),
+    cancel: (id) => cancelAnimationFrame(id),
   }
 }
 
