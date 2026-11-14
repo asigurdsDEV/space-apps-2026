@@ -48,9 +48,10 @@ function fakeBudgets(params: Params): Pick<SimState, 'metrics' | 'issues'> {
   if (genGb > downGb) issues.push({ code: 'data_backlog', severity: 'warning', resource: 'data', message: 'Instruments make data faster than the radio can send it home. Data that never reaches the ground earns no science.' })
   return {
     metrics: {
-      phase: 'design', mass_kg: mass, mass_limit_kg: limit, payload_mass_kg: sum('mass_kg'), payload_limit_kg: Number(bus?.props.max_added_mass_kg ?? 0),
+      phase: 'design', mass_kg: mass, mass_limit_kg: limit, added_mass_kg: sum('mass_kg'), added_mass_limit_kg: Number(bus?.props.max_added_mass_kg ?? 0),
+      battery_wh: Number(entities.find((p) => p.id === params.battery)?.props.capacity_wh ?? 0), battery_needed_wh: load * 1.6 * Number(orbit?.props.eclipse_fraction ?? 0),
       power_w: load, power_available_w: avail, cost_usd: sum('cost_usd'), budget_usd: 8_000_000,
-      data_generated_gb_per_day: genGb, downlink_gb_per_day: downGb, science_per_day: sciPerDay, science_goal: 30, mission_days: 365,
+      data_generated_gb_per_day: genGb, downlink_gb_per_day: downGb, science_expected: sciPerDay * 365, science_goal: 30, mission_days: 365,
     },
     issues,
   }

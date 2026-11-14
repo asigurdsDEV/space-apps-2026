@@ -57,6 +57,16 @@ describe('budgetBars', () => {
     expect(short).toMatchObject({ label: 'Science (projected)', goal: true, bad: true })
     expect(short.used).toBeCloseTo(18.25)
     expect(budgetBars({ science_per_day: 0.1, mission_days: 365, science_goal: 30 })[0].bad).toBe(false)
+    // The sim's forecast wins over the naive product (it knows the radio can't send everything home).
+    expect(budgetBars({ science_expected: 1.7, science_per_day: 0.1, mission_days: 365, science_goal: 30 })[0]).toMatchObject({ used: 1.7, bad: true })
+  })
+
+  it('reads bus capacity and the battery from the reviewed sim metrics', () => {
+    const bars = budgetBars({ added_mass_kg: 2.1, added_mass_limit_kg: 4, battery_wh: 40, battery_needed_wh: 8.7 })
+    expect(bars.map((b) => b.label)).toEqual(['Bus capacity', 'Battery vs. one eclipse'])
+    expect(bars[1]).toMatchObject({ goal: true, bad: false })
+    expect(budgetBars({ battery_wh: 5, battery_needed_wh: 8.7 })[0].bad).toBe(true)
+    expect(budgetBars({ battery_wh: 40, battery_needed_wh: 0 })).toEqual([])
   })
 })
 
