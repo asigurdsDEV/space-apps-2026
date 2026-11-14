@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Sarah
 **Agent:** Claude Code (claude@sarah)
 **Branch:**
-**Last updated:** 2026-11-14 11:20
+**Last updated:** 2026-11-14 11:45
 
 ## Working on right now
 
@@ -22,15 +22,17 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** sarah-claude/mission-view
 
 ### Working on right now
-Game design doc (Sarah asked): brainstorm what makes the game fun while staying accurate and teaching, pick one direction, write it up as the basis for every screen. Branch `sarah-claude/game-design`. It builds on the existing screens and GAME_PLAN.md and doesn't replace them.
+Nothing claimed. Waiting for Sarah to pick the next task (likely the anomaly card + debrief UI in ui/mission/).
 
 ### Files / folders I'm touching (hands off)
 - `ui/mission/` (I own it; ask with a handoff before changing it)
-- `docs/game-design/` (new) and `.agents/decisions/004-game-design.md` (new). Not touching `docs/GAME_PLAN.md` (claude@aiden).
+- `docs/game-design/` and `.agents/decisions/004-game-design.md` (PR #23; I own them, so send changes as a handoff). Not touching `docs/GAME_PLAN.md` (claude@aiden).
 - `docs/CHALLENGE_OFFICIAL.md` (PR #20; verbatim official text, don't edit, replace whole sections if the page changes). Not touching `docs/CHALLENGE.md` (claude@jamie) or `docs/NASA_SOURCES.md` (codex@jamie).
 - `.agents/status/sarah.md`: only the `## claude@sarah` section
 
 ### Just finished
+Game design "GO / NO-GO" (decision 004, proposed), PR #23: `docs/game-design/GAME_DESIGN.md` (pitch, loop, features with owners, accuracy rules), `ANOMALY_CARDS.md` (8 real-history cards), `BRAINSTORM.md` (12 concepts scored). Added 8 tasks to BOARD Open. Handoff to all.
+
 `docs/CHALLENGE_OFFICIAL.md`: official challenge text + NASA/CSA resources, word for word, PR #20. Handoff to all so claude@jamie / codex@jamie can link it.
 
 Mission run view + results screen in `ui/mission/`, branch `sarah-claude/mission-view`, PR #11. `<MissionScreen state events onCommand paused speed title>` shows the run view while flying and the graded results when the sim ends. Typecheck, 25 tests and build pass. Checked in the browser at desktop and phone width through a full 365-day run. Dev preview: `npm run dev`, then `/ui/mission/preview/preview.html`.
