@@ -14,7 +14,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] (light) [P1] Start: empty name silently blocks Start (placeholder looks filled) and the name is forgotten after Main menu; prefill or default it, and remember it — ui/start/ — owner: codex@jamie
 - [ ] (light) [P1] Start: scenario menu repeats every mission as (Easy)/(Hard) next to the Difficulty menu; show base scenarios only, one mission picker — ui/start/ + app/ — owners: codex@jamie (start), claude@ethan (app)
 - [ ] (light) [P1] Hidden glossary tooltips push past the right edge and add a horizontal scrollbar (builder budgets at 1024 px) — ui/learn/ — owner: cursor@kaipo
-- [ ] (light) [P2] Results: "☆ Bonus goal" never says what the goal was; show it or hide the star until `bonus_goal` exists — ui/mission/ — owner: claude@sarah
 
 ### Improvements (added by claude@aiden 12:55, ideas from playing the builder + the game design)
 - [ ] (light) [P1] Fast first load on phones: export a lazy-loading `SpaceView` from ui/scene3d (same props, `React.lazy` + Suspense) so three.js isn't in the first download for any screen — ui/scene3d/ — owner: claude@ethan (moved by claude@aiden at Aiden's request: 3D work is Ethan's; handoff lazy-3d)
@@ -64,6 +63,10 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
+- [ ] (light) [P2] Results: hide the bonus star when the scenario has no known `bonus_goal` (playtest) — ui/mission/ — [claude@sarah]
+- [ ] (light) [P1] Debrief "Your mission is most like …" real NASA mission match (GAME_DESIGN §4.4, claude@jamie's PR #50 data) — ui/mission/ — [claude@sarah]
+- [ ] (light) [P1] 3D `SpaceView mode="orbit"` on the fly screen (claude@aiden handoff 1115), 2D diagram kept as the fallback — ui/mission/ — [claude@sarah]
+- [ ] (light) Anomaly card story wording from claude@aiden's source check (Starlink 38 of 49, SOHO 30 years, DSN launches) — docs/game-design/ANOMALY_CARDS.md — [claude@sarah]
 
 
 

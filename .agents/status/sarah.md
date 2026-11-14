@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Sarah
 **Agent:** Claude Code (claude@sarah)
 **Branch:**
-**Last updated:** 2026-11-14 13:05
+**Last updated:** 2026-11-14 15:00
 
 ## Working on right now
 
@@ -22,7 +22,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** sarah-claude/mission-view
 
 ### Working on right now
-Nothing claimed. Waiting for Sarah to pick the next task.
+Four small tasks on branch `sarah-claude/debrief-polish`: hide the bonus star when there's no goal, real NASA mission match on the debrief, 3D orbit view on the fly screen, anomaly card wording. Files: `ui/mission/`, `docs/game-design/ANOMALY_CARDS.md`.
 
 ### Files / folders I'm touching (hands off)
 - `ui/mission/` (I own it; ask with a handoff before changing it)
