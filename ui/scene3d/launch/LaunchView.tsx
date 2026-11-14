@@ -11,7 +11,10 @@ export interface LaunchViewProps {
   state: Pick<SimState, 'entities' | 'params'>
   /** Called once, when the sequence ends or the player skips it. */
   onDone?: () => void
-  /** The sim reported outcome "launch_failure": the sequence ends with the rocket lost instead of reaching orbit. */
+  /**
+   * The sim reported outcome "launch_failure" (summary(state).outcome, or the scenario_ended event's reason):
+   * the sequence ends with the rocket lost instead of reaching orbit. Pass it from the first render; changing it restarts the sequence.
+   */
   failed?: boolean
   /** Sizes the view; the default height is in launch.css. */
   className?: string
