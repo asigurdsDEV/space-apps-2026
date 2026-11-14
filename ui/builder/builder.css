@@ -104,3 +104,18 @@
 .mb-launch:focus-visible, .mb-table input:focus-visible { outline: 2px solid var(--mb-accent); outline-offset: 2px; }
 .mb-objective { margin: -8px 0 16px; padding: 10px 12px; border-left: 3px solid var(--mb-accent); background: var(--mb-panel); border-radius: 0 6px 6px 0; }
 .mb-table td:nth-child(2) { min-width: 11rem; }
+
+/* co-op roles */
+.mb-role {
+  margin-left: 8px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--mb-pick);
+  color: var(--mb-accent);
+  font-size: 0.8em;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.mb-slot.is-locked .mb-table-wrap { opacity: 0.6; }
+.mb-lock { margin: 4px 0 8px; color: var(--mb-warn); font-size: 0.9em; }
+.mb-changed { margin: 0 0 8px; font-size: 0.85em; }

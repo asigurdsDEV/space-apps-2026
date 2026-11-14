@@ -1,7 +1,13 @@
-import type { Command, Dataset, SimState } from '../../shared'
+import { useEffect, useRef, useState } from 'react'
+import type { Command, Dataset, Player, SimState } from '../../shared'
 import {
   DEFAULT_SLOTS,
+  ROLE_TITLES,
   budgetBars,
+  changedBy,
+  commandAccess,
+  playerLabel,
+  slotAccess,
   columnLabel,
   formatValue,
   parseIds,
@@ -19,14 +25,38 @@ export interface MissionBuilderProps {
   /** Sends a Command to the app loop (or over net/ to the host). */
   send: (command: Command) => void
   slots?: Slot[]
+  /** Co-op roster (Session snapshot `players`). With 2+ players each section shows its role and is locked for other roles. */
+  players?: Player[]
+  /** This browser's player (Session snapshot `me`). */
+  me?: Player
   /** shortcut: unused since parts come from state.entities; kept so app/ code written against the first API still compiles. Remove once app/ stops passing it. */
   datasets?: Dataset[]
 }
 
 const UNIT_HEADERS = new Set(['kg', 'W', 'Wh', 'pts'])
 
-export function MissionBuilder({ state, send, slots = DEFAULT_SLOTS }: MissionBuilderProps) {
-  const setParam = (key: string, value: string) => send({ type: 'set_param', payload: { key, value } })
+const NO_PLAYERS: Player[] = []
+
+export function MissionBuilder({ state, send, slots = DEFAULT_SLOTS, players = NO_PLAYERS, me }: MissionBuilderProps) {
+  const coop = players.length > 1
+  // Who changed what: compare each new params snapshot with the last one.
+  const prevParams = useRef(state.params)
+  const mySends = useRef(new Set<string>())
+  const [lastBy, setLastBy] = useState<Record<string, string>>({})
+  useEffect(() => {
+    if (prevParams.current === state.params) return
+    const keys = slots.map((s) => s.key)
+    const found = changedBy(prevParams.current, state.params, keys, players, me, mySends.current)
+    prevParams.current = state.params
+    for (const key of Object.keys(found)) mySends.current.delete(key)
+    if (coop && Object.keys(found).length > 0) setLastBy((b) => ({ ...b, ...found }))
+  }, [state.params, slots, players, me, coop])
+
+  const setParam = (key: string, value: string) => {
+    mySends.current.add(key)
+    send({ type: 'set_param', payload: { key, value } })
+  }
+  const launch = commandAccess({ type: 'launch', payload: {} }, players, me)
   const errors = state.issues.filter((i) => i.severity === 'error')
   const warnings = state.issues.filter((i) => i.severity === 'warning')
   const bars = budgetBars(state.metrics)
@@ -42,13 +72,26 @@ export function MissionBuilder({ state, send, slots = DEFAULT_SLOTS }: MissionBu
           const columns = slotColumns(slot, state).filter((c) => parts.some((p) => p.props[c] != null))
           const value = state.params[slot.key]
           const picked = slot.multi ? parseIds(value) : typeof value === 'string' ? [value] : []
+          const access = slotAccess(slot.key, players, me)
+          const locked = coop && !access.canEdit
           return (
-            <fieldset key={slot.key} className="mb-slot">
+            <fieldset key={slot.key} className={`mb-slot${locked ? ' is-locked' : ''}`} disabled={locked}>
               <legend>
                 {slot.label}
                 {slot.multi && <span className="mb-muted"> (pick any)</span>}
+                {coop && (
+                  <span className="mb-role">
+                    {ROLE_TITLES[access.role]} · {playerLabel(access.holder, me) ?? 'open to anyone'}
+                  </span>
+                )}
               </legend>
               {slot.hint && <p className="mb-hint">{slot.hint}</p>}
+              {locked && (
+                <p className="mb-lock">
+                  Only {access.holder?.name} ({ROLE_TITLES[access.role]}) can change this. Talk it over with them!
+                </p>
+              )}
+              {coop && lastBy[slot.key] && <p className="mb-muted mb-changed">Last changed by {lastBy[slot.key]}</p>}
               {parts.length === 0 ? (
                 <p className="mb-muted">No parts of this kind loaded yet.</p>
               ) : (
@@ -151,12 +194,15 @@ export function MissionBuilder({ state, send, slots = DEFAULT_SLOTS }: MissionBu
         <button
           type="button"
           className="mb-launch"
-          disabled={errors.length > 0}
+          disabled={errors.length > 0 || !launch.canEdit}
           onClick={() => send({ type: 'launch', payload: {} })}
         >
           Launch mission
         </button>
         {errors.length > 0 && <p className="mb-muted">Fix the issues above to launch.</p>}
+        {errors.length === 0 && !launch.canEdit && (
+          <p className="mb-muted">{launch.holder?.name} ({ROLE_TITLES[launch.role]}) launches when the team is ready.</p>
+        )}
       </aside>
     </div>
   )

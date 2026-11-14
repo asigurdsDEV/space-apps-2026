@@ -1,5 +1,5 @@
 // Pure helpers for the mission builder. No React here, so they're easy to test.
-import type { Entity, Metrics, ParamValue, SimState } from '../../shared'
+import { canSend, ownerRole, type Command, type Entity, type Metrics, type Params, type ParamValue, type Player, type Role, type SimState } from '../../shared'
 
 /** One design choice on the builder screen: a `set_param` key filled from the sim's part entities. */
 export interface Slot {
@@ -152,4 +152,62 @@ export function formatValue(n: number, unit: string): string {
     case '': return n1(n)
     default: return `${n1(n)} ${unit}`
   }
+}
+
+// ---------------------------------------------------------------- co-op roles
+
+/** shortcut: same titles as ui/lobby ROLE_DETAILS (codex@jamie); move both to shared/ if a third screen needs them. */
+export const ROLE_TITLES: Record<Role, string> = {
+  'mission-planning': 'Mission planning',
+  spacecraft: 'Spacecraft',
+  science: 'Science',
+  'comms-resources': 'Communications & resources',
+}
+
+export interface Access {
+  /** The role that owns this choice (shared/net.ts ROLE_PARAM_KEYS). */
+  role: Role
+  /** The player holding that role, or null when nobody has claimed it. */
+  holder: Player | null
+  /** Same rule the host enforces: you hold the role, or nobody does. */
+  canEdit: boolean
+}
+
+/** Who owns a command and whether `me` may send it. Solo (no players) can always send. */
+export function commandAccess(command: Command, players: readonly Player[], me: Player | undefined): Access {
+  const role = ownerRole(command) ?? 'mission-planning'
+  const holder = players.find((p) => p.role === role) ?? null
+  return { role, holder, canEdit: canSend(me?.role ?? null, command, players.map((p) => p.role)) }
+}
+
+export const slotAccess = (key: string, players: readonly Player[], me: Player | undefined): Access =>
+  commandAccess({ type: 'set_param', payload: { key, value: '' } }, players, me)
+
+/** "You", the player's name, or null for an unclaimed role. */
+export function playerLabel(player: Player | null, me: Player | undefined): string | null {
+  if (!player) return null
+  return player.player_id === me?.player_id ? 'You' : player.name
+}
+
+/**
+ * Who made each slot change between two params snapshots: slot key → name.
+ * The host only accepts a change from the role holder (canSend), so a claimed slot was changed by its holder.
+ * An unclaimed slot was changed by me if I sent that key (`mySends`), else by "A teammate".
+ * shortcut: inferred, because state messages don't say who sent each command; switch to the sender once the host includes it.
+ */
+export function changedBy(
+  prev: Params,
+  next: Params,
+  keys: readonly string[],
+  players: readonly Player[],
+  me: Player | undefined,
+  mySends: ReadonlySet<string>,
+): Record<string, string> {
+  const out: Record<string, string> = {}
+  for (const key of keys) {
+    if (prev[key] === next[key]) continue
+    const { holder } = slotAccess(key, players, me)
+    out[key] = playerLabel(holder, me) ?? (mySends.has(key) ? 'You' : 'A teammate')
+  }
+  return out
 }

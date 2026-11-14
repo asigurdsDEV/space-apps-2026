@@ -2,7 +2,7 @@
 // shortcut: a few hand-made parts in data/'s column names + a stand-in for sim budget math. Delete once app/ mounts the builder with the real sim.
 import { StrictMode, useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import type { Command, Entity, Issue, Params, SimState } from '../../shared'
+import type { Command, Entity, Issue, Params, Player, SimState } from '../../shared'
 import { MissionBuilder } from './MissionBuilder'
 import { parseIds } from './model'
 
@@ -61,8 +61,17 @@ const initialParams: Params = {
   launch_vehicle: 'rideshare', orbit: 'sso', bus: 'cubesat-6u', instruments: 'camera-basic', solar: 'solar-deployable-small', battery: 'battery-small', comms: 's-band-patch',
 }
 
+// Co-op stand-in: a 3-player room (comms is unclaimed). Pick who you are from the bar on top.
+const roster: Player[] = [
+  { player_id: 'ana', name: 'Ana', role: 'mission-planning', is_host: true },
+  { player_id: 'kai', name: 'Kai', role: 'science', is_host: false },
+  { player_id: 'sam', name: 'Sam', role: 'spacecraft', is_host: false },
+]
+
 function Preview() {
   const [params, setParams] = useState<Params>(initialParams)
+  const [meId, setMeId] = useState('solo')
+  const me = roster.find((p) => p.player_id === meId)
   const state: SimState = {
     contract_version: '0.1', scenario_id: 'preview', tick: 0, t_s: 0, utc: '2027-01-01T00:00:00Z',
     frame: 'body-centered', status: 'paused', entities, params, rng_state: 1, ...fakeBudgets(params),
@@ -70,7 +79,23 @@ function Preview() {
   const send = (c: Command) => {
     if (c.type === 'set_param') setParams((p) => ({ ...p, [c.payload.key]: c.payload.value }))
   }
-  return <MissionBuilder state={state} send={send} />
+  return (
+    <>
+      <div style={{ padding: 8, display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', font: '14px system-ui' }}>
+        <label>
+          View as{' '}
+          <select value={meId} onChange={(ev) => setMeId(ev.target.value)}>
+            <option value="solo">Solo (no roles)</option>
+            {roster.map((p) => <option key={p.player_id} value={p.player_id}>{p.name} ({p.role})</option>)}
+          </select>
+        </label>
+        <button type="button" onClick={() => setParams((p) => ({ ...p, orbit: p.orbit === 'sso' ? 'leo' : 'sso' }))}>
+          Ana switches the orbit
+        </button>
+      </div>
+      <MissionBuilder state={state} send={send} players={me ? roster : undefined} me={me} />
+    </>
+  )
 }
 
 createRoot(document.getElementById('root')!).render(<StrictMode><Preview /></StrictMode>)

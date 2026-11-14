@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import type { Entity } from '../../shared'
-import { DEFAULT_SLOTS, budgetBars, columnLabel, formatValue, parseIds, slotColumns, slotParts, toggleId, unitOf } from './model'
+import type { Entity, Player } from '../../shared'
+import { DEFAULT_SLOTS, changedBy, commandAccess, slotAccess, budgetBars, columnLabel, formatValue, parseIds, slotColumns, slotParts, toggleId, unitOf } from './model'
 
 const part = (id: string, kind: string, props: Entity['props'] = {}): Entity => ({ id, kind, name: id, props })
 const slot = (key: string) => DEFAULT_SLOTS.find((s) => s.key === key)!
@@ -80,4 +80,39 @@ it('formats values students can read', () => {
   expect(formatValue(2400, 's/day')).toBe('40 min/day')
   expect(formatValue(5 * 365 * 86400, 's')).toBe('5 years')
   expect(formatValue(1500, 'kg')).toBe('1,500 kg')
+})
+
+describe('co-op roles', () => {
+  const host: Player = { player_id: 'h', name: 'Ana', role: 'mission-planning', is_host: true }
+  const sci: Player = { player_id: 'g1', name: 'Kai', role: 'science', is_host: false }
+  const players = [host, sci]
+
+  it('locks slots owned by another player and leaves unclaimed roles open', () => {
+    expect(slotAccess('instruments', players, host)).toEqual({ role: 'science', holder: sci, canEdit: false })
+    expect(slotAccess('instruments', players, sci).canEdit).toBe(true)
+    expect(slotAccess('orbit', players, sci).canEdit).toBe(false)
+    expect(slotAccess('bus', players, sci)).toEqual({ role: 'spacecraft', holder: null, canEdit: true })
+  })
+
+  it('lets a solo player do everything', () => {
+    const solo: Player = { player_id: 'solo', name: 'You', role: null, is_host: true }
+    expect(slotAccess('instruments', [solo], solo).canEdit).toBe(true)
+    expect(commandAccess({ type: 'launch', payload: {} }, [solo], solo).canEdit).toBe(true)
+    expect(slotAccess('orbit', [], undefined).canEdit).toBe(true)
+  })
+
+  it('only the mission planner launches once that role is claimed', () => {
+    expect(commandAccess({ type: 'launch', payload: {} }, players, sci).canEdit).toBe(false)
+    expect(commandAccess({ type: 'launch', payload: {} }, players, host).canEdit).toBe(true)
+  })
+
+  it('says who changed each slot', () => {
+    const prev = { orbit: 'leo', instruments: 'cam', bus: 'a' }
+    const next = { orbit: 'sso', instruments: 'cam,mag', bus: 'b' }
+    expect(changedBy(prev, next, ['orbit', 'instruments', 'bus'], players, sci, new Set())).toEqual({
+      orbit: 'Ana', instruments: 'You', bus: 'A teammate',
+    })
+    expect(changedBy(prev, next, ['bus'], players, sci, new Set(['bus']))).toEqual({ bus: 'You' })
+    expect(changedBy(prev, prev, ['orbit'], players, sci, new Set())).toEqual({})
+  })
 })
