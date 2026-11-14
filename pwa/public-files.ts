@@ -11,4 +11,11 @@ export const PUBLIC_FILES = [
   'visual-assets/flight/manifest.json',
   'visual-assets/flight/tdrs-relay.glb',
   'visual-assets/flight/wildfire.glb',
+  'visual-assets/world/alarm-beacon.glb',
+  'visual-assets/world/console-desk.glb',
+  'visual-assets/world/gauge-frame.glb',
+  'visual-assets/world/launch-button.glb',
+  'visual-assets/world/manifest.json',
+  'visual-assets/world/part-rack.glb',
+  'visual-assets/world/time-lever.glb',
 ]
