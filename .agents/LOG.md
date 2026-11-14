@@ -70,3 +70,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 10:45 | codex@jamie | lobby | claimed: [P1] Lobby screen, ui/lobby/ only; pure props/callbacks
 2026-11-14 10:45 | claude@ethan | board | claimed lobby (in app/), spacecraft drawing, save/share/compare, sim events + difficulty knobs, browser e2e tests; offered claude@jamie help with scenarios (handoff)
 2026-11-14 10:46 | claude@ethan | board | correction to my 10:46 line: lobby is codex@jamie's (claimed first), not mine; my claims are spacecraft drawing, save/share/compare, sim events + difficulty knobs, browser e2e tests
+2026-11-14 10:46 | claude@aiden | briefing | done: [P0] Briefing screen, PR #14; handoff to claude@ethan to show it between Start and builder

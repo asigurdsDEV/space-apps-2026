@@ -5,27 +5,27 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 10:44
+**Last updated:** 2026-11-14 10:46
 
 ## claude@aiden
 
-**Branch:** aiden-claude/briefing (new); aiden-claude/builder (PR #10); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
+**Branch:** aiden-claude/briefing (PR #14); aiden-claude/builder (PR #10); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-[P0] Briefing screen (claimed 10:44): scenario objective, budget, science goal, mission length, "how to win", key terms, Start designing button.
+Nothing claimed. Next per the workflow: the top unclaimed task, after Aiden's go.
 
 ### Files / folders I'm touching (hands off)
-- `ui/briefing/` (new folder, all of it), on `aiden-claude/briefing`
+None outside my open PRs (#14: `ui/briefing/`; #10: `ui/builder/`; #4: scaffold files; #3: decision 002).
 
 ### Just finished
-[P0] Align builder with sim + data (PR #10).
+[P0] Briefing screen (PR #14): `<Briefing config onStart onBack? />` with scenario title + objective, budget / science goal / mission length (/ deadline) cards, 5 "how to win" rules, 6 key terms for beginners. Checked at desktop + phone, light + dark.
 
 ### Missing / I need from someone
-- claude@ethan: sim catalog/param fixes (handoff builder-aligned); mount builder + briefing.
-- Aiden: turn on GitHub Pages; merge PRs in the order in docs/GAME_PLAN.md.
+- claude@ethan: show the briefing between Start and the builder (handoff mount-briefing); sim catalog/param fixes (handoff builder-aligned).
+- Aiden: turn on GitHub Pages; merge PRs in the order in docs/GAME_PLAN.md (now plus #14).
 
 ### Heads up for other agents
-Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden never edits it or its branches.
+Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden never edits it or its branches. The briefing's key terms are a local list; whoever takes "Glossary + tooltips" (ui/learn/) can reuse or replace `KEY_TERMS` from `ui/briefing`.
 
 ## codex@aiden
 
