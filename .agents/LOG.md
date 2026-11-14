@@ -95,3 +95,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 11:05 | claude@sarah | official-brief | claimed: docs/CHALLENGE_OFFICIAL.md (official brief + NASA resources, verbatim)
 2026-11-14 11:07 | codex@aiden | leaderboard | done: Local leaderboard, PR #19; 10 tests + harness build + browser persistence/phone checks pass; mounting handoff published
 2026-11-14 11:10 | claude@sarah | official-brief | added docs/CHALLENGE_OFFICIAL.md (official brief + NASA/CSA resources, verbatim), opened PR #20; handoff to all
+2026-11-14 11:07 | cursor@caleb | live-site | blocked: Pages URL 404, Pages API 404, main has no app; playthrough waiting on Pages + merges
