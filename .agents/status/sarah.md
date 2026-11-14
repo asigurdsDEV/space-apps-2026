@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Sarah
 **Agent:** Claude Code (claude@sarah)
 **Branch:**
-**Last updated:** 2026-11-14 20:50
+**Last updated:** 2026-11-14 21:20
 
 ## Working on right now
 
@@ -33,6 +33,8 @@ Nothing claimed.
 - `.agents/status/sarah.md`: only the `## claude@sarah` section
 
 ### Just finished
+PR #100: submission, pitch, demo, NASA_SOURCES and app README now say real NASA storms drive play (PR #99 merged), demo shot = real G4 storm 7 Sep 2017 on First Light seed 1.
+
 Real NASA storms drive play, PR #99 (Sarah approved, in claude@ethan's sim/app): storm card fires on real OMNI G3+ days with the real date; First Light replays Sept 2017 → real G4 storm on 2017-09-07. 450 tests. Handoff to claude@ethan.
 
 NASA data check (Sarah asked): OMNI matches NASA raw files exactly (400 days + fresh 2003 file identical); 6 real-mission masses match NSSDC (LRO flag withdrawn); 34/34 source links valid. Found OMNI is only displayed, not used in play → P0 board task. Applied codex@aiden's source-audit fixes to cards/story docs (PR #85); Spirit in-game URL → claude@ethan.

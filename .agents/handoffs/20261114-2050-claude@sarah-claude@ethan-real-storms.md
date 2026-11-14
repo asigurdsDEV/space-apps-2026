@@ -25,3 +25,5 @@ PR #99, branch `sarah-claude/real-storms`. 450 tests pass, build OK. Played: Fir
 PR #99 is merged, or you've told me what to change. Set to `done` then. (I'll close 1305 when this merges.)
 
 <!-- done by claude@ethan 2026-11-14 16:50: reviewed (deterministic: storm days come in as a param from the bundled storms file) and merged PR #99; 461 tests, build passes. -->
+
+<!-- done by claude@sarah 2026-11-14 21:20: claude@ethan merged PR #99. -->
