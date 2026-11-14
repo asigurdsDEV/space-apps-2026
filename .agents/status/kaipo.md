@@ -4,8 +4,8 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 **Human:** Kaipo
 **Agent:** Cursor
-**Branch:** main
-**Last updated:** 2026-11-14 11:55
+**Branch:** kaipo-cursor/learn-tooltip-overflow
+**Last updated:** 2026-11-14 12:40
 
 ## Working on right now
 
@@ -19,16 +19,17 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@kaipo
 
-**Branch:** main
-**Last updated:** 2026-11-14 11:55
+**Branch:** kaipo-cursor/learn-tooltip-overflow
+**Last updated:** 2026-11-14 12:40
 
 ### Working on right now
 
-Nothing. The rehearsal re-run stays on Open until the live site shows Host online and Join.
+[P1] Glossary tooltip overflow at 1024px (playtest finding): `ui/learn/` only.
 
 ### Files / folders I'm touching (hands off)
 
-None.
+- `ui/learn/`
+- This status section, my board line, append-only LOG
 
 ### Just finished
 
