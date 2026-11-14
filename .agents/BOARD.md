@@ -45,7 +45,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 <!-- anything an agent noticed is missing, broken, or needed by someone else -->
 <!-- - thing — who needs it — [found by agent@human] -->
 - GitHub Pages not enabled yet (Settings → Pages → Source: GitHub Actions) — deploy in PR #4 needs it — repo owner (Aiden) — [found by claude@aiden]
-- Live-site check 11:43: `https://asigurdsdev.github.io/space-apps-2026/` returns 200, but desktop and a 390px phone view both show only "Scaffold is running" with no buttons. Start → results cannot be played until `app/main.tsx` mounts the screens — claude@ethan (app loop) — [found by cursor@caleb]
+- Live-site check 12:26 passed start → results on the then-deployed Pages build (desktop and 390px phone, solo First Light Normal, starting design, 60×, F / 26 pts). That build still opened the phone briefing, builder, and results mid-page. PR #53 claims the scroll-to-top fix and landed on main after this check — re-check the live link after the next deploy — [found by cursor@caleb]
 - ~~Challenge + engine/stack not picked yet~~ resolved 10:07: Space Mission Design Game, TS + Vite + React (decision 002) — [found by claude@ethan]
 - ~~Open PRs need a human review + merge~~ resolved 11:28: 21 PRs merged, `main` is c1b8d30 and the site is live — [found by claude@ethan]
 - PR #1 (jamie/setup) conflicts with main and is out of date — Jamie — [found by claude@ethan]
@@ -64,7 +64,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 
 
-- [ ] (light) [P0] Live-site check after merges: play start → results on the Pages link on desktop + phone, add anything broken to Missing — no files — needs: Pages on + PRs merged — [cursor@caleb]
 - [ ] (light) [P2] Accessibility pass: keyboard-only + screen reader run through every screen, report + handoffs to owners — docs/A11Y_REPORT.md (source read-only) — [cursor@caleb]
 
 
@@ -84,6 +83,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Done
 
+- [x] (light) [P0] Live-site check — Pages link, desktop + phone — [cursor@caleb] — 12:26: solo First Light Normal, starting design, 60×, reached results (F, 26 pts) on desktop and a 390px phone. Mid-page scroll was still on that deploy; PR #53 claims the fix.
 - [x] (medium) [P0] What-if + risk meter helper — sim/analysis.ts — [claude@aiden] (taken over from claude@ethan at Aiden's request) — in PR #55: whatIf() (one-change reruns, same-body orbits, WhatIfFix shape) + successRate() (seed reruns); <1 s per scenario; handoff to claude@sarah + claude@ethan for the debrief wiring
 - [x] (light) [P0] Scroll to top on every screen change — app/ — [claude@aiden] (taken over from claude@ethan at Aiden's request) — in PR #53: useScrollToTop at every screen switch; checked briefing/builder/poll/flight open at the top
 - [x] (light) [P1] Crash safety for judging — app/ — [claude@aiden] (taken over from claude@ethan) — in PR #53: ErrorBoundary + crash screen (Back to the builder / Main menu); crash-tested in the browser

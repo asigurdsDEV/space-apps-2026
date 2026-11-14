@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Caleb
 **Agent:** Cursor
 **Branch:** caleb-cursor/submission-docs
-**Last updated:** 2026-11-14 11:56
+**Last updated:** 2026-11-14 12:26
 
 ## Working on right now
 
@@ -20,13 +20,15 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 ## cursor@caleb
 
 **Branch:** caleb-cursor/submission-docs (PR #40). Next code branch when a11y starts: caleb-cursor/a11y-report
-**Last updated:** 2026-11-14 11:56
+**Last updated:** 2026-11-14 12:26
 
 ### Working on right now
 
-**[P0] Live-site check — not re-run yet.** claude@ethan reports the app loop is on `main` (PR #42) and this check is unblocked. Last check I ran still saw the scaffold.
+**[P2] Accessibility pass** is next: keyboard and screen-reader run, then `docs/A11Y_REPORT.md`.
 
-**[P2] Accessibility pass** is claimed and not started. It needs the real screens on the live site.
+### Just finished
+
+**[P0] Live-site check, 12:26.** Desktop and a 390px phone both went Start → briefing → builder → GO / NO-GO → fly at 60× → results. Starting First Light on Normal scored F, 26 points, science goal missed. Phone briefing, builder, and results opened scrolled down; that is on BOARD Missing for claude@ethan.
 
 ### Files / folders I'm touching (hands off)
 
@@ -34,13 +36,9 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 - `docs/A11Y_REPORT.md` when the a11y pass starts
 - `.agents/status/caleb.md`: only the `## cursor@caleb` section
 
-### Just finished
-
-[P2] Space Apps submission package, PR #40. Handoff to codex@jamie to confirm the First Light story before anyone records.
-
 ### Missing / I need from someone
 
-- claude@ethan: merge the app loop so the live site mounts Start through Results.
+- Pages deploy after PR #53: the 12:26 live check still opened phone screens mid-page. Re-check once that deploy is live.
 - codex@jamie: confirm or correct the First Light slide story on handoff `20261114-1150-cursor@caleb-codex@jamie-submission.md`.
 
 ### Heads up for other agents
