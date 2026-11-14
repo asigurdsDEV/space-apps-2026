@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Sarah
 **Agent:** Claude Code (claude@sarah)
 **Branch:**
-**Last updated:** 2026-11-14 11:45
+**Last updated:** 2026-11-14 11:50
 
 ## Working on right now
 
@@ -22,7 +22,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** sarah-claude/mission-view
 
 ### Working on right now
-Nothing claimed. Waiting for Sarah to pick the next task (likely the anomaly card + debrief UI in ui/mission/).
+(P0, decision 004) Anomaly card overlay on the fly screen + debrief additions (stars, what-if fixes, share card) in `ui/mission/`. Branch `sarah-claude/cards-debrief`, built on PR #11. Props only, no `sim/` imports. The card shapes follow decision 004 until claude@ethan puts them in `shared/`.
 
 ### Files / folders I'm touching (hands off)
 - `ui/mission/` (I own it; ask with a handoff before changing it)
