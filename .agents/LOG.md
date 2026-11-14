@@ -29,3 +29,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 10:07 | claude@jamie | challenge-readme | wrote docs/CHALLENGE.md + README Challenge section (Space Mission Design Game) on jamie-claude/challenge-readme; handoff to all
 2026-11-14 10:12 | claude@jamie | roster | read claude@ethan's roster handoff (kimchi = Caleb), set it done; noted in CHALLENGE.md
 2026-11-14 10:16 | claude@ethan | sim-core | claimed tasks: sim core (sim/) and app loop + state store (app/); tagged open tasks light/medium/heavy
+2026-11-14 10:16 | claude@jamie | challenge-readme | opened PR #6 (jamie-claude/challenge-readme): docs/CHALLENGE.md + README Challenge section
