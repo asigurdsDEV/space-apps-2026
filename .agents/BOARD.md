@@ -10,7 +10,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ### Playtest 14:15 (claude@aiden played main start → results; details in handoff 20261114-1420 playtest)
 - [ ] (light) [P1] Start: empty name silently blocks Start (placeholder looks filled) and the name is forgotten after Main menu; prefill or default it, and remember it — ui/start/ — owner: codex@jamie
-- [ ] (light) [P1] Hidden glossary tooltips push past the right edge and add a horizontal scrollbar (builder budgets at 1024 px) — ui/learn/ — owner: cursor@kaipo
 
 ### Improvements (added by claude@aiden 12:55, ideas from playing the builder + the game design)
 
@@ -25,18 +24,16 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 ### P2 — nice-to-haves from the brief
 
 ### Game design (decision 004, proposed, see docs/game-design/GAME_DESIGN.md §8)
-- [ ] (heavy) [P0] Anomaly cards in the sim: `decision_required` event + `resolve_decision` command, seeded draws, effects vocabulary, encode the deck from docs/game-design/ANOMALY_CARDS.md — sim/, shared/, CONTRACTS.md — owner: claude@ethan
-- [ ] (medium) [P0] What-if + risk meter helper: `whatIf()` and `successRate()` reruns of the pure sim — sim/analysis.ts — owner: claude@ethan
 
 ## Missing / needed
 
-- Completion check 12:07: main has 294 passing tests + clean build; current gaps, ready PRs #41/#43/#44 and owner actions are in `20261114-1207-codex@aiden-all-completion-check.md`. Start difficulty request is not applied by app; Ethan already owns Start-list/integration fixes. Venue rehearsal, phone/a11y checks, final demo run sheet and refreshed submission/source claims remain — [found by codex@aiden]
+- Supersedes the 12:07 check: difficulty, Daily, GO/NO-GO, stars/weather/tips/sound and lazy 3D are integrated. Focused Daily/regular record regression passes on de0d869 (PR #56 report, 316 tests/build). The old completion handoff is historical for those integrations; venue rehearsal, full phone/a11y, final demo/submission and newer app-safety validation remain separate — [found by codex@aiden]
 
 - Builder first-time tips component ready in PR #44; mount BuilderTutorial once above/beside MissionBuilder while designing — app/builder owners (Ethan/Aiden); ui/tutorial/README.md API — [found by codex@jamie]
 
 - Resolved 12:07: Pages serves the real game (PR #42); codex@aiden completed live solo Start → Results (First Light Normal, starting design, 60×, science_shortfall, 26 points). Older scaffold/Pages permission blockers below are historical; Caleb and Kaipo can resume their checks — [found by codex@aiden]
 
-- Leaderboard PRs #19 + #37 are merged and regular results mounting works live. Still missing in app/: dailySeed only for Daily and supplied earned-star count; bonus goal must reach MissionScreen. App owner claude@ethan; see completion-check handoff — [found by codex@aiden]
+- Resolved: leaderboard #19/#37 props are now integrated. Live Daily 100 points/3 stars survives two reloads plus independent regular 69/0 and lower Daily 69/0; saved score, stars and original design remain paired. Evidence: PR #56, daily-regression-verified handoff — [found by codex@aiden]
 
 - Theme PR #16 is imported by app; builder/briefing use tokens. app currently pins Start/Lobby/Mission dark because those screens retain local palettes. Full light-theme adoption remains with screen owners; no blocker to the current dark game — [found by codex@aiden]
 
@@ -46,7 +43,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 <!-- anything an agent noticed is missing, broken, or needed by someone else -->
 <!-- - thing — who needs it — [found by agent@human] -->
 - GitHub Pages not enabled yet (Settings → Pages → Source: GitHub Actions) — deploy in PR #4 needs it — repo owner (Aiden) — [found by claude@aiden]
-- Live-site check 11:43: `https://asigurdsdev.github.io/space-apps-2026/` returns 200, but desktop and a 390px phone view both show only "Scaffold is running" with no buttons. Start → results cannot be played until `app/main.tsx` mounts the screens — claude@ethan (app loop) — [found by cursor@caleb]
+- ~~Live-site phone screens opened mid-page~~ resolved 12:45: after scrolling the start page to the bottom, briefing and builder on a 390px view both open at scrollY 0 (h1 on screen). https://asigurdsdev.github.io/space-apps-2026/ — [found by cursor@caleb]
 - ~~Challenge + engine/stack not picked yet~~ resolved 10:07: Space Mission Design Game, TS + Vite + React (decision 002) — [found by claude@ethan]
 - ~~Open PRs need a human review + merge~~ resolved 11:28: 21 PRs merged, `main` is c1b8d30 and the site is live — [found by claude@ethan]
 - PR #1 (jamie/setup) conflicts with main and is out of date — Jamie — [found by claude@ethan]
@@ -56,9 +53,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
-- [ ] (light) [P1] Bundle-size check in the deploy workflow: fail the build if the first-load JS grows past a set limit — .github/workflows/ — needs: lazy 3D split — owner: claude@aiden — [claude@aiden]
-- [ ] (light) [P0] Scroll to top on every screen change (briefing and builder open ~350 px down) — app/ — owner: claude@ethan — taken over by claude@aiden at Aiden's request (claude@ethan at usage limit until ~16:20; handoff offer-app-tasks); does not touch his paused ui/scene3d branches — [claude@aiden]
-- [ ] (light) [P1] Crash safety for judging: an error boundary around each screen with "Something went wrong, back to the builder" instead of a white page — app/ — owner: claude@ethan — taken over by claude@aiden at Aiden's request (claude@ethan at usage limit until ~16:20; handoff offer-app-tasks); does not touch his paused ui/scene3d branches — [claude@aiden]
+- [ ] (light) [P0] Debrief "what would have fixed it": app/ calls `whatIf()` once at mission end, passes `fixes` + a "Try it" button to the results screen (claude@aiden what-if handoff; taken over from claude@ethan at Aiden's request) — app/ (Flight only) — [claude@aiden]
 
 
 
@@ -66,8 +61,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 
 
-- [ ] (light) [P0] Live-site check after merges: play start → results on the Pages link on desktop + phone, add anything broken to Missing — no files — needs: Pages on + PRs merged — [cursor@caleb]
-- [ ] (light) [P2] Accessibility pass: keyboard-only + screen reader run through every screen, report + handoffs to owners — docs/A11Y_REPORT.md (source read-only) — [cursor@caleb]
 
 
 
@@ -86,6 +79,19 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Done
 
+- [x] (heavy) [P0] Anomaly cards in the sim — sim/, shared/, app/, CONTRACTS.md — [claude@ethan] — PR #60 on `main`: 8 cards, `decision_required` / `resolve_decision` / `decision_resolved`, own seeded stream, co-op console ownership; played in a browser (2 cards, results show them); what-if + real mission match wired in PR #63
+- [x] (light) [P2] GO / NO-GO poll sounds: `playSound` go / no-go as each console calls (claude@aiden handoff sound) — ui/gonogo/ — [claude@jamie] — in PR #61: one sound per console call, one for Skip / reduced motion; checked in the browser preview
+
+- [x] (light) [P2] Accessibility pass — docs/A11Y_REPORT.md — [cursor@caleb] — in PR #59: keyboard and accessibility-tree pass of the live game; handoff to codex@jamie for the builder tour dialog. Not an NVDA/VoiceOver run.
+- [x] (light) [P1] Daily/stars/personal-best regression: assembled-game persistence and regular-vs-daily isolation; report evidence only — docs/qa/daily-records.md (new); ui/leaderboard/ read-only — [codex@aiden] — PR #56 merged (ddfb083): live Daily 100/3 stars retained through two reloads, regular 69/0 and lower Daily 69/0; saved winning design kept; 316 tests/build pass
+
+- [x] (light) [P1] Hidden glossary tooltips push past the right edge and add a horizontal scrollbar (builder budgets at 1024 px) — ui/learn/ — [cursor@kaipo] — in PR #58: tips use `display: none` until hover/focus; right-edge anchor when wide
+- [x] (light) [P1] Builder risk meter — ui/builder/ + app/useChance.ts — [claude@aiden] — in PR #57: "Chance of success" from 20 background test flights on Hard (0% starting design, 95% winning design), hidden on Easy/Normal
+- [x] (light) [P0] Live-site check — Pages link, desktop + phone — [cursor@caleb] — 12:26: solo First Light Normal, starting design, 60×, reached results (F, 26 pts) on desktop and a 390px phone. Mid-page scroll was still on that deploy; PR #53 claims the fix.
+- [x] (medium) [P0] What-if + risk meter helper — sim/analysis.ts — [claude@aiden] (taken over from claude@ethan at Aiden's request) — in PR #55: whatIf() (one-change reruns, same-body orbits, WhatIfFix shape) + successRate() (seed reruns); <1 s per scenario; handoff to claude@sarah + claude@ethan for the debrief wiring
+- [x] (light) [P0] Scroll to top on every screen change — app/ — [claude@aiden] (taken over from claude@ethan at Aiden's request) — in PR #53: useScrollToTop at every screen switch; checked briefing/builder/poll/flight open at the top
+- [x] (light) [P1] Crash safety for judging — app/ — [claude@aiden] (taken over from claude@ethan) — in PR #53: ErrorBoundary + crash screen (Back to the builder / Main menu); crash-tested in the browser
+- [x] (light) [P1] Bundle-size check in the deploy workflow — scripts/, .github/workflows/ — [claude@aiden] — in PR #54: `npm run size`, first load 117 kB gzipped, limit 150 kB
 - [x] (light) Debrief polish: no nameless bonus star (playtest P2), real NASA mission match, 3D `SpaceView` orbit view on the fly screen, anomaly card wording (38 of 49 / SOHO 30 yrs / DSN launches) — ui/mission/, docs/game-design/ — [claude@sarah] — in PR #52; match needs #50 + app/ to pass `realMissions` (handoff to claude@ethan)
 - [x] (light) [P1] Start: scenario menu repeated Easy/Hard — app/ — [claude@ethan] — fixed on `main`: app passes only the three base scenarios, the Difficulty menu picks the level
 - [x] (light) [P1] Fast first load on phones: export a lazy-loading `SpaceView` from ui/scene3d (same props, `React.lazy` + Suspense) so three.js isn't in the first download for any screen — ui/scene3d/ — owner: claude@ethan (moved by claude@aiden at Aiden's request: 3D work is Ethan's; handoff lazy-3d) — [claude@ethan] — done in 10ae68e (main chunk 959 kB → 352 kB); claude@aiden's 15:00 takeover of this line withdrawn, Ethan had just finished it

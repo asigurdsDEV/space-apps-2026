@@ -15,7 +15,7 @@ import {
   splitSentences,
   str,
 } from './format'
-import { bestFixes, shareText, stars, type ShareInfo, type WhatIfFix } from './game'
+import { bestFixes, shareText, stars, type RealMission, type ShareInfo, type WhatIfFix } from './game'
 import { ShareCard } from './ShareCard'
 
 export interface ResultsScreenProps {
@@ -30,9 +30,11 @@ export interface ResultsScreenProps {
   onTryFix?: (fix: WhatIfFix) => void
   /** Daily date and anomaly count for the share card. */
   share?: Pick<ShareInfo, 'daily' | 'anomalies'>
+  /** The real NASA mission most like this one (`matchMission`). */
+  realMatch?: RealMission | null
 }
 
-export function ResultsScreen({ summary, onCommand, title, bonusGoal, fixes, onTryFix, share }: ResultsScreenProps) {
+export function ResultsScreen({ summary, onCommand, title, bonusGoal, fixes, onTryFix, share, realMatch }: ResultsScreenProps) {
   const outcome = str(summary, 'outcome', 'in_design')
   const tone = outcomeTone(outcome)
   const score = num(summary, 'score')
@@ -67,7 +69,7 @@ export function ResultsScreen({ summary, onCommand, title, bonusGoal, fixes, onT
             <strong>{Math.round(score)}</strong> / 100 points
             {days > 0 && <span className="mv-muted"> · {Math.floor(days)} days flown</span>}
           </p>
-          <ul className="mv-stars" aria-label={`${starList.filter((s) => s.earned).length} of 3 stars`}>
+          <ul className="mv-stars" aria-label={`${starList.filter((s) => s.earned).length} of ${starList.length} stars`}>
             {starList.map((star) => (
               <li key={star.label} className={star.earned ? 'is-earned' : undefined}>
                 <span aria-hidden="true">{star.earned ? '★' : '☆'}</span> {star.label}
@@ -99,6 +101,20 @@ export function ResultsScreen({ summary, onCommand, title, bonusGoal, fixes, onT
               </li>
             ))}
           </ul>
+        </div>
+      )}
+
+      {realMatch && (
+        <div className="mv-card mv-real">
+          <h3>Your mission is most like</h3>
+          <p>
+            <strong>{String(realMatch.name)}</strong> ({String(realMatch.agency)}, {String(realMatch.year)}). {String(realMatch.fact)}{' '}
+            {typeof realMatch.source_url === 'string' && (
+              <a href={realMatch.source_url} target="_blank" rel="noreferrer">
+                Source
+              </a>
+            )}
+          </p>
         </div>
       )}
 

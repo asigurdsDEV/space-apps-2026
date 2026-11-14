@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Issue } from '../../shared'
-import { canLaunch, poll, type Call } from './model'
+import { playSound } from '../audio'
+import { canLaunch, poll, soundFor, type Call } from './model'
 import './gonogo.css'
 
 export interface GoNoGoPollProps {
@@ -29,6 +30,14 @@ export function GoNoGoPoll({ issues, onLaunch, onBack, stepMs = 700 }: GoNoGoPol
     const t = setTimeout(() => setShown((n) => n + 1), stepMs)
     return () => clearTimeout(t)
   }, [shown, calls.length, stepMs])
+
+  // Sound for each console as it calls (ui/audio handles mute and reduced motion).
+  const heard = useRef(0)
+  useEffect(() => {
+    const sound = soundFor(calls.slice(heard.current, shown))
+    heard.current = shown
+    if (sound) playSound(sound)
+  }, [shown, calls])
 
   const done = shown >= calls.length
   const go = canLaunch(calls)

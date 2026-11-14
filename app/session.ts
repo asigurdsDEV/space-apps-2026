@@ -188,11 +188,12 @@ const ACTIONS: Record<Command['type'], string> = {
   reset: 'reset the mission',
   set_param: 'change that part of the design',
   select_entity: 'do that',
+  resolve_decision: 'answer this anomaly',
 }
 
 /** Why `command` was refused, for the player who sent it. */
-function refusal(command: Command, players: readonly Player[]): string {
-  const owner = ownerRole(command)
+function refusal(command: Command, players: readonly Player[], decisionConsole?: Role | null): string {
+  const owner = ownerRole(command, decisionConsole)
   const holder = players.find((p) => p.role !== null && p.role === owner)
   if (!owner || !holder) return 'That command was refused.'
   return `Only ${holder.name} (${ROLE_LABELS[owner]}) can ${ACTIONS[command.type]}.`
@@ -345,7 +346,10 @@ export function createHostSession(
       if (!isDesignKey(command.payload.key)) return 'That is not a part of the design that players can change.'
       if (game.getSnapshot().state.metrics.phase !== 'design') return 'The design is locked after launch.'
     }
-    if (!canSend(player.role, command, players.map((p) => p.role))) return refusal(command, players)
+    // An anomaly card belongs to the console the sim named for it.
+    const console = game.getSnapshot().state.metrics.decision_console
+    const decisionConsole = ROLES.find((role) => role === console) ?? null
+    if (!canSend(player.role, command, players.map((p) => p.role), decisionConsole)) return refusal(command, players, decisionConsole)
     const before = game.getSnapshot().events
     game.send(command)
     // A warning the sim raised in answer (a refused launch) goes back to whoever sent the command.

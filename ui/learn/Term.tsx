@@ -1,5 +1,7 @@
-import { useId, type ReactNode } from 'react'
+import { useCallback, useId, useRef, useState, type ReactNode } from 'react'
 import { glossaryEntry } from './glossary'
+
+const TIP_WIDTH_PX = 352 /* min(22rem, 70vw) at a typical root font size */
 
 export interface TermProps {
   /** Glossary id, e.g. `delta-v`. Unknown ids render the children (or the id) with no tooltip. */
@@ -14,18 +16,30 @@ export interface TermProps {
  */
 export function Term({ id, children }: TermProps) {
   const uid = useId()
+  const rootRef = useRef<HTMLSpanElement>(null)
+  const [tipEnd, setTipEnd] = useState(false)
   const entry = glossaryEntry(id)
+
+  const placeTip = useCallback(() => {
+    const root = rootRef.current
+    if (!root) return
+    const left = root.getBoundingClientRect().left
+    const maxWidth = Math.min(TIP_WIDTH_PX, window.innerWidth * 0.7, window.innerWidth - 16)
+    setTipEnd(left + maxWidth > window.innerWidth - 8)
+  }, [])
+
   if (!entry) {
     return <span className="learn-term learn-term-missing">{children ?? id}</span>
   }
 
   const tipId = `learn-tip-${entry.id}-${uid}`
+  const tipClass = tipEnd ? 'learn-term-tip learn-term-tip--end' : 'learn-term-tip'
   return (
-    <span className="learn-term">
-      <button type="button" className="learn-term-trigger" aria-describedby={tipId}>
+    <span ref={rootRef} className="learn-term" onMouseEnter={placeTip}>
+      <button type="button" className="learn-term-trigger" aria-describedby={tipId} onFocus={placeTip}>
         {children ?? entry.term}
       </button>
-      <span role="tooltip" id={tipId} className="learn-term-tip">
+      <span role="tooltip" id={tipId} className={tipClass}>
         <span className="learn-term-tip-title">{entry.term}</span>
         <span className="learn-term-tip-body">{entry.meaning}</span>
       </span>

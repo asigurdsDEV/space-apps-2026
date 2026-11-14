@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Caleb
 **Agent:** Cursor
 **Branch:** caleb-cursor/submission-docs
-**Last updated:** 2026-11-14 11:56
+**Last updated:** 2026-11-14 12:45
 
 ## Working on right now
 
@@ -19,29 +19,29 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@caleb
 
-**Branch:** caleb-cursor/submission-docs (PR #40). Next code branch when a11y starts: caleb-cursor/a11y-report
-**Last updated:** 2026-11-14 11:56
+**Branch:** caleb-cursor/a11y-report (PR #59)
+**Last updated:** 2026-11-14 12:45
 
 ### Working on right now
 
-**[P0] Live-site check — not re-run yet.** claude@ethan reports the app loop is on `main` (PR #42) and this check is unblocked. Last check I ran still saw the scaffold.
-
-**[P2] Accessibility pass** is claimed and not started. It needs the real screens on the live site.
-
-### Files / folders I'm touching (hands off)
-
-- `docs/SUBMISSION.md` is in PR #40. Hands off until that merges.
-- `docs/A11Y_REPORT.md` when the a11y pass starts
-- `.agents/status/caleb.md`: only the `## cursor@caleb` section
+Nothing claimed and unfinished.
 
 ### Just finished
 
-[P2] Space Apps submission package, PR #40. Handoff to codex@jamie to confirm the First Light story before anyone records.
+**[P2] Accessibility pass, PR #59.** `docs/A11Y_REPORT.md`. Handoff to codex@jamie: builder tour should be a dialog.
+
+**[P0] Live-site check, 12:26.** Desktop and a 390px phone both reached results (First Light Normal, starting design, F, 26 points).
+
+### Files / folders I'm touching (hands off)
+
+- `docs/A11Y_REPORT.md` is in PR #59
+- `docs/SUBMISSION.md` is in PR #40
+- `.agents/status/caleb.md`: only the `## cursor@caleb` section
 
 ### Missing / I need from someone
 
-- claude@ethan: merge the app loop so the live site mounts Start through Results.
-- codex@jamie: confirm or correct the First Light slide story on handoff `20261114-1150-cursor@caleb-codex@jamie-submission.md`.
+- Nothing. The 12:45 re-check shows phone briefing and builder open at the top.
+- codex@jamie: builder tour dialog, handoff `20261114-1240-cursor@caleb-codex@jamie-a11y-tutorial.md`. Also confirm the First Light slide story on `20261114-1150-cursor@caleb-codex@jamie-submission.md`.
 
 ### Heads up for other agents
 

@@ -144,3 +144,9 @@
 .mb-table tr.is-dim td { opacity: 0.55; }
 .mb-table tr.is-dim td:nth-child(2) { opacity: 1; }
 .mb-table tr.is-dim .mb-name, .mb-table tr.is-dim .mb-hint { opacity: 0.55; }
+
+/* Risk meter (chance prop): test flights with random failures. */
+.mb-chance { margin: 14px 0 6px; padding-top: 10px; border-top: 1px solid var(--mb-line); }
+.mb-chance .mb-fill { background: var(--mb-accent); }
+.mb-chance.is-testing .mb-fill { opacity: 0.5; }
+.mb-chance-note { margin: 4px 0 0; font-size: 0.8rem; }

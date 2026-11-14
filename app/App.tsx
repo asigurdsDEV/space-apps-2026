@@ -3,11 +3,12 @@
 // The screens only get props. Everything about who runs the game is behind `Session` (app/session.ts),
 // so solo, same-screen, host and guest play all use the same screens.
 
-import { useEffect, useRef, useState, type ComponentType, type FormEvent } from 'react'
-import { DIFFICULTIES, getDatasets, getScenario, scenarios, withDifficulty, type Difficulty } from '../data'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ComponentType, type FormEvent } from 'react'
+import { DIFFICULTIES, getDatasets, getScenario, realMissions, rowsAsObjects, scenarios, withDifficulty, type Difficulty } from '../data'
 import { LocalTransport } from '../net'
 import type { Config, NetMessage, SimEvent, SimState, Summary } from '../shared'
-import { catalogEntities, simCore } from '../sim'
+import { canSend, ROLES } from '../shared'
+import { catalogEntities, pendingDecision, simCore, whatIf } from '../sim'
 import { playSound, SoundToggle } from '../ui/audio'
 import { Briefing } from '../ui/briefing'
 import { MissionBuilder } from '../ui/builder'
@@ -21,10 +22,12 @@ import { BuilderTutorial } from '../ui/tutorial'
 import '../ui/theme/theme.css'
 import '../ui/learn/learn.css'
 import { Crew, Notice, RoomCode } from './Crew'
+import { ErrorBoundary } from './ErrorBoundary'
 import { startDriver, timerClock } from './driver'
 import { createGame, type Game } from './game'
 import { cleanRoomCode, openRoom } from './room'
 import { createGuestSession, createHostSession, createSoloSession, ROLE_LABELS, type Session } from './session'
+import { useChance } from './useChance'
 import { useSession } from './useSession'
 import './app.css'
 
@@ -41,6 +44,15 @@ export const SCENARIOS: Config[] = scenarios.flatMap((scenario) => LEVELS.map((l
  * leaves them out of its `state` messages (see app/session.ts) and guests put them back.
  */
 export const BASELINE = catalogEntities(getDatasets())
+
+/** Real missions for the debrief's "your mission is most like…" line. */
+const REAL_MISSIONS = rowsAsObjects(realMissions)
+
+/** Anomaly cards per mission (GAME_DESIGN.md §4.2): easy 1, normal 2, hard 3. A scenario's own `anomaly_cards` wins. */
+export const withCards = (config: Config): Config => ({
+  ...config,
+  params: { anomaly_cards: config.params.difficulty === 'easy' ? 1 : config.params.difficulty === 'hard' ? 3 : 2, ...config.params },
+})
 
 /**
  * ui/mission only has a dark palette so far, so the theme is pinned to dark around the flight
@@ -94,7 +106,7 @@ export function App() {
   }, [active])
 
   const newGame = (config: Config): Game => {
-    const game = createGame({ config, datasets: getDatasets(config.datasets), sim: simCore })
+    const game = createGame({ config: withCards(config), datasets: getDatasets(config.datasets), sim: simCore })
     designFromHash(link.current).forEach(game.send)
     link.current = ''
     return game
@@ -148,11 +160,14 @@ export function App() {
     active?.session.close()
     setActive(null)
   }
+  useScrollToTop(active ? 'room' : 'start')
 
   return (
     <div className="game-theme app">
       {active ? (
-        <Room active={active} onExit={exit} />
+        <ErrorBoundary resetKey={active} actions={[{ label: 'Main menu', run: exit }]}>
+          <Room active={active} onExit={exit} />
+        </ErrorBoundary>
       ) : (
         <>
           <StartScreen
@@ -173,10 +188,10 @@ export function App() {
 
 /** Under the Start screen: the no-network way to play together, which ui/start has no mode for. */
 function SameScreen({ disabled, onPlay }: { disabled: boolean; onPlay: (config: Config) => void }) {
-  const [scenarioId, setScenarioId] = useState(SCENARIOS[0]?.scenario_id ?? '')
+  const [scenarioId, setScenarioId] = useState(scenarios[0]?.scenario_id ?? '')
   const submit = (event: FormEvent) => {
     event.preventDefault()
-    const config = SCENARIOS.find((scenario) => scenario.scenario_id === scenarioId)
+    const config = scenarios.find((scenario) => scenario.scenario_id === scenarioId)
     if (config) onPlay(config)
   }
   return (
@@ -188,7 +203,7 @@ function SameScreen({ disabled, onPlay }: { disabled: boolean; onPlay: (config: 
       <label>
         Mission
         <select className="game-field" value={scenarioId} onChange={(event) => setScenarioId(event.target.value)} disabled={disabled}>
-          {SCENARIOS.map((scenario) => (
+          {scenarios.map((scenario) => (
             <option key={scenario.scenario_id} value={scenario.scenario_id}>
               {scenario.title}
             </option>
@@ -223,6 +238,7 @@ export function Room({ active, onExit }: { active: Active; onExit: () => void })
   const { stage, notice, state, players, me } = useSession(session)
   /** Each player reads the briefing on their own screen and goes on when they are ready. */
   const [briefed, setBriefed] = useState(false)
+  useScrollToTop(stage === 'lobby' || stage === 'closed' ? stage : !briefed && state.metrics.phase === 'design' ? 'briefing' : 'game')
 
   if (stage === 'lobby') {
     return (
@@ -275,6 +291,8 @@ export function GameScreen({ session, config, onExit, roomCode, daily }: GameScr
   const snapshot = useSession(session)
   const { state, notice, players, me } = snapshot
   const designing = state.metrics.phase === 'design'
+  useScrollToTop(designing ? 'design' : 'flight')
+  const backToBuilder = () => session.send({ type: 'reset', payload: {} })
 
   return (
     <div {...(designing ? { className: 'app-page' } : DARK_ONLY)}>
@@ -297,24 +315,41 @@ export function GameScreen({ session, config, onExit, roomCode, daily }: GameScr
         </button>
       </header>
       <Notice session={session} notice={notice} />
-      {designing ? (
-        <Design session={session} />
-      ) : (
-        // Unmounts on reset, so every launch starts it fresh.
-        <Flight session={session} config={config} daily={daily} />
-      )}
+      <ErrorBoundary
+        resetKey={designing}
+        actions={[
+          { label: 'Back to the builder', run: backToBuilder },
+          { label: 'Main menu', run: onExit },
+        ]}
+      >
+        {designing ? (
+          <Design session={session} config={config} />
+        ) : (
+          // Unmounts on reset, so every launch starts it fresh.
+          <Flight session={session} config={config} daily={daily} />
+        )}
+      </ErrorBoundary>
     </div>
   )
+}
+
+/** Every new screen starts at the top of the page; without this the old scroll position carried over. */
+function useScrollToTop(screen: string) {
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0)
+  }, [screen])
 }
 
 /** A ref that never changes, so React calls it once, when the element appears. */
 const focusOnMount = (node: HTMLElement | null) => node?.focus()
 
 /** The design phase: the builder with save-and-share under it, then the GO / NO-GO poll before launch. */
-function Design({ session }: { session: Session }) {
+function Design({ session, config }: { session: Session; config: Config }) {
   const { state, players, me } = useSession(session)
+  const chance = useChance(config, state.params, !state.issues.some((i) => i.severity === 'error'))
   /** The builder's Launch button opens the poll; the poll's Launch button sends the command. */
   const [polling, setPolling] = useState(false)
+  useScrollToTop(polling ? 'poll' : 'builder')
 
   if (polling) {
     return (
@@ -336,6 +371,7 @@ function Design({ session }: { session: Session }) {
         send={(command) => (command.type === 'launch' ? setPolling(true) : session.send(command))}
         players={players}
         me={me}
+        chance={chance}
       />
       <section className="app-share" aria-labelledby="app-share-title">
         <h2 id="app-share-title">Save, share and compare designs</h2>
@@ -379,7 +415,7 @@ type SpaceWeatherData = typeof import('../data/space-weather')
 
 /** Everything after launch: (the launch sequence,) cruise and operations, then the results with the personal best. */
 function Flight({ session, config, daily }: { session: Session; config: Config; daily?: DailyMission }) {
-  const { state, events, paused, speed } = useSession(session)
+  const { state, events, paused, speed, players, me } = useSession(session)
   const [launchDone, setLaunchDone] = useState(false)
   // 340 kB of real NASA data, so it is loaded only once a mission flies.
   const [weather, setWeather] = useState<SpaceWeatherData | null>(null)
@@ -389,12 +425,26 @@ function Flight({ session, config, daily }: { session: Session; config: Config; 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   const ended = state.status === 'ended'
+  // "What would have fixed it": the flown mission rerun with every single change, once, when it ends.
+  const fixes = useMemo(
+    () => (ended ? whatIf({ ...withCards(config), seed: daily?.seed ?? config.seed }, getDatasets(config.datasets), state.params) : undefined),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [ended],
+  )
 
   if (LaunchView && !launchDone && !ended) return <LaunchView state={state} onDone={() => setLaunchDone(true)} />
 
   const summary = ended ? finalSummary(events) : undefined
   const bonusGoal = typeof config.params.bonus_goal === 'string' ? config.params.bonus_goal : undefined
   const day = state.metrics.mission_day
+  // The anomaly card waiting for an answer, read from the state so a late joiner or a reload still sees it.
+  const decision = pendingDecision(state)
+  const console = ROLES.find((role) => role === decision?.console) ?? null
+  const tryFix = (fix: { params?: SimState['params'] }) => {
+    session.send({ type: 'reset', payload: {} })
+    for (const [key, value] of Object.entries(fix.params ?? {})) session.send({ type: 'set_param', payload: { key, value } })
+  }
+  const decide = (decision_id: string, option_id: string) => session.send({ type: 'resolve_decision', payload: { decision_id, option_id } })
   return (
     <>
       <MissionScreen
@@ -406,7 +456,13 @@ function Flight({ session, config, daily }: { session: Session; config: Config; 
         title={config.title}
         summary={summary}
         bonusGoal={bonusGoal}
-        share={{ daily: daily?.date }}
+        share={{ daily: daily?.date, anomalies: String(state.metrics.cards_drawn ?? '').split(',').filter(Boolean).length }}
+        decision={decision}
+        fixes={fixes}
+        onTryFix={tryFix}
+        realMissions={REAL_MISSIONS}
+        onDecide={decide}
+        canDecide={canSend(me.role, { type: 'resolve_decision', payload: { decision_id: '', option_id: '' } }, players.map((p) => p.role), console)}
         spaceWeather={weather && typeof day === 'number' ? weather.weatherForMissionDay(weatherStart(config, daily?.seed ?? config.seed), day) : null}
       />
       {summary && typeof summary.score === 'number' && (

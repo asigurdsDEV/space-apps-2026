@@ -55,13 +55,16 @@ export const BONUS_GOALS: Record<string, { label: string; met: (s: Summary) => b
 /** Score needed for the "Excellent" star. */
 export const EXCELLENT_SCORE = 85
 
-/** The three stars of GAME_DESIGN.md §4.5. Bonus goals only count on a successful mission. */
+/**
+ * The stars of GAME_DESIGN.md §4.5. Bonus goals only count on a successful mission.
+ * A scenario without a known `bonus_goal` has no bonus star at all (2 stars, not a nameless one).
+ */
 export function stars(summary: Summary, bonusGoal?: string): Star[] {
   const success = str(summary, 'outcome') === 'success'
   const bonus = bonusGoal ? BONUS_GOALS[bonusGoal] : undefined
   return [
     { label: 'Mission success', earned: success },
-    { label: bonus ? bonus.label : 'Bonus goal', earned: success && !!bonus && bonus.met(summary) },
+    ...(bonus ? [{ label: bonus.label, earned: success && bonus.met(summary) }] : []),
     { label: `Excellent (${EXCELLENT_SCORE}+ points)`, earned: num(summary, 'score') >= EXCELLENT_SCORE },
   ]
 }
@@ -123,3 +126,26 @@ export interface SpaceWeather {
 
 /** NOAA geomagnetic storm scale names. */
 export const STORM_LABEL = ['Quiet', 'G1 minor storm', 'G2 moderate storm', 'G3 strong storm', 'G4 severe storm', 'G5 extreme storm']
+
+// ------------------------------------------------------ real mission match
+
+/** A row of claude@jamie's `data/real-missions.json` (pass `rowsAsObjects(realMissions)` in). */
+export interface RealMission {
+  [column: string]: string | number | boolean | null
+}
+
+/**
+ * The real mission most like the player's (GAME_DESIGN.md §4.4): same body first, then same orbit
+ * class, then same objective, then the closest launch mass on a log scale. Null if no body matches.
+ */
+export function matchMission(
+  missions: readonly RealMission[],
+  mine: { body: string; orbit?: string; objective?: string; mass_kg: number },
+): RealMission | null {
+  const logMass = Math.log(Math.max(1, mine.mass_kg))
+  const rank = (m: RealMission) =>
+    (m.orbit_class === mine.orbit ? 0 : 2) +
+    (m.objective === mine.objective ? 0 : 1) +
+    Math.min(0.99, Math.abs(Math.log(Math.max(1, Number(m.mass_kg) || 1)) - logMass) / 10)
+  return missions.filter((m) => m.body === mine.body).sort((a, b) => rank(a) - rank(b))[0] ?? null
+}

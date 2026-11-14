@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Entity, Player } from '../../shared'
-import { DEFAULT_SLOTS, callText, partFit, changedBy, termFor, commandAccess, slotAccess, budgetBars, columnLabel, formatValue, parseIds, slotColumns, slotParts, toggleId, unitOf } from './model'
+import { DEFAULT_SLOTS, callText, chanceText, partFit, changedBy, termFor, commandAccess, slotAccess, budgetBars, columnLabel, formatValue, parseIds, slotColumns, slotParts, toggleId, unitOf } from './model'
 
 const part = (id: string, kind: string, props: Entity['props'] = {}): Entity => ({ id, kind, name: id, props })
 const slot = (key: string) => DEFAULT_SLOTS.find((s) => s.key === key)!
@@ -171,5 +171,15 @@ describe('partFit', () => {
       { text: 'Half science here · best in Sun-synchronous orbit', tone: 'warn' },
     ])
     expect(partFit(magnetometer, { entities, params: { bus: 'cubesat-6u', orbit: 'leo-iss' } })).toEqual({ badges: [], dim: false })
+  })
+})
+
+describe('chanceText', () => {
+  it('puts the chance in words', () => {
+    expect(chanceText(0.96)).toBe('Very likely (96%)')
+    expect(chanceText(0.75)).toBe('Likely (75%)')
+    expect(chanceText(0.5)).toBe('Risky (50%)')
+    expect(chanceText(0.05)).toBe('Unlikely (5%)')
+    expect(chanceText(0)).toBe('Fails every test flight (0%)')
   })
 })

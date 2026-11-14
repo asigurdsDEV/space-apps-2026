@@ -60,8 +60,10 @@ export function isDesignKey(key: string): boolean {
  * The role that owns a command, or null when anyone may send it.
  * Mission planning owns launch, pause/resume, speed and reset.
  */
-export function ownerRole(command: Command): Role | null {
+export function ownerRole(command: Command, decisionConsole?: Role | null): Role | null {
   if (command.type === 'select_entity') return null
+  // An anomaly card belongs to its console; pass `state.metrics.decision_console`. Unknown = anyone.
+  if (command.type === 'resolve_decision') return decisionConsole ?? null
   if (command.type !== 'set_param') return 'mission-planning'
   for (const role of ROLES) {
     if (ROLE_PARAM_KEYS[role].includes(command.payload.key)) return role
@@ -74,8 +76,13 @@ export function ownerRole(command: Command): Role | null {
  * nobody in the room holds it (so 1 to 3 players can still fly a whole mission).
  * `claimedRoles` is every role currently taken in the roster.
  */
-export function canSend(role: Role | null, command: Command, claimedRoles: readonly (Role | null)[]): boolean {
-  const owner = ownerRole(command)
+export function canSend(
+  role: Role | null,
+  command: Command,
+  claimedRoles: readonly (Role | null)[],
+  decisionConsole?: Role | null,
+): boolean {
+  const owner = ownerRole(command, decisionConsole)
   if (owner === null) return true
   return role === owner || !claimedRoles.includes(owner)
 }
@@ -128,6 +135,8 @@ function commandOk(v: unknown): boolean {
       )
     case 'select_entity':
       return isObj(p) && (p.id === null || isStr(p.id, MAX_KEY_LENGTH))
+    case 'resolve_decision':
+      return isObj(p) && isStr(p.decision_id, MAX_KEY_LENGTH) && isStr(p.option_id, MAX_KEY_LENGTH)
     default:
       return false
   }
@@ -180,6 +189,18 @@ function eventPayloadOk(type: unknown, p: Obj): boolean {
       return isStr(p.reason) && isRecord(p.summary, (s) => isNum(s) || isStr(s))
     case 'warning':
       return isStr(p.message)
+    case 'decision_required':
+      return (
+        isStr(p.decision_id, MAX_KEY_LENGTH) &&
+        isStr(p.card_id, MAX_KEY_LENGTH) &&
+        isStr(p.title) &&
+        isStr(p.body) &&
+        isRole(p.console) &&
+        isList(p.options, (o) => isObj(o) && isStr(o.id, MAX_KEY_LENGTH) && isStr(o.label) && isStr(o.effect_text)) &&
+        optional(p.story, (s) => isObj(s) && isStr(s.mission) && (isNum(s.year) || isStr(s.year)) && isStr(s.text) && optional(s.source_url, (u) => isStr(u)))
+      )
+    case 'decision_resolved':
+      return isStr(p.decision_id, MAX_KEY_LENGTH) && isStr(p.card_id, MAX_KEY_LENGTH) && isStr(p.option_id, MAX_KEY_LENGTH) && isStr(p.message)
     default:
       return false
   }

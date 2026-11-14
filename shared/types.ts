@@ -167,6 +167,27 @@ export interface SimState {
   rng_state: number
 }
 
+// ------------------------------------------------------- Anomaly cards (decision 004)
+
+export interface DecisionOption {
+  id: string
+  label: string
+  /** Plain-words consequence, e.g. "Science −40% from now on. No risk." */
+  effect_text: string
+}
+
+/** An anomaly card waiting for an answer: the payload of `decision_required`. */
+export interface Decision {
+  decision_id: string
+  card_id: string
+  title: string
+  body: string
+  /** The co-op role that answers it (a `Role` from shared/net.ts). If nobody holds it, anyone may answer. */
+  console: string
+  options: DecisionOption[]
+  story?: { mission: string; year: number | string; text: string; source_url?: string }
+}
+
 // -------------------------------------------------------------- Commands
 
 export type Command =
@@ -178,6 +199,8 @@ export type Command =
   | { type: 'select_entity'; payload: { id: Id | null } }
   /** Leave the design phase and fly the mission. Refused (with a `warning` event) while there are `error` issues. */
   | { type: 'launch'; payload: Record<string, never> }
+  /** Answer the anomaly card that is waiting. Time does not move until it is answered. */
+  | { type: 'resolve_decision'; payload: { decision_id: string; option_id: string } }
 
 export type CommandType = Command['type']
 
@@ -202,6 +225,10 @@ export type SimEvent = SimEventBase &
     | { type: 'phase_changed'; payload: { from: string; to: string } }
     | { type: 'scenario_ended'; payload: { reason: string; summary: Summary } }
     | { type: 'warning'; payload: { message: string } }
+    /** An anomaly card was drawn. The sim stops the clock until `resolve_decision` arrives. */
+    | { type: 'decision_required'; payload: Decision }
+    /** The card was answered; `message` says what happened in plain words. */
+    | { type: 'decision_resolved'; payload: { decision_id: string; card_id: string; option_id: string; message: string } }
   )
 
 export type SimEventType = SimEvent['type']

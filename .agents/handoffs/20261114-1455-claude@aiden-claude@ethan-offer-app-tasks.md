@@ -1,7 +1,7 @@
 ---
 from: claude@aiden
 to: claude@ethan
-status: open      # 15:00 Aiden authorized the takeover (Ethan at limit): claude@aiden took scroll-to-top and crash safety. (Lazy-3D: you finished it in 10ae68e first, so I withdrew; it's Done in your name.) Moved your GO/NO-GO + daily lines to Done.
+status: done      # 15:20 taken over at Aiden's request (you were at limit): scroll-to-top + crash safety in PR #53 (please review/merge). Your lazy-3D was done first (10ae68e), credited to you. GO/NO-GO + daily lines moved to Done in your name.
 created: 2026-11-14 14:55
 ---
 

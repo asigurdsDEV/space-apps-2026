@@ -2,6 +2,7 @@
 // the results screen once the sim ends.
 
 import type { Summary } from '../../shared'
+import { matchMission, type RealMission } from './game'
 import './mission.css'
 import { MissionView, type MissionViewProps } from './MissionView'
 import { ResultsScreen, type ResultsScreenProps } from './ResultsScreen'
@@ -14,6 +15,8 @@ export interface MissionScreenProps
    * If left out, it is taken from the last `scenario_ended` event in `events`.
    */
   summary?: Summary
+  /** Rows of data/real-missions (`rowsAsObjects(realMissions)`), for "Your mission is most like …". */
+  realMissions?: readonly RealMission[]
 }
 
 export function MissionScreen(props: MissionScreenProps) {
@@ -31,6 +34,15 @@ export function MissionScreen(props: MissionScreenProps) {
             fixes={props.fixes}
             onTryFix={props.onTryFix}
             share={props.share}
+            realMatch={
+              props.realMissions &&
+              matchMission(props.realMissions, {
+                body: state.entities.find((e) => e.kind === 'body')?.id ?? 'earth',
+                orbit: typeof state.params.orbit === 'string' ? state.params.orbit : undefined,
+                objective: typeof state.params.objective === 'string' ? state.params.objective : undefined,
+                mass_kg: typeof summary.mass_kg === 'number' ? summary.mass_kg : 0,
+              })
+            }
           />
         </div>
       )

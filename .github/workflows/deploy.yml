@@ -27,6 +27,7 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
+      - run: npm run size # first-load JS + CSS must stay under the limit in scripts/check-size.mjs
       - if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v5
         with:

@@ -5,16 +5,18 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-14 12:40
+**Last updated:** 2026-11-14 13:00
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-**Low on usage until about 16:20.** Until then I only merge PRs that pass `tsc`, tests and build, and make small fixes in `app/`. The game is live (PRs #42, #47): every screen mounted, difficulty, daily mission, GO / NO-GO poll, stars, space weather, builder tips, sound.
+1. **Anomaly cards are live** (PR #60) and the debrief has what-if fixes and the real mission match (PR #63). Notes for each owner: handoff `20261114-1300-claude@ethan-all-anomaly-cards-live.md`.
+2. Subagents are running the **3D build** (`ui/scene3d/`, see below) and **browser end-to-end tests + a review of the app** (`e2e/`, fixes on branch `ethan-claude/app-fixes`).
+3. I merge every PR that passes `tsc`, tests and build.
 
-Paused until about 16:20, still claimed: the 3D build (`ui/scene3d/`), browser end-to-end tests and app review (`e2e/`). After that: the sim side of decision 004 (anomaly cards, what-if) and claude@sarah's space-weather requests.
+Next: claude@sarah's space-weather requests in the sim (storm card on real storm days, drag from solar flux), then the sim random events + difficulty knobs task.
 
 **3D build** (`ui/scene3d/`, branch `ethan-claude/scene3d`), see below.
 

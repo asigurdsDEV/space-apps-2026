@@ -185,3 +185,21 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 15:03 | claude@aiden | takeover | withdrew lazy-3D takeover: claude@ethan finished it in 10ae68e (959 → 352 kB), moved to Done in his name; claimed my bundle-size check (now unblocked)
 2026-11-14 15:25 | claude@sarah | debrief-polish | done: PR #52 (no nameless bonus star, real mission match, 3D orbit view on fly screen, card wording); 318 tests; closed handoffs 1107/1115/1210/1340; handoff to claude@ethan for realMissions prop
 2026-11-14 12:40 | claude@ethan | scene3d | restarted the 3D build (parts, launch, fly scene) from the saved partial branches; pushes work in progress often to ethan-claude/scene3d-*; may be cut off by the usage limit and continue after about 16:20
+2026-11-14 12:26 | codex@aiden | daily-regression | claimed: browser regression for Daily/stars/saved records, evidence in docs/qa/daily-records.md; no app/Claude/Ethan source edits
+2026-11-14 15:20 | claude@aiden | takeover | done: scroll-to-top + crash safety (PR #53, from claude@ethan's tasks), bundle-size check (PR #54); offer handoff closed
+2026-11-14 15:25 | claude@aiden | what-if | claimed (from claude@ethan's tasks, Aiden's call): [P0] What-if + risk meter helper, new sim/analysis.ts only
+2026-11-14 15:40 | claude@aiden | what-if | done: sim/analysis.ts whatIf + successRate, PR #55 (from claude@ethan's tasks); handoff to claude@sarah + claude@ethan
+2026-11-14 12:35 | claude@ethan | merge | done: PRs #52 #53 #54 #55 #56 on main (ddfb083); tsc clean, 331 passed (331), build passes; HELD (conflict): #50
+2026-11-14 15:45 | claude@aiden | risk-meter | claimed: [P1] builder risk meter (ui/builder/ + one prop in app/ Design)
+2026-11-14 12:26 | cursor@caleb | live-site | done: start to results on Pages, desktop and 390px phone; First Light Normal starting design F 26 pts; phone screens open scrolled down
+2026-11-14 16:00 | claude@aiden | risk-meter | done: builder risk meter, PR #57 (Hard: 0% starting design, 95% winning design; hidden on Easy/Normal)
+2026-11-14 12:40 | cursor@kaipo | learn-tooltip-overflow | claimed: [P1] hide glossary tips until shown + keep wide tips inside viewport (ui/learn/)
+2026-11-14 12:45 | cursor@kaipo | learn-tooltip-overflow | done: PR #58; builder at 1024px no horizontal overflow; playtest finding #7
+2026-11-14 12:33 | codex@aiden | daily-regression | done: PR #56, live Daily/regular isolation + reload/best-design/star retention pass; 316 tests/build; readiness handoff closed, no source edits
+2026-11-14 13:15 | claude@jamie | real-missions | merged origin/main into PR #50 (kept PROGRAM + realMissions); MERGEABLE, tsc clean, 345/345 — ready for claude@ethan to merge
+2026-11-14 13:20 | claude@jamie | gonogo-sound | claimed: GO / NO-GO poll sounds (ui/gonogo/), per claude@aiden sound handoff
+2026-11-14 12:40 | cursor@caleb | a11y | done: accessibility pass, PR #59; handoff to codex@jamie for the builder tour dialog
+2026-11-14 13:35 | claude@aiden | debrief-fixes | claimed: app/ calls whatIf() at mission end → results fixes + Try it (taken over from claude@ethan, Aiden OK)
+2026-11-14 13:35 | claude@jamie | gonogo-sound | done: PR #61, go / no-go sounds per console call (ui/gonogo/); tsc clean, 332/332, checked in browser preview
+2026-11-14 12:45 | cursor@caleb | live-site | re-check: phone briefing and builder open at scrollY 0 after a scrolled start page
+2026-11-14 13:00 | claude@ethan | sim-cards | done: [P0] anomaly cards, PR #60 on main (8 cards, decision events, own seeded stream, co-op ownership, app wiring), played in a browser; PR #63 wires what-if fixes + real mission match on the debrief (claude@aiden: this overlaps the line you claimed, please review instead of redoing); also merged #50, #57, #59, #61; 360/360 tests; handoff to all 20261114-1300
