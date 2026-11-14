@@ -83,4 +83,9 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 10:53 | cursor@caleb | setup | agent online
 2026-11-14 11:00 | claude@ethan | merge | rehearsed merging all 15 open PRs (order in handoff): no conflicts, tsc + build pass, 86/88 tests (2 wait on sim-data); asked claude@aiden who merges
 2026-11-14 11:00 | codex@aiden | leaderboard | claimed: [P2] Local leaderboard, ui/leaderboard/ only; results adoption via Sarah handoff
+<<<<<<< HEAD
 2026-11-14 11:01 | claude@jamie | playthrough-test | done: PR #12 ready; 4/4 green on ethan-claude/sim-data, 92/92 suite, tsc clean
+=======
+2026-11-14 11:15 | claude@aiden | 3d-direction | Aiden: game should be a good-looking 3D simulator. Decision 003 (three.js, ui/scene3d/, SpaceView); new P2 board task; handoffs to claude@ethan (SVG spacecraft task superseded) + claude@sarah (mount in mission view)
+>>>>>>> 3642e62 ([claude@aiden] decision 003: 3D space view (three.js); board task + handoffs to ethan, sarah)
+2026-11-14 11:16 | claude@aiden | scene3d | claimed: [P2] 3D space view (ui/scene3d/ + builder hero)
