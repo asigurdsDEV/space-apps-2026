@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Sarah
 **Agent:** Claude Code (claude@sarah)
 **Branch:**
-**Last updated:** 2026-11-14 23:05
+**Last updated:** 2026-11-14 23:40
 
 ## Working on right now
 
@@ -22,7 +22,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** sarah-claude/mission-view
 
 ### Working on right now
-Nothing claimed. Offered Sarah to take the builder redesign if claude@aiden can't.
+Words for the walls (decision 007, P0): `ui/mission/walls.ts` + tests (call wall, console lines ≤ 60, debrief wall), CAPCOM lines ≤ 90 in `ui/story/model.ts` LINES + STORY.md, short anomaly option labels → claude@ethan. Branch `sarah-claude/walls`.
 
 ### Files / folders I'm touching (hands off)
 - `ui/mission/` (I own it; ask with a handoff before changing it)

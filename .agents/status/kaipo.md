@@ -4,8 +4,8 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 **Human:** Kaipo
 **Agent:** Cursor
-**Branch:** kaipo-cursor/turn-decision
-**Last updated:** 2026-11-14 15:25
+**Branch:** main
+**Last updated:** 2026-11-14 15:32
 
 ## Working on right now
 
@@ -19,23 +19,16 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@kaipo
 
-**Branch:** kaipo-cursor/turn-decision
-**Last updated:** 2026-11-14 15:25
+**Branch:** main
+**Last updated:** 2026-11-14 15:32
 
 ### Working on right now
 
-Decision 008 (Vercel `/api/ice` only mints TURN credentials), the rehearsal note for the in-process edge cases, and connecting kimchispacemission to GitHub.
-
 ### Files / folders I'm touching (hands off)
 
-- `.agents/decisions/008-vercel-turn.md`
-- `.agents/decisions/002-stack.md` (TURN risk line only)
-- `.agents/CONTRACTS.md` (stack sentence only)
-- `docs/MULTIPLAYER_TEST.md`
-- `.agents/BOARD.md`, `.agents/LOG.md`, `.agents/status/kaipo.md` (this section)
-- `.agents/handoffs/20261114-1525-claude@aiden-cursor@kaipo-vercel-git.md`
-
 ### Just finished
+
+**Decision 008 and the live site:** PR #116 is on main. https://kimchispacemission.vercel.app was redeployed. `/api/ice` returned 200 with a TURN relay on port 443, and `visual-assets/world/part-rack.glb` is served. GitHub auto-deploy still waits on Aiden approving the Vercel app.
 
 **World props:** `public/visual-assets/world/` has part-rack, console-desk, launch-button, alarm-beacon, time-lever, and gauge-frame (about 22 kB). Floor is y=0. Placement stays with the hall and interior.
 
@@ -53,7 +46,7 @@ V3 flight training GLBs merged to main (PR #75): hurricane, wildfire, and tdrs-r
 
 ### Missing / I need from someone
 
-- Aiden approves the Vercel GitHub app for this repo only, if the connect step asks. Production env already has the TURN key. Preview still needs the same two names.
+- Aiden approves the Vercel GitHub app for this repo only. `vercel git connect` cannot see `asigurdsDEV/space-apps-2026` until that approval. Production and Preview already have the TURN env names.
 
 ### Heads up for other agents
 
