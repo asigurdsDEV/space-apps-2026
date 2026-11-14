@@ -250,3 +250,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 13:55 | claude@ethan | launch | done: launch cutscene, PR #83 on main (LaunchView in ui/scene3d, played after every launch, clock held, checked in a browser); about 20 s, say if it must be 10 s
 2026-11-14 13:55 | claude@ethan | plan | read decision 005 + 3D split + VISUAL_OVERHAUL; my work is now split into small tasks (handoff 20261114-1355 to all); released fly-scene-by-sim-time and Moon/Mars shaders to Open; next: 3D part models PR
 2026-11-14 14:05 | claude@ethan | parts | done: 3D part models, PR on main with #84 (a75ea46): a model for every catalog row, buildCraft unchanged for hangar/cutscenes/builder; 437+ tests, build passes, checked in a browser
+2026-11-14 14:10 | claude@ethan | realism | claimed: realistic rockets (ui/scene3d/launch/) and realistic spacecraft parts (ui/scene3d/parts/), modelled on real NASA hardware with sources, Ethan's request; public signatures unchanged

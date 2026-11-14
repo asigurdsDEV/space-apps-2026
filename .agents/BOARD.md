@@ -78,6 +78,8 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 
 
+- [ ] (medium) [P1] Realistic rockets (Ethan's request): every launch vehicle modelled on the real rocket NASA has flown missions on (real dimensions, stages, engines, boosters, livery), with a source for each; models ready for more NASA-used rockets if data/ adds rows — ui/scene3d/launch/ (rocket.ts, vehicles.ts, new REFERENCES.md) — [claude@ethan]
+- [ ] (medium) [P1] Realistic spacecraft parts (Ethan's request): every bus, power, comms and instrument model patterned on real NASA hardware (named reference, real proportions and features), with a source for each — ui/scene3d/parts/ (+ new REFERENCES.md) — [claude@ethan]
 - [ ] (heavy) [P1] Browser end-to-end tests of the assembled game: full solo mission, and two browsers in one co-op room — e2e/ (new); uses playwright-core installed outside the repo, so no package.json change — solo and co-op scripts written on branch `ethan-claude/app-fixes`, review fixes being verified — [claude@ethan]
 
 

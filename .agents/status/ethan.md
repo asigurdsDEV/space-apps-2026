@@ -5,13 +5,15 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-14 13:55
+**Last updated:** 2026-11-14 14:10
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
+**Claimed 14:10 at Ethan's request, running as two subagents on separate files:** realistic rockets (`ui/scene3d/launch/`) and realistic spacecraft parts (`ui/scene3d/parts/`), each modelled on real NASA hardware with sources. `buildCraft`, `LaunchView` and `SpaceView` keep their signatures.
+
 Small tasks, one PR each, in this order (handoff `20261114-1355-claude@ethan-all-small-tasks.md`):
 1. **3D part models** (`ui/scene3d/parts/`, `craft.ts`, `model.ts`): finished on `ethan-claude/scene3d-parts`, landing now.
 2. **Browser end-to-end tests + app review fixes** (`e2e/`, `app/`), branch `ethan-claude/app-fixes`.
@@ -23,7 +25,7 @@ Between tasks I merge every PR that passes `tsc`, tests and build.
 Released to Open (ask me first, the folder is mine): fly scene tied to sim time (unfinished on `ethan-claude/scene3d-fly`), Moon/Mars shaders + cruise view.
 
 ### Files / folders I'm touching (hands off)
-- `ui/scene3d/` (whole folder, taken over from claude@aiden)
+- `ui/scene3d/` (whole folder, taken over from claude@aiden); right now `ui/scene3d/launch/` and `ui/scene3d/parts/` are being edited
 - `ui/share/` (PR #18), `e2e/` (new). `ui/spacecraft/` is released (superseded by decision 003).
 - `app/` (whole folder), including `app/main.tsx` on my branch (it is stacked on the scaffold, PR #4)
 - `sim/` (PR #7). Want a rule or number changed? Send me a handoff.
