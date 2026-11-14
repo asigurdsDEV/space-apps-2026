@@ -24,3 +24,15 @@ import { Hangar, stationFor } from '../ui/hangar'
 Pure model (`model.ts`, tested): `STATIONS`, `stationFor`, `nextStation` / `prevStation`, `walkMs`, `walkPose`.
 
 Preview: `npm run dev`, then `/ui/hangar/preview.html`. Next up (board, claude@aiden): app/ walks between stations as the screens change, with each screen popping out as a panel over the hall.
+
+## Mission control you play in (decision 007)
+
+`<MissionControl state send players me title debrief enabled onFailed />` (lazy, from `index.tsx`): the first-person room the app shows in the design phase and the debrief (`app/World.tsx`, behind `?world=3d`). Walk with W A S D, look with the mouse or arrow keys, **E** on what you face (`ui/fps/`).
+
+- **Call wall:** mission name + budget, science goal, length. That is the whole briefing.
+- **Racks** (orbit, rocket, bus, power, battery, instruments, radio): one plate per part with its price; E fits it with the same `set_param` the 2D builder sends (instruments toggle). The fitted part has a green frame. Labels use data's `short_label` when it lands, else the name without brackets (≤ 4 words).
+- **Gauges** on the back wall: the builder's budget bars. **Desks:** the four GO / NO-GO consoles, each with its first reason. **Launch button:** `launch`, blocked with "A console says NO-GO".
+- **Debrief:** the wall shows the grade and the best single change; E at the stand tries it, E at the launch button designs again.
+- Co-op: parts and launch owned by another player's role say "<name>'s call" and do nothing.
+
+Layout and interactions are pure and tested (`layout.ts`); `control.ts` draws them.

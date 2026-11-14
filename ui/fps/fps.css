@@ -40,11 +40,12 @@
   display: none;
 }
 .fps-why {
-  color: #ffb4a8;
+  color: #c9d3ea;
+  font-weight: 500;
 }
 .fps-hint {
   position: absolute;
-  bottom: 16px;
+  top: 16px;
   margin: 0;
   padding: 6px 12px;
   border-radius: 8px;

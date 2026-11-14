@@ -27,6 +27,7 @@ import { Crew, Notice, RoomCode } from './Crew'
 import { ErrorBoundary } from './ErrorBoundary'
 import { StoryLayer } from './StoryLayer'
 import { Walk, WalkTo } from './Walk'
+import { World, WORLD_3D } from './World'
 import { startDriver, timerClock } from './driver'
 import { createGame, type Game } from './game'
 import { cleanRoomCode, openRoom } from './room'
@@ -285,6 +286,8 @@ export function Room({ active, onExit }: { active: Active; onExit: () => void })
       />
     )
   }
+  // Decision 007: the first-person 3D game (app/World.tsx), behind ?world=3d until it is the default.
+  if (WORLD_3D) return <World active={active} config={config} onExit={onExit} />
   // The hall stays mounted under every screen from here on, so each screen change is a walk (app/Walk.tsx).
   return (
     <Walk state={state} title={config.title}>

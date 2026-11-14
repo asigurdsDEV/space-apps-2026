@@ -20,7 +20,7 @@ export function WalkTo({ screen }: { screen: WalkScreen }) {
   return null
 }
 
-function hasWebGL(): boolean {
+export function hasWebGL(): boolean {
   if (typeof WebGLRenderingContext === 'undefined') return false
   try {
     const canvas = document.createElement('canvas')

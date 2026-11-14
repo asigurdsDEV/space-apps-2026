@@ -267,3 +267,20 @@ body {
     transition: none;
   }
 }
+
+/* ---------- the 3D game (app/World.tsx, decision 007): the view fills the window, a few buttons in a corner. */
+.app-world {
+  position: fixed;
+  inset: 0;
+}
+.app-world-view {
+  position: absolute;
+  inset: 0;
+}
+.app-world-bar {
+  position: absolute;
+  top: var(--game-space-2);
+  right: var(--game-space-2);
+  display: flex;
+  gap: var(--game-space-2);
+}
