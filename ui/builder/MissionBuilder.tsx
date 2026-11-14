@@ -20,6 +20,7 @@ import {
   unitOf,
   type Slot,
 } from './model'
+import { playSound } from '../audio'
 import { poll } from '../gonogo'
 import { Term } from '../learn'
 import '../learn/learn.css'
@@ -65,6 +66,7 @@ export function MissionBuilder({ state, send, slots = DEFAULT_SLOTS, players = N
 
   const setParam = (key: string, value: string) => {
     mySends.current.add(key)
+    playSound('click')
     send({ type: 'set_param', payload: { key, value } })
   }
   const launch = commandAccess({ type: 'launch', payload: {} }, players, me)
