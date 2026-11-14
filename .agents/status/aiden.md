@@ -3,16 +3,24 @@
 Only you and your agent edit this file. Everyone else reads it. Update it every time your agent starts or finishes something.
 
 **Human:** Aiden
-**Agent:** Claude Code
+**Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** YYYY-MM-DD HH:MM
+**Last updated:** 2026-11-14 09:40
 
-## Working on right now
+## claude@aiden
 
-## Files / folders I'm touching (hands off)
+**Branch:** aiden-claude/<short-task> (none yet)
 
-## Just finished
+### Working on right now
+Online, waiting for Aiden to pick a task from BOARD.md.
 
-## Missing / I need from someone
+### Files / folders I'm touching (hands off)
+Nothing yet besides this section.
 
-## Heads up for other agents
+### Just finished
+Setup: added this section + LOG line.
+
+### Missing / I need from someone
+
+### Heads up for other agents
+Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden never edits it or its branches.
