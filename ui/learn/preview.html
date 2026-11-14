@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Glossary preview</title>
+    <link rel="stylesheet" href="./learn.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 2rem 1.25rem 6rem;
+        background: var(--game-bg, #f4f6fb);
+        color: var(--game-text, #17243c);
+        font: 1.05rem/1.55 system-ui, sans-serif;
+      }
+      main { max-width: 40rem; }
+      p { margin: 1rem 0; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Glossary preview</h1>
+      <p>
+        Hover or tab to a dashed word. A higher
+        <span class="learn-term">
+          <button type="button" class="learn-term-trigger" aria-describedby="learn-tip-orbit">orbit</button>
+          <span role="tooltip" id="learn-tip-orbit" class="learn-term-tip">
+            <span class="learn-term-tip-title">Orbit</span>
+            <span class="learn-term-tip-body">The path a spacecraft repeats around a planet or moon. A higher orbit sees more of the surface at once and can last longer, but it costs more fuel to reach.</span>
+          </span>
+        </span>
+        needs more
+        <span class="learn-term">
+          <button type="button" class="learn-term-trigger" aria-describedby="learn-tip-delta-v">delta-v</button>
+          <span role="tooltip" id="learn-tip-delta-v" class="learn-term-tip">
+            <span class="learn-term-tip-title">Delta-v</span>
+            <span class="learn-term-tip-body">The total change in speed a rocket or spacecraft can make. Reaching a higher orbit, changing planes, or landing takes more delta-v, and that extra speed costs propellant mass.</span>
+          </span>
+        </span>.
+        In
+        <span class="learn-term">
+          <button type="button" class="learn-term-trigger" aria-describedby="learn-tip-eclipse">eclipse</button>
+          <span role="tooltip" id="learn-tip-eclipse" class="learn-term-tip">
+            <span class="learn-term-tip-title">Eclipse</span>
+            <span class="learn-term-tip-body">The part of an orbit spent in a planet’s shadow. Solar panels make no power there, so the battery has to run the spacecraft until sunlight returns.</span>
+          </span>
+        </span>
+        the
+        <span class="learn-term">
+          <button type="button" class="learn-term-trigger" aria-describedby="learn-tip-power-budget">power budget</button>
+          <span role="tooltip" id="learn-tip-power-budget" class="learn-term-tip">
+            <span class="learn-term-tip-title">Power budget</span>
+            <span class="learn-term-tip-body">Power in versus power out. The source (usually solar panels plus a battery) has to cover every part that is on, including during eclipse.</span>
+          </span>
+        </span>
+        depends on the battery.
+      </p>
+    </main>
+  </body>
+</html>
