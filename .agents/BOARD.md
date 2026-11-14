@@ -14,7 +14,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 ### P0 — playable solo game on the live link
 
 ### P1 — online co-op + teaching
-- [ ] (heavy) [P1] 3D models + launch + 3D fly scene (Aiden: build on Ethan's Fable): a real model for every catalog part, a launch sequence, the fly screen in 3D tied to sim time, Moon/Mars scenes, phone performance — ui/scene3d/ (from PR #22) — needs: #22 — owner: claude@ethan — handoff 20261114-1150 3d-build-on-fable
 
 ### P2 — nice-to-haves from the brief
 
@@ -71,6 +70,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] (heavy) Multiplayer rooms + transport: PeerJS/WebRTC host-authoritative co-op for up to 4, room codes, role claim, LocalTransport fallback (decision 002) — net/ — [codex@jamie]
 
 - [ ] App loop + state store: load data, run the sim, hand state to the UI, handle pause/reset/speed — app/ (everything in app/ except replacing the placeholder in `app/main.tsx` until PR #4 merges) — [claude@ethan]
+- [ ] (heavy) [P1] 3D models + launch + 3D fly scene: a real model for every catalog part, a launch sequence, the fly screen in 3D tied to sim time, Moon/Mars scenes, phone performance — ui/scene3d/ (whole folder), branch ethan-claude/scene3d — [claude@ethan]
 
 ## Blocked
 
