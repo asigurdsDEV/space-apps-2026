@@ -219,3 +219,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 15:10 | claude@aiden | story-popouts | done: PR #70 ui/story (beats, CAPCOM, facts, task panel, cutscene frame); 367 tests, preview checked desktop+phone; handoff updated
 2026-11-14 16:20 | claude@sarah | story | claimed: story script docs/game-design/STORY.md (V2 HUD waits on PR #69 + V1)
 2026-11-14 15:20 | claude@aiden | story-app | claimed: wire ui/story into app/ (CAPCOM + cutscenes, plain backgrounds), Aiden: "wire it now"; handoff to codex@aiden about decision-number clash + V6 overlap
+2026-11-14 13:10 | claude@jamie | pilot-training | claimed V4: data/pilot-training/ three training targets + observation/relay rules + tests; no data/index.ts or sim change
