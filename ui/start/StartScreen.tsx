@@ -1,10 +1,17 @@
 import { useId, useState, type FormEvent } from 'react'
 import type { Config } from '../../shared'
+import type { Difficulty } from '../../data'
+import { Term } from '../learn'
+import '../learn/learn.css'
 import { startRequest, type StartMode, type StartRequest } from './model'
 import './start.css'
 
+export type StartScenario = Pick<Config, 'scenario_id' | 'title' | 'params'>
+
 export interface StartScreenProps {
-  scenarios: readonly Pick<Config, 'scenario_id' | 'title' | 'params'>[]
+  scenarios: readonly StartScenario[]
+  scenarioPreview?: (id: string, difficulty: Difficulty) => StartScenario | undefined
+  difficultyLabels?: Record<Difficulty, string>
   onStart: (request: StartRequest) => void
   busy?: boolean
   error?: string | null
@@ -15,19 +22,23 @@ const modes: { mode: StartMode; title: string; detail: string }[] = [
   { mode: 'join', title: 'Join a room', detail: 'Bring a room code from your host.' },
 ]
 
-export function StartScreen({ scenarios, onStart, busy = false, error }: StartScreenProps) {
+export function StartScreen({ scenarios, onStart, scenarioPreview, difficultyLabels = { easy: 'Easy', normal: 'Normal', hard: 'Hard' }, busy = false, error }: StartScreenProps) {
   const id = useId()
   const [mode, setMode] = useState<StartMode>('solo')
+  const [difficulty, setDifficulty] = useState<Difficulty>('normal')
   const [name, setName] = useState('')
   const [scenarioId, setScenarioId] = useState(scenarios[0]?.scenario_id ?? '')
   const [code, setCode] = useState('')
   const [validation, setValidation] = useState<string | null>(null)
   const scenario = scenarios.find(item => item.scenario_id === scenarioId) ?? scenarios[0]
+  const preview = scenario && (scenarioPreview ? scenarioPreview(scenario.scenario_id, difficulty) : difficulty === 'normal' ? scenario : undefined)
+  const budget = preview?.params.budget_usd
+  const goal = preview?.params.target_science_score
   const message = validation || error
   function submit(event: FormEvent) {
     event.preventDefault()
     if (busy) return
-    const request = startRequest(mode, name, scenario?.scenario_id ?? '', code)
+    const request = startRequest(mode, name, scenario?.scenario_id ?? '', code, difficulty)
     if (!request) { setValidation('Enter your name and choose a scenario, or enter a room code to join.'); return }
     setValidation(null)
     onStart(request)
@@ -39,6 +50,7 @@ export function StartScreen({ scenarios, onStart, busy = false, error }: StartSc
           <p className="ss-eyebrow">Kimchi Trenchers · Space Mission Design Game</p>
           <h1>Big ideas.<br /><span>Finite resources.</span></h1>
           <p className="ss-lede">Design a spacecraft, balance its resources, and discover what it takes to bring science home.</p>
+          <p className="ss-hint">Learn the trade-offs in your <Term id="power-budget" /> and <Term id="downlink" />.</p>
           <ol className="ss-steps"><li>Choose your mission</li><li>Make the trade-offs</li><li>Fly and learn</li></ol>
         </header>
         <form className="ss-panel" onSubmit={submit} onChange={() => setValidation(null)} aria-busy={busy}>
@@ -68,6 +80,15 @@ export function StartScreen({ scenarios, onStart, busy = false, error }: StartSc
                 {!scenarios.length && <option value="">No scenarios available</option>}
                 {scenarios.map(item => <option key={item.scenario_id} value={item.scenario_id}>{item.title}</option>)}
               </select>
+              <label htmlFor={`${id}-difficulty`}>Difficulty</label>
+              <select id={`${id}-difficulty`} value={difficulty} onChange={event => setDifficulty(event.target.value as Difficulty)}>
+                {(['easy', 'normal', 'hard'] as const).map(level => <option key={level} value={level}>{difficultyLabels[level]}</option>)}
+              </select>
+              <dl className="ss-stats" aria-live="polite">
+                {typeof budget === 'number' && Number.isFinite(budget) && <div><dt>Budget</dt><dd>{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(budget)}</dd></div>}
+                {typeof goal === 'number' && Number.isFinite(goal) && <div><dt>Science goal</dt><dd>{goal} points</dd></div>}
+              </dl>
+              {!preview && <p className="ss-hint">Adjusted budget and goal will appear in the mission briefing.</p>}
               <p className="ss-hint">{typeof scenario?.params.objective_text === 'string' ? scenario.params.objective_text : 'Choose a mission, then read the briefing before you build.'}</p>
             </>}
             {message && <p className="ss-error" role="alert">{message}</p>}
