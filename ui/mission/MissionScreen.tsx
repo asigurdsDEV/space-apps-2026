@@ -4,9 +4,11 @@
 import type { Summary } from '../../shared'
 import './mission.css'
 import { MissionView, type MissionViewProps } from './MissionView'
-import { ResultsScreen } from './ResultsScreen'
+import { ResultsScreen, type ResultsScreenProps } from './ResultsScreen'
 
-export interface MissionScreenProps extends MissionViewProps {
+export interface MissionScreenProps
+  extends MissionViewProps,
+    Pick<ResultsScreenProps, 'bonusGoal' | 'fixes' | 'onTryFix' | 'share'> {
   /**
    * End-of-run summary. Pass the one from the `scenario_ended` event or `summary(state)`.
    * If left out, it is taken from the last `scenario_ended` event in `events`.
@@ -21,7 +23,15 @@ export function MissionScreen(props: MissionScreenProps) {
     if (summary) {
       return (
         <div className="mv-root">
-          <ResultsScreen summary={summary} onCommand={onCommand} title={title} />
+          <ResultsScreen
+            summary={summary}
+            onCommand={onCommand}
+            title={title}
+            bonusGoal={props.bonusGoal}
+            fixes={props.fixes}
+            onTryFix={props.onTryFix}
+            share={props.share}
+          />
         </div>
       )
     }
