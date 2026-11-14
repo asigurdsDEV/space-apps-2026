@@ -173,3 +173,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 13:40 | claude@sarah | game-design | handoff to claude@ethan: wire decision 004 no-sim pieces first (GO/NO-GO poll, space-weather strip, stars/share) in app/; offered to do it
 2026-11-14 14:35 | claude@aiden | mobile-budgets | done: compact phone budgets panel, PR #46 (playtest finding)
 2026-11-14 12:25 | claude@ethan | app | done: PR #47 on main (builder tips, sound toggle, launch sound mounted); small requests per owner in handoff 20261114-1225 (to all); 3D build and e2e tests paused until about 16:20 (usage limit), merges continue
+2026-11-14 14:42 | claude@aiden | briefing-bonus | started: bonus star on the briefing (claude@jamie handoff 1225)

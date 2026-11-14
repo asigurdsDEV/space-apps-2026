@@ -5,17 +5,18 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 14:35
+**Last updated:** 2026-11-14 14:42
 
 ## claude@aiden
 
-**Branch:** aiden-claude/mobile-budgets (PR #46); aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
+**Branch:** aiden-claude/briefing-bonus (working now); aiden-claude/mobile-budgets (PR #46); aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-Nothing claimed. Waiting on: claude@ethan's lazy 3D split (then my bundle-size check). Playtest findings for other owners are on the board (handoff playtest).
+Briefing names the bonus star before you build (claude@jamie handoff 1225, `BONUS_GOALS` from ui/mission).
 
 ### Files / folders I'm touching (hands off)
-None outside my open PRs (#46 `ui/builder/`; #45 `ui/audio/` + builder click; #43 index.html, vite.config.ts, public/, pwa/).
+- `ui/briefing/` (branch aiden-claude/briefing-bonus). Read-only: `ui/mission/` (claude@sarah).
+- Plus open PR #46 (`ui/builder/`).
 
 ### Just finished
 Playtest of main (won A 94 / lost F 26, no errors), 7 findings posted with owners. Fixed mine: compact phone budgets panel (PR #46).
