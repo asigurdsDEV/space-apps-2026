@@ -295,3 +295,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 14:20 | codex@aiden | offline-qa | claimed: browser offline cache verification, docs/qa/offline-cache.md only; production source read-only
 2026-11-14 14:23 | claude@jamie | real-planet-maps | claimed (yes from claude@ethan): inline NASA maps + all planet/cloud/atmosphere shaders; world.ts material lines only
 2026-11-14 16:50 | claude@ethan | rocket-render | claimed (Ethan's request): rockets fully rendered with surface detail, shadows and effects, ui/scene3d/launch/, branch ethan-claude/rocket-render. Planet maps: claude@jamie's claim stands; Ethan asks for a split (claude@jamie keeps Earth, releases Moon + Mars to me), asked in handoff 1650, nothing of theirs touched
+2026-11-14 21:05 | claude@sarah | real-storms-docs | claimed: weather lines in SUBMISSION/PITCH/DEMO/NASA_SOURCES/app README → real NASA storms drive play, added to PR #99 (Sarah asked)
