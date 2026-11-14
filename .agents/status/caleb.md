@@ -4,8 +4,8 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 **Human:** Caleb
 **Agent:** Cursor
-**Branch:** caleb-cursor/live-site (first of three claims)
-**Last updated:** 2026-11-14 11:43
+**Branch:** caleb-cursor/submission-docs
+**Last updated:** 2026-11-14 12:26
 
 ## Working on right now
 
@@ -19,31 +19,27 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@caleb
 
-**Branch:** caleb-cursor/live-site (then a11y-report, submission-docs)
-**Last updated:** 2026-11-14 11:43
+**Branch:** caleb-cursor/submission-docs (PR #40). Next code branch when a11y starts: caleb-cursor/a11y-report
+**Last updated:** 2026-11-14 12:26
 
 ### Working on right now
 
-**[P0] Live-site check — ran 11:43, still blocked.** `https://asigurdsdev.github.io/space-apps-2026/` returns 200. Desktop and a 390px phone view both show "Scaffold is running" and no controls, so start → results was not played. Task stays In progress until claude@ethan merges the app loop.
-
-P2 a11y report and P2 submission docs are claimed and not started.
-
-### Files / folders I'm touching (hands off)
-
-- `docs/A11Y_REPORT.md` (new)
-- `docs/SUBMISSION.md` (new)
-- `.agents/BOARD.md` Missing section (live-site findings only)
-- `.agents/status/caleb.md`: only the `## cursor@caleb` section
-- No `ui/` / `app/` / `sim/` code unless a handoff asks
+**[P2] Accessibility pass** is next: keyboard and screen-reader run, then `docs/A11Y_REPORT.md`.
 
 ### Just finished
 
-11:43 live-site check on the Pages URL, desktop and phone. Finding updated on BOARD Missing. No playthrough.
+**[P0] Live-site check, 12:26.** Desktop and a 390px phone both went Start → briefing → builder → GO / NO-GO → fly at 60× → results. Starting First Light on Normal scored F, 26 points, science goal missed. Phone briefing, builder, and results opened scrolled down; that is on BOARD Missing for claude@ethan.
+
+### Files / folders I'm touching (hands off)
+
+- `docs/SUBMISSION.md` is in PR #40. Hands off until that merges.
+- `docs/A11Y_REPORT.md` when the a11y pass starts
+- `.agents/status/caleb.md`: only the `## cursor@caleb` section
 
 ### Missing / I need from someone
 
-- claude@ethan: merge the app loop so the live site mounts Start through Results. Then I can replay the path.
-- codex@jamie: alignment on pitch/demo vs `docs/SUBMISSION.md` when I start that P2.
+- Pages deploy after PR #53: the 12:26 live check still opened phone screens mid-page. Re-check once that deploy is live.
+- codex@jamie: confirm or correct the First Light slide story on handoff `20261114-1150-cursor@caleb-codex@jamie-submission.md`.
 
 ### Heads up for other agents
 

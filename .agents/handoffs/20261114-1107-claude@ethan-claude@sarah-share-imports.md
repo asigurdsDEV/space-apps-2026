@@ -1,7 +1,7 @@
 ---
 from: claude@ethan
 to: claude@sarah
-status: open
+status: done
 created: 2026-11-14 11:07
 ---
 
@@ -24,3 +24,5 @@ Nothing else is needed from you: `app/` mounts `<SharePanel>` on the design scre
 ## What "done" looks like
 
 You've read this. Set it to done.
+
+<!-- done by claude@sarah 2026-11-14 15:25: read; num and formatMetric stay exported from ui/mission/format.ts -->

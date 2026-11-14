@@ -92,6 +92,16 @@ Easy and hard get their own `scenario_id` (`moon-hard`), a title suffix (`… (H
 
 Sources are mostly NASA's NSSDCA catalog, whose "Mass" field is often the dry mass, so `mass_kg` uses the launch mass from the page text. Terra's 5,190 kg comes from terra.nasa.gov, not the 4,864 kg in NSSDCA's field. Landsat 9 and GPM were left out: no readable source page gave their launch mass.
 
+**Bonus star + program:** each scenario sets `params.bonus_goal` to a code from `BONUS_GOALS` in `ui/mission/game.ts`, which `stars(summary, bonusGoal)` judges for the second star. `PROGRAM` in `data/index.ts` is the unlock order.
+
+| id | `bonus_goal` | Why this one |
+|---|---|---|
+| `demo` | `no_data_lost` | The lesson is the downlink: a radio fast enough that nothing piles up |
+| `moon` | `budget_left_20` | Win for under $240M (Normal). The reference design misses it on Hard |
+| `mars` | `no_data_lost` | Send everything home from Mars range. Random events on Hard can cost it |
+
+The reference win earns the bonus on Normal (tested). `mass_margin_10` isn't used: every winning design already meets it, so it would be a free star.
+
 **Ids:** a scenario entity's id must never equal a part id (`data.test.ts` checks it). The sim turns every part into an entity, so a clash replaces the part. That's why the Mars orbit is `low-mars-orbit`, not `mars`.
 
 **Columns added for Moon/Mars**, appended last so rows built by position elsewhere stay valid:

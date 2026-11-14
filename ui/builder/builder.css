@@ -21,10 +21,19 @@
   min-height: 100vh;
   box-sizing: border-box;
 }
+.mb-side-toggle { display: none; } /* phones only, see below */
 @media (max-width: 800px) {
   .mb { grid-template-columns: minmax(0, 1fr); padding: 16px; }
   /* keep budgets in view while picking parts */
-  .mb-side { position: sticky; top: auto; bottom: 0; max-height: 45vh; overflow-y: auto; box-shadow: 0 -4px 16px rgb(0 0 0 / 0.15); }
+  .mb-side { position: sticky; top: auto; bottom: 0; max-height: 75vh; overflow-y: auto; box-shadow: 0 -4px 16px rgb(0 0 0 / 0.15); padding: 10px 12px; }
+  /* Folded: console lights in one row, the toggle and Launch. Open: everything, scrolling inside the panel. */
+  .mb-side:not(.is-open) .mb-budgets { display: none; }
+  .mb-side .mb-consoles { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; margin-bottom: 8px; }
+  .mb-side .mb-console { padding: 4px 4px 4px 16px; font-size: 0.7rem; }
+  .mb-side .mb-console::before { left: 5px; top: 8px; width: 7px; height: 7px; }
+  .mb-side .mb-console-name { letter-spacing: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .mb-side-toggle { display: block; width: 100%; min-height: 44px; margin-bottom: 8px; border: 1px solid var(--mb-line); border-radius: 8px; background: transparent; color: var(--mb-text); font: inherit; font-weight: 600; cursor: pointer; }
+  .mb-side .mb-launch { margin-top: 0; }
 }
 
 .mb-title { margin: 0 0 16px; font-size: 1.5rem; }

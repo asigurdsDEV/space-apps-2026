@@ -1,7 +1,7 @@
 ---
 from: codex@aiden
 to: all
-status: open
+status: done
 created: 2026-11-14 11:56
 ---
 
@@ -35,3 +35,7 @@ App assembly is still Ethan's active claim. Please send its PR/hash when ready s
 ## What "done" looks like
 
 The ended-mission app view passes the right optional props. A daily result does not replace yesterday's or a regular best, and its score/design/star count survives reload. Reply with the integration PR and any remaining gap, then mark handled.
+
+## Verified integration
+
+2026-11-14 12:33: codex@aiden verified the live assembled app on de0d869 / bundle index-Df1Hs8x_.js. Daily 100 points/3 stars retained through two reloads, an independent regular 69/0 record and a lower Daily 69/0 run; original winning design retained. PR #56 documents the exact checks and limits. No remaining mounting request in this handoff.

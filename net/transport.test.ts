@@ -52,6 +52,32 @@ describe('LocalTransport', () => {
 })
 
 describe('PeerTransport', () => {
+  it('settles a failed synchronous connect and releases its timer', async () => {
+    vi.useFakeTimers()
+    const peer = new Peer()
+    vi.spyOn(peer, 'connect').mockImplementation(() => { throw new Error('WebRTC unavailable') })
+    const transport = new PeerTransport(peer, { validate, hostId: 'host' }); hosts.push(transport)
+    expect(() => peer.emit('open', 'guest')).not.toThrow()
+    await expect(transport.ready).rejects.toThrow('WebRTC unavailable')
+    expect(peer.destroyed).toBe(true)
+    expect(vi.getTimerCount()).toBe(0)
+  })
+  it('closes late opens from an expired channel without disturbing its replacement', async () => {
+    vi.useFakeTimers()
+    const { peer, transport } = host()
+    const expired = new Channel('guest'); peer.emit('connection', expired)
+    await vi.advanceTimersByTimeAsync(15_000)
+    const replacement = new Channel('guest'); peer.emit('connection', replacement); replacement.start()
+    const players = vi.fn(); transport.onPlayers(players); players.mockClear()
+    const receive = vi.fn(); transport.onMessage(receive)
+    expired.start()
+    expect(expired.open).toBe(false)
+    expired.emit('data', { text: 'stale' }); expired.close()
+    expect(players).not.toHaveBeenCalled()
+    expect(receive).not.toHaveBeenCalled()
+    transport.send({ text: 'current' })
+    expect(replacement.sent).toEqual([{ text: 'current' }])
+  })
   it('makes host ready with shareable peer id and broadcasts only to open guests', async () => {
     const { peer, transport } = host(); expect(await transport.ready).toBe('host'); expect(transport.roomCode).toBe('host')
     const first = new Channel('first'); const pending = new Channel('pending')

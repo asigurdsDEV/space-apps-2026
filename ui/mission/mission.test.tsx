@@ -98,17 +98,16 @@ describe('MissionView', () => {
     const html = renderToStaticMarkup(<MissionView state={flying} events={all} onCommand={noop} title="Demo" />)
     expect(html).toContain('aria-current="step"')
     expect(html).toContain('Science ops')
-    expect(html).toContain('orbiting Earth')
+    expect(html).toContain('mv-space') // 3D SpaceView from ui/scene3d
     expect(html).toContain('Science returned')
     expect(html).toContain('In orbit. Science operations have started.')
     expect(html).toContain('Pause')
   })
 
-  it('shows Resume when paused and a placeholder before launch', () => {
+  it('shows Resume when paused', () => {
     const state = init(demoConfig, fixtureDatasets)
     const html = renderToStaticMarkup(<MissionView state={state} events={[]} onCommand={noop} paused />)
     expect(html).toContain('Resume')
-    expect(html).toContain('Launch to see your spacecraft here.')
   })
 })
 
@@ -154,7 +153,7 @@ function findButton(node: any, text: string): any {
 // ------------------------------------------------- decision 004: game layer
 
 import { DecisionCard, DecisionCardBody } from './DecisionCard'
-import { bestFixes, shareText, stars, type Decision } from './game'
+import { bestFixes, matchMission, shareText, stars, type Decision } from './game'
 
 const card: Decision = {
   decision_id: 'd1',
@@ -180,7 +179,9 @@ describe('stars', () => {
 
   it('gives no bonus star on a failed mission or an unknown goal', () => {
     expect(stars({ ...base, outcome: 'science_shortfall', score: 60 }, 'no_data_lost').map((s) => s.earned)).toEqual([false, false, false])
-    expect(stars(base, 'made_up')[1].earned).toBe(false)
+    // No known goal: no nameless bonus star (playtest finding), just success + excellent.
+    expect(stars(base, 'made_up').map((s) => s.label)).toEqual(['Mission success', 'Excellent (85+ points)'])
+    expect(stars(base).length).toBe(2)
   })
 })
 
@@ -192,7 +193,7 @@ describe('what-if + share card', () => {
 
   it('builds a share text with stars, score, grade and outcome', () => {
     const text = shareText({ outcome: 'success', score: 84, grade: 'B' }, { title: 'First Light', daily: '2026-11-14', anomalies: 2 })
-    expect(text).toBe('GO / NO-GO · Daily 2026-11-14 · First Light\n★☆☆  84 pts (B)\nMission success · ⚠ 2 anomalies survived')
+    expect(text).toBe('GO / NO-GO · Daily 2026-11-14 · First Light\n★☆  84 pts (B)\nMission success · ⚠ 2 anomalies survived')
   })
 })
 
@@ -245,5 +246,30 @@ describe('space weather strip', () => {
     expect(html).toContain('Real NASA data from 30 Oct 2003')
     expect(html).toContain('mv-tone-bad')
     expect(renderToStaticMarkup(<MissionView state={state} events={events} onCommand={noop} />)).not.toContain('mv-weather')
+  })
+})
+
+describe('real mission match', () => {
+  const missions = [
+    { id: 'icecube', name: 'IceCube', agency: 'NASA', year: 2017, body: 'earth', orbit_class: 'leo-iss', mass_kg: 4.5, objective: 'earth-observation', fact: 'Tiny.', source_url: 'https://a' },
+    { id: 'landsat-9', name: 'Landsat 9', agency: 'NASA', year: 2021, body: 'earth', orbit_class: 'sso', mass_kg: 2711, objective: 'earth-observation', fact: 'Big.', source_url: 'https://b' },
+    { id: 'small-sso', name: 'Small SSO', agency: 'NASA', year: 2020, body: 'earth', orbit_class: 'sso', mass_kg: 15, objective: 'earth-observation', fact: 'Small.', source_url: 'https://c' },
+    { id: 'lro', name: 'LRO', agency: 'NASA', year: 2009, body: 'moon', orbit_class: 'lunar', mass_kg: 1916, objective: 'lunar-mapping', fact: 'Moon.', source_url: 'https://d' },
+  ]
+
+  it('prefers same body, then orbit, then objective, then closest mass', () => {
+    expect(matchMission(missions, { body: 'earth', orbit: 'sso', objective: 'earth-observation', mass_kg: 12 })?.id).toBe('small-sso')
+    expect(matchMission(missions, { body: 'earth', orbit: 'sso', objective: 'earth-observation', mass_kg: 2000 })?.id).toBe('landsat-9')
+    expect(matchMission(missions, { body: 'earth', orbit: 'leo-iss', mass_kg: 3000 })?.id).toBe('icecube') // orbit beats mass
+    expect(matchMission(missions, { body: 'moon', mass_kg: 5 })?.id).toBe('lro')
+    expect(matchMission(missions, { body: 'mars', mass_kg: 5 })).toBeNull()
+  })
+
+  it('shows the match with its fact and source on the debrief', () => {
+    const { state, events } = fly({ toEnd: true, sandbox: true })
+    const html = renderToStaticMarkup(<MissionScreen state={state} events={events} onCommand={noop} realMissions={missions} />)
+    expect(html).toContain('Your mission is most like')
+    expect(html).toMatch(/<strong>(IceCube|Landsat 9|Small SSO)<\/strong>/)
+    expect(html).toContain('>Source</a>')
   })
 })

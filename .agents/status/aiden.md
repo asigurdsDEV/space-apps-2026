@@ -5,19 +5,24 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 14:05
+**Last updated:** 2026-11-14 16:00
 
 ## claude@aiden
 
-**Branch:** aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
+**Branch:** aiden-claude/risk-meter (PR #57); aiden-claude/what-if (PR #55); aiden-claude/app-safety (PR #53); aiden-claude/bundle-check (PR #54); aiden-claude/briefing-bonus (PR #49); aiden-claude/mobile-budgets (PR #46); aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-Nothing claimed. Next of mine: bundle-size check in the deploy workflow, after claude@ethan's lazy 3D split.
+Nothing claimed.
 
 ### Files / folders I'm touching (hands off)
-None outside my open PRs (#45: `ui/audio/`, builder click; #43: index.html, vite.config.ts, public/, pwa/).
+None outside my open PRs (#57: `ui/builder/`, `app/useChance.ts`, `app/App.tsx` Design; #49 `ui/briefing/`).
 
 ### Just finished
+Builder risk meter (PR #57): chance of success from background test flights on Hard.
+What-if + success-rate helpers (PR #55, taken over from claude@ethan at Aiden's request).
+Took over claude@ethan's scroll-to-top + crash safety (PR #53) at Aiden's request; bundle-size check in CI (PR #54, first load 117 kB / 150 kB). Ethan's lazy 3D, GO/NO-GO and daily lines moved to Done in his name.
+Briefing shows the bonus star goal (PR #49, claude@jamie handoff 1225 done).
+Playtest of main (won A 94 / lost F 26, no errors), 7 findings posted with owners. Fixed mine: compact phone budgets panel (PR #46).
 [P2] Sound (PR #45): `ui/audio/` generated sound effects + mute toggle; builder part-pick clicks; handoff to app/gonogo/results owners.
 [P1] Offline mode (PR #43): the game loads from cache when venue wifi is down or slow; app icon + manifest; link-preview meta. Moved the lazy-3D task to claude@ethan (Aiden: 3D work is Ethan's).
 [P1] Builder part compatibility (PR #39): bus-class and best-orbit badges, parts too big for the bus dimmed, same rules as the sim.
@@ -40,25 +45,25 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** main (coordination only); aiden-codex/daily-records (PR #37, merged)
-**Last updated:** 2026-11-14 12:07
+**Branch:** main (done coordination); aiden-codex/daily-regression (PR #56, merged)
+**Last updated:** 2026-11-14 12:33
 
 ### Working on right now
 
-Completion assessment finished. No implementation claimed. Main now contains the real game (PR #42), replacing the scaffold. Read-only live solo check reached Results; findings handed to existing owners.
+Focused Daily/stars/personal-best regression complete. QA report PR #56 merged by Ethan in ddfb083; no active implementation claim. Recovery/source integration remains with its owners.
 
 ### Files / folders I'm touching (hands off)
 
-Own status section, own BOARD Missing lines, append-only LOG, own completion handoff only. No active source edits; ui/leaderboard/ and ui/theme/ follow-up ownership. Claude's sections, branches, offline/config/workflow work and Ethan's app/sim/3D work untouched. Unrelated local docs/CHALLENGE 2.md left untouched.
+No active source edits. PR #56 changes only `docs/qa/daily-records.md`; own coordination/status/log/handoffs only on main. Claude sections/branches, app/, sim/, shared/, ui/mission/, ui/start/, net/, ui/scene3d/, workflows/config untouched. ui/leaderboard/ and ui/theme/ remain follow-up ownership. Unrelated docs/CHALLENGE 2.md left untouched.
 
 ### Just finished
 
-Checked main 8c7a293 (latest coordination caa0791): 294/294 tests, typecheck and production build pass. Live solo First Light Normal: Start → Briefing → Builder → Launch → Mission at 60× → Results. Starting design correctly misses science goal: 26 points, 365 days, 1.7/30 science, local best displayed. PRs #41 (bonus goals/program), #43 (offline), #44 (tips) are open with green build checks. Main entry JS is 959.41 kB / 263.53 kB gzip, so Ethan's lazy 3D split remains relevant.
+Live bundle index-Df1Hs8x_.js matches tested de0d869 build. Daily Moon ignores ordinary Hard picker: Normal budget $300M/goal75. Reference Daily win: 100 points, 3 stars, 730 days. After reload, regular Moon lower design: 69 points/0 stars, separate regular record. After another reload, lower Daily: current 69/0, saved Daily still 100/3 with original three instruments/high-gain dish. Expanded record fits 390px viewport with no horizontal overflow; console error log empty at inspection. 316/316 tests + typecheck/build pass. Exact steps and limitations in PR #56.
 
 ### Missing / I need from someone
 
-Ethan: Start currently ignores request.difficulty and shows variant IDs twice; daily callback/seed/UTC refresh, GO/NO-GO poll mounting, bonusGoal/stars/leaderboard metadata and spaceWeather still need app wiring. Sarah's anomaly/what-if UI requires Ethan's sim events/analysis. Kaipo and Caleb: live page now unblocks your network, phone and accessibility rehearsals. Jamie/Caleb: finalize demo run sheet and update submission/source descriptions that still describe a scaffold or no measured data. Detailed evidence in completion-check handoff.
+No Daily/record integration defect found. Ethan merged PR #56 with #52–#55; his merge receipt reports 331 tests/build pass. Live midnight rollover, blocked storage in browser, offline, venue co-op and newer recovery PR #53 are outside this check; Caleb/Kaipo/Claude retain their scopes. The former difficulty/Daily/GO-NO-GO/stars prop gaps are resolved on the tested revision.
 
 ### Heads up for other agents
 
-No blanket claim of multiplayer, phone, offline or winning live-run verification: this check was one desktop solo losing run. Ethan remains sole merge coordinator for ready PRs. Claude Aiden owns offline/PWA, bundle-size workflow and newly claimed sound; Ethan owns all 3D; Jamie Codex already completed tips in PR #44. Daily/stars storage helper is ready, but stars accompany the best-score design rather than an independent progression store.
+Readiness handoff 1156 is closed with observed assembled-app evidence. No app/shared/sim/data/UI source changes. Tests use existing coverage; no duplicate test harness/dependency added. Personal-best stars belong to the matching best-score design, not independent progression. Ethan remains merge coordinator; this QA does not certify later code changes.

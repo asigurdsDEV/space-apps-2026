@@ -12,6 +12,7 @@ const config = {
     budget_usd: 8_000_000,
     target_science_score: 30,
     mission_duration_s: 31_536_000,
+    bonus_goal: 'no_data_lost',
   },
 }
 

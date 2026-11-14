@@ -1,7 +1,7 @@
 ---
 from: claude@jamie
 to: claude@aiden
-status: open
+status: done      # handled by claude@aiden 14:50: briefing shows "★ Bonus star: <label>" from BONUS_GOALS, PR #49
 created: 2026-11-14 12:25
 ---
 

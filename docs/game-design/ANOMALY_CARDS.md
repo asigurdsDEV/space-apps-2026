@@ -41,7 +41,7 @@ Numbers below are starting values for balance. claude@ethan may tune them. Keep 
 - **Body:** A burst from the Sun is heating Earth's upper atmosphere, and it puffs up. More air at your altitude means more drag pulling you down.
 - **A. Go to safe mode, edge-on to the wind:** `lose_days(2)`. *"Lose 2 days of science. Drag mostly avoided."*
 - **B. Keep observing:** `chance(p_lowalt, [end_mission("reentry")], [])`, where `p_lowalt` = 0.25 below 400 km, 0.08 at 400–600 km, 0.01 above. *"Fine if you're high enough. Very risky in a low orbit."*
-- **Story (Starlink, 2022):** In February 2022, a geomagnetic storm raised drag on a batch of 49 newly launched Starlink satellites still in a very low orbit. About 40 of them couldn't climb away and re-entered the atmosphere.
+- **Story (Starlink, 2022):** In February 2022, a geomagnetic storm raised drag on a batch of 49 newly launched Starlink satellites still in a very low orbit. 38 of them couldn't climb away and re-entered the atmosphere.
 - **Lesson:** low orbits are cheaper to reach and see more detail, but drag and space weather shorten their lives.
 - **source_url:** https://repository.library.noaa.gov/view/noaa/53091 (NOAA space-weather study of the February 2022 Starlink loss)
 
@@ -71,7 +71,7 @@ Numbers below are starting values for balance. claude@ethan may tune them. Keep 
 - **Body:** Your spacecraft stopped answering after a routine command. It might be spinning out of control, or just pointed the wrong way.
 - **A. Pay for extra antenna time to search:** `cost_usd(0.03 × budget_usd), lose_days(6)`. *"Costs 3% of your budget and 6 days, but you'll find it."*
 - **B. Wait for it to fix itself:** `chance(0.55 × bus_reliability_factor, [lose_days(15)], [end_mission("lost_contact")])`. *"Free, but you might lose it for good."*
-- **Story (SOHO, 1998):** The Sun-watching SOHO observatory (ESA and NASA) lost contact in June 1998 after a command error sent it spinning. Teams found it by bouncing radar signals off it, slowly brought it back, and resumed science later that year. It's still observing today.
+- **Story (SOHO, 1998):** The Sun-watching SOHO observatory (ESA and NASA) lost contact in June 1998 after a command error sent it spinning. Teams found it by bouncing radar signals off it, slowly brought it back, and resumed science later that year. It was still observing 30 years after launch.
 - **Lesson:** ground stations are part of the mission, not just the spacecraft.
 - **source_url:** https://www.esa.int/Newsroom/Press_Releases/SOHO_spacecraft_located_with_ground-based_radar · https://soho.nascom.nasa.gov/operations/Recovery/recovery_diary.html
 
@@ -91,7 +91,7 @@ Numbers below are starting values for balance. claude@ethan may tune them. Keep 
 - **Body:** A higher-priority mission needs the big antennas this week, and you're losing most of your passes.
 - **A. Rent time on commercial ground stations:** `cost_usd(0.02 × budget_usd)`. *"Costs 2% of your budget. No data delay."*
 - **B. Wait it out:** `downlink_mult(0.4, for_days: 7)`. *"Free, but data piles up. Watch your storage."*
-- **Story (inspired by the Deep Space Network):** NASA's Deep Space Network has only three sites, in California, Spain and Australia, shared by dozens of missions. Antenna time is scheduled in advance, and high-priority events like landings can take precedence.
+- **Story (inspired by the Deep Space Network):** NASA's Deep Space Network has only three sites, in California, Spain and Australia, shared by dozens of missions. Antenna time is scheduled in advance, and high-priority events like launches can take precedence.
 - **Lesson:** downlink capacity is a shared, scheduled resource.
 - **source_url:** https://www.nasa.gov/directorates/somd/space-communications-navigation-program/what-is-the-deep-space-network/ · scheduling and priority: https://oig.nasa.gov/wp-content/uploads/2023/12/ig-23-016.pdf
 

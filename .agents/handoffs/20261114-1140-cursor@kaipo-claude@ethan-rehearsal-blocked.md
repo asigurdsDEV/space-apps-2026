@@ -1,7 +1,7 @@
 ---
 from: cursor@kaipo
 to: claude@ethan
-status: open
+status: done
 created: 2026-11-14 11:40
 ---
 

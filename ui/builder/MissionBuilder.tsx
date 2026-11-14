@@ -20,6 +20,7 @@ import {
   unitOf,
   type Slot,
 } from './model'
+import { playSound } from '../audio'
 import { poll } from '../gonogo'
 import { Term } from '../learn'
 import '../learn/learn.css'
@@ -65,12 +66,16 @@ export function MissionBuilder({ state, send, slots = DEFAULT_SLOTS, players = N
 
   const setParam = (key: string, value: string) => {
     mySends.current.add(key)
+    playSound('click')
     send({ type: 'set_param', payload: { key, value } })
   }
   const launch = commandAccess({ type: 'launch', payload: {} }, players, me)
   const errors = state.issues.filter((i) => i.severity === 'error')
   const warnings = state.issues.filter((i) => i.severity === 'warning')
   const bars = budgetBars(state.metrics)
+  // Phones: the budgets fold away so the parts stay visible (console lights and Launch always show).
+  const [panelOpen, setPanelOpen] = useState(false)
+  const problems = bars.filter((b) => b.bad).length + errors.length
   const objective = state.params.objective_text
 
   return (
@@ -169,7 +174,7 @@ export function MissionBuilder({ state, send, slots = DEFAULT_SLOTS, players = N
         })}
       </div>
 
-      <aside className="mb-side" aria-label="Mission budgets">
+      <aside className={`mb-side${panelOpen ? ' is-open' : ''}`} aria-label="Mission budgets">
         <h2 className="mb-sr">Flight consoles</h2>
         <ul className="mb-consoles">
           {poll(state.issues).map((c) => {
@@ -185,6 +190,10 @@ export function MissionBuilder({ state, send, slots = DEFAULT_SLOTS, players = N
             )
           })}
         </ul>
+        <button type="button" className="mb-side-toggle" aria-expanded={panelOpen} aria-controls="mb-budgets" onClick={() => setPanelOpen((o) => !o)}>
+          {panelOpen ? 'Hide budgets ▾' : `Show budgets ▴${problems > 0 ? ` · ${problems} to fix` : ''}`}
+        </button>
+        <div id="mb-budgets" className="mb-budgets">
         <h2>Budgets</h2>
         {bars.length === 0 && <p className="mb-muted">Pick parts to see your budgets.</p>}
         {bars.map((b) => (
@@ -226,6 +235,7 @@ export function MissionBuilder({ state, send, slots = DEFAULT_SLOTS, players = N
             ))}
           </ul>
         )}
+        </div>
 
         <button
           type="button"

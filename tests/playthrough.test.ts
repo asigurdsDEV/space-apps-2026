@@ -2,8 +2,9 @@
 // the way the app will: init → set_param → launch → step until ended.
 import { describe, it, expect } from 'vitest'
 import type { Command, Config, ParamValue, SimEvent, SimState } from '../shared'
-import { init, step } from '../sim'
-import { DIFFICULTIES, getDatasets, getScenario, type Difficulty } from '../data'
+import { init, step, summary } from '../sim'
+import { DIFFICULTIES, PROGRAM, getDatasets, getScenario, scenarios, type Difficulty } from '../data'
+import { stars } from '../ui/mission/game'
 
 const MAX_STEPS = 10_000 // far beyond any mission length; stops a stuck sim from hanging the test
 
@@ -53,6 +54,18 @@ describe('playthrough (real sim + real data)', () => {
   it.each(Object.keys(WINS))('%s (hard, random failures on): the reference design survives its seed', (id) => {
     const r = play(getScenario(id, 'hard')!, WINS[id])
     expect(r.ended?.payload).toMatchObject({ reason: 'success' })
+  })
+
+  // The bonus star must be a goal results can judge, and reachable on Normal.
+  it.each(Object.keys(WINS))('%s: the reference design earns the bonus star', (id) => {
+    const config = sandbox(id)
+    const [, bonus] = stars(summary(play(config, WINS[id]).state), String(config.params.bonus_goal))
+    expect(bonus.label).not.toBe('Bonus goal') // an unknown code falls back to this label
+    expect(bonus.earned).toBe(true)
+  })
+
+  it('the mission program lists every scenario once', () => {
+    expect([...PROGRAM].sort()).toEqual(scenarios.map((s) => s.scenario_id).sort())
   })
 
   it.each(Object.keys(WINS))('%s: the starting design does not win', (id) => {

@@ -8,10 +8,10 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Open
 
+### Playtest 14:15 (claude@aiden played main start → results; details in handoff 20261114-1420 playtest)
+- [ ] (light) [P1] Start: empty name silently blocks Start (placeholder looks filled) and the name is forgotten after Main menu; prefill or default it, and remember it — ui/start/ — owner: codex@jamie
+
 ### Improvements (added by claude@aiden 12:55, ideas from playing the builder + the game design)
-- [ ] (light) [P1] Fast first load on phones: export a lazy-loading `SpaceView` from ui/scene3d (same props, `React.lazy` + Suspense) so three.js isn't in the first download for any screen — ui/scene3d/ — owner: claude@ethan (moved by claude@aiden at Aiden's request: 3D work is Ethan's; handoff lazy-3d)
-- [ ] (light) [P1] Bundle-size check in the deploy workflow: fail the build if the first-load JS grows past a set limit — .github/workflows/ — needs: lazy 3D split — owner: claude@aiden
-- [ ] (light) [P1] Crash safety for judging: an error boundary around each screen with "Something went wrong, back to the builder" instead of a white page — app/ — owner: claude@ethan
 
 <!-- The six build tasks below are proposed by claude@ethan (one folder each so nobody collides). Rename or split them if your human disagrees. -->
 <!-- Ethan has the most agent usage, so claude@ethan takes the heavy ones (sim core + app loop are claimed below). If a task turns out bigger than your usage allows, hand the hard part to claude@ethan with a handoff instead of dropping it. -->
@@ -24,19 +24,17 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 ### P2 — nice-to-haves from the brief
 
 ### Game design (decision 004, proposed, see docs/game-design/GAME_DESIGN.md §8)
-- [ ] (light) [P0] Daily mission app integration: use dailyMissionForDate + apply descriptor seed before init, refresh at UTC midnight/resume — app/ — owner: claude@ethan — needs: #30 #31 (Start portion complete)
 - [ ] (heavy) [P0] Anomaly cards in the sim: `decision_required` event + `resolve_decision` command, seeded draws, effects vocabulary, encode the deck from docs/game-design/ANOMALY_CARDS.md — sim/, shared/, CONTRACTS.md — owner: claude@ethan
-- [ ] (medium) [P0] What-if + risk meter helper: `whatIf()` and `successRate()` reruns of the pure sim — sim/analysis.ts — owner: claude@ethan
 
 ## Missing / needed
 
-- Completion check 12:07: main has 294 passing tests + clean build; current gaps, ready PRs #41/#43/#44 and owner actions are in `20261114-1207-codex@aiden-all-completion-check.md`. Start difficulty request is not applied by app; Ethan already owns Start-list/integration fixes. Venue rehearsal, phone/a11y checks, final demo run sheet and refreshed submission/source claims remain — [found by codex@aiden]
+- Supersedes the 12:07 check: difficulty, Daily, GO/NO-GO, stars/weather/tips/sound and lazy 3D are integrated. Focused Daily/regular record regression passes on de0d869 (PR #56 report, 316 tests/build). The old completion handoff is historical for those integrations; venue rehearsal, full phone/a11y, final demo/submission and newer app-safety validation remain separate — [found by codex@aiden]
 
 - Builder first-time tips component ready in PR #44; mount BuilderTutorial once above/beside MissionBuilder while designing — app/builder owners (Ethan/Aiden); ui/tutorial/README.md API — [found by codex@jamie]
 
 - Resolved 12:07: Pages serves the real game (PR #42); codex@aiden completed live solo Start → Results (First Light Normal, starting design, 60×, science_shortfall, 26 points). Older scaffold/Pages permission blockers below are historical; Caleb and Kaipo can resume their checks — [found by codex@aiden]
 
-- Leaderboard PRs #19 + #37 are merged and regular results mounting works live. Still missing in app/: dailySeed only for Daily and supplied earned-star count; bonus goal must reach MissionScreen. App owner claude@ethan; see completion-check handoff — [found by codex@aiden]
+- Resolved: leaderboard #19/#37 props are now integrated. Live Daily 100 points/3 stars survives two reloads plus independent regular 69/0 and lower Daily 69/0; saved score, stars and original design remain paired. Evidence: PR #56, daily-regression-verified handoff — [found by codex@aiden]
 
 - Theme PR #16 is imported by app; builder/briefing use tokens. app currently pins Start/Lobby/Mission dark because those screens retain local palettes. Full light-theme adoption remains with screen owners; no blocker to the current dark game — [found by codex@aiden]
 
@@ -46,7 +44,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 <!-- anything an agent noticed is missing, broken, or needed by someone else -->
 <!-- - thing — who needs it — [found by agent@human] -->
 - GitHub Pages not enabled yet (Settings → Pages → Source: GitHub Actions) — deploy in PR #4 needs it — repo owner (Aiden) — [found by claude@aiden]
-- Live-site check 11:43: `https://asigurdsdev.github.io/space-apps-2026/` returns 200, but desktop and a 390px phone view both show only "Scaffold is running" with no buttons. Start → results cannot be played until `app/main.tsx` mounts the screens — claude@ethan (app loop) — [found by cursor@caleb]
+- Live-site check 12:26 passed start → results on the then-deployed Pages build (desktop and 390px phone, solo First Light Normal, starting design, 60×, F / 26 pts). That build still opened the phone briefing, builder, and results mid-page. PR #53 claims the scroll-to-top fix and landed on main after this check — re-check the live link after the next deploy — [found by cursor@caleb]
 - ~~Challenge + engine/stack not picked yet~~ resolved 10:07: Space Mission Design Game, TS + Vite + React (decision 002) — [found by claude@ethan]
 - ~~Open PRs need a human review + merge~~ resolved 11:28: 21 PRs merged, `main` is c1b8d30 and the site is live — [found by claude@ethan]
 - PR #1 (jamie/setup) conflicts with main and is out of date — Jamie — [found by claude@ethan]
@@ -56,7 +54,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
-- [ ] (medium) [P1] Real missions table: ~10–15 real missions with sourced numbers for the debrief match — data/real-missions.json — owner: claude@jamie — [claude@jamie]
 
 
 
@@ -64,14 +61,12 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 
 
-- [ ] (light) [P0] Live-site check after merges: play start → results on the Pages link on desktop + phone, add anything broken to Missing — no files — needs: Pages on + PRs merged — [cursor@caleb]
 - [ ] (light) [P2] Accessibility pass: keyboard-only + screen reader run through every screen, report + handoffs to owners — docs/A11Y_REPORT.md (source read-only) — [cursor@caleb]
-- [ ] (light) [P2] Space Apps submission package: project summary, NASA resources used, AI-use note, demo video/slides plan (coordinate with codex@jamie's PITCH/DEMO) — docs/SUBMISSION.md — [cursor@caleb]
 
 
 
 - [ ] (medium) [P1] Sim: richer random events + difficulty knobs the scenario files can set (the easy/normal/hard scenario variants stay with claude@jamie) — sim/ — starts when ethan-claude/sim-data lands — [claude@ethan]
-- [ ] (heavy) [P1] Browser end-to-end tests of the assembled game: full solo mission, and two browsers in one co-op room — e2e/ (new); uses playwright-core installed outside the repo, so no package.json change — in progress on branch ethan-claude/app — [claude@ethan]
+- [ ] (heavy) [P1] Browser end-to-end tests of the assembled game: full solo mission, and two browsers in one co-op room — e2e/ (new); uses playwright-core installed outside the repo, so no package.json change — paused until about 16:20 (usage limit); first scripts written, not in the repo yet — [claude@ethan]
 
 
 
@@ -85,15 +80,33 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Done
 
+- [x] (light) [P1] Daily/stars/personal-best regression: assembled-game persistence and regular-vs-daily isolation; report evidence only — docs/qa/daily-records.md (new); ui/leaderboard/ read-only — [codex@aiden] — PR #56 merged (ddfb083): live Daily 100/3 stars retained through two reloads, regular 69/0 and lower Daily 69/0; saved winning design kept; 316 tests/build pass
+
+- [x] (light) [P1] Hidden glossary tooltips push past the right edge and add a horizontal scrollbar (builder budgets at 1024 px) — ui/learn/ — [cursor@kaipo] — in PR #58: tips use `display: none` until hover/focus; right-edge anchor when wide
+- [x] (light) [P1] Builder risk meter — ui/builder/ + app/useChance.ts — [claude@aiden] — in PR #57: "Chance of success" from 20 background test flights on Hard (0% starting design, 95% winning design), hidden on Easy/Normal
+- [x] (light) [P0] Live-site check — Pages link, desktop + phone — [cursor@caleb] — 12:26: solo First Light Normal, starting design, 60×, reached results (F, 26 pts) on desktop and a 390px phone. Mid-page scroll was still on that deploy; PR #53 claims the fix.
+- [x] (medium) [P0] What-if + risk meter helper — sim/analysis.ts — [claude@aiden] (taken over from claude@ethan at Aiden's request) — in PR #55: whatIf() (one-change reruns, same-body orbits, WhatIfFix shape) + successRate() (seed reruns); <1 s per scenario; handoff to claude@sarah + claude@ethan for the debrief wiring
+- [x] (light) [P0] Scroll to top on every screen change — app/ — [claude@aiden] (taken over from claude@ethan at Aiden's request) — in PR #53: useScrollToTop at every screen switch; checked briefing/builder/poll/flight open at the top
+- [x] (light) [P1] Crash safety for judging — app/ — [claude@aiden] (taken over from claude@ethan) — in PR #53: ErrorBoundary + crash screen (Back to the builder / Main menu); crash-tested in the browser
+- [x] (light) [P1] Bundle-size check in the deploy workflow — scripts/, .github/workflows/ — [claude@aiden] — in PR #54: `npm run size`, first load 117 kB gzipped, limit 150 kB
+- [x] (light) Debrief polish: no nameless bonus star (playtest P2), real NASA mission match, 3D `SpaceView` orbit view on the fly screen, anomaly card wording (38 of 49 / SOHO 30 yrs / DSN launches) — ui/mission/, docs/game-design/ — [claude@sarah] — in PR #52; match needs #50 + app/ to pass `realMissions` (handoff to claude@ethan)
+- [x] (light) [P1] Start: scenario menu repeated Easy/Hard — app/ — [claude@ethan] — fixed on `main`: app passes only the three base scenarios, the Difficulty menu picks the level
+- [x] (light) [P1] Fast first load on phones: export a lazy-loading `SpaceView` from ui/scene3d (same props, `React.lazy` + Suspense) so three.js isn't in the first download for any screen — ui/scene3d/ — owner: claude@ethan (moved by claude@aiden at Aiden's request: 3D work is Ethan's; handoff lazy-3d) — [claude@ethan] — done in 10ae68e (main chunk 959 kB → 352 kB); claude@aiden's 15:00 takeover of this line withdrawn, Ethan had just finished it
+- [x] (light) [P0] Put the GO / NO-GO poll (#33) between the builder's Launch and the mission — app/ — owner: claude@ethan — [claude@ethan] — done in 24247ed (Launch opens GoNoGoPoll); moved to Done by claude@aiden
+- [x] (light) [P0] Daily mission app integration: use dailyMissionForDate + apply descriptor seed before init, refresh at UTC midnight/resume — app/ — owner: claude@ethan — needs: #30 #31 (Start portion complete) — [claude@ethan] — done in 24247ed (dailyMissionForDate, UTC midnight refresh); moved to Done by claude@aiden
+- [x] (medium) [P1] Real missions table: ~10–15 real missions with sourced numbers for the debrief match — data/real-missions.json — owner: claude@jamie — [claude@jamie] — in PR #50: 12 missions (Earth 3, Moon 5, Mars 4), launch mass + year each from a cited NASA/NOAA page, tested no-URL-no-row; match helper handed to claude@sarah
+
+- [x] (medium) [P1] Multiplayer disconnect/rejoin reliability: expire stale channels, settle failed joins, preserve broadcast ordering during disconnects; regression tests against existing app transport — net/ — [codex@jamie] — PR #48 merged; existing app transport, no mounting needed; 316 tests + build pass
+
+- [x] (light) [P1] Builder on phones: compact budgets panel — ui/builder/ — [claude@aiden] — in PR #46: folded panel is 24% of the screen (was ~50%), console lights + "Show budgets · n to fix" + Launch always visible; desktop unchanged
+- [x] (light) [P2] Space Apps submission package — docs/SUBMISSION.md — [cursor@caleb] — in PR #40; summary, NASA wording from NASA_SOURCES, AI-use note, video/slides plan; handoff to codex@jamie to confirm First Light before recording
 - [x] (medium) [P2] Sound — ui/audio/ — [claude@aiden] — in PR #45: generated click / GO / NO-GO / launch rumble / success / failure, `<SoundToggle>` (remembered, muted by default under reduced motion), builder clicks wired; handoff to all for app (toggle + launch), gonogo, results
 - [x] (light) [P2] First-time tips: 4 dismissible coach marks on the builder (pick an orbit, watch the bars, fix a red problem, launch), remembered in localStorage, skippable — ui/tutorial/ (new) — [codex@jamie] — in PR #44; owner mount pending
 
 - [x] (light) [P1] Demo works on bad venue wifi — index.html, public/, pwa/, vite.config.ts — [claude@aiden] — in PR #43: build-time service worker (assets cache-first, page network-first with 4 s timeout), manifest + icon, link-preview meta; tested offline (server stopped, page still loads); also fixes `npm run preview` base path
 - [x] (heavy) [P0] App loop + every screen mounted — app/, shared/net.ts — [claude@ethan] — PR #42 on `main`: the live site is the real game (Start → Lobby → Briefing → Builder → launch → Mission → Results; solo, one screen, online). 294 tests pass; Start, Briefing and Builder checked in a browser on the production build. Full-mission and two-browser end-to-end tests are still running; fixes follow in a second PR
 - [x] (light) [P1] Bonus star goal per scenario (`bonus_goal` param) + mission program order — data/scenarios/ — owner: claude@jamie — [claude@jamie] — in PR #41: demo/mars `no_data_lost`, moon `budget_left_20`, `PROGRAM` = demo → moon → mars; each reference win earns its bonus on Normal (tested); wiring handed to app/briefing/start owners
-
 - [x] (light) [P1] Daily leaderboard records + stars — ui/leaderboard/ — [codex@aiden] — PR #37 merged; legacy-compatible optional dailySeed/stars, 20 leaderboard tests; merged main has 216 passing tests + clean build; app/results adoption handed off.
-
 - [x] (medium) [P1] Builder part compatibility — ui/builder/ — [claude@aiden] — in PR #39 (after #35): "Needs a SmallSat bus or bigger" (dimmed) and best-orbit badges from the sim's own rules (bus_too_small, off_best_orbit); checked on real demo data
 - [x] (light) [P2] Glossary terms the anomaly cards use: reaction wheel, high-gain antenna, drag, safe mode, South Atlantic Anomaly, Deep Space Network — ui/learn/ — [cursor@kaipo] — merged in PR #38 (`aeccf8b`). Tooltip ids are unique per use. Rehearsal re-run stays Open until Host/Join is on the live site.
 - [x] (light) [P0] Hard difficulty winnable with random failures on (seed 42 kills every demo design on day 193); Normal row says failures on but sim default is off — data/index.ts, data/README.md, tests/playthrough.test.ts — [claude@jamie] — in PR #36: demo seed 42 → 1, Normal failures off, new failures-on Hard test

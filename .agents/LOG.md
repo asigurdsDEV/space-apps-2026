@@ -166,3 +166,33 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 14:05 | claude@aiden | audio | done: sound effects + mute toggle, PR #45; handoff to all (app toggle + launch, gonogo calls, results)
 2026-11-14 14:10 | claude@aiden | board | main chunk is 959 kB / 264 kB gz with the app in (three.js not split yet); note to claude@ethan (bundle size + tab icon vs PR #43)
 2026-11-14 12:40 | claude@jamie | real-missions | claimed: [P1] real missions table (data/real-missions.json) for the debrief match
+2026-11-14 11:56 | cursor@caleb | submission | done: Space Apps submission package, PR #40
+2026-11-14 14:20 | claude@aiden | playtest | played main start → results (won A 94, lost F 26, no console errors); 7 findings posted to Open with owners + handoff to all; claimed the builder phone-panel fix
+2026-11-14 12:13 | codex@jamie | net-lifecycle | claimed: multiplayer disconnect/rejoin reliability, existing PeerTransport internals + tests/docs; no app mounting dependency
+2026-11-14 12:18 | claude@ethan | merge | done: PRs #41, #43, #44, #45 + app follow-up (difficulty picker, daily mission, GO / NO-GO, stars, space weather wired) on main (bb6a932); tsc clean, 310/310 tests, build passes
+2026-11-14 13:40 | claude@sarah | game-design | handoff to claude@ethan: wire decision 004 no-sim pieces first (GO/NO-GO poll, space-weather strip, stars/share) in app/; offered to do it
+2026-11-14 14:35 | claude@aiden | mobile-budgets | done: compact phone budgets panel, PR #46 (playtest finding)
+2026-11-14 12:25 | claude@ethan | app | done: PR #47 on main (builder tips, sound toggle, launch sound mounted); small requests per owner in handoff 20261114-1225 (to all); 3D build and e2e tests paused until about 16:20 (usage limit), merges continue
+2026-11-14 14:42 | claude@aiden | briefing-bonus | started: bonus star on the briefing (claude@jamie handoff 1225)
+2026-11-14 12:28 | claude@ethan | merge | done: PRs #46 #48 on main (0f04a69); tsc clean, 316 passed (316), build passes
+2026-11-14 12:18 | codex@jamie | net-lifecycle | done: multiplayer disconnect/rejoin reliability, PR #48; 316 tests + tsc/build; existing app sessions covered, no mounting needed
+2026-11-14 14:50 | claude@aiden | briefing-bonus | done: briefing names the bonus star, PR #49; claude@jamie handoff 1225 set done
+2026-11-14 13:05 | claude@jamie | real-missions | done: PR #50, 12 sourced real missions + realMissions export; tsc clean, 308/308; handoff to claude@sarah for the debrief match helper
+2026-11-14 14:55 | claude@aiden | offer | offered claude@ethan to take 2 app/ tasks (scroll to top, crash safety); noted GO/NO-GO mount already done in 24247ed
+2026-11-14 15:00 | claude@sarah | debrief-polish | claimed: bonus star fix, real mission match, 3D orbit view on fly screen (ui/mission/), card wording (ANOMALY_CARDS.md)
+2026-11-14 15:00 | claude@aiden | takeover | Aiden: take over Ethan's tasks without overriding (Ethan at limit). Claimed scroll-to-top, crash safety, lazy 3D (index.ts only); moved Ethan's finished GO/NO-GO + daily lines to Done (24247ed)
+2026-11-14 12:35 | claude@ethan | merge | done: PRs #49, #51 on main (8bfbd90); 316/316 tests, build passes; #50 HELD (conflict in data/README.md + data/index.ts, claude@jamie to merge main into it); lazy 3D cut first-load script from 959 kB to 352 kB; answers to all open handoffs in 20261114-1235 (to all); accepted claude@aiden taking scroll-to-top + error boundary in app/
+2026-11-14 15:03 | claude@aiden | takeover | withdrew lazy-3D takeover: claude@ethan finished it in 10ae68e (959 → 352 kB), moved to Done in his name; claimed my bundle-size check (now unblocked)
+2026-11-14 15:25 | claude@sarah | debrief-polish | done: PR #52 (no nameless bonus star, real mission match, 3D orbit view on fly screen, card wording); 318 tests; closed handoffs 1107/1115/1210/1340; handoff to claude@ethan for realMissions prop
+2026-11-14 12:40 | claude@ethan | scene3d | restarted the 3D build (parts, launch, fly scene) from the saved partial branches; pushes work in progress often to ethan-claude/scene3d-*; may be cut off by the usage limit and continue after about 16:20
+2026-11-14 12:26 | codex@aiden | daily-regression | claimed: browser regression for Daily/stars/saved records, evidence in docs/qa/daily-records.md; no app/Claude/Ethan source edits
+2026-11-14 15:20 | claude@aiden | takeover | done: scroll-to-top + crash safety (PR #53, from claude@ethan's tasks), bundle-size check (PR #54); offer handoff closed
+2026-11-14 15:25 | claude@aiden | what-if | claimed (from claude@ethan's tasks, Aiden's call): [P0] What-if + risk meter helper, new sim/analysis.ts only
+2026-11-14 15:40 | claude@aiden | what-if | done: sim/analysis.ts whatIf + successRate, PR #55 (from claude@ethan's tasks); handoff to claude@sarah + claude@ethan
+2026-11-14 12:35 | claude@ethan | merge | done: PRs #52 #53 #54 #55 #56 on main (ddfb083); tsc clean, 331 passed (331), build passes; HELD (conflict): #50
+2026-11-14 15:45 | claude@aiden | risk-meter | claimed: [P1] builder risk meter (ui/builder/ + one prop in app/ Design)
+2026-11-14 12:26 | cursor@caleb | live-site | done: start to results on Pages, desktop and 390px phone; First Light Normal starting design F 26 pts; phone screens open scrolled down
+2026-11-14 16:00 | claude@aiden | risk-meter | done: builder risk meter, PR #57 (Hard: 0% starting design, 95% winning design; hidden on Easy/Normal)
+2026-11-14 12:40 | cursor@kaipo | learn-tooltip-overflow | claimed: [P1] hide glossary tips until shown + keep wide tips inside viewport (ui/learn/)
+2026-11-14 12:45 | cursor@kaipo | learn-tooltip-overflow | done: PR #58; builder at 1024px no horizontal overflow; playtest finding #7
+2026-11-14 12:33 | codex@aiden | daily-regression | done: PR #56, live Daily/regular isolation + reload/best-design/star retention pass; 316 tests/build; readiness handoff closed, no source edits

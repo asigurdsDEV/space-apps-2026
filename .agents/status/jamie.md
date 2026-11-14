@@ -5,18 +5,18 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 12:40
+**Last updated:** 2026-11-14 13:05
 
 
 ## claude@jamie
 
-**Branch:** jamie-claude/bonus-goal (PR #41 open); jamie-claude/hard-mode (PR #36 open); jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
+**Branch:** jamie-claude/real-missions (PR #50 open); jamie-claude/bonus-goal (PR #41 open); jamie-claude/hard-mode (PR #36 open); jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
 
 ### Working on right now
-[P1] Real missions table (claimed 2026-11-14 12:40): ~10–15 real missions with sourced numbers for the debrief match.
+Nothing claimed.
 
 ### Files / folders I'm touching (hands off)
-- `data/real-missions.json` (new) + its loader in `data/index.ts`
+- `data/real-missions.json` + `realMissions` in `data/index.ts` until PR #50 merges
 - `ui/gonogo/` until PR #33 merges
 - `data/`, `tests/playthrough.test.ts` until PR #36 merges; PR #41 also edits `data/scenarios/`, `data/index.ts`, `data/README.md`
 - `data/data.test.ts` (to drop its duplicate balance math once the playthrough test covers it)
@@ -24,6 +24,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 - `docs/CHALLENGE.md`, `docs/README.md`, and the `## Challenge` section + Team table of `README.md` until PR #6 merges
 
 ### Just finished
+- **[P1] Real missions table (PR #50):** 12 missions (IceCube, Terra, GOES-16, Lunar Prospector, LRO, LADEE, GRAIL, CAPSTONE, MAVEN, MRO, Odyssey, MarCO), launch mass + year each from a cited NASA/NOAA page; tests require an https source on every row. tsc clean, 308/308. Match helper → claude@sarah (handoff).
 - **[P1] Bonus star goal + program order (PR #41):** `params.bonus_goal` per scenario (demo/mars `no_data_lost`, moon `budget_left_20`, codes from ui/mission `BONUS_GOALS`), `PROGRAM` export. Each reference win earns its bonus on Normal (tested). tsc clean, 222/222. Handoffs: app passes bonusGoal (claude@ethan), briefing shows it (claude@aiden), program map (codex@jamie).
 - **[P0] Hard mode fix (PR #36):** demo seed 42 → 1 (42 lost every demo design to a day-193 bus failure; reference survives ~92/100 seeds). Normal's `random_failures` now false, README row fixed. New test: each reference win survives Hard with failures on. tsc clean, 189/189.
 - **[P0] GO / NO-GO poll (PR #33):** `ui/gonogo/` maps each sim issue to PLAN / SPACECRAFT / SCIENCE / COMMS; errors = NO-GO, warnings = GO with concerns; Launch disabled while any console is NO-GO. tsc clean, 189/189 tests on main. Not mounted yet (handoff to claude@ethan).
@@ -47,36 +48,28 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## codex@jamie
 
-**Branch:** jamie-codex/builder-tips — PR #44; jamie-codex/daily-mission — PR #31 (after #30); jamie-codex/start-polish — PR #30. Original #9/#13/#15 merged.
-
-**Last updated:** 2026-11-14 12:05
+**Branch:** main; jamie-codex/net-lifecycle — PR #48 merged
+**Last updated:** 2026-11-14 12:18
 
 ### Working on right now
 
-First-time builder tips component complete in PR #44. No active source edits; app/builder mounting remains with its owner. New Claude program-order handoff read: PROGRAM is demo → moon → mars; not claiming that separate task in this chunk.
+Completed multiplayer disconnect/rejoin reliability in PR #48. No active source edits; existing app uses the fixed transport directly, with no wiring dependency.
 
 ### Files / folders I'm touching (hands off)
 
-- `ui/tutorial/`: follow-up ownership; no active edits. Four tips, persistence, preview, styles/tests/README.
-- Prior follow-up ownership remains ui/start/, ui/lobby/, net/ and pitch/demo/source/audit docs; no active edits here.
-- Own status/board/log/handoffs only. No ui/builder/, app/, shared/, data/, sim/ changes.
+- No active edits. `net/` follow-up ownership; PR #48 changes peer-transport.ts, transport.test.ts, lifecycle.test.ts and README.md.
+- Own status, BOARD line, append-only LOG and outgoing handoffs. No app/, shared/, sim/, data/ or other agent's UI source edits.
 
 ### Just finished
 
-PR #44: four builder coach marks (orbit, bars, blocking issues, launch), Back/Next/Got it/Skip, local dismissal memory, storage failure containment, optional owner-supplied Show me callback. Full suite 299/299 + tsc/build pass; browser checked all steps, focus targeting, completion and Skip across reload, 390px controls. Mounting handoff published to builder/app owners.
+PR #48: corrected roster ordering when a guest drops during broadcast, immediate failed-connect cleanup, stale-channel open guard. Reproduced failures before fixing; real app-session integration covers thrown send and synchronous close, role reuse, rejoin, stale close and game start. 316/316 tests + tsc/build pass after syncing main. No UI/app wiring required.
 
-- PR #31: pure dailyMissionForDate helper + optional Solo daily button/separate callback. UTC day, YYYYMMDD seed, sorted/deduplicated base IDs, fixed Normal. Ethan accepted this in 11:41 handoff. 191 full-suite tests, tsc/build pass. Browser: missing-name validation, trim, seed/date/scenario payload, Normal despite Hard ordinary picker, no daily controls on Join.
-- PR #30: Easy/Normal/Hard + callback-supplied actual budget/goal, shared light/dark token adoption and Term tooltips in Start/Lobby. 179 tests + tsc/build/theme contrast passed at that snapshot; browser both themes/difficulty payload/numbers/390px tooltip containment.
-- Original transport, Start and Lobby are merged. Actual-data playthrough now passes after sim-data #26; the old integration report is explicitly a historical snapshot.
-- Responded to Ethan’s net questions: HostRoom.claimRole(from,null) and nullable authorize policy already work on main; avoid rebuilding lobby to release roles. Short room-code mapping belongs to app wrapper; raw PeerTransport still uses full peer IDs.
-- Caleb has pitch/demo/provenance guidance via polish-ready handoff; his submission file stays his.
+PR #44 builder tips; #31 daily Start; #30 difficulty/theme; original #9 transport, #13 Start and #15 Lobby merged. Prior evidence remains in LOG and PRs.
 
 ### Missing / I need from someone
 
-- Ethan: merge/review #30 then #31, mount Start/Lobby, pass scenarioPreview=getScenario, honor request.difficulty, apply DailyMission.seed before init and refresh UTC day at midnight/resume. Full app/live WebRTC remains unverified here.
-- Program map/unlocks need scenario-order + star-progress data from their owners; not fabricated in Start.
-- Team: real device/venue rehearsal, then finalize demo/submission claims to the behavior actually shipped. Pages is enabled and the scaffold deploy is live; app-loop is still a separate owner’s integration task.
+PR #48 merged by Ethan and confirmed on GitHub. No remaining implementation or mounting dependency. Venue four-device rehearsal stays with Kaipo; deterministic transport tests do not certify venue wifi.
 
 ### Heads up for other agents
 
-Original PR heads were not rewritten during merge batch. Daily adds a separate callback, no new Command/NetMessage/StartRequest variant. UI never duplicates difficulty scaling or creates sessions. Latest APIs in ui/start/README.md. Keep claude@jamie’s section and ui/gonogo/data/tests scopes untouched.
+This work changes existing PeerTransport internals without changing its API. Claude Jamie can continue real-mission data independently. ui/start/, ui/lobby/, ui/tutorial/ and pitch/demo/source docs remain my follow-up areas with no active edits in this chunk.

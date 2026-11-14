@@ -3,21 +3,25 @@
 // The screens only get props. Everything about who runs the game is behind `Session` (app/session.ts),
 // so solo, same-screen, host and guest play all use the same screens.
 
-import { useEffect, useRef, useState, type ComponentType, type FormEvent } from 'react'
-import { DIFFICULTIES, getDatasets, scenarios, withDifficulty, type Difficulty } from '../data'
+import { useEffect, useLayoutEffect, useRef, useState, type ComponentType, type FormEvent } from 'react'
+import { DIFFICULTIES, getDatasets, getScenario, scenarios, withDifficulty, type Difficulty } from '../data'
 import { LocalTransport } from '../net'
 import type { Config, NetMessage, SimEvent, SimState, Summary } from '../shared'
 import { catalogEntities, simCore } from '../sim'
+import { playSound, SoundToggle } from '../ui/audio'
 import { Briefing } from '../ui/briefing'
 import { MissionBuilder } from '../ui/builder'
+import { GoNoGoPoll } from '../ui/gonogo'
 import { LocalLeaderboard } from '../ui/leaderboard'
 import { LobbyScreen } from '../ui/lobby'
-import { MissionScreen } from '../ui/mission'
+import { MissionScreen, stars } from '../ui/mission'
 import { designFromHash, SharePanel } from '../ui/share'
-import { StartScreen, type StartRequest } from '../ui/start'
+import { dailyMissionForDate, StartScreen, type DailyMission, type DailyMissionRequest, type StartRequest } from '../ui/start'
+import { BuilderTutorial } from '../ui/tutorial'
 import '../ui/theme/theme.css'
 import '../ui/learn/learn.css'
 import { Crew, Notice, RoomCode } from './Crew'
+import { ErrorBoundary } from './ErrorBoundary'
 import { startDriver, timerClock } from './driver'
 import { createGame, type Game } from './game'
 import { cleanRoomCode, openRoom } from './room'
@@ -30,7 +34,7 @@ export const GAME_NAME = 'Space Mission Design Game'
 // Each scenario as written first, then its easier and harder versions.
 const LEVELS: Difficulty[] = ['normal', ...(Object.keys(DIFFICULTIES) as Difficulty[]).filter((level) => level !== 'normal')]
 
-/** Everything the Start screen offers: every scenario in data/ at every difficulty. */
+/** Every scenario in data/ at every difficulty: all the missions the Start screen can make, found by `scenario_id`. */
 export const SCENARIOS: Config[] = scenarios.flatMap((scenario) => LEVELS.map((level) => withDifficulty(scenario, level)))
 
 /**
@@ -40,8 +44,8 @@ export const SCENARIOS: Config[] = scenarios.flatMap((scenario) => LEVELS.map((l
 export const BASELINE = catalogEntities(getDatasets())
 
 /**
- * ui/start, ui/lobby and ui/mission only have a dark palette so far (light text is hard-coded),
- * so the theme is pinned to dark around them. Drop this once they use the ui/theme tokens.
+ * ui/mission only has a dark palette so far, so the theme is pinned to dark around the flight
+ * and the results. Drop this once it uses the ui/theme tokens.
  */
 const DARK_ONLY = { className: 'game-theme app-page', 'data-theme': 'dark' } as const
 
@@ -49,6 +53,24 @@ export interface Active {
   session: Session
   /** Online rooms only. */
   roomCode: string | null
+  /** Set when this game is today's daily mission. */
+  daily?: DailyMission
+}
+
+/** Today's UTC date (YYYY-MM-DD). Checked every minute and when the page gets focus again, so the daily mission turns over at UTC midnight. */
+function useUtcDay(): string {
+  const today = () => new Date().toISOString().slice(0, 10)
+  const [day, setDay] = useState(today)
+  useEffect(() => {
+    const check = () => setDay(today())
+    const timer = setInterval(check, 60_000)
+    addEventListener('focus', check)
+    return () => {
+      clearInterval(timer)
+      removeEventListener('focus', check)
+    }
+  }, [])
+  return day
 }
 
 /** Start screen until a session exists, then the room (lobby, briefing, game, or "room closed"). */
@@ -58,6 +80,8 @@ export function App() {
   const [error, setError] = useState<string | null>(null)
   /** A design from a shared link (ui/share) that no game has taken yet. */
   const link = useRef(typeof location === 'undefined' ? '' : location.hash)
+  // Same day, same scenario and same seed for everyone (ui/start/daily.ts).
+  const daily = dailyMissionForDate(new Date(useUtcDay()), scenarios.map((scenario) => scenario.scenario_id))
 
   // A link pasted while the page is open: change the design on screen, or keep it for the next game.
   useEffect(() => {
@@ -77,8 +101,15 @@ export function App() {
     return game
   }
 
-  const playSolo = (config: Config, name: string) =>
-    setActive({ session: createSoloSession(newGame(config), { name, drive: startDriver }), roomCode: null })
+  const playSolo = (config: Config, name: string, daily?: DailyMission) =>
+    setActive({ session: createSoloSession(newGame(config), { name, drive: startDriver }), roomCode: null, daily })
+
+  // The daily mission is the scenario as written (Normal) with the day's seed.
+  const playDaily = (request: DailyMissionRequest) => {
+    const config = getScenario(request.scenarioId)
+    if (!config) return setError('Today’s mission is missing from this version of the game.')
+    playSolo({ ...config, seed: request.seed }, request.name, request)
+  }
 
   // One seat holding no role, so all four roles' controls work on this device. No network, no lobby.
   const playSameScreen = (config: Config) => {
@@ -108,7 +139,7 @@ export function App() {
 
   const start = (request: StartRequest) => {
     if (request.mode === 'join') return void playOnline(request.name, null, cleanRoomCode(request.code))
-    const config = SCENARIOS.find((scenario) => scenario.scenario_id === request.scenarioId)
+    const config = getScenario(request.scenarioId, request.difficulty)
     if (!config) return setError('That mission is missing from this version of the game.')
     if (request.mode === 'solo') playSolo(config, request.name)
     else void playOnline(request.name, config, null)
@@ -118,16 +149,27 @@ export function App() {
     active?.session.close()
     setActive(null)
   }
+  useScrollToTop(active ? 'room' : 'start')
 
   return (
     <div className="game-theme app">
       {active ? (
-        <Room active={active} onExit={exit} />
+        <ErrorBoundary resetKey={active} actions={[{ label: 'Main menu', run: exit }]}>
+          <Room active={active} onExit={exit} />
+        </ErrorBoundary>
       ) : (
-        <div {...DARK_ONLY}>
-          <StartScreen scenarios={SCENARIOS} onStart={start} busy={busy} error={error} />
+        <>
+          <StartScreen
+            scenarios={scenarios}
+            scenarioPreview={getScenario}
+            dailyMission={daily}
+            onDailyMission={playDaily}
+            onStart={start}
+            busy={busy}
+            error={error}
+          />
           <SameScreen disabled={busy} onPlay={playSameScreen} />
-        </div>
+        </>
       )}
     </div>
   )
@@ -185,21 +227,20 @@ export function Room({ active, onExit }: { active: Active; onExit: () => void })
   const { stage, notice, state, players, me } = useSession(session)
   /** Each player reads the briefing on their own screen and goes on when they are ready. */
   const [briefed, setBriefed] = useState(false)
+  useScrollToTop(stage === 'lobby' || stage === 'closed' ? stage : !briefed && state.metrics.phase === 'design' ? 'briefing' : 'game')
 
   if (stage === 'lobby') {
     return (
-      <div {...DARK_ONLY}>
-        <LobbyScreen
-          code={roomCode}
-          players={players}
-          me={me}
-          onClaimRole={(role) => session.claimRole?.(role)}
-          // The host's start() sends the first `state`, which moves every guest out of the lobby too.
-          onContinue={() => session.start?.()}
-          onLeave={onExit}
-          error={notice}
-        />
-      </div>
+      <LobbyScreen
+        code={roomCode}
+        players={players}
+        me={me}
+        onClaimRole={(role) => session.claimRole?.(role)}
+        // The host's start() sends the first `state`, which moves every guest out of the lobby too.
+        onContinue={() => session.start?.()}
+        onLeave={onExit}
+        error={notice}
+      />
     )
   }
   if (stage === 'closed') {
@@ -220,7 +261,7 @@ export function Room({ active, onExit }: { active: Active; onExit: () => void })
   if (!briefed && state.metrics.phase === 'design') {
     return <Briefing config={config} onStart={() => setBriefed(true)} onBack={onExit} />
   }
-  return <GameScreen session={session} config={config} onExit={onExit} roomCode={roomCode} />
+  return <GameScreen session={session} config={config} onExit={onExit} roomCode={roomCode} daily={active.daily} />
 }
 
 export interface GameScreenProps {
@@ -230,13 +271,17 @@ export interface GameScreenProps {
   onExit: () => void
   /** Online rooms only: adds the crew menu (room code, roster, role picker) to the top bar. */
   roomCode?: string | null
+  /** Set when this game is today's daily mission: its record and share card are kept apart. */
+  daily?: DailyMission
 }
 
 /** The builder while the mission is being designed, the flight once it has launched. */
-export function GameScreen({ session, config, onExit, roomCode }: GameScreenProps) {
+export function GameScreen({ session, config, onExit, roomCode, daily }: GameScreenProps) {
   const snapshot = useSession(session)
   const { state, notice, players, me } = snapshot
   const designing = state.metrics.phase === 'design'
+  useScrollToTop(designing ? 'design' : 'flight')
+  const backToBuilder = () => session.send({ type: 'reset', payload: {} })
 
   return (
     <div {...(designing ? { className: 'app-page' } : DARK_ONLY)}>
@@ -253,24 +298,73 @@ export function GameScreen({ session, config, onExit, roomCode }: GameScreenProp
             </div>
           </details>
         )}
+        <SoundToggle />
         <button type="button" className="game-button app-small" onClick={onExit}>
           Main menu
         </button>
       </header>
       <Notice session={session} notice={notice} />
-      {designing ? (
-        <>
-          <MissionBuilder state={state} send={session.send} players={players} me={me} />
-          <section className="app-share" aria-labelledby="app-share-title">
-            <h2 id="app-share-title">Save, share and compare designs</h2>
-            <SharePanel state={state} send={session.send} />
-          </section>
-        </>
-      ) : (
-        // Unmounts on reset, so every launch starts it fresh.
-        <Flight session={session} title={config.title} />
-      )}
+      <ErrorBoundary
+        resetKey={designing}
+        actions={[
+          { label: 'Back to the builder', run: backToBuilder },
+          { label: 'Main menu', run: onExit },
+        ]}
+      >
+        {designing ? (
+          <Design session={session} />
+        ) : (
+          // Unmounts on reset, so every launch starts it fresh.
+          <Flight session={session} config={config} daily={daily} />
+        )}
+      </ErrorBoundary>
     </div>
+  )
+}
+
+/** Every new screen starts at the top of the page; without this the old scroll position carried over. */
+function useScrollToTop(screen: string) {
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0)
+  }, [screen])
+}
+
+/** A ref that never changes, so React calls it once, when the element appears. */
+const focusOnMount = (node: HTMLElement | null) => node?.focus()
+
+/** The design phase: the builder with save-and-share under it, then the GO / NO-GO poll before launch. */
+function Design({ session }: { session: Session }) {
+  const { state, players, me } = useSession(session)
+  /** The builder's Launch button opens the poll; the poll's Launch button sends the command. */
+  const [polling, setPolling] = useState(false)
+  useScrollToTop(polling ? 'poll' : 'builder')
+
+  if (polling) {
+    return (
+      // Focused when it opens, so keyboard and screen-reader players land on the poll, not at the top of the page.
+      <main className="app-poll" tabIndex={-1} ref={focusOnMount}>
+        <GoNoGoPoll
+          issues={state.issues}
+          onLaunch={() => session.send({ type: 'launch', payload: {} })}
+          onBack={() => setPolling(false)}
+        />
+      </main>
+    )
+  }
+  return (
+    <>
+      <BuilderTutorial />
+      <MissionBuilder
+        state={state}
+        send={(command) => (command.type === 'launch' ? setPolling(true) : session.send(command))}
+        players={players}
+        me={me}
+      />
+      <section className="app-share" aria-labelledby="app-share-title">
+        <h2 id="app-share-title">Save, share and compare designs</h2>
+        <SharePanel state={state} send={session.send} />
+      </section>
+    </>
   )
 }
 
@@ -291,21 +385,62 @@ function finalSummary(events: readonly SimEvent[]): Summary | undefined {
   return undefined
 }
 
+const DAY_MS = 86_400_000
+
+/**
+ * The first real day of space weather a mission replays (data/space-weather/README.md): the
+ * scenario's `weather_start`, or else a day picked by the seed between 1996 and 2021, so that
+ * even a three-year mission stays inside the data.
+ */
+export function weatherStart(config: Config, seed: number): string {
+  const chosen = config.params.weather_start
+  if (typeof chosen === 'string') return chosen
+  return new Date(Date.UTC(1996, 0, 1) + ((Math.abs(Math.trunc(seed)) * 7919) % 9500) * DAY_MS).toISOString().slice(0, 10)
+}
+
+type SpaceWeatherData = typeof import('../data/space-weather')
+
 /** Everything after launch: (the launch sequence,) cruise and operations, then the results with the personal best. */
-function Flight({ session, title }: { session: Session; title: string }) {
+function Flight({ session, config, daily }: { session: Session; config: Config; daily?: DailyMission }) {
   const { state, events, paused, speed } = useSession(session)
   const [launchDone, setLaunchDone] = useState(false)
+  // 340 kB of real NASA data, so it is loaded only once a mission flies.
+  const [weather, setWeather] = useState<SpaceWeatherData | null>(null)
+  useEffect(() => {
+    if (session.getSnapshot().state.status !== 'ended') playSound('launch') // Flight mounts when the mission leaves design
+    void import('../data/space-weather').then(setWeather, () => {})
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   const ended = state.status === 'ended'
 
   if (LaunchView && !launchDone && !ended) return <LaunchView state={state} onDone={() => setLaunchDone(true)} />
 
   const summary = ended ? finalSummary(events) : undefined
+  const bonusGoal = typeof config.params.bonus_goal === 'string' ? config.params.bonus_goal : undefined
+  const day = state.metrics.mission_day
   return (
     <>
-      <MissionScreen state={state} events={events} onCommand={session.send} paused={paused} speed={speed} title={title} summary={summary} />
+      <MissionScreen
+        state={state}
+        events={events}
+        onCommand={session.send}
+        paused={paused}
+        speed={speed}
+        title={config.title}
+        summary={summary}
+        bonusGoal={bonusGoal}
+        share={{ daily: daily?.date }}
+        spaceWeather={weather && typeof day === 'number' ? weather.weatherForMissionDay(weatherStart(config, daily?.seed ?? config.seed), day) : null}
+      />
       {summary && typeof summary.score === 'number' && (
         <div className="app-best">
-          <LocalLeaderboard scenarioId={state.scenario_id} summary={summary} design={state.params} />
+          <LocalLeaderboard
+            scenarioId={state.scenario_id}
+            summary={summary}
+            design={state.params}
+            dailySeed={daily?.seed}
+            stars={stars(summary, bonusGoal).filter((star) => star.earned).length}
+          />
         </div>
       )}
     </>
