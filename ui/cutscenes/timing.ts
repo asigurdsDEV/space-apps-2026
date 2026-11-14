@@ -1,8 +1,16 @@
-// Durations match CUTSCENE_MS in ui/story/model.ts (PR #70). That module is not on main yet,
-// so these numbers are copied. Pass durationMs from CUTSCENE_MS when mounting so they cannot drift.
+// Decision 005 durations match CUTSCENE_MS in ui/story/model.ts. Pass durationMs from
+// CUTSCENE_MS when mounting those. enter-craft and return-control are decision 007 and
+// are not story ids yet; claude@aiden adds the ids when the frame mounts them.
 
-/** Cutscenes this folder draws. Launch stays in ui/scene3d until 17:30. */
-export type CutsceneSceneId = 'arrival' | 'orbit' | 'anomaly' | 'ending-success' | 'ending-loss'
+/** Cutscenes this folder draws. Launch stays in ui/scene3d. */
+export type CutsceneSceneId =
+  | 'arrival'
+  | 'orbit'
+  | 'anomaly'
+  | 'ending-success'
+  | 'ending-loss'
+  | 'enter-craft'
+  | 'return-control'
 
 export interface CutsceneCanvasProps {
   kind: CutsceneSceneId
@@ -19,6 +27,8 @@ export const CUTSCENE_SCENE_MS: Record<CutsceneSceneId, number> = {
   anomaly: 3000,
   'ending-success': 6000,
   'ending-loss': 5000,
+  'enter-craft': 8000,
+  'return-control': 6000,
 }
 
 /** 0 at the start, 1 at durationMs, smooth in between. Reduced motion stays on the first frame. */

@@ -67,7 +67,8 @@ export function DecisionCardBody({
       {!canAnswer && <p className="mv-muted mv-small">Waiting for the {consoleName} console to decide.</p>}
 
       {decision.story && (
-        <aside className="mv-decision__story">
+        <details className="mv-decision__story">
+          <summary>ⓘ The real story</summary>
           <strong>
             {/^inspired by/i.test(decision.story.mission)
               ? decision.story.mission
@@ -82,7 +83,7 @@ export function DecisionCardBody({
               </a>
             </>
           )}
-        </aside>
+        </details>
       )}
     </div>
   )

@@ -21,7 +21,7 @@
       ["rideshare", "Rideshare slot", "shared launch", 0, 200, 0, 0, 300000, 6000, 0.97, "Share a big rocket with dozens of other satellites. Cheap, but you only go where the rocket goes (sun-synchronous orbit).", 0],
       ["electron", "Electron", "Rocket Lab", 300, 200, 0, 30, 7500000, 0, 0.92, "A small dedicated rocket. Your own ride to low orbit, and a tiny payload can even reach the Moon.", 0],
       ["pegasus-xl", "Pegasus XL", "Northrop Grumman", 450, 325, 0, 0, 40000000, 0, 0.93, "Launched from under an airplane. Flexible, but expensive for how little it carries.", 0],
-      ["falcon-9", "Falcon 9", "SpaceX", 17500, 13000, 5500, 3500, 70000000, 0, 0.99, "Workhorse medium-lift rocket. Reaches every orbit in this game.", 4000],
+      ["falcon-9", "Falcon 9", "SpaceX", 17500, 13000, 5500, 5000, 70000000, 0, 0.99, "Workhorse medium-lift rocket. Reaches every orbit in this game.", 4000],
       ["vulcan-centaur", "Vulcan Centaur", "United Launch Alliance", 27000, 20000, 14400, 10000, 110000000, 0, 0.95, "Heavy lifter for big spacecraft headed to high orbits or the Moon.", 6500],
       ["sls-block-1", "Space Launch System (Block 1)", "NASA", 95000, 0, 0, 27000, 2000000000, 0, 0.95, "NASA's Moon rocket. Enormous capacity and an enormous price tag.", 0]
     ]

@@ -43,3 +43,15 @@
 }
 .hg-button:disabled { opacity: 0.4; cursor: default; }
 .hg-button:focus-visible { outline: 2px solid var(--game-focus, #ffda8a); outline-offset: 2px; }
+
+/* Mission control you play in (decision 007): fills its box; the app gives it the whole window. */
+.mc {
+  position: relative;
+  overflow: hidden;
+  background: #070a12;
+  font-family: var(--game-font, system-ui, sans-serif);
+}
+.mc-canvas { position: absolute; inset: 0; }
+.mc-canvas canvas { display: block; width: 100%; height: 100%; }
+.mc-canvas:focus-visible { outline: 3px solid var(--game-focus, #ffda8a); outline-offset: -3px; }
+.mc-fallback { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; color: #edf1fa; }

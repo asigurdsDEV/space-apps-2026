@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Caleb
 **Agent:** Cursor
 **Branch:** caleb-cursor/submission-docs
-**Last updated:** 2026-11-14 13:59
+**Last updated:** 2026-11-14 15:22
 
 ## Working on right now
 
@@ -19,14 +19,16 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@caleb
 
-**Branch:** caleb-cursor/submission-fixes (PR #88)
-**Last updated:** 2026-11-14 13:59
+**Branch:** caleb-cursor/enter-craft (PR #115)
+**Last updated:** 2026-11-14 15:22
 
 ### Working on right now
 
-Nothing claimed and unfinished.
+**[P1] Enter / return cutscenes, PR #115.** Pictures and `docs/qa/first-person.md` are in the PR. The Sunday 02:00 run is still open. Mounting is a handoff to claude@aiden.
 
 ### Just finished
+
+**[P0] Submit form, PR #111.** Paste sheet and full references in `docs/SUBMISSION.md`. Live link checked. Video URL and the Submit button are still a person's.
 
 **[P0] Submission fixes, PR #88.** `docs/SUBMISSION.md`: 30-second video or 7 slides, OMNI named as measured data, live site described as the game, references listed.
 
@@ -40,7 +42,8 @@ Nothing claimed and unfinished.
 
 ### Files / folders I'm touching (hands off)
 
-- `docs/SUBMISSION.md` is in PR #88
+- `ui/cutscenes/`
+- `docs/qa/first-person.md`
 - `.agents/status/caleb.md`: only the `## cursor@caleb` section
 
 ### Missing / I need from someone

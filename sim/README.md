@@ -185,7 +185,7 @@ Each code appears at most once. Each `message` is written for students and says 
 
 ## summary(state)
 
-`outcome`, `score` (0 to 100: 70 science, 10 budget left, 10 launch margin, 10 data delivered; a failed mission scores at most 69), `grade` (A to F; a failed mission gets at most a C), `science_score`, `science_goal`, `cost_usd`, `budget_usd`, `mass_kg`, `mass_limit_kg`, `data_generated_gb`, `data_downlinked_gb`, `data_lost_gb`, `mission_days_flown`, and `why`: sentences explaining the result. After a flown mission the design warnings follow, introduced by "Before launch the design check said:"; a launch failure lists none, and a lost spacecraft only `radiation_risk`.
+`outcome`, `score` (0 to 100: 70 science, 10 budget left, 10 launch margin, 10 data delivered; a failed mission scores at most 69), `grade` (A to F; a failed mission gets at most a C), `science_score`, `science_goal`, `cost_usd`, `budget_usd`, `mass_kg`, `mass_limit_kg`, `data_generated_gb`, `data_downlinked_gb`, `data_lost_gb`, `mission_days_flown`, and `why`: sentences explaining the result. After a flown mission the design warnings follow, one sentence each, every one introduced by "Before launch the design check said:"; a launch failure lists none, and a lost spacecraft only `radiation_risk`.
 
 ## The demo scenario in the sim
 

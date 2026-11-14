@@ -12,12 +12,13 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** aiden-claude/app-walk (PR #87); aiden-claude/hangar (PR #80); aiden-claude/story-app (PR #74, after #70); aiden-claude/story-popouts (PR #70); aiden-claude/launch-visible (PR #68); aiden-claude/debrief-fixes (PR #65); aiden-claude/risk-meter (PR #57); aiden-claude/what-if (PR #55); aiden-claude/app-safety (PR #53); aiden-claude/bundle-check (PR #54); aiden-claude/briefing-bonus (PR #49); aiden-claude/mobile-budgets (PR #46); aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-Nothing claimed. Every Open board task has another owner.
+Nothing claimed (Aiden's usage limit). Open PRs, merge in order: #107 → #114 → #120. The 3D game plays start → debrief behind `?world=3d`; what's left is listed in `ui/interior/README.md` (handoff section): module-placed choices browser check, 3D default by Sun 08:00, space weather + leaderboard in 3D, Kaipo's time lever, Caleb's enter-craft cutscenes.
 
 ### Files / folders I'm touching (hands off)
 PR #87: `app/Walk.tsx`, `app/Walk.test.tsx`, the `<Walk>` / `<WalkTo>` lines in `app/App.tsx`, the walk block in `app/app.css`. Otherwise none outside my open PRs #65 (`sim/analysis.ts`, one argument in `app/App.tsx` Flight) #68 (`ui/builder/builder.css`) #70 (`ui/story/`) and #80 (`ui/hangar/`), #74 (`app/StoryLayer.tsx`, `<StoryLayer>` lines + `online`/clock hold in `app/App.tsx`).
 
 ### Just finished
+Added Submission readiness to the board (record demo, submit, code freeze Sun 18:00, launch 20 s vs 10 s). Checked the walk + cutscenes on the live site at 375 px, keyboard and screen-reader structure: no change needed.
 Offline cache covers every file in public/, incl. cursor@kaipo's flight models (PR #93). Add a file to `public/` → add it to `pwa/public-files.ts` (a test tells you). Not checked: an offline reload in a browser.
 3D scenes inside the cutscene frame (cursor@caleb's handoff 1340, branch aiden-claude/cutscene-scenes): arrival, orbit, anomaly, ending in `app/StoryLayer.tsx`. Seen in the game: arrival, anomaly, ending (loss). Not seen in the game: Moon/Mars orbit, ending (success).
 Walk between stations (PR #87): `ui/hangar` behind every screen, each screen a panel over the hall; no WebGL = today's screens. Not checked: co-op in two browsers, a real phone, a screen reader.
@@ -53,20 +54,20 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** main (done coordination); aiden-codex/offline-qa (PR #101)
-**Last updated:** 2026-11-14 14:36
+**Branch:** main (completion coordination); aiden-codex/desktop-world-qa (PR #118)
+**Last updated:** 2026-11-14 15:29
 
 ### Working on right now
-Offline browser QA complete, PR #101. No new implementation claimed. Ethan has both V7 scene and app mount; earlier optional UI assembly offer withdrawn to avoid duplicate ownership.
+Desktop acceptance complete; findings handed to Claude Aiden, who now owns ui/interior + World wiring. No active source claim. Desktop remains priority; no further mobile work.
 
 ### Files / folders I'm touching (hands off)
-No active source edits. PR #101: docs/qa/offline-cache.md only, review fixes mine. Own coordination only. Claude section/branches and unrelated docs/CHALLENGE 2.md untouched.
+PR #118 docs/qa/desktop-world.md only, released on merge. Own coordination only. Claude section/branches, deployment/racks/FPS/interior/app/scene3d, Caleb QA plan and docs/CHALLENGE 2.md untouched.
 
 ### Just finished
-Fresh-profile Chrome production preview: cached Start reloads with origin stopped; all six public files incl. three valid GLBs pass. Uncached negative control rejects. Offline first-use lazy Hangar/canvas/SpaceView imports fail and Builder hits error boundary; online control succeeds with two canvases. Same failure without page-level offline emulation. Build and 3 focused Vitest tests pass. Report separates preview finding from unverified live Pages impact.
+PR #118: exported published #114 head 1804d2b, real Chrome keyboard/mouse at 1280x800. Design→launch→existing flight→3D debrief F/26→Try the fix pass. Movement/sprint, mouse lock/drag/relock, reach/cabinet collision, invalid launch block and UI role fixture pass. 18 focused tests, build, size 140.9/150 kB pass; full suite initially one known cards timeout, then focused 13/13 and full 477/477 pass with browser stopped. Optional touch PR #110 remains complete.
 
 ### Missing / I need from someone
-Claude Aiden/PWA owner: reproduce local offline lazy-import failure and compare Pages behavior; board + handoff carry exact steps. Ethan: V7 integration; Kaipo: physical venue rehearsal. Remaining data/provenance tasks stay with owners. Sarah's source fixes and real-storm integration are now on main; no competing storm work requested.
+Claude World owner: completed 3D mission does not save personal best (only player-name localStorage key); reuse existing leaderboard saving and preserve stars/design + Daily separation before default flip. Follow-up is on BOARD; report/handoff include smaller prompt/Escape observations. Physical native Escape, public deployment, network co-op and new interior not checked. Earlier offline report stays with PWA owner.
 
 ### Heads up for other agents
-QA is complete, offline gameplay is not signed off. Vary: Origin/request matching is only a diagnostic lead; root cause unconfirmed. No physical phone, installed-PWA upgrade or V7 acceptance tested. Sol remains appropriate for QA; Astra for new model/design work.
+Test evidence is pinned to 1804d2b before newer real-model rack changes, not acceptance of those later heads or a fully 3D flight run. Caleb retains first-person plan; Ethan sole merge coordinator. No new dependencies/assets/model work; Sol remains suitable.

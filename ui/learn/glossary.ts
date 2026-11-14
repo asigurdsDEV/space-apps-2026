@@ -68,7 +68,7 @@ export const GLOSSARY: readonly GlossaryEntry[] = [
     id: 'reaction-wheel',
     term: 'Reaction wheel',
     meaning:
-      'A spinning wheel inside the spacecraft. Speeding it up or slowing it down turns the craft the other way, so the instruments can stay pointed at a target. If a wheel stops, the pointing gets coarse.',
+      'A spinning wheel inside the spacecraft. Speeding it up or slowing it down turns the craft the other way, so the instruments can stay pointed at a target. Losing a wheel can force coarser pointing, but a spare wheel or another trick can keep the mission going. Kepler lost two wheels and finished as K2 by balancing on sunlight.',
   },
   {
     id: 'high-gain-antenna',
@@ -98,7 +98,25 @@ export const GLOSSARY: readonly GlossaryEntry[] = [
     id: 'deep-space-network',
     term: 'Deep Space Network',
     meaning:
-      'NASA’s three big antenna sites, in California, Spain, and Australia. Many missions share them. A higher-priority event, such as a landing, can take the antenna time you were counting on.',
+      'NASA’s three big antenna sites, in California, Spain, and Australia. Many missions share them. A higher-priority event, such as a launch or landing, can take the antenna time you were counting on.',
+  },
+  {
+    id: 'rtg',
+    term: 'RTG',
+    meaning:
+      'A radioisotope thermoelectric generator. It turns heat from decaying plutonium into electricity, so it keeps working in shadow and far from the Sun. A solar array cannot do that: night and distance both cut its power.',
+  },
+  {
+    id: 'solar-flux',
+    term: 'Solar flux',
+    meaning:
+      'How strong the sunlight is, compared with Earth. It falls with the square of the distance from the Sun, so a solar array at Mars makes about 43% of the power it would make in Earth orbit. An RTG ignores this.',
+  },
+  {
+    id: 'coverage',
+    term: 'Coverage',
+    meaning:
+      'The share of a planet that an orbit actually flies over. An imager on the wrong orbit misses the ground that orbit never sees. In this game a low Earth orbit covers about 80% of Earth, and geostationary about 42%.',
   },
 ]
 
@@ -124,6 +142,9 @@ export const ANOMALY_TERM_IDS = [
   'south-atlantic-anomaly',
   'deep-space-network',
 ] as const
+
+/** Ids for the power and coverage rules the accuracy audit asked the glossary to name. */
+export const AUDIT_TERM_IDS = ['rtg', 'solar-flux', 'coverage'] as const
 
 export function glossaryEntry(id: string): GlossaryEntry | undefined {
   return byId.get(id)

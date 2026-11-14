@@ -604,7 +604,11 @@ export function summary(state: SimState): Summary {
       outcome !== 'launch_failure' &&
       (outcome !== 'spacecraft_failure' || issue.code === 'radiation_risk'),
   )
-  if (said.length > 0) why.push(`Before launch the design check said: ${said.map((issue) => issue.message).join(' ')}`)
+  // One sentence per warning: the results screen lists `why` sentence by sentence, and a loose
+  // "Pick a bigger battery." would read as something that happened.
+  for (const issue of said) {
+    why.push(`Before launch the design check said: ${issue.message.replace(/[.!?]\s+([A-Z])/g, (_, first: string) => `; ${first.toLowerCase()}`)}`)
+  }
   if (outcome === 'success' && budget > 0 && cost < budget) {
     why.push(`You finished ${formatUsd(budget - cost)} under budget.`)
   }

@@ -4,8 +4,8 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 **Human:** Kaipo
 **Agent:** Cursor
-**Branch:** kaipo-cursor/rehearsal-rerun
-**Last updated:** 2026-11-14 13:32
+**Branch:** main
+**Last updated:** 2026-11-14 15:32
 
 ## Working on right now
 
@@ -19,29 +19,35 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@kaipo
 
-**Branch:** kaipo-cursor/rehearsal-rerun
-**Last updated:** 2026-11-14 13:32
+**Branch:** main
+**Last updated:** 2026-11-14 15:32
 
 ### Working on right now
 
-Four-device multiplayer rehearsal re-run. Writing results in docs/MULTIPLAYER_TEST.md.
-
 ### Files / folders I'm touching (hands off)
-
-- docs/MULTIPLAYER_TEST.md
 
 ### Just finished
 
-V3 flight training GLBs merged to main (PR #75, `929fb77`): hurricane, wildfire, and tdrs-relay markers, about 9 KB total. Scene placement is still Ethan's. Service-worker cache is still claude@aiden.
+**Decision 008 and the live site:** PR #116 is on main. https://kimchispacemission.vercel.app was redeployed. `/api/ice` returned 200 with a TURN relay on port 443, and `visual-assets/world/part-rack.glb` is served. GitHub auto-deploy still waits on Aiden approving the Vercel app.
 
-Glossary tooltip overflow fix (PR #58): hidden tips no longer widen the builder; wide tips flip to the right edge. Playtest finding #7 from claude@aiden.
+**World props:** `public/visual-assets/world/` has part-rack, console-desk, launch-button, alarm-beacon, time-lever, and gauge-frame (about 22 kB). Floor is y=0. Placement stays with the hall and interior.
 
-Anomaly-card glossary terms are on main (PR #38, `aeccf8b`): reaction wheel, high-gain antenna, drag, safe mode, South Atlantic Anomaly, Deep Space Network. Each tooltip now has its own id. The preview tooltip for "reaction wheel" was checked in the browser. 188 tests passed on the branch before merge.
+**Multiplayer rehearsal:** players on different devices joined a room on https://kimchispacemission.vercel.app without a hotspot (2026-11-14). Fifth player, launch sync, guest leave, and host close pass in `app/coop.test.ts` (17/17). They were not repeated on separate devices.
+
+**Glossary (ui/learn/):** Deep Space Network now says a launch or landing can take the antenna. A reaction-wheel failure no longer always means coarse pointing. Added RTG, solar flux, and coverage, with sources in `ui/learn/README.md`.
+
+**Live WebRTC:** same-computer rooms `LL2KQG` and `V3XD2E` passed. The pre-TURN cross-network try `XFCY3M` timed out. A later different-device join on the Vercel site passed without a hotspot.
+
+**Public play:** https://kimchispacemission.vercel.app serves Host online and Join. `/api/ice` returns Cloudflare TURN, including `turns:turn.cloudflare.com:443`. The key stays in Vercel env, not in git. Four-player cap unchanged.
+
+**Run A-local (4 tabs, localhost):** partial pass — join 4/4, lobby → briefing → builder, Guest-B bus edit synced on host (12U). Not run: 5th player, launch/flight, disconnect. Logged in `docs/MULTIPLAYER_TEST.md`.
+
+V3 flight training GLBs merged to main (PR #75): hurricane, wildfire, and tdrs-relay markers. Glossary tooltip overflow (PR #58) and anomaly-card terms (PR #38) are on main.
 
 ### Missing / I need from someone
 
-- Four devices, venue wifi, and a phone hotspot for the multiplayer re-run (Open P1 on the board). The live game now has Host online / Join.
+- Aiden approves the Vercel GitHub app for this repo only. `vercel git connect` cannot see `asigurdsDEV/space-apps-2026` until that approval. Production and Preview already have the TURN env names.
 
 ### Heads up for other agents
 
-V3 is on `main` (PR #75). Preflight for the four-device rehearsal is recorded in `docs/MULTIPLAYER_TEST.md`; Run A/B still need venue devices. GLB offline cache: claude@aiden (`pwa/`).
+World prop meshes are in `public/visual-assets/world/`. Cross-device multiplayer join passed on the Vercel site. Glossary provenance is in `ui/learn/README.md`.
