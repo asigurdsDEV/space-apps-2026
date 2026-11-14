@@ -22,25 +22,26 @@ export interface StoryBeat {
 
 /**
  * CAPCOM's lines, one sentence or two, never a paragraph (GAME_DESIGN.md §4.8).
- * shortcut: placeholder wording by claude@aiden; claude@sarah owns the script (docs/game-design/STORY.md)
- * and replaces these. They state only what the game itself does, so no source is needed (§7).
+ * The script is docs/game-design/STORY.md (claude@sarah); change it there first.
+ * Only real-world claim: Earth–Mars radio delay of minutes (NASA: about 4 to 20 minutes one way,
+ * https://www.nasa.gov/missions/tech-demonstration/deep-space-atomic-clock/how-an-atomic-clock-will-get-humans-to-mars-on-time/).
  */
 export const LINES = {
-  'call-earth': 'Flight, CAPCOM. Welcome to your first shift. A new mission call is up on the wall screen.',
-  'call-moon': 'Flight, CAPCOM. The next call is from the Moon team: they need the surface mapped from orbit.',
-  'call-mars': 'Flight, CAPCOM. This is the big one: Mars. The team wants to hunt for ice under the ground.',
-  design: 'Your spacecraft is on the stand in the assembly bay. Every part costs mass, power and money.',
-  poll: 'Time to poll the room. Every console has to call GO before we launch.',
-  launch: 'Lift-off! Your spacecraft is on its way.',
-  'orbit-earth': 'We are in orbit. Science operations start now.',
-  'orbit-moon': 'Lunar orbit confirmed. Start mapping.',
-  'orbit-mars': 'Mars orbit confirmed. Start the radar.',
-  anomaly: 'Flight, CAPCOM: we have an anomaly. The clock is stopped until you make the call.',
-  'anomaly-resolved': 'Copy that. Back to the mission.',
-  'ending-success': 'The data is home. Mission success, Flight.',
-  'ending-loss': 'We fell short this time. Let’s find out why.',
-  'debrief-success': 'Good flight. Here is how it went, and what would have made it even better.',
-  'debrief-loss': 'Here is what happened, and the one change that would have helped most.',
+  'call-earth': "Flight, CAPCOM. Welcome to your first shift. Small satellite, small budget: let's bring pictures home.",
+  'call-moon': 'Flight, CAPCOM. Good work on First Light. Now map the Moon from orbit, where its shadow hides you every orbit.',
+  'call-mars': 'Flight, CAPCOM. The big one: radar to find ice under Mars. Out there, every message takes minutes to arrive.',
+  design: 'Your spacecraft is on the stand. Every part costs mass, power and money, and the rocket has to carry it all.',
+  poll: "Flight, the call is yours. Poll the room: every console has to say GO before we fly.",
+  launch: 'Lift-off. Clear of the tower, and all the work from the clean room is riding on it now.',
+  'orbit-earth': "Orbit confirmed. Instruments on. Remember, data only counts once it's on the ground.",
+  'orbit-moon': "Lunar orbit confirmed. Watch the battery: in the Moon's shadow, it's all you've got.",
+  'orbit-mars': 'Mars orbit confirmed. Radar on. Every pass over a ground station counts now.',
+  anomaly: 'Flight, CAPCOM: we have an anomaly. The clock is stopped. Take your time and make the call.',
+  'anomaly-resolved': 'Copy, Flight. Executing. Back to the mission.',
+  'ending-success': 'The data is home. Science team is cheering. Nice flying, Flight.',
+  'ending-loss': "Signal's quiet, Flight. Every mission teaches us something. Let's go find out what.",
+  'debrief-success': "Good flight. Here's the full report, and one change that would have made it even better.",
+  'debrief-loss': "Here's what happened, and the one change that would have saved it. Fix it and fly again.",
 } as const
 
 export type LineId = keyof typeof LINES
