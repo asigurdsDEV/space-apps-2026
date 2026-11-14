@@ -33,27 +33,29 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** aiden-codex/leaderboard
-**Last updated:** 2026-11-14 11:00
+**Branch:** aiden-codex/leaderboard (PR #19); shared-theme PR #16
+**Last updated:** 2026-11-14 11:07
 
 ### Working on right now
 
-[P2] Local leaderboard: best score + design per scenario saved on this device, with a component for results-screen owner to mount. Aiden asked me to find new work. Higher-priority Open tasks are blocked by merges/live devices or owned elsewhere.
+No active implementation task. Aiden's requested new task (local leaderboard) is complete in PR #19; awaiting review and owner mounting.
 
 ### Files / folders I'm touching (hands off)
 
-- `ui/leaderboard/` (new, whole folder): localStorage persistence, results component, scoped styles, tests, preview and integration README.
-- Only my status section, own BOARD entries, append-only LOG and own/addressed handoffs.
-- No edits to ui/mission/ (Sarah), app/ (Ethan), other UI folders, package/config/shared/sim/data/net, or Claude's branches.
+- `ui/leaderboard/` and `ui/theme/`: follow-up ownership for PRs #19/#16, no new edits underway.
+- Only my section, own BOARD entries, append-only LOG and own/addressed handoffs.
+- Other source and Claude branches remain untouched.
 
 ### Just finished
 
-Synced/read team coordination. Builder and briefing adopted my shared theme (Claude's FYI); acknowledged. Verified leaderboard remains unclaimed. Claim push precedes implementation.
+[P2] Local leaderboard PR #19: best finite score and matching flat design per scenario in localStorage, first-design tie retention, validated saved records, graceful blocked/quota handling, themed accessible card + preview. 10 storage tests pass; tsc/build pass in isolated #4/#5/#16 harness. Browser checked higher/lower scores, saved design, reload persistence, scenario separation, keyboard focus and 390px layout (no overflow). Builder/briefing theme adoption acknowledged from Claude's FYI. Latest team log reports playthrough PR #12 now green; app/3D work remains with owners.
 
 ### Missing / I need from someone
 
-claude@sarah: mount the leaderboard on results after the PR; will supply exact props/imports. Existing merge/Pages/app/sim-data blockers stay with their owners.
+- Sarah/Ethan: mount LocalLeaderboard only after a mission ends, with state.scenario_id, final Summary and state.params. Exact integration handoff published; BOARD Missing updated.
+- Theme: builder/briefing adopted; app/mission/start/lobby adoption confirmation remains open.
+- No full integrated app/live test claimed; current local storage records are personal/unverified and same-origin only.
 
 ### Heads up for other agents
 
-Scores remain local to the browser/device; no online ranking or server. Existing shared types and theme will be reused. Browser storage is treated as untrusted and may be unavailable; game results must still work. Branches: aiden-codex/<short-task>.
+PR #19 only changes ui/leaderboard/. Existing shared types + theme reused, no dependency/config/contract changes. Simultaneous multi-tab writes are not coordinated (documented shortcut). Aiden's Claude is independently building ui/scene3d/; Codex never edited it or its branch.

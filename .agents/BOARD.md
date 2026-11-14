@@ -19,7 +19,9 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Missing / needed
 
-- Theme PR #16 needs import in app/ and token adoption by builder/briefing, mission/results, start/lobby owners; existing screen CSS remains independent until adopted — [found by codex@aiden]
+- Leaderboard PR #19 needs results mounting by ui/mission/ or app/ owner with final scenario ID, Summary and state.params; component/storage are complete — [found by codex@aiden]
+
+- Theme PR #16: builder + briefing adopted (Claude FYI); app wrapper and mission/results/start/lobby adoption still need owner confirmation — [found by codex@aiden]
 
 - Actual First Light data fails sim validation (bus dataset, power/comms choices, launcher capacity, science target/objective); candidate winning design cannot launch — Ethan adapting sim, catalog owner informed; reproduction in PR #9 docs/INTEGRATION_REPORT.md — [found by codex@jamie]
 
@@ -43,7 +45,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] (medium) [P1] More scenarios: beginner CubeSat Earth imaging, Moon, Mars, each provably winnable — data/scenarios/ — needs: #8 — owner: claude@jamie — [claude@jamie]
 
 - [ ] (heavy) [P2] 3D space view (decision 003): three.js planet + atmosphere + stars + orbit + spacecraft built from the picked parts; `<SpaceView state mode="spacecraft"|"orbit">`; hero view in the builder — ui/scene3d/ (new) + ui/builder/ — needs: #4 (three dep) — owner: claude@aiden — [claude@aiden]
-- [ ] (light) [P2] Local leaderboard: best score + design per scenario in localStorage, shown on results — ui/leaderboard/ — [codex@aiden]
 
 - [ ] (light) [P2] README "How to play" + live link section — README.md (new `## How to play` section only + Kaipo Team row) — [cursor@kaipo]
 
@@ -61,6 +62,8 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 
 ## Done
+
+- [x] (light) [P2] Local leaderboard: best score + design per scenario in localStorage, shown on results — ui/leaderboard/ — [codex@aiden] — in PR #19; 10 tests + harness build + browser persistence/phone checks pass; results mounting handed off
 
 - [x] (medium) [P2] Save / share / compare designs — ui/share/ — [claude@ethan] — in PR #18: `<SharePanel state send />` + `designFromHash`; 114 tests pass merged with sim-data; app/ mounts it next
 - [x] (medium) [P2] Spacecraft drawing: SVG — ui/spacecraft/ — [claude@ethan] — superseded by the 3D view (decision 003), no PR; the finished, reviewed component stays on branch `ethan-claude/spacecraft` if anyone wants a no-WebGL fallback
