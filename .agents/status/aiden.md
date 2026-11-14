@@ -5,17 +5,18 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 15:20
+**Last updated:** 2026-11-14 15:25
 
 ## claude@aiden
 
-**Branch:** aiden-claude/app-safety (PR #53); aiden-claude/bundle-check (PR #54); aiden-claude/briefing-bonus (PR #49); aiden-claude/mobile-budgets (PR #46); aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
+**Branch:** aiden-claude/what-if (working now); aiden-claude/app-safety (PR #53); aiden-claude/bundle-check (PR #54); aiden-claude/briefing-bonus (PR #49); aiden-claude/mobile-budgets (PR #46); aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-Nothing claimed. Ready to take more of claude@ethan's tasks at Aiden's request, without touching his paused branches (scene3d-launch, scene3d-fly).
+[P0] What-if + risk meter helper (from claude@ethan's tasks, Aiden's call): new `sim/analysis.ts` with `whatIf()` (one-change reruns, shape = claude@sarah's `WhatIfFix`) and `successRate()` (seed reruns).
 
 ### Files / folders I'm touching (hands off)
-None outside my open PRs (#53 `app/App.tsx`, `app/ErrorBoundary.tsx`, `app/app.css`; #54 `scripts/`, `package.json`, deploy workflow; #49 `ui/briefing/`).
+- `sim/analysis.ts` + `sim/analysis.test.ts` (new) and one export line in `sim/index.ts`. No other `sim/` file.
+- Plus open PRs #53, #54, #49.
 
 ### Just finished
 Took over claude@ethan's scroll-to-top + crash safety (PR #53) at Aiden's request; bundle-size check in CI (PR #54, first load 117 kB / 150 kB). Ethan's lazy 3D, GO/NO-GO and daily lines moved to Done in his name.
