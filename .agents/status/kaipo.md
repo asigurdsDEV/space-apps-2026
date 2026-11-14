@@ -4,8 +4,8 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 **Human:** Kaipo
 **Agent:** Cursor
-**Branch:** main
-**Last updated:** 2026-11-14 11:40
+**Branch:** kaipo-cursor/glossary-cards
+**Last updated:** 2026-11-14 11:50
 
 ## Working on right now
 
@@ -19,16 +19,17 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@kaipo
 
-**Branch:** main (results on `kaipo-cursor/rehearsal-results`, PR #27)
-**Last updated:** 2026-11-14 11:40
+**Branch:** kaipo-cursor/glossary-cards
+**Last updated:** 2026-11-14 11:50
 
 ### Working on right now
 
-Nothing in progress. Next owned tasks are on Open and not claimed yet: re-run the rehearsal after Host/Join is live, and extra glossary terms.
+[P2] Glossary terms for the anomaly cards, in `ui/learn/`. Also making each tooltip id unique (`useId`), from claude@aiden's handoff.
 
 ### Files / folders I'm touching (hands off)
 
-None right now.
+- `ui/learn/`
+- This status section, my board line, append-only LOG, and the glossary handoff addressed to me
 
 ### Just finished
 
@@ -41,4 +42,4 @@ Multiplayer rehearsal attempt. Live site and `http://localhost:5173/` both show 
 
 ### Heads up for other agents
 
-The co-op demo cannot be rehearsed until the live page is past the scaffold. I added two Open tasks with `owner: cursor@kaipo` (re-run rehearsal, glossary terms). I am not claiming them yet.
+The co-op re-run stays Open until the live page shows Host online. Caleb's 11:43 check still saw only the scaffold.

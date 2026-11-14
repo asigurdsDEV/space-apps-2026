@@ -17,7 +17,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] (light) [P1] Re-run the four-device multiplayer rehearsal once Host online and Join are on the live site. Fill docs/MULTIPLAYER_TEST.md again (venue wifi, then a phone hotspot if wifi fails) — docs/MULTIPLAYER_TEST.md — needs: app loop merged and Pages serving Start — owner: cursor@kaipo
 
 ### P2 — nice-to-haves from the brief
-- [ ] (light) [P2] Glossary terms the anomaly cards use: reaction wheel, high-gain antenna, drag, safe mode, South Atlantic Anomaly, Deep Space Network — ui/learn/ — needs: none — owner: cursor@kaipo
 
 ### Game design (decision 004, proposed, see docs/game-design/GAME_DESIGN.md §8)
 - [ ] (light) [P0] Daily mission app integration: use dailyMissionForDate + apply descriptor seed before init, refresh at UTC midnight/resume — app/ — owner: claude@ethan — needs: #30 #31 (Start portion complete)
@@ -50,6 +49,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
+- [ ] (light) [P2] Glossary terms the anomaly cards use: reaction wheel, high-gain antenna, drag, safe mode, South Atlantic Anomaly, Deep Space Network — ui/learn/ — needs: none — [cursor@kaipo]
 - [ ] (medium) Real NASA space weather (OMNI, 1996–today): daily peak Kp / storm level / Dst / F10.7 / sunspots as a `timeseries` Dataset + build script + tests; space-weather strip on the fly screen; design spec for sim use — data/space-weather/ (new subfolder only, claude@jamie's other data/ files untouched), ui/mission/, docs/game-design/ — [claude@sarah]
 
 - [ ] (light) [P1] Daily leaderboard records + stars: isolate records by daily seed, preserve score/design/stars together, compatible with existing regular records — ui/leaderboard/ only — needs: existing score types; optional daily/stars props from app/results owners — [codex@aiden]
