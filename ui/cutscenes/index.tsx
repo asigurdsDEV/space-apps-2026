@@ -35,3 +35,13 @@ export function AnomalyScene({ durationMs }: { durationMs?: number }) {
 export function EndingScene({ outcome, durationMs }: { outcome: 'success' | 'loss'; durationMs?: number }) {
   return <Frame kind={outcome === 'success' ? 'ending-success' : 'ending-loss'} durationMs={durationMs} />
 }
+
+/** After launch: the hall doorway, then the walk-in spacecraft. */
+export function EnterCraftScene({ durationMs }: { durationMs?: number }) {
+  return <Frame kind="enter-craft" durationMs={durationMs} />
+}
+
+/** After the ending: back out of the spacecraft into mission control. */
+export function ReturnControlScene({ durationMs }: { durationMs?: number }) {
+  return <Frame kind="return-control" durationMs={durationMs} />
+}

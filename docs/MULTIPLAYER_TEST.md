@@ -2,11 +2,23 @@
 
 How to check online co-op for up to 4 players, and what to do when the network fails. This is the venue script for the Space Mission Design Game (team Kimchi Trenchers).
 
-**Status:** first attempt 2026-11-14 11:35 **fail** (scaffold only). **Preflight 2026-11-14 13:30 pass:** live [Pages](https://asigurdsdev.github.io/space-apps-2026/) and local dev show **Play solo**, **Host online**, and **Join a room** (app loop on `main`, merge `929fb77+`). **Run A-local 2026-11-14 ~13:40 partial pass** (4 tabs, one laptop, loopback — see below). **Venue Run A / Run B still not run.** Net unit tests still do not prove WebRTC.
+**Status:** first attempt 2026-11-14 11:35 **fail** (scaffold only). **Preflight 2026-11-14 13:30 pass:** live [Pages](https://asigurdsdev.github.io/space-apps-2026/) and local dev show **Play solo**, **Host online**, and **Join a room**. **Run A-local 2026-11-14 ~13:40 partial pass** (4 tabs, one laptop, loopback — see below). **Same-machine public WebRTC 2026-11-14 partial pass** (two tabs on the Vercel URL, room `V3XD2E`, Crew 2/4). **Cross-network join before TURN failed** (room `XFCY3M`, “Room connection timed out”). **TURN is live** on the Vercel host (`/api/ice` returned `turns:turn.cloudflare.com:443` on 2026-11-14). **Cross-network join after TURN passed** on 2026-11-14 afternoon Pacific: Kaipo had players on different devices join a room on the Vercel site, and a phone hotspot was not required. The room code was not written down. **Venue Run B (hotspot) was not needed.** Fifth player, launch sync, guest leave, and host close passed in `app/coop.test.ts` (17/17, 2026-11-14 15:23 Pacific) against the in-process room. They were not repeated on separate devices. Net unit tests still do not prove WebRTC. The checks below are what does.
 
 Transport behavior below matches `net/README.md` (checked 2026-11-14). The room code players type is the **6-letter code** (`smdg-` plus that code is the PeerJS id). A room never grows past **4 players** (host + 3). Extra joins are closed.
 
 **Public play:** open the same site on every device. The Vercel address is [https://kimchispacemission.vercel.app](https://kimchispacemission.vercel.app) (Vercel account lit-turtle). GitHub Pages remains `https://asigurdsdev.github.io/space-apps-2026/`. Play still goes peer-to-peer (PeerJS signaling + WebRTC). `/api/ice` on that Vercel site gives each browser a short-lived Cloudflare TURN relay (including TCP/TLS on port 443) so guest Wi-Fi does not have to be a hotspot. Confirmed live 2026-11-14. The TURN key stays in Vercel env (`CLOUDFLARE_TURN_KEY_ID`, `CLOUDFLARE_TURN_API_TOKEN`), not in the repo. GitHub Pages has no `/api/ice` and keeps the direct PeerJS path. There is no extra game server, and a fifth player is still rejected.
+
+## What live WebRTC has proved
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| App wiring (Host / Join on a live site) | pass | Pages preflight 13:30; Vercel host shows Host online and Join. |
+| Real WebRTC on one computer | pass | Localhost room `LL2KQG`, 4 tabs, guest edit synced. Public URL room `V3XD2E`, Crew 2/4, same machine. |
+| Cross-network WebRTC before TURN | fail | Guest on another network, room `XFCY3M`: “Room connection timed out”. |
+| TURN credential endpoint | pass | `GET https://kimchispacemission.vercel.app/api/ice` returned 200 with `turns:turn.cloudflare.com:443`. |
+| Cross-network WebRTC after TURN | pass | 2026-11-14 afternoon Pacific. Different devices joined a room on the Vercel site. Hotspot not required. Room code not recorded. |
+| Venue wifi / phone hotspot | pass for join | Same session as the row above. Hotspot Run B was not needed. |
+| Fifth player, launch, guest leave, host close | automated pass | `app/coop.test.ts` 17/17 on 2026-11-14 15:23 Pacific. A fifth join closes with “Room is full” and the roster stays at 4. A guest leave frees that role. The host’s launch is the phase the guest sees. Host close shows “The host closed the room.” Not repeated on separate devices. |
 
 ## What you need
 

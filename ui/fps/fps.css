@@ -1,0 +1,65 @@
+/* First-person overlay (decision 007). Sits over a 3D view that is always dark, so text is light in both themes. */
+.fps-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+  color: #edf1fa;
+  font-family: var(--game-font, system-ui, sans-serif);
+}
+.fps-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.7);
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.5);
+}
+.fps-dot--on {
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  background: transparent;
+  border: 2px solid #ffda8a;
+}
+.fps-prompt {
+  position: absolute;
+  top: calc(50% + 28px);
+  margin: 0;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  background: rgb(0 0 0 / 0.55);
+}
+.fps-prompt:empty {
+  display: none;
+}
+.fps-why {
+  color: #c9d3ea;
+  font-weight: 500;
+}
+.fps-hint {
+  position: absolute;
+  top: 16px;
+  margin: 0;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgb(0 0 0 / 0.55);
+  font-size: 0.9rem;
+}
+.fps-overlay kbd {
+  display: inline-block;
+  min-width: 1.4em;
+  margin: 0 1px;
+  padding: 0 4px;
+  border: 1px solid rgb(255 255 255 / 0.5);
+  border-radius: 4px;
+  font: inherit;
+  font-size: 0.85em;
+  text-align: center;
+}

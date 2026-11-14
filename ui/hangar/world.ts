@@ -27,7 +27,7 @@ export interface HangarWorld {
 }
 
 /** A canvas texture with centred lines of text. The first line is big. */
-function textTexture(lines: string[], w: number, h: number, bg: string, fg: string, accent = fg): THREE.CanvasTexture {
+export function textTexture(lines: string[], w: number, h: number, bg: string, fg: string, accent = fg): THREE.CanvasTexture {
   const c = document.createElement('canvas')
   c.width = w
   c.height = h
@@ -48,7 +48,7 @@ function textTexture(lines: string[], w: number, h: number, bg: string, fg: stri
   return t
 }
 
-function gridTexture(): THREE.CanvasTexture {
+export function gridTexture(): THREE.CanvasTexture {
   const c = document.createElement('canvas')
   c.width = c.height = 256
   const g = c.getContext('2d')!

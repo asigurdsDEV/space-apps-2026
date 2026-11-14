@@ -10,17 +10,18 @@
     "power_w": "W",
     "cost_usd": "USD",
     "data_rate_bps": "bps",
-    "reference_range_m": "m"
+    "reference_range_m": "m",
+    "build_months": "months"
   },
   "data": {
-    "columns": ["id", "name", "band", "mass_kg", "power_w", "cost_usd", "data_rate_bps", "reference_range_m", "min_bus_class", "description"],
+    "columns": ["id", "name", "band", "mass_kg", "power_w", "cost_usd", "data_rate_bps", "reference_range_m", "min_bus_class", "description", "build_months"],
     "rows": [
-      ["uhf-radio", "UHF radio", "UHF", 0.1, 2, 20000, 9600, 1000000, "cubesat", "Like a ham radio. Cheap and simple, but very slow."],
-      ["s-band-patch", "S-band patch antenna", "S", 0.4, 8, 100000, 1000000, 1500000, "cubesat", "A flat antenna and radio. The usual choice for small satellites."],
-      ["x-band-transmitter", "X-band transmitter", "X", 2, 30, 800000, 50000000, 2000000, "cubesat", "Fast downlink for imaging satellites in low orbit."],
-      ["high-gain-dish", "High-gain dish antenna", "Ka", 20, 120, 5000000, 300000000, 40000000, "smallsat", "A pointed dish for big data from high orbits."],
-      ["deep-space-transponder", "Deep-space transponder + dish", "X (DSN)", 15, 60, 10000000, 2000000, 400000000, "smallsat", "Talks to NASA's Deep Space Network giant dishes. Slow but reaches the Moon and beyond."],
-      ["mars-hga", "Mars high-gain dish (DSN)", "X/Ka (DSN)", 30, 150, 15000000, 20000000, 100000000000, "medium", "A big pointed dish that can talk to NASA's Deep Space Network from as far as Mars."]
+      ["uhf-radio", "UHF radio", "UHF", 0.1, 2, 20000, 9600, 1000000, "cubesat", "Like a ham radio. Cheap and simple, but very slow.", 2],
+      ["s-band-patch", "S-band patch antenna", "S", 0.4, 8, 100000, 1000000, 1500000, "cubesat", "A flat antenna and radio. The usual choice for small satellites.", 3],
+      ["x-band-transmitter", "X-band transmitter", "X", 2, 30, 800000, 50000000, 2000000, "cubesat", "Fast downlink for imaging satellites in low orbit.", 6],
+      ["high-gain-dish", "High-gain dish antenna", "Ka", 20, 120, 5000000, 300000000, 40000000, "smallsat", "A pointed dish for big data from high orbits.", 12],
+      ["deep-space-transponder", "Deep-space transponder + dish", "X (DSN)", 15, 60, 10000000, 2000000, 400000000, "smallsat", "Talks to NASA's Deep Space Network giant dishes. Slow but reaches the Moon and beyond.", 18],
+      ["mars-hga", "Mars high-gain dish (DSN)", "X/Ka (DSN)", 30, 150, 15000000, 20000000, 100000000000, "medium", "A big pointed dish that can talk to NASA's Deep Space Network from as far as Mars.", 24]
     ]
   }
 }

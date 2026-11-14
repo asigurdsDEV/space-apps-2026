@@ -9,6 +9,11 @@ describe('cutscene timing', () => {
     }
   })
 
+  it('adds the two decision 007 walks and keeps them under 10 seconds', () => {
+    expect(CUTSCENE_SCENE_MS['enter-craft']).toBeLessThanOrEqual(10_000)
+    expect(CUTSCENE_SCENE_MS['return-control']).toBeLessThanOrEqual(10_000)
+  })
+
   it('holds the first frame under reduced motion and clamps a finished shot', () => {
     expect(shotProgress(0, 5000, false)).toBe(0)
     expect(shotProgress(2500, 5000, true)).toBe(0)

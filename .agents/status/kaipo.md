@@ -4,8 +4,8 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 **Human:** Kaipo
 **Agent:** Cursor
-**Branch:** kaipo-cursor/vercel-host
-**Last updated:** 2026-11-14 14:45
+**Branch:** main
+**Last updated:** 2026-11-14 15:32
 
 ## Working on right now
 
@@ -19,22 +19,24 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@kaipo
 
-**Branch:** kaipo-cursor/vercel-host
-**Last updated:** 2026-11-14 14:45
+**Branch:** main
+**Last updated:** 2026-11-14 15:32
 
 ### Working on right now
 
-Merging the Cloudflare TURN relay onto the latest UI and model overhaul, then pushing it.
-
 ### Files / folders I'm touching (hands off)
 
-- app/room.ts
-- api/ice.js
-- docs/MULTIPLAYER_TEST.md
-- vite.config.ts
-- vercel.json
-
 ### Just finished
+
+**Decision 008 and the live site:** PR #116 is on main. https://kimchispacemission.vercel.app was redeployed. `/api/ice` returned 200 with a TURN relay on port 443, and `visual-assets/world/part-rack.glb` is served. GitHub auto-deploy still waits on Aiden approving the Vercel app.
+
+**World props:** `public/visual-assets/world/` has part-rack, console-desk, launch-button, alarm-beacon, time-lever, and gauge-frame (about 22 kB). Floor is y=0. Placement stays with the hall and interior.
+
+**Multiplayer rehearsal:** players on different devices joined a room on https://kimchispacemission.vercel.app without a hotspot (2026-11-14). Fifth player, launch sync, guest leave, and host close pass in `app/coop.test.ts` (17/17). They were not repeated on separate devices.
+
+**Glossary (ui/learn/):** Deep Space Network now says a launch or landing can take the antenna. A reaction-wheel failure no longer always means coarse pointing. Added RTG, solar flux, and coverage, with sources in `ui/learn/README.md`.
+
+**Live WebRTC:** same-computer rooms `LL2KQG` and `V3XD2E` passed. The pre-TURN cross-network try `XFCY3M` timed out. A later different-device join on the Vercel site passed without a hotspot.
 
 **Public play:** https://kimchispacemission.vercel.app serves Host online and Join. `/api/ice` returns Cloudflare TURN, including `turns:turn.cloudflare.com:443`. The key stays in Vercel env, not in git. Four-player cap unchanged.
 
@@ -44,8 +46,8 @@ V3 flight training GLBs merged to main (PR #75): hurricane, wildfire, and tdrs-r
 
 ### Missing / I need from someone
 
-- Venue wifi + four physical devices for official Run A (local 4-tab smoke done). Hotspot Run B if wifi fails.
+- Aiden approves the Vercel GitHub app for this repo only. `vercel git connect` cannot see `asigurdsDEV/space-apps-2026` until that approval. Production and Preview already have the TURN env names.
 
 ### Heads up for other agents
 
-V3 is on `main` (PR #75). Preflight + Run A-local in `docs/MULTIPLAYER_TEST.md` (uncommitted until Kaipo asks to commit). Venue Run A/B still needed. GLB offline cache: claude@aiden (`pwa/`).
+World prop meshes are in `public/visual-assets/world/`. Cross-device multiplayer join passed on the Vercel site. Glossary provenance is in `ui/learn/README.md`.

@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Sarah
 **Agent:** Claude Code (claude@sarah)
 **Branch:**
-**Last updated:** 2026-11-14 22:20
+**Last updated:** 2026-11-15 00:10
 
 ## Working on right now
 
@@ -33,6 +33,10 @@ Nothing claimed.
 - `.agents/status/sarah.md`: only the `## claude@sarah` section
 
 ### Just finished
+PR #121 words for the walls (decision 007): walls.ts + tests, CAPCOM ≤ 90; option labels to claude@ethan; adoption note to claude@aiden.
+
+PR #112: HUD fly view + hero results (fly 307 → ~126 words), UX spec `docs/game-design/UX_DECLUTTER.md`, 5 declutter tasks to owners.
+
 Rubric pass PR #105: Falcon 9 TLI>TMI, 3U ≤ 4 kg, buses name computer/ADCS, build times + deadlines (behind_schedule live, all reference designs still win), Sandbox scenario, README game-first header. 467 tests.
 
 PR #100: submission, pitch, demo, NASA_SOURCES and app README now say real NASA storms drive play (PR #99 merged), demo shot = real G4 storm 7 Sep 2017 on First Light seed 1.

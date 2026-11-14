@@ -1,8 +1,18 @@
-# NASA Space Apps Challenge 2026 — Team Repo
+# GO / NO-GO: Space Mission Design Game
 
-Build started 9:00 AM Sat Nov 14, 2026. **New here? Copy your agent's prompt from [`docs/AGENT_SETUP.md`](docs/AGENT_SETUP.md).**
+**Play it now: https://asigurdsdev.github.io/space-apps-2026/** (browser only, works on a phone, solo or co-op for up to 4)
 
-Open source under the MIT License.
+NASA Space Apps Challenge 2026 · [Space Mission Design Game](https://www.spaceappschallenge.org/2026/challenges/space-mission-design-game/) · Team Kimchi Trenchers (Seattle) · MIT License
+
+You're the Flight Director. Pick a mission (map Earth from a CubeSat, chart the Moon, hunt for ice on Mars, or a no-limits Sandbox), read the requirements, then design the spacecraft: bus, instruments, power, battery, radio, orbit and rocket. Every choice moves live mass, power, budget, data, comms and schedule bars. Four flight-controller consoles must all call **GO** before launch. In flight you answer anomalies taken from real missions (Kepler, Galileo, Spirit, Opportunity, SOHO). The debrief explains why you won or lost, shows **the one change that would have fixed it** (the real sim rerun), and names **the real NASA mission yours resembles**.
+
+**Real NASA data in play.** Each mission replays a real stretch of **NASA SPDF OMNI** space weather (1996–2026). Solar storms hit on the days strong storms really happened, and the card names the date (for example, the G4 storm of 7 Sep 2017). Real missions and anomaly stories cite NASA/JPL/ESA/NOAA pages. Part catalogs are labelled team-made approximations. Details: [`docs/NASA_SOURCES.md`](docs/NASA_SOURCES.md). Accuracy check: [`docs/game-design/ACCURACY_AUDIT.md`](docs/game-design/ACCURACY_AUDIT.md). Design: [`docs/game-design/GAME_DESIGN.md`](docs/game-design/GAME_DESIGN.md).
+
+**Run locally:** `npm ci && npm run dev`. Tests: `npm test`.
+
+---
+
+*Below: how this repo was built. Six teammates each ran AI coding agents that coordinated through files in the repo.*
 
 ## What's here
 

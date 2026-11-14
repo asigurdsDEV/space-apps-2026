@@ -141,8 +141,9 @@ describe('init', () => {
   it('leaves the old optional features off when data/ has no column or key for them', () => {
     const m = init(calm(), fixtureDatasets).metrics
     expect(m.cruise_days).toBe(0)
-    expect(m.schedule_months).toBe(0)
-    expect(m.deadline_months).toBe(0)
+    // data/ now has build_months and First Light a deadline (brief: Time = development + lifetime).
+    expect(m.schedule_months).toBeGreaterThan(0)
+    expect(m.deadline_months).toBe(18)
     expect(m.ops_cost_usd).toBe(0)
     expect(m.ground_stations).toBe(1)
   })
@@ -244,6 +245,13 @@ describe('step: design phase', () => {
     expect(codes(uhf)).toEqual(expect.arrayContaining(['link_weak', 'downlink_short']))
     expect(uhf.metrics.link_factor).toBeCloseTo(4 / 9)
     expect(uhf.metrics.data_rate_bps).toBeCloseTo(9600 * (4 / 9))
+    // "Pick a radio with a longer range" only while the catalog has one.
+    const linkWeak = (s: SimState) => s.issues.find((issue) => issue.code === 'link_weak')?.message
+    expect(linkWeak(uhf)).toMatch(/Pick a radio with a longer range\.$/)
+    const onlyUhf = fixtureDatasets.map((d) =>
+      d.id === 'comms-systems' && d.kind === 'table' ? { ...d, data: { ...d.data, rows: d.data.rows.filter((row) => row[0] === 'uhf-radio') } } : d,
+    )
+    expect(linkWeak(init(calm({ comms: 'uhf-radio' }), onlyUhf))).toMatch(/No radio reaches further/)
 
     // The radiation detector is best in lunar orbit: 8 points become 4, so 10 + 4 < 30.
     const offOrbit = state({ instruments: 'camera-basic,radiation-detector' })
@@ -430,7 +438,7 @@ describe('step: flying the mission', () => {
     const report = summary(state)
     expect(report.grade).toBe('F')
     expect(String(report.why)).toMatch(/never reached the ground/)
-    expect(String(report.why)).toMatch(/Pick a faster radio/)
+    expect(String(report.why)).toMatch(/pick a faster radio/)
   })
 
   it('fades with the solar panels: 3% less output each year', () => {
@@ -697,6 +705,10 @@ describe('review findings', () => {
     expect(String(summary(failed).why)).not.toMatch(/radio|design check/)
     const flown = flyTo(calm({ battery: '' })).state
     expect(String(summary(flown).why)).toMatch(/Before launch the design check said: There is no battery/)
+    // Each warning is one sentence with its own lead-in, so no advice stands alone in the results list.
+    const two = String(summary(flyTo(calm({ battery: '', comms: 'uhf-radio' })).state).why)
+    expect(two.match(/Before launch the design check said: /g)?.length).toBeGreaterThan(1)
+    expect(two).not.toMatch(/[.!?] Pick /)
   })
 
   it('blocking messages name what would fix them', () => {

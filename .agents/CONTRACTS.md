@@ -1,6 +1,6 @@
 # Contracts
 
-**Stack:** TypeScript + Vite + React, static browser app on GitHub Pages. Online co-op (up to 4) is host-authoritative peer-to-peer over WebRTC (PeerJS), with no server of our own. See `.agents/decisions/002-stack.md`.
+**Stack:** TypeScript + Vite + React, static browser app on GitHub Pages and on Vercel (`kimchispacemission.vercel.app`). Online co-op (up to 4) is host-authoritative peer-to-peer over WebRTC (PeerJS). Vercel's only server route, `/api/ice`, mints short-lived Cloudflare TURN credentials; it does not run the sim, store a mission, or keep accounts. See `.agents/decisions/002-stack.md` and `.agents/decisions/008-vercel-turn.md`.
 
 The interfaces between parts of the simulator. Agents must not break these without a decision record.
 
@@ -203,6 +203,26 @@ Each command has one owning role. A player may send it if they hold that role, *
 - While a card waits, `step` does not advance time and emits nothing. `state.metrics.decision_id`, `decision_card` and `decision_console` say which card is waiting (empty strings when none).
 - Cards are drawn from their own seeded random stream, so the same seed and the same answers give the same mission, and turning cards on never changes the failure rolls.
 - The deck and its effects are in `sim/cards.ts`; wording and stories come from `docs/game-design/ANOMALY_CARDS.md`.
+
+## Interactables (decision 007: first-person 3D)
+
+A 3D place (`ui/hangar/` mission control, `ui/scene3d/interior/` the walk-in spacecraft) tells the first-person controller (`ui/fps/`) what can be walked into and what can be used. Plain data, rebuilt by the place whenever the game state changes.
+
+```ts
+interface Interactable {
+  id: string                       // unique in the place, e.g. 'rack:solar:deployable-large'
+  at: [number, number, number]     // world position (metres) the player looks at
+  reach?: number                   // metres; default 2.2
+  label: string                    // the prompt after "E · ", at most 4 words: 'Fit large solar wings'
+  role?: Role                      // owning role; the controller greys it out when canSend says no
+  disabled?: string                // why it can't be used right now, at most 6 words ('Over budget'); shown instead of the label
+  use: () => void                  // what E does: usually session.send(<existing Command>)
+}
+interface Obstacle { min: [number, number, number]; max: [number, number, number] } // boxes the player can't walk through
+```
+
+- `use` only sends Commands that already exist in this file. 3D never changes `SimState` directly.
+- The controller owns input (WASD, mouse look, E, touch), reach/aim testing and the one-line prompt. Places own models, gauges and what `use` does.
 
 ## Mission design mapping (Space Mission Design Game)
 

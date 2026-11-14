@@ -80,6 +80,11 @@ describe('runtime validators', () => {
     expect(isNetMessage({ type: 'state', payload: { state: unsetMetric, events: [] } })).toBe(true)
   })
 
+  it('lets an event type it does not know through, so a new sim event cannot stop co-op (CONTRACTS rule 7)', () => {
+    const added = { tick: 3, t_s: 3, type: 'eclipse_started', payload: { orbit: 'sso', depth: 0.4 } }
+    expect(isNetMessage({ type: 'state', payload: { state, events: [added] } })).toBe(true)
+  })
+
   it('refuses anything else without throwing', () => {
     const hostile = new Proxy({}, { get() { throw new Error('boom') } })
     const bad: unknown[] = [
@@ -109,7 +114,8 @@ describe('runtime validators', () => {
       { type: 'state', payload: { state: { ...state, entities: [{ id: 'sat' }] }, events: [] } },
       { type: 'state', payload: { state: { ...state, metrics: { mass_kg: null } }, events: [] } },
       { type: 'state', payload: { state, events: [{ tick: 0, t_s: 0, type: 'warning', payload: {} }] } },
-      { type: 'state', payload: { state, events: [{ tick: 0, t_s: 0, type: 'mystery', payload: {} }] } },
+      { type: 'state', payload: { state, events: [{ tick: 0, t_s: 0, type: 'mystery', payload: { nested: { deep: 1 } } }] } },
+      { type: 'state', payload: { state, events: [{ tick: 0, t_s: 0, type: 7, payload: {} }] } },
       { type: 'state', payload: { state } },
       { type: 'rejected', payload: { player_id: 'p2' } },
       { type: 'rejected', payload: { player_id: 'p2', reason: 'No.', command: { type: 'nope' } } },
