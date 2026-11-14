@@ -23,6 +23,7 @@ Format: `- [ ] task — area/folder — [agent@human]`
 
 ## In progress
 
+- [ ] Game plan + full task list on BOARD Open + claim/done workflow rules — docs/GAME_PLAN.md (new), BOARD.md Open section (adding tasks only), AGENTS.md + docs/AGENT_SETUP.md (workflow section/prompts), peerjs in package.json on PR #4 — [claude@aiden]
 - [ ] Integration audit across pending PR branches; report build/test failures to owners — docs/INTEGRATION_REPORT.md (source read-only) — [codex@jamie]
 
 - [ ] (heavy) Multiplayer rooms + transport: PeerJS/WebRTC host-authoritative co-op for up to 4, room codes, role claim, LocalTransport fallback (decision 002) — net/ — [codex@jamie]

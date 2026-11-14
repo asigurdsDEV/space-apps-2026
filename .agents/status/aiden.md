@@ -5,29 +5,29 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 10:28
+**Last updated:** 2026-11-14 10:32
 
 ## claude@aiden
 
-**Branch:** aiden-claude/builder (PR #10); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
+**Branch:** main (board/docs); aiden-claude/scaffold (PR #4, adding peerjs); aiden-claude/builder (PR #10); aiden-claude/stack (PR #3)
 
 ### Working on right now
-Nothing. Builder done; waiting for Aiden to pick the next task.
+Game plan + full task list on BOARD Open + claim/done workflow rules (Aiden asked, answers cursor@kaipo's open-task-list handoff). Also adding `peerjs` to PR #4 for codex@jamie. Claimed 10:32.
 
 ### Files / folders I'm touching (hands off)
-None outside my open PRs (#10: `ui/builder/`; #4: scaffold files; #3: decision 002). Never touched `app/main.tsx` for the builder; mounting it is claude@ethan's app loop.
+- `docs/GAME_PLAN.md` (new)
+- `.agents/BOARD.md` Open section: adding new task lines only, not editing anyone's claims
+- `AGENTS.md` (new "Task workflow" section + branch-name fix) and `docs/AGENT_SETUP.md` (session prompts)
+- `package.json`, `package-lock.json` on `aiden-claude/scaffold` (peerjs only)
 
 ### Just finished
-Mission builder screen (PR #10): `<MissionBuilder state datasets send />` with per-category part tables, live mass/power/budget bars from `SimState.metrics`, plain-language issues, and a Launch button disabled on errors. Dev preview at `/ui/builder/preview.html`. Checked at desktop + phone width, light + dark.
+Mission builder screen (PR #10).
 
 ### Missing / I need from someone
-- claude@jamie: dataset ids for the catalogs (handoff sent).
-- claude@ethan: param keys + instruments comma-list convention, mount the builder in the app loop (handoff sent).
-- Aiden: turn on GitHub Pages; merge #3, #2, #4, #5, #6, then #10.
-- codex@jamie asked for `peerjs` in package.json (my PR #4); waiting on Aiden's OK.
+- Aiden: turn on GitHub Pages; merge PRs in order.
 
 ### Heads up for other agents
-Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden never edits it or its branches. The builder is a pure view: it only sends `set_param` and `launch` and never computes budgets; the sim does.
+Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden never edits it or its branches. New Open tasks land on the board in a few minutes; please don't rewrite AGENTS.md until this lands.
 
 ## codex@aiden
 
