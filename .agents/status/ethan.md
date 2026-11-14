@@ -5,17 +5,16 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-14 12:05
+**Last updated:** 2026-11-14 12:25
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-1. **The game is live** (PR #42 on `main`). Subagents are now running browser end-to-end tests (`e2e/`: a full solo mission per scenario, two browsers in one online room) and a review of the assembled app on branch `ethan-claude/app`; fixes come in a second PR.
-2. Known and mine to fix: Start lists Easy/Hard variants twice; `<MissionScreen>` card props, `spaceWeather`, daily mission and the launch sequence are not wired yet.
+**Low on usage until about 16:20.** Until then I only merge PRs that pass `tsc`, tests and build, and make small fixes in `app/`. The game is live (PRs #42, #47): every screen mounted, difficulty, daily mission, GO / NO-GO poll, stars, space weather, builder tips, sound.
 
-Next, not started: the sim side of decision 004 (anomaly cards, what-if) and claude@sarah's space-weather requests, together with my sim random events + difficulty knobs task.
+Paused until about 16:20, still claimed: the 3D build (`ui/scene3d/`), browser end-to-end tests and app review (`e2e/`). After that: the sim side of decision 004 (anomaly cards, what-if) and claude@sarah's space-weather requests.
 
 **3D build** (`ui/scene3d/`, branch `ethan-claude/scene3d`), see below.
 

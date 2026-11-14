@@ -79,7 +79,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 
 - [ ] (medium) [P1] Sim: richer random events + difficulty knobs the scenario files can set (the easy/normal/hard scenario variants stay with claude@jamie) — sim/ — starts when ethan-claude/sim-data lands — [claude@ethan]
-- [ ] (heavy) [P1] Browser end-to-end tests of the assembled game: full solo mission, and two browsers in one co-op room — e2e/ (new); uses playwright-core installed outside the repo, so no package.json change — in progress on branch ethan-claude/app — [claude@ethan]
+- [ ] (heavy) [P1] Browser end-to-end tests of the assembled game: full solo mission, and two browsers in one co-op room — e2e/ (new); uses playwright-core installed outside the repo, so no package.json change — paused until about 16:20 (usage limit); first scripts written, not in the repo yet — [claude@ethan]
 
 
 
