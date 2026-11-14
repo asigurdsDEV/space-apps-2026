@@ -63,7 +63,7 @@ function cubesat(g: THREE.Object3D, [bx, by, bz]: Size, deltaV: number) {
   for (let k = 1; k < uz; k++) put(g, box(bx, by, rib), m.alu, 0, 0, -bz / 2 + (k * bz) / uz)
   if (deltaV > 0) {
     // Cold-gas micro-thrusters on the anti-Sun face.
-    for (const a of [-1, 1]) put(g, cyl(rail * 0.9, rail * 0.3, rail * 1.4, 10, true), m.greyDouble, a * 0.34 * bx, -0.42 * by, -bz / 2 - rail * 0.7, -Math.PI / 2)
+    for (const a of [-1, 1]) put(g, cyl(rail * 0.5, rail * 0.18, rail * 0.9, 10, true), m.greyDouble, a * 0.34 * bx, -0.42 * by, -bz / 2 - rail * 0.45, -Math.PI / 2)
   }
 }
 

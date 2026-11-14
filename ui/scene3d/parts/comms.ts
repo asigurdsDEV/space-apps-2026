@@ -85,7 +85,7 @@ function dish(g: THREE.Group, d: number, foot: number, o: DishStyle) {
   g.add(head)
   put(head, cyl(0.13 * d, 0.07 * d, hub, 16), m.aluDark, 0, hub / 2, 0)
   put(head, dishGeometry(R, f), o.grey ? m.greyDouble : m.whiteDouble, 0, hub, 0)
-  put(head, new THREE.TorusGeometry(R, 0.012 * d, 6, 40), m.alu, 0, hub + depth, 0, Math.PI / 2)
+  put(head, new THREE.TorusGeometry(R, (o.amps ? 0.018 : 0.012) * d, 6, 40), o.amps ? m.gold : m.alu, 0, hub + depth, 0, Math.PI / 2)
   // Stiffening ribs behind the reflector.
   // A straight rib under a curved dish: it follows the tangent at half radius, a quarter of the depth below the vertex.
   const rib = box(0.012 * d, 0.05 * d, R * 0.82).translate(0, -depth / 4 - 0.032 * d, R * 0.52)
