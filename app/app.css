@@ -248,6 +248,81 @@ h1.app-bar-title {
   padding: 0 var(--game-space-4) var(--game-space-8);
 }
 
+/* ---------- flight training (app/Training.tsx): the way in above the mission screen, then the training in its place */
+.app-training-entry {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--game-space-2) var(--game-space-3);
+  padding: var(--game-space-2) var(--game-space-4);
+  font-size: 0.875rem;
+}
+.app-training,
+.app-training-loading {
+  margin: 0;
+  padding: var(--game-space-3) var(--game-space-4) var(--game-space-6);
+}
+.app-training {
+  display: grid;
+  gap: var(--game-space-3);
+  justify-items: center;
+}
+.app-training-bar {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--game-space-2) var(--game-space-3);
+}
+.app-training-bar div {
+  flex: 1 1 12rem;
+}
+.app-training-bar h2,
+.app-training-bar p {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.app-training-bar p {
+  font-size: 0.875rem;
+}
+/* The HUD is laid over the scene, so the box is the scene's size. */
+.app-training-view {
+  position: relative;
+  width: 100%;
+}
+/* Keyboard: the scene takes the window and the pad (which only needs the focus) sits under it. */
+.app-training-scene {
+  height: clamp(360px, 100dvh - 8rem, 820px);
+}
+/* Touch: the pad has to be on screen with the scene, and V1's pad has no compact mode of its own. */
+@media (max-width: 600px), (pointer: coarse) {
+  .app-training-scene {
+    height: clamp(300px, 100dvh - 20rem, 760px);
+  }
+  /* V2's target panel sits just under the crosshair, which is where a chase camera shows the craft. A narrow
+     view has no room beside it, so there the panel goes above the crosshair. */
+  .app-training .fh-focus {
+    top: 30%;
+  }
+  .app-training .pi-root {
+    padding: var(--game-space-2);
+  }
+  .app-training .pi-heading,
+  .app-training .pi-help,
+  .app-training .pi-intent,
+  .app-training .pi-footer {
+    display: none;
+  }
+  .app-training .pi-buttons {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .app-training .pi-buttons button {
+    min-height: 52px;
+    padding: var(--game-space-1);
+    font-size: 0.7rem;
+  }
+}
+
 /* ---------- room closed */
 .app-closed {
   min-height: 100dvh;
