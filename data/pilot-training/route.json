@@ -1,0 +1,60 @@
+{
+  "id": "first-light-training",
+  "title": "Flight training: First Light",
+  "body": "earth",
+  "intro": "Training run. Fly to the storm and the fire, point an instrument at each, then send what you saw home through a relay satellite. Nothing here changes your mission score.",
+  "complete_text": "Training complete. You observed, stored and sent data, which is the same job every Earth-watching satellite does every day.",
+  "targets": [
+    {
+      "id": "hurricane",
+      "kind": "observe",
+      "label": "Hurricane",
+      "instruments": ["camera-basic", "multispectral-imager", "weather-imager"],
+      "hold_s": 3,
+      "requires": [],
+      "feedback": {
+        "approach": "Hurricane ahead. Point a camera at the eye and hold steady.",
+        "scanning": "Imaging the storm. Hold steady…",
+        "done": "Got it. Pictures show where the storm is and how big it is.",
+        "partial": "Observed, but you have no camera or imager on board. Next time, add one to see clouds and storms clearly.",
+        "blocked": ""
+      },
+      "fact": "NASA's MODIS cameras on Terra and Aqua see the whole Earth every 1 to 2 days, in 36 colors of light.",
+      "source_url": "https://www.earthdata.nasa.gov/data/instruments/modis"
+    },
+    {
+      "id": "wildfire",
+      "kind": "observe",
+      "label": "Wildfire",
+      "instruments": ["ir-spectrometer", "multispectral-imager"],
+      "hold_s": 3,
+      "requires": [],
+      "feedback": {
+        "approach": "Smoke below. Infrared sees the heat through it. Hold steady over the fire.",
+        "scanning": "Measuring heat. Hold steady…",
+        "done": "Hot spot found. Infrared shows the fire's edge even under smoke.",
+        "partial": "Observed, but only smoke shows up. An infrared spectrometer or multispectral imager would see the fire's heat.",
+        "blocked": ""
+      },
+      "fact": "NASA's FIRMS service sends satellite fire detections to firefighters worldwide within 3 hours of the satellite passing over.",
+      "source_url": "https://www.earthdata.nasa.gov/data/tools/firms"
+    },
+    {
+      "id": "tdrs-relay",
+      "kind": "relay",
+      "label": "TDRS relay satellite",
+      "instruments": [],
+      "hold_s": 2,
+      "requires": ["hurricane", "wildfire"],
+      "feedback": {
+        "approach": "Relay satellite in range. Point your antenna at it to send your data home.",
+        "scanning": "Sending data…",
+        "done": "Data sent. The relay passes it down to the ground, so scientists see it in minutes.",
+        "partial": "",
+        "blocked": "Nothing to send yet. Observe the hurricane and the wildfire first."
+      },
+      "fact": "NASA's TDRS relay satellites sit in geosynchronous orbit and relay data for more than 25 missions, including Hubble and the Space Station.",
+      "source_url": "https://www.nasa.gov/mission/tracking-and-data-relay-satellites/"
+    }
+  ]
+}
