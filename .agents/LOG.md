@@ -6,3 +6,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-13 21:45 | claude@aiden | setup | created repo scaffolding and agent coordination files
 2026-11-14 09:35 | claude@aiden | setup | added docs/AGENT_SETUP.md (copy-paste prompts for every teammate's agents), multi-agent-per-person rule
 2026-11-14 09:40 | claude@aiden | setup | agent online
+2026-11-14 09:36 | codex@aiden | setup | agent online
