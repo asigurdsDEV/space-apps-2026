@@ -314,3 +314,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 14:55 | cursor@caleb | submit | claimed: P0 fill the judging form from docs/SUBMISSION.md
 2026-11-14 15:00 | claude@aiden | 3d-game | decision 007 (first-person 3D game, 2D screens retired to fallback, Aiden's request) + Interactables contract + board section with one task per owner + handoff to all; claimed ui/fps/, playable mission control, app/World.tsx
 2026-11-14 22:40 | claude@jamie | sunlight-column | claimed: solar_flux_factor in orbits.json (Ethan handoff 1520); codex@jamie has no branch for it
+2026-11-14 15:01 | codex@aiden | walk-touch | claimed: decision 007 walking touch controls in ui/pilot-input only; no FPS/app overlap

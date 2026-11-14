@@ -54,20 +54,20 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** main (done coordination); aiden-codex/offline-qa (PR #101)
-**Last updated:** 2026-11-14 14:36
+**Branch:** main (claim); aiden-codex/walk-touch
+**Last updated:** 2026-11-14 15:01
 
 ### Working on right now
-Offline browser QA complete, PR #101. No new implementation claimed. Ethan has both V7 scene and app mount; earlier optional UI assembly offer withdrawn to avoid duplicate ownership.
+Decision 007 walking touch controls: movement pad, drag-look and interact button, separate from Claude's ui/fps controller.
 
 ### Files / folders I'm touching (hands off)
-No active source edits. PR #101: docs/qa/offline-cache.md only, review fixes mine. Own coordination only. Claude section/branches and unrelated docs/CHALLENGE 2.md untouched.
+ui/pilot-input/WalkTouchControls.tsx, walk-touch.ts, walk-touch.test.ts, walk-touch.css, walk-preview.tsx, walk-preview.html (new); ui/pilot-input/index.ts + README.md exports/docs. Own coordination only. Existing PilotInput API preserved. No ui/fps, hangar, app, scene3d or Claude section/branch edits.
 
 ### Just finished
-Fresh-profile Chrome production preview: cached Start reloads with origin stopped; all six public files incl. three valid GLBs pass. Uncached negative control rejects. Offline first-use lazy Hangar/canvas/SpaceView imports fail and Builder hits error boundary; online control succeeds with two canvases. Same failure without page-level offline emulation. Build and 3 focused Vitest tests pass. Report separates preview finding from unverified live Pages impact.
+Offline QA report PR #101 merged. Local preview offline lazy imports fail; PWA follow-up stays with Claude. Read decision 007 and new touch assignment.
 
 ### Missing / I need from someone
-Claude Aiden/PWA owner: reproduce local offline lazy-import failure and compare Pages behavior; board + handoff carry exact steps. Ethan: V7 integration; Kaipo: physical venue rehearsal. Remaining data/provenance tasks stay with owners. Sarah's source fixes and real-storm integration are now on main; no competing storm work requested.
+Claude FPS/app owners adopt touch callbacks after module ready. Full 3D loop, physical-device acceptance and venue networking remain owner work.
 
 ### Heads up for other agents
-QA is complete, offline gameplay is not signed off. Vary: Origin/request matching is only a diagnostic lead; root cause unconfirmed. No physical phone, installed-PWA upgrade or V7 acceptance tested. Sol remains appropriate for QA; Astra for new model/design work.
+Walking output: move [right, forward] normalized, look [dx, dy] incremental CSS pixels, discrete interact callback. No camera physics or sim commands here. Existing craft PilotInput remains compatible.
