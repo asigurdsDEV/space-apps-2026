@@ -135,7 +135,7 @@ export function createFps(element: HTMLElement, camera: PerspectiveCamera, optio
   addEventListener('pointerup', onPointerUp)
 
 
-  return {
+  const api: Fps = {
     update(rawDt) {
       if (!enabled) return false
       const dt = Math.min(rawDt, 0.1) // a stutter or a background tab must not spin the view or teleport the player
@@ -226,4 +226,7 @@ export function createFps(element: HTMLElement, camera: PerspectiveCamera, optio
       if (locked) document.exitPointerLock?.()
     },
   }
+  // Dev builds only: QA can read and move the player from the console (`__fps.where()`, `__fps.teleport([x, 0, z], yaw)`).
+  if (import.meta.env.DEV) Object.assign(window, { __fps: { ...api, get aimed() { return aimed }, where: () => ({ pos, yaw, pitch }) } })
+  return api
 }
