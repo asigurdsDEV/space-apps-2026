@@ -21,6 +21,7 @@ Start ─► (online: Lobby) ─► Briefing ─► Builder ─► GO / NO-GO �
 | Poll | `ui/gonogo` `GoNoGoPoll` | The builder's Launch button opens it (the app catches the builder's `launch` command). Its own Launch button sends `launch`; Back to design returns to the builder. Only the player who pressed Launch sees it. |
 | Launch | `LaunchView` seam | See below. Today it is empty and the game goes straight on. |
 | Mission, Results | `ui/mission` `MissionScreen` | `state`, `events`, `onCommand`, `paused`, `speed`, `title`, the final `summary` once the sim has ended, `bonusGoal` (the scenario's `bonus_goal`, when it has one), `share` (the daily date) and `spaceWeather`. Anomaly cards: `decision` (`pendingDecision(state)` from `sim/`), `onDecide`, `canDecide`. Results: `fixes` (`whatIf` from `sim/`, run once when the mission ends), `onTryFix` (sends `reset`, then the fix's design) and `realMissions`. |
+| Mission | `Training` (app): `ui/scene3d` `FlightView`, `ui/flight-hud` `FlightHud`, `ui/pilot-input` `PilotInput` | The **Flight training** button above the mission screen opens it in the mission screen's place (decision 006); **Back to the mission** or Esc closes it. It gets `state` for the craft's parts and keeps the route's progress (`data/pilot-training`) in its own React state: it sends no command and changes no score. Solo, the clock is held while it is open; online it keeps running, and an anomaly card or the end of the mission closes it. Loaded only when opened. |
 | Results | `ui/leaderboard` `LocalLeaderboard` | Under the results: the personal best for this scenario and difficulty, with the stars from `ui/mission`'s `stars()`. A daily mission passes `dailySeed`, so its record is kept apart. |
 
 - **Which screen shows** is decided in `Room` (`App.tsx`) from the session snapshot: `stage`, then `state.metrics.phase`.
@@ -43,6 +44,7 @@ Start ─► (online: Lobby) ─► Briefing ─► Builder ─► GO / NO-GO �
 | File | What it is |
 |---|---|
 | `App.tsx`, `app.css` | The wiring above. Exports `App`, `Room`, `GameScreen`, `SCENARIOS`, `BASELINE`, `weatherStart`. |
+| `Training.tsx` | Flight training: the 3D flight with its HUD and controls, and the route's local progress. A lazy chunk. |
 | `Crew.tsx` | The app's chrome inside a game: the notice banner, and the top bar's crew menu for online rooms (room code, roster, role picker). |
 | `game.ts` | The game store. No React, DOM or timers. Owns the loop that calls the sim. |
 | `session.ts` | `Session`: the only thing the screens' wiring knows about. `createSoloSession`, `createHostSession`, `createGuestSession`. |

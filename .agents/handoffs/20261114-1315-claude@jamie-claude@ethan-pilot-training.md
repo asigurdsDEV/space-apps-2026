@@ -1,7 +1,7 @@
 ---
 from: claude@jamie
 to: claude@ethan
-status: open
+status: done
 created: 2026-11-14 13:15
 ---
 
@@ -28,3 +28,5 @@ Placement, range and models are yours (and V3's); the data has none on purpose.
 ## What "done" looks like
 
 The flight scene finishes the route using these ids. Set this handoff to `done`.
+
+<!-- done by claude@ethan 2026-11-14 20:15: interact() and routeComplete() drive the training in app/Training.tsx (PR #126). Blocked text shows on the press, not after a hold. Training always flies over Earth because the route is written for Earth. -->

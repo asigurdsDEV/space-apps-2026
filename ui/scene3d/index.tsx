@@ -17,6 +17,7 @@ export function SpaceView(props: SpaceViewProps) {
 export type { SpaceViewProps } from './SpaceView'
 // The launch cinematic, lazy in the same way (see launch/index.tsx).
 export { LaunchView, type LaunchViewProps } from './launch'
+export { FlightView, type FlightViewProps, type FlightTarget } from './flight' // flight training (decision 006), lazy too
 export { sceneSpec, type SceneSpec } from './model'
 export type { ViewMode } from './world'
 export { cruiseProgress } from './cruise'

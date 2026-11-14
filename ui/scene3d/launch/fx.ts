@@ -1,6 +1,7 @@
 // Shader effects for the launch: dawn sky, ground, cloud deck, engine plumes and smoke puffs.
 // Everything is procedural (no texture files). Colors are linear; OutputPass tone-maps.
 import * as THREE from 'three'
+import type { Nozzle } from './stack'
 import type { Propellant } from './vehicles'
 
 const NOISE2 = /* glsl */ `
@@ -183,12 +184,17 @@ void main() {
 
 // ---------------------------------------------------------------- Plumes
 
-const PLUME_COLORS: Record<Propellant, { core: [number, number, number]; edge: [number, number, number]; diamonds: number; length: number }> = {
-  kerolox: { core: [3.2, 2.0, 0.9], edge: [1.8, 0.55, 0.1], diamonds: 0.5, length: 1 },
-  methalox: { core: [2.2, 2.0, 3.0], edge: [0.9, 0.5, 1.5], diamonds: 1, length: 0.9 },
-  hydrolox: { core: [1.5, 1.9, 2.8], edge: [0.3, 0.45, 1.0], diamonds: 1, length: 0.7 },
-  solid: { core: [3.6, 2.5, 1.2], edge: [2.4, 1.0, 0.25], diamonds: 0, length: 1.25 },
+// `body`: how solid the flame looks. Kerosene and solid motors burn sooty and opaque; hydrogen and methane flames are
+// thin enough to see the shock diamonds through. `smoke`: how much of a trail is left behind.
+const PLUME_COLORS: Record<Propellant, { core: [number, number, number]; edge: [number, number, number]; diamonds: number; length: number; body: number; smoke: number }> = {
+  kerolox: { core: [3.2, 2.0, 0.9], edge: [1.8, 0.55, 0.1], diamonds: 0.6, length: 1, body: 0.9, smoke: 0.6 },
+  methalox: { core: [2.2, 2.0, 3.0], edge: [0.9, 0.5, 1.5], diamonds: 1, length: 0.9, body: 0.5, smoke: 0.35 },
+  hydrolox: { core: [1.5, 1.9, 2.8], edge: [0.3, 0.45, 1.0], diamonds: 1, length: 0.7, body: 0.35, smoke: 0.22 },
+  solid: { core: [4.6, 3.2, 1.5], edge: [2.6, 1.1, 0.25], diamonds: 0, length: 1.3, body: 1.2, smoke: 1 },
 }
+
+export const smokiness = (p: Propellant) => PLUME_COLORS[p].smoke
+export const flameColor = (p: Propellant) => PLUME_COLORS[p].core
 
 export interface Plume {
   mesh: THREE.Mesh
@@ -199,11 +205,14 @@ export interface Plume {
 
 let plumeGeometry: THREE.BufferGeometry | null = null
 
-/** A flame hanging down -y from its origin: `radius` at the nozzle, about `length` long at sea level. */
-export function makePlume(propellant: Propellant, radius: number, length: number, seed = 0): Plume {
+/**
+ * The flame of a stage, hanging down -y from its origin: one wide soft flame for the whole cluster, about `length`
+ * long at sea level, and inside it a narrow bright jet with shock diamonds for every engine.
+ */
+export function makePlume(nozzle: Nozzle, length: number, seed = 0): Plume {
   // One shared open cone, 1 long and 1 wide; the vertex shader shapes it.
-  plumeGeometry ??= new THREE.CylinderGeometry(1, 1, 1, 28, 24, true).translate(0, -0.5, 0)
-  const look = PLUME_COLORS[propellant]
+  plumeGeometry ??= new THREE.CylinderGeometry(1, 1, 1, 20, 14, true).translate(0, -0.5, 0)
+  const look = PLUME_COLORS[nozzle.propellant]
   const uniforms = {
     uPower: { value: 0 },
     uVacuum: { value: 0 },
@@ -212,24 +221,31 @@ export function makePlume(propellant: Propellant, radius: number, length: number
     uCore: { value: new THREE.Vector3(...look.core) },
     uEdge: { value: new THREE.Vector3(...look.edge) },
     uDiamonds: { value: look.diamonds },
+    uBody: { value: look.body },
+    uSolid: { value: nozzle.propellant === 'solid' ? 1 : 0 },
   }
-  const mesh = new THREE.Mesh(
+  const mesh = new THREE.InstancedMesh(
     plumeGeometry,
     new THREE.ShaderMaterial({
       uniforms,
       vertexShader: /* glsl */ `
 uniform float uVacuum;
 varying float vAlong;
+varying float vJet;
 varying vec3 vN;
 varying vec3 vView;
 void main() {
   vAlong = -position.y;
+  // Instance 0 is the cluster's flame; the others are single engines' jets.
+  vJet = gl_InstanceID > 0 ? 1.0 : 0.0;
   vec3 p = position;
   // Sea level: a long narrow flame. Thin air: the exhaust balloons out into a wide, short bell.
-  float w = mix(1.0 + 0.9 * sqrt(vAlong) - 1.2 * vAlong * vAlong, 1.0 + 6.0 * pow(vAlong, 0.6), uVacuum);
+  float w = mix(1.0 + mix(0.9, 0.25, vJet) * sqrt(vAlong) - 1.2 * vAlong * vAlong, 1.0 + 6.0 * pow(vAlong, 0.6), uVacuum);
   p.xz *= max(w, 0.05);
-  vec4 mv = modelViewMatrix * vec4(p, 1.0);
-  vN = normalize(normalMatrix * vec3(normal.x, 0.25, normal.z));
+  vec4 mv = modelViewMatrix * instanceMatrix * vec4(p, 1.0);
+  // The instance is stretched along the flame, so its normals lean the other way.
+  vec3 stretch = vec3(length(instanceMatrix[0].xyz), length(instanceMatrix[1].xyz), length(instanceMatrix[2].xyz));
+  vN = normalize(normalMatrix * (vec3(normal.x, 0.25, normal.z) / stretch));
   vView = normalize(-mv.xyz);
   gl_Position = projectionMatrix * mv;
 }
@@ -242,17 +258,25 @@ uniform float uSeed;
 uniform vec3 uCore;
 uniform vec3 uEdge;
 uniform float uDiamonds;
+uniform float uBody;
+uniform float uSolid;
 varying float vAlong;
+varying float vJet;
 varying vec3 vN;
 varying vec3 vView;
 ${NOISE2}
 void main() {
   float facing = abs(dot(normalize(vN), normalize(vView)));
-  float flick = 0.75 + 0.5 * noise2(vec2(vAlong * 7.0 - uTime * 11.0, uSeed * 13.0 + facing * 2.0));
+  // Solid motors burn rough: their flame boils. Liquid engines only shimmer.
+  float flick = mix(0.75 + 0.5 * noise2(vec2(vAlong * 7.0 - uTime * 11.0, uSeed * 13.0 + facing * 2.0)),
+                    0.45 + 1.1 * noise2(vec2(vAlong * 16.0 - uTime * 17.0, uSeed * 13.0 + facing * 5.0)), uSolid);
   float fade = pow(1.0 - vAlong, mix(1.4, 2.6, uVacuum)) * smoothstep(0.0, 0.02, vAlong);
-  float diamonds = 1.0 + uDiamonds * (1.0 - uVacuum) * 0.9 * pow(max(sin(vAlong * 44.0 - 0.6), 0.0), 3.0) * (1.0 - smoothstep(0.05, 0.5, vAlong));
-  vec3 col = mix(uEdge, uCore, pow(facing, 2.5) * (1.0 - 0.75 * vAlong));
-  float a = pow(facing, 1.3) * fade * flick * diamonds * uPower * mix(1.0, 0.22, uVacuum);
+  // Shock diamonds: bright knots where the air squeezes the jet. They fade out as the air thins.
+  float knots = pow(max(sin(vAlong * 50.0 - 0.6), 0.0), 3.0) * (1.0 - smoothstep(0.1, 0.75, vAlong)) * uDiamonds * (1.0 - uVacuum);
+  vec3 col = mix(uEdge, uCore, max(pow(facing, 2.5) * (1.0 - 0.75 * vAlong), vJet * (0.85 - 0.5 * vAlong)));
+  float a = pow(facing, mix(1.3, 2.0, vJet)) * fade * flick * uPower * mix(1.0, 0.22, uVacuum);
+  // The cluster's flame is as solid as the propellant burns; a jet is faint between its knots. In thin air the jets merge into the one wide plume.
+  a *= mix(uBody * (1.0 + 0.5 * knots), (0.3 + 0.3 * uBody + 2.4 * knots) * (1.0 - 0.8 * uVacuum), vJet);
   gl_FragColor = vec4(col * a, 1.0);
 }
 `,
@@ -261,13 +285,17 @@ void main() {
       depthWrite: false,
       side: THREE.DoubleSide,
     }),
+    1 + nozzle.engines.length,
   )
-  mesh.scale.set(radius, length * look.length, radius)
+  const m = new THREE.Matrix4()
+  mesh.setMatrixAt(0, m.makeScale(nozzle.radius, length * look.length, nozzle.radius))
+  const jet = Math.min(length * look.length * 0.6, nozzle.exit * 22)
+  nozzle.engines.forEach(([x, z], i) => mesh.setMatrixAt(i + 1, m.makeScale(nozzle.exit * 0.8, jet, nozzle.exit * 0.8).setPosition(x, 0, z)))
   mesh.frustumCulled = false
   mesh.visible = false
   return {
     mesh,
-    propellant,
+    propellant: nozzle.propellant,
     set(power, vacuum, time) {
       mesh.visible = power > 0.001
       uniforms.uPower.value = power

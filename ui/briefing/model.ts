@@ -38,11 +38,10 @@ export function briefingFacts(config: Pick<Config, 'params' | 'duration_s'>): Fa
 }
 
 export const HOW_TO_WIN: string[] = [
-  'Reach the science goal before the mission ends. Science only counts once its data is sent home, so a great camera with a slow radio still loses.',
-  'Stay inside the budget. The rocket is often the biggest bill.',
-  'Make it fit: everything has to fit on your spacecraft bus, and the whole spacecraft has to fit on a rocket that can reach your orbit.',
-  'Keep the power on: your power source has to cover everything, even while the spacecraft is in Earth’s shadow.',
-  'You can’t launch while any problem says “Blocks launch”. Fix it, then launch and watch your mission fly.',
+  '📡 Science only counts once data gets home',
+  '💰 Stay in budget. The rocket costs most',
+  '🔋 Keep power on, even in the shadow',
+  '🚦 Fix every NO-GO, then launch',
 ]
 
 /** Glossary ids (ui/learn, cursor@kaipo) shown under "Words you'll see". The definitions live in the glossary only. */

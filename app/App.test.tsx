@@ -125,6 +125,28 @@ describe('game screen', () => {
     expect(results).not.toContain('Save, share and compare designs')
   })
 
+  it('offers flight training while the mission flies, and only then', () => {
+    const { game, session } = soloSession()
+    const button = /<button[^>]*>Flight training<\/button>/
+    expect(screen(session)).not.toMatch(button) // the builder
+    for (const command of designCommands) session.send(command)
+    session.send({ type: 'launch', payload: {} })
+    expect(screen(session)).not.toMatch(button) // the launch
+    session.send({ type: 'set_speed', payload: { multiplier: 60 } })
+    for (let i = 0; i < 100 && session.getSnapshot().state.t_s <= 86400; i++) game.advance(1000)
+    const flying = screen(session)
+    expect(flying).toMatch(button)
+    expect(flying).toContain('the mission waits for you') // solo: the clock is held while it is open
+    // Online the clock is the whole crew's, so it keeps running.
+    const online = renderToStaticMarkup(<GameScreen session={session} config={config} onExit={() => {}} roomCode="ABC234" />)
+    expect(online).toMatch(button)
+    expect(online).toContain('the mission keeps running')
+    // Closed until the player opens it: none of the training is on the mission screen.
+    expect(flying).not.toContain('app-training-view')
+    for (let i = 0; i < 100; i++) game.advance(1000)
+    expect(screen(session)).not.toMatch(button) // the results
+  })
+
   it('replays real space weather from a day the seed picks, inside the data for a three-year mission', () => {
     expect(weatherStart(config, 1)).toBe(weatherStart(config, 1))
     expect(weatherStart(config, 1)).not.toBe(weatherStart(config, 2))

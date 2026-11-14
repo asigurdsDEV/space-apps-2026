@@ -4,17 +4,17 @@
 // with the rocket at the origin and the planet turning underneath. The cuts hide the switch.
 // The climb is an illustration: the sim only decides whether the launch works.
 import * as THREE from 'three'
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js'
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js'
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js'
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { buildCraft, disposeObject } from '../craft'
+import { planetMaps } from '../maps'
 import type { CraftSpec } from '../model'
 import { cloudShader, planetShader } from '../shaders'
 import { altitudeM, downrangeM, pitchRad, vacuum } from './flight'
-import { makeCloudDeck, makeGlow, makeGround, makePlume, makePuffs, makeSky, makeSpaceSky, makeStars, type Plume } from './fx'
-import { buildRocket } from './rocket'
+import { flameColor, makeCloudDeck, makeGlow, makeGround, makePlume, makePuffs, makeSky, makeSpaceSky, makeStars, smokiness, type Plume } from './fx'
+import { buildRocket, type Nozzle } from './rocket'
 import { buildCarrier, buildPad } from './site'
 import { EVENT_AT, missionTime, stageAt, stageProgress, type LaunchTimeline, type StageId } from './timeline'
 import type { RocketSpec } from './vehicles'
@@ -43,7 +43,7 @@ export interface LaunchScene {
 
 const EARTH_R = 6_371_000
 const SPACE = new Set<StageId>(['boosters', 'staging', 'fairing', 'burn', 'deploy'])
-const SUN_GROUND = new THREE.Vector3(0.82, 0.16, 0.3).normalize()
+const SUN_GROUND = new THREE.Vector3(0.8, 0.32, 0.36).normalize()
 const SUN_SPACE = new THREE.Vector3(0.45, 0.6, 0.66).normalize()
 const CARRIER_MS = 240
 
@@ -60,17 +60,25 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' })
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, coarse ? 1.5 : 2))
   renderer.toneMapping = THREE.ACESFilmicToneMapping
+  // Phones and still frames go without: the shadow pass draws the rocket and the pad a second time.
+  const shadows = !coarse && !options.reducedMotion
+  renderer.shadowMap.enabled = shadows
   renderer.domElement.style.cssText = 'display:block;width:100%;height:100%'
   container.appendChild(renderer.domElement)
 
   const scene = new THREE.Scene()
   scene.background = new THREE.Color(0x000002)
-  const pmrem = new THREE.PMREMGenerator(renderer)
-  const environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
-  scene.environment = environment
   const camera = new THREE.PerspectiveCamera(36, 1, 0.5, 4_000_000)
 
+  // The Sun is the one light that casts shadows; its shadow box follows the rocket.
   const sunLight = new THREE.DirectionalLight(0xffffff, 2)
+  sunLight.castShadow = shadows
+  sunLight.shadow.mapSize.setScalar(2048)
+  sunLight.shadow.bias = -0.0004
+  sunLight.shadow.normalBias = 0.06
+  sunLight.shadow.camera.near = 100
+  sunLight.shadow.camera.far = 2600
+  const shade = (o: THREE.Object3D) => o.traverse((m) => { if (m instanceof THREE.Mesh) m.castShadow = m.receiveShadow = true })
   const hemi = new THREE.HemisphereLight(0x8fa8de, 0x54483c, 1)
   // The flame lights the pad, the tower and the rocket's own tail.
   const flame = new THREE.PointLight(0xff8a3c, 0, 0, 0)
@@ -83,6 +91,7 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
   // Not to scale: the spacecraft is drawn to fill the fairing so it can be seen.
   model.payload.scale.setScalar(model.payloadRadius)
   model.payload.add(buildCraft(options.craft))
+  shade(model.root)
   scene.add(model.root)
   const payloadHome = model.payload.position.y
   const upperHome = model.upper.position.y
@@ -92,20 +101,21 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
   const upperLen = spec.s2.length + spec.fairing.length
 
   const plumes: { plume: Plume; glow: THREE.Sprite; of: 's1' | 's2' | 'booster' }[] = []
-  const addPlume = (parent: THREE.Object3D, of: 's1' | 's2' | 'booster', y: number, radius: number, length: number, propellant: Plume['propellant'], seed: number) => {
-    const plume = makePlume(propellant, radius, length, seed)
-    const glow = makeGlow(propellant, radius)
-    plume.mesh.position.y = y
-    glow.position.y = y - radius
+  const addPlume = (parent: THREE.Object3D, of: 's1' | 's2' | 'booster', nozzle: Nozzle, length: number, seed: number) => {
+    const plume = makePlume(nozzle, length, seed)
+    const glow = makeGlow(nozzle.propellant, nozzle.radius)
+    plume.mesh.position.y = nozzle.y
+    glow.position.y = nozzle.y - nozzle.radius
     parent.add(plume.mesh, glow)
     plumes.push({ plume, glow, of })
+    model.heat[of].emissive.setRGB(...flameColor(nozzle.propellant))
   }
   const n1 = model.nozzles.s1
-  addPlume(model.stage1, 's1', n1.y, n1.radius, H * 0.85, n1.propellant, 1)
+  addPlume(model.stage1, 's1', n1, H * 0.85, 1)
   const n2 = model.nozzles.s2
-  addPlume(model.upper, 's2', n2.y, n2.radius, upperLen * 0.9, n2.propellant, 2)
+  addPlume(model.upper, 's2', n2, upperLen * 0.9, 2)
   const nb = model.nozzles.booster
-  if (nb) model.boosters.forEach((b, i) => addPlume(b.group, 'booster', nb.y, nb.radius, H * 0.95, nb.propellant, 3 + i))
+  if (nb) model.boosters.forEach((b, i) => addPlume(b.group, 'booster', nb, H * 0.95, 3 + i))
 
   // ---- Low shots: dawn sky, ground, clouds, and the pad or the carrier aircraft.
   const skyU = { uSun: { value: SUN_GROUND.clone() }, uSpace: { value: 0 }, uTime: { value: 0 } }
@@ -116,8 +126,21 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
   const carrier = air ? buildCarrier(spec.s1.radius) : null
   const standoff = pad?.standoff ?? 0
   low.add(skyDome, makeGround(skyU, Math.max(30, H * 0.9)), makeCloudDeck(skyU, 3_600))
-  if (pad) low.add(pad.group)
-  if (carrier) low.add(carrier)
+  if (pad) {
+    shade(pad.group)
+    low.add(pad.group)
+    if (shadows) {
+      // The ground is a shader of its own and takes no light, so the shadows fall on a sheet laid over the apron.
+      const sheet = new THREE.Mesh(new THREE.CircleGeometry(H * 9, 48).rotateX(-Math.PI / 2), new THREE.ShadowMaterial({ opacity: 0.5, depthWrite: false }))
+      sheet.position.y = 0.06
+      sheet.receiveShadow = true
+      low.add(sheet)
+    }
+  }
+  if (carrier) {
+    shade(carrier)
+    low.add(carrier)
+  }
   scene.add(low)
 
   // ---- High shots: the planet's limb, a thin line of air, stars.
@@ -129,9 +152,11 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
   stars.renderOrder = -9
   stars.frustumCulled = false
   const backdrop = { depthTest: false, depthWrite: false }
+  // Real NASA maps (../maps/README.md); the planet is procedural until they have loaded.
+  const maps = planetMaps(renderer.capabilities.getMaxAnisotropy())
   const planet = new THREE.Mesh(
     new THREE.SphereGeometry(EARTH_R, 192, 96),
-    new THREE.ShaderMaterial({ ...planetShader, uniforms: { uSun: spaceU.uSun, uBody: { value: 0 } }, ...backdrop }),
+    new THREE.ShaderMaterial({ ...planetShader, uniforms: { uSun: spaceU.uSun, uBody: { value: 0 }, ...maps.maps.earth }, ...backdrop }),
   )
   const clouds = new THREE.Mesh(
     new THREE.SphereGeometry(EARTH_R + 9_000, 192, 96),
@@ -145,17 +170,39 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
   globe.add(planet, clouds)
   high.add(spaceSky, stars, globe)
   scene.add(high)
-  // Which part of the Earth is below: picked for a mix of sea, coast and cloud.
-  const globeStart = new THREE.Quaternion().setFromEuler(new THREE.Euler(0.55, 2.2, 0))
+  // Which part of the Earth is below: lift-off from Cape Canaveral (28.5 N, 80.6 W), flying north-east up the coast,
+  // so the camera on the seaward side looks back at the land. Every vehicle gets this one ground track.
+  // On the map a point is (cos lat cos lon, sin lat, -cos lat sin lon); the scene has +y up and +x downrange.
+  const lat = 28.5 * (Math.PI / 180)
+  const lon = -80.6 * (Math.PI / 180)
+  const up = new THREE.Vector3(Math.cos(lat) * Math.cos(lon), Math.sin(lat), -Math.cos(lat) * Math.sin(lon))
+  const east = new THREE.Vector3(-Math.sin(lon), 0, -Math.cos(lon))
+  const heading = up.clone().cross(east).add(east).normalize()
+  const globeStart = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(heading, up, heading.clone().cross(up))).invert()
   const spin = new THREE.Quaternion()
   const Z = new THREE.Vector3(0, 0, 1)
 
-  const puffs = makePuffs(320)
+  // What bare metal mirrors: the dawn sky over dark ground on the way up, a black sky over the bright Earth in space.
+  const pmrem = new THREE.PMREMGenerator(renderer)
+  const mirrored = (dome: THREE.Mesh, below: number) => {
+    const world = new THREE.Scene()
+    dome.scale.setScalar(50)
+    world.add(dome, new THREE.Mesh(new THREE.CircleGeometry(50, 24).rotateX(-Math.PI / 2).translate(0, -0.5, 0), new THREE.MeshBasicMaterial({ color: below })))
+    const map = pmrem.fromScene(world, 0.03, 0.1, 100).texture
+    disposeObject(world)
+    return map
+  }
+  const envLow = mirrored(makeSky(skyU), 0x2c2a22)
+  spaceU.uAltitude.value = 150_000
+  const envHigh = mirrored(makeSpaceSky(spaceU, EARTH_R), 0x3d6aa8)
+
+  const puffs = makePuffs(360)
   scene.add(puffs.mesh)
 
   const composer = new EffectComposer(renderer)
   composer.addPass(new RenderPass(scene, camera))
-  composer.addPass(new UnrealBloomPass(new THREE.Vector2(256, 256), 0.45, 0.5, 1.0))
+  // The threshold sits above sunlit white paint, so only flames, hot throats and the Sun bloom.
+  composer.addPass(new UnrealBloomPass(new THREE.Vector2(256, 256), 0.45, 0.5, 1.5))
   composer.addPass(new OutputPass())
 
   // ---- Timeline bookkeeping: when each event happens on screen, and when its shot ends.
@@ -258,7 +305,8 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
       half.visible = !over('fairing')
       const open = Math.max(sF, 0)
       half.position.set(dir * spec.fairing.radius * (0.5 * open + 1.6 * open * open), fairingHome - spec.fairing.length * 0.35 * open * open, 0)
-      half.rotation.z = -dir * Math.min(open * 0.8, 1.3)
+      // Each half swings out, then tumbles as it falls behind.
+      half.rotation.set(dir * 0.5 * open * open, 0.35 * open * open, -dir * Math.min(open * 0.8, 1.3))
     })
     if (model.escape) {
       // The abort tower's own motor pulls it straight off the nose.
@@ -302,6 +350,7 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
       glow.visible = power > 0.01
       // Many strap-ons side by side: their glows add up, so each gets a share.
       glow.material.opacity = power * (of === 's2' ? 0.5 : of === 'booster' ? Math.min(1, 2 / model.boosters.length) : 1)
+      model.heat[of].emissiveIntensity = power * 1.6
     }
     const thrust = Math.max(p1, pBoost)
     onAxis(-0.08, flame.position)
@@ -314,16 +363,18 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
       sunLight.intensity = 3
       hemi.color.set(0x0c1424)
       hemi.groundColor.set(0x6d90d0)
-      hemi.intensity = 0.7
-      scene.environmentIntensity = 0.25
+      hemi.intensity = 0.4
+      scene.environment = envHigh
+      scene.environmentIntensity = 0.8
     } else {
       // Dawn: a low warm Sun, blue sky light; whiter and harder as the rocket climbs out of the haze.
       sunLight.color.set(0xffc9a0).lerp(tmpColor.set(0xfff4e6), thin)
-      sunLight.intensity = 2.1
+      sunLight.intensity = 3.1
       hemi.color.set(0x8fa8de)
       hemi.groundColor.set(0x54483c)
-      hemi.intensity = 1
-      scene.environmentIntensity = 0.45
+      hemi.intensity = 0.35
+      scene.environment = envLow
+      scene.environmentIntensity = 0.6
     }
 
     // ---- Camera.
@@ -455,6 +506,14 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
     // ---- Backdrop.
     sunLight.position.copy(target).addScaledVector(sun, 1000)
     sunLight.target.position.copy(target)
+    // The shadow box is as tight as the vehicle allows: the whole stack at first, the upper stage once it flies alone.
+    const reach = (over('staging') ? upperLen : H) * 0.8
+    const box = sunLight.shadow.camera
+    if (box.right !== reach) {
+      box.left = box.bottom = -reach
+      box.right = box.top = reach
+      box.updateProjectionMatrix()
+    }
     if (space) {
       spaceU.uAltitude.value = altitude + eye.y
       spaceSky.position.copy(eye)
@@ -479,7 +538,39 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
 
     // ---- Smoke.
     puffs.begin()
+    const R = spec.s1.radius
     if (!space) {
+      if (pad && met < 0.5) {
+        // Boil-off: cold oxygen vapour drifts from the vents of both stages until the tanks are sealed for flight.
+        for (let i = 0; i < 16; i++) {
+          const age = (t * 0.25 + hash(i + 3)) % 1
+          onAxis(i % 2 ? (spec.s1.length * 0.96) / H : (spec.s1.length + spec.interstage.length + spec.s2.length * 0.9) / H, p3)
+          puffs.add(p3.x + R + age * W * 3, p3.y - age * age * W * 1.2, p3.z - age * W * (0.4 + hash(i)), W * (0.3 + 1.5 * age), 0.2 * (1 - age) * Math.min(age * 8, 1), 0, hash(i + 0.4))
+        }
+      }
+      if (pad && met > 0 && met < 14) {
+        // Frost that built up on the cold tanks shakes loose and showers down as the rocket climbs away.
+        for (let i = 0; i < 48; i++) {
+          const born = hash(i + 7) * 7
+          const age = met - born
+          if (age <= 0 || age > 4) continue
+          basePos(born, p3)
+          const a = hash(i + 0.3) * Math.PI * 2
+          const out = R * (1.1 + 0.5 * age)
+          const y = p3.y + (0.3 + 0.55 * hash(i + 0.6)) * spec.s1.length - 4.9 * age * age
+          if (y > 0.5) puffs.add(p3.x + Math.cos(a) * out, y, p3.z + Math.sin(a) * out, W * (0.08 + 0.14 * hash(i + 0.9)), 0.9 * clamp01(1 - age / 4), 0, hash(i))
+        }
+      }
+      if (id === 'maxq') {
+        // Near the speed of sound the air squeezed over the nose turns to fog: a skirt of cloud that flickers on and off.
+        const fog = smooth(0.05, 0.25, p) * (1 - smooth(0.4, 0.6, p))
+        for (let i = 0; i < 18; i++) {
+          const a = (i / 18) * Math.PI * 2
+          const r = spec.fairing.radius * 1.5
+          onAxis(1 - (spec.fairing.length * (0.8 + 0.3 * hash(i))) / H, p3)
+          puffs.add(p3.x + Math.cos(a) * r * axis.y, p3.y - Math.cos(a) * r * axis.x, p3.z + Math.sin(a) * r, spec.fairing.radius * 1.7, 0.13 * fog * (0.5 + 0.5 * hash(i + Math.floor(t * 12))), 0, hash(i + 0.2))
+        }
+      }
       const ignition = shotStart.get('ignition')
       if (pad && ignition !== undefined) {
         // Pad smoke: the flame trench throws it out both sides, then it billows and drifts.
@@ -499,6 +590,8 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
         // Exhaust trail: puffs left at fixed spots along the path, growing as they age.
         const from = air ? 5 : 0.3
         const gap = W * 1.6
+        // Solid motors lay a thick white trail; hydrogen engines leave little more than steam.
+        const trail = Math.max(smokiness(n1.propellant), nb && sB <= 0 ? smokiness(nb.propellant) : 0)
         const head = id === 'failure' ? Math.min(met, missionTime(timeline, stage.start + 0.16 * (stage.end - stage.start))) : met
         if (head > from) {
           const s0 = pathS(head) - H * 0.55
@@ -513,7 +606,7 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
             const size = W * (3 + 4.5 * Math.sqrt(age)) * (0.8 + 0.4 * hash(first - j))
             p3.x += (hash(first - j + 0.3) - 0.5) * size * 0.5
             p3.z += (hash(first - j + 0.6) - 0.5) * size * 0.5
-            puffs.add(p3.x, p3.y, p3.z, size, 0.6 * Math.min(1, j / 3 + 0.2) * (1 - j / 70) * lerp(1, 0.55, thin), Math.exp(-age * 5) * 0.6, hash(first - j + 0.9))
+            puffs.add(p3.x, p3.y, p3.z, size, trail * Math.min(1, j / 3 + 0.2) * (1 - j / 70) * lerp(1, 0.55, thin), Math.exp(-age * 5) * 0.6, hash(first - j + 0.9))
           }
         }
       }
@@ -551,6 +644,13 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
   const tmpColor = new THREE.Color()
 
   // ---- Clock.
+  // The real map arrives a moment after the first frame: a frozen scene draws again once it has.
+  // Checked in a frame callback: drawing from a timer hangs headless Chrome when it runs on virtual time.
+  let waits = 0
+  let mapWait = requestAnimationFrame(function check() {
+    if (maps.maps.earth.uHasMap.value > 0) draw(time)
+    else if (++waits < 600) mapWait = requestAnimationFrame(check)
+  })
   let time = clamp01((options.startAt ?? 0) / timeline.duration) * timeline.duration
   let playing = false
   let onScreen = true
@@ -612,8 +712,11 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
       renderer.setAnimationLoop(null)
       visibility.disconnect()
       resizeObserver.disconnect()
+      cancelAnimationFrame(mapWait)
       disposeObject(scene)
-      environment.dispose()
+      maps.dispose()
+      envLow.dispose()
+      envHigh.dispose()
       pmrem.dispose()
       composer.dispose()
       renderer.dispose()

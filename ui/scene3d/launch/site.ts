@@ -83,8 +83,11 @@ export function buildPad(height: number, footprint: number, bellDrop: number): P
     const a = Math.PI / 4 + (i * Math.PI) / 2
     add(post, dark, Math.cos(a) * footprint * 0.95, deck + (standoff - deck) / 2, Math.sin(a) * footprint * 0.95)
   }
-  // Scorched trench floor under the mount.
+  // Flame trench under the mount: a scorched floor between two low walls, and a wedge that turns the exhaust out both ends.
   add(new THREE.BoxGeometry(mount * 5, 0.2, mount * 1.1), dark, 0, 0.1, 0)
+  const wall = new THREE.BoxGeometry(mount * 5, deck * 0.3, mount * 0.12)
+  for (const z of [-1, 1]) add(wall, concrete, 0, deck * 0.15, z * mount * 0.61)
+  add(new THREE.CylinderGeometry(mount * 0.5, mount * 0.5, mount * 1.05, 3).rotateX(Math.PI / 2).rotateZ(Math.PI / 2).scale(1, (deck * 0.6) / (mount * 0.75), 1), dark, 0, deck * 0.2, 0)
 
   // Service tower with a lightning rod, and two arms reaching the rocket.
   const towerW = Math.max(height * 0.085, 2.2)
@@ -93,6 +96,10 @@ export function buildPad(height: number, footprint: number, bellDrop: number): P
   const tower = lattice(towerW, towerH, steel)
   tower.position.set(towerX, 0, 0)
   group.add(tower)
+  // Inside the lattice: the lift shaft, and a work platform every few levels.
+  add(new THREE.BoxGeometry(towerW * 0.36, towerH, towerW * 0.36), concrete, towerX - towerW * 0.18, towerH / 2, -towerW * 0.18)
+  const floor = new THREE.BoxGeometry(towerW * 1.1, towerW * 0.05, towerW * 1.1)
+  for (let y = towerH * 0.16; y < towerH; y += towerH * 0.14) add(floor, steel, towerX, y, 0)
   add(new THREE.CylinderGeometry(towerW * 0.03, towerW * 0.06, height * 0.22, 6), steel, towerX, towerH + height * 0.11, 0)
   const arms: THREE.Object3D[] = []
   for (const f of [0.52, 0.86]) {
@@ -100,6 +107,9 @@ export function buildPad(height: number, footprint: number, bellDrop: number): P
     pivot.position.set(towerX + towerW / 2, standoff + height * f, 0)
     const reach = -towerX - towerW / 2 - footprint * 0.45
     add(new THREE.BoxGeometry(reach, towerW * 0.22, towerW * 0.3), steel, reach / 2, 0, 0, pivot)
+    // The umbilical plate at the tip, with its propellant line back along the arm.
+    add(new THREE.BoxGeometry(towerW * 0.12, towerW * 0.42, towerW * 0.42), dark, reach, 0, 0, pivot)
+    add(new THREE.CylinderGeometry(towerW * 0.035, towerW * 0.035, reach, 6).rotateZ(Math.PI / 2), white, reach / 2, -towerW * 0.16, 0, pivot)
     group.add(pivot)
     arms.push(pivot)
   }
@@ -120,9 +130,15 @@ export function buildPad(height: number, footprint: number, bellDrop: number): P
   add(new THREE.BoxGeometry(height * 0.5, height * 0.16, height * 0.3), concrete, -ring * 4.5, height * 0.08, -ring * 2.2)
   add(new THREE.BoxGeometry(height * 0.52, height * 0.015, height * 0.32), dark, -ring * 4.5, height * 0.165, -ring * 2.2)
 
+  // The water tower that floods the pad at ignition.
+  const tub = Math.max(height * 0.05, 1.6)
+  add(new THREE.CylinderGeometry(tub, tub * 0.8, tub * 1.3, 20), white, ring * 0.9, towerH * 0.5, -ring * 1.3)
+  add(new THREE.CylinderGeometry(tub * 0.22, tub * 0.3, towerH * 0.5, 8), steel, ring * 0.9, towerH * 0.25, -ring * 1.3)
+
   // A real-size van (6 m long) parked on the apron: the pad is sized to the rocket, so this is what shows how big the rocket is.
+  // It stands behind the pad: in front, it would block the close shot of a small rocket's engines.
   const vanX = mount + 7
-  const vanZ = mount * 1.5 + 5
+  const vanZ = -(mount * 1.5 + 5)
   add(new THREE.BoxGeometry(4.2, 2.3, 2.2), white, vanX - 0.9, 1.45, vanZ)
   add(new THREE.BoxGeometry(1.8, 1.7, 2.2), steel, vanX + 2.1, 1.15, vanZ)
   add(new THREE.BoxGeometry(5.4, 0.5, 2.3), dark, vanX, 0.35, vanZ)

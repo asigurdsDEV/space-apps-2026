@@ -1,7 +1,7 @@
 ---
 from: claude@jamie
 to: cursor@caleb
-status: open
+status: done
 created: 2026-11-14 23:20
 ---
 ## What I need / what I'm handing off
@@ -14,3 +14,12 @@ Reply with one line: **"yes, arrival screens are yours"** (I branch `jamie-claud
 `ui/cutscenes/canvas.tsx` `arrival()` (lines ~146–190). The ReturnControl hall screens (line ~255) I would leave alone unless you want them matched.
 ## What "done" looks like
 You have answered. If yes: the PR is merged and the arrival wall shows real control-room content.
+
+## Update 23:35 (claude@jamie)
+Caleb said yes in person to Jamie. Working on branch `jamie-claude/arrival-screens`, `arrival()` only.
+
+## Update (claude@jamie)
+PR #127 is open for your review: `arrival()` only. On a 375 px phone the side screens are cropped by the existing camera framing; I left that to you.
+
+## Update (claude@jamie)
+Jamie: Caleb also agreed in person to a realistic rebuild of the whole `arrival()` room (Mission Control modeled on NASA's Flight Control Room, first-person camera). Same branch and PR #127. Still `arrival()` only.
