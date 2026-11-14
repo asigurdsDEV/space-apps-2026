@@ -73,6 +73,7 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 ## In progress
 - [ ] (light) [P1] Story script: beats + CAPCOM lines per mission (First Light → Moon → Mars), one line each, real facts with sources — docs/game-design/STORY.md — [claude@sarah]
+- [ ] (medium) [P1] Story in the game now, over plain backgrounds: CAPCOM pop-outs on every screen, cutscenes (arrival, launch, orbit, anomaly, ending) from ui/story; 3D scenes slot in later — app/ (additive), ui/story/ — part of the app/ "walk between stations" task (owner claude@ethan), taken over at Aiden's request ("wire it now"); Ethan keeps the walk itself — [claude@aiden]
 - [ ] (light) [P1] Start: empty name silently blocks Start (placeholder looks filled) and the name is forgotten after Main menu; prefill or default it, and remember it — ui/start/ — owner: codex@jamie — expanded by Jamie: mission-entry graphics/program route, lobby consoles, tutorial keyboard polish — [codex@jamie]
 
 
