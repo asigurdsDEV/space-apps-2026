@@ -8,6 +8,8 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Open
 
+- [ ] (light) [P1] Preserve personal-best saving in the 3D debrief before default flip: World bypasses LocalLeaderboard, so completed score/design/stars are not stored; reuse existing save helper, preserve daily/regular separation — app/World.tsx — owner: claude@aiden — needs: desktop evidence PR #118; no Codex source claim
+
 - [ ] (light) [P1] Investigate first-use offline lazy scene import failure in local production preview (Start/GLBs cached, Builder error boundary); compare Pages headers before asserting live impact — pwa/ + config owner: claude@aiden — needs: reproduction in docs/qa/offline-cache.md PR #101; no source claim transferred
 
 - [ ] (medium) [P2] Fly scene tied to sim time (craft position from `t_s`, ground stations, downlink beam, part highlight) — ui/scene3d/ — released by claude@ethan 13:55 so it does not block anyone; unfinished work is on branch `ethan-claude/scene3d-fly`. Ask claude@ethan before taking it (the folder is his)
@@ -64,6 +66,8 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 - [ ] (light) [P2] **CAPCOM pop-outs auto-dismiss** after ~6 s unless hovered/focused; on results it covers the leaderboard card — ui/story/ — owner: claude@aiden
 
 ## Missing / needed
+
+- Desktop QA #118 on #114 head 1804d2b: design→flight→3D debrief→Try the fix works, but no personal best saved. Claude World owner follow-up before 3D default. Native Escape/hardware and full 3D interior remain unverified; smaller prompt/focus observations in report — [found by codex@aiden]
 - 5 duplicate handoff files ending in " 2.md" (identical copies, e.g. `20261114-2305-claude@sarah-all-ux-declutter 2.md`) were committed in fad54ba; safe to `git rm` them — claude@aiden (committer) — [found by claude@sarah]
 
 - Jamie reached Claude usage limit; codex@jamie takes over Jamie follow-ups. Sarah fixes are PR #105; Claude Jamie sunlight is PR #108; Codex regression/integration checks are PR #109. Merge coordinator Ethan has the handoff — [found by codex@jamie]
@@ -106,7 +110,6 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 ## In progress
 - [ ] (heavy) [P0] Walk-in spacecraft (digital twin in the ops room): each part you picked as a module on the walls (from `buildCraft`), gauges from `state.metrics` (battery, storage, science, money, day), time lever (`pause` / `resume` / `set_speed`), anomaly = alarm + the affected module flashes + 2–3 choice Interactables (`resolve_decision`), window showing the real craft in space (SpaceView). Exposes `interactables` + `obstacles` per the contract; preview — ui/interior/ (new; moved out of ui/scene3d so claude@ethan's folder is untouched) — by Sun 02:00 — owner: claude@ethan (suggest V7 flight training waits until after this) — [claude@aiden] taken at Aiden's request 15:30 (not started by claude@ethan; handoff 1530)
-- [ ] (light) [P1] Independent desktop acceptance of published first-person mission control (#107/#114): keyboard/mouse, interaction reach/permissions, Escape recovery and design-to-debrief evidence — docs/qa/desktop-world.md (new); owner source read-only, separate from Caleb first-person plan — [codex@aiden]
 - [ ] (medium) [P1] Cutscenes "into the walk-in spacecraft" (after launch) and "back to mission control" (after the ending), ≤ 10 s, Skip + reduced motion as now; QA plan for the 3D loop, run on the Sun 02:00 build — ui/cutscenes/, docs/qa/ — owner: cursor@caleb — [cursor@caleb] — scenes and plan in PR #115 (`EnterCraftScene` 8 s, `ReturnControlScene` 6 s, `docs/qa/first-person.md`). The Sunday 02:00 run is not done. Mount handoff to claude@aiden.
 - [ ] (light) [P1] **Walk + cutscenes on a phone and with reduced motion / a screen reader:** hall and panels at 375 px, reduced motion cuts straight to each station, screen reader hears the screens not the hall, cutscene Skip/Escape works — app/Walk.tsx, app/StoryLayer.tsx, app/app.css — owner: claude@aiden — [claude@aiden]
 - [ ] (medium) [P1] Rockets fully rendered (Ethan's request): surface detail on every launch vehicle (panel seams, weld lines, markings, engine detail), shadows, exhaust and pad effects — ui/scene3d/launch/ — branch `ethan-claude/rocket-render` — [claude@ethan]
@@ -131,6 +134,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 
 ## Done
+- [x] (light) [P1] Independent desktop acceptance of published first-person mission control (#107/#114): keyboard/mouse, interaction reach/permissions, Escape recovery and design-to-debrief evidence — docs/qa/desktop-world.md (new); owner source read-only, separate from Caleb first-person plan — [codex@aiden] — in PR #118: pinned #114 1804d2b desktop loop + Try the fix pass; record persistence missing; 477 tests/build/size pass after one timing retry
 - [x] (light) [P0] **Submit:** judging form text in docs/SUBMISSION.md — [cursor@caleb] — in PR #111: paste sheet, planet-map and hardware references, Spirit URL matches the card, live link opens the game. Video URL is still empty (recording task). A person still presses Submit. Six world props are project-original (`docs/visual-assets/world.md`); that one sentence is not in the PR.
 - [x] (medium) [P1] Prop models for the 3D game: part rack, console desk, launch button, alarm beacon, time lever, gauge frame — public/visual-assets/world/ — [cursor@kaipo] — six original GLBs, about 22 kB, floor at y=0, propId on the root; listed in pwa/public-files.ts. Scene placement stays with claude@aiden and claude@ethan.
 - [x] (light) [P1] Re-run the four-device multiplayer rehearsal once Host online and Join are on the live site. Fill docs/MULTIPLAYER_TEST.md again — docs/MULTIPLAYER_TEST.md — [cursor@kaipo] — cross-device join on the Vercel site passed 2026-11-14 (no hotspot). Fifth player, launch sync, and disconnect were not re-scored.

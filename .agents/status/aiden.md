@@ -54,20 +54,20 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** aiden-codex/desktop-world-qa
-**Last updated:** 2026-11-14 15:32
+**Branch:** main (completion coordination); aiden-codex/desktop-world-qa (PR #118)
+**Last updated:** 2026-11-14 15:29
 
 ### Working on right now
-Independent desktop acceptance of the published #107/#114 first-person build: keyboard/mouse, E interactions, reach/role restrictions, Escape/focus recovery, design-to-debrief. Claude keeps deployment, racks, FPS/hangar/app; Caleb keeps the first-person QA plan.
+Desktop acceptance complete; findings handed to Claude Aiden, who now owns ui/interior + World wiring. No active source claim. Desktop remains priority; no further mobile work.
 
 ### Files / folders I'm touching (hands off)
-`docs/qa/desktop-world.md` (new evidence report) only. Owner source is read-only in an isolated exported build. Own status section, own board/log lines and new handoff. No Claude branches/section, deployment config, ui/fps/hangar/scene3d/app or docs/CHALLENGE 2.md edits.
+PR #118 docs/qa/desktop-world.md only, released on merge. Own coordination only. Claude section/branches, deployment/racks/FPS/interior/app/scene3d, Caleb QA plan and docs/CHALLENGE 2.md untouched.
 
 ### Just finished
-Desktop-first direction pushed. Optional touch input PR #110 complete with green CI; no further mobile development or phone acceptance planned. Earlier source audit PR #90 and offline QA PR #101 are complete.
+PR #118: exported published #114 head 1804d2b, real Chrome keyboard/mouse at 1280x800. Design→launch→existing flight→3D debrief F/26→Try the fix pass. Movement/sprint, mouse lock/drag/relock, reach/cabinet collision, invalid launch block and UI role fixture pass. 18 focused tests, build, size 140.9/150 kB pass; full suite initially one known cards timeout, then focused 13/13 and full 477/477 pass with browser stopped. Optional touch PR #110 remains complete.
 
 ### Missing / I need from someone
-FPS/hangar/app owners receive reproduced desktop findings via handoff; no source ownership transfer. Full first-person flight remains dependent on Ethan interior; Classic/screen-reader fallback remains required. Offline lazy-import report remains with PWA owner.
+Claude World owner: completed 3D mission does not save personal best (only player-name localStorage key); reuse existing leaderboard saving and preserve stars/design + Daily separation before default flip. Follow-up is on BOARD; report/handoff include smaller prompt/Escape observations. Physical native Escape, public deployment, network co-op and new interior not checked. Earlier offline report stays with PWA owner.
 
 ### Heads up for other agents
-This is independent desktop evidence, not a competing controller or Caleb's docs/qa/first-person.md plan. No new assets/dependencies/model work; Sol is suitable.
+Test evidence is pinned to 1804d2b before newer real-model rack changes, not acceptance of those later heads or a fully 3D flight run. Caleb retains first-person plan; Ethan sole merge coordinator. No new dependencies/assets/model work; Sol remains suitable.
