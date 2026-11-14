@@ -3,12 +3,12 @@
 // The screens only get props. Everything about who runs the game is behind `Session` (app/session.ts),
 // so solo, same-screen, host and guest play all use the same screens.
 
-import { useEffect, useLayoutEffect, useRef, useState, type ComponentType, type FormEvent } from 'react'
-import { DIFFICULTIES, getDatasets, getScenario, scenarios, withDifficulty, type Difficulty } from '../data'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ComponentType, type FormEvent } from 'react'
+import { DIFFICULTIES, getDatasets, getScenario, realMissions, rowsAsObjects, scenarios, withDifficulty, type Difficulty } from '../data'
 import { LocalTransport } from '../net'
 import type { Config, NetMessage, SimEvent, SimState, Summary } from '../shared'
 import { canSend, ROLES } from '../shared'
-import { catalogEntities, pendingDecision, simCore } from '../sim'
+import { catalogEntities, pendingDecision, simCore, whatIf } from '../sim'
 import { playSound, SoundToggle } from '../ui/audio'
 import { Briefing } from '../ui/briefing'
 import { MissionBuilder } from '../ui/builder'
@@ -44,6 +44,9 @@ export const SCENARIOS: Config[] = scenarios.flatMap((scenario) => LEVELS.map((l
  * leaves them out of its `state` messages (see app/session.ts) and guests put them back.
  */
 export const BASELINE = catalogEntities(getDatasets())
+
+/** Real missions for the debrief's "your mission is most like…" line. */
+const REAL_MISSIONS = rowsAsObjects(realMissions)
 
 /** Anomaly cards per mission (GAME_DESIGN.md §4.2): easy 1, normal 2, hard 3. A scenario's own `anomaly_cards` wins. */
 export const withCards = (config: Config): Config => ({
@@ -422,6 +425,12 @@ function Flight({ session, config, daily }: { session: Session; config: Config; 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   const ended = state.status === 'ended'
+  // "What would have fixed it": the flown mission rerun with every single change, once, when it ends.
+  const fixes = useMemo(
+    () => (ended ? whatIf({ ...withCards(config), seed: daily?.seed ?? config.seed }, getDatasets(config.datasets), state.params) : undefined),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [ended],
+  )
 
   if (LaunchView && !launchDone && !ended) return <LaunchView state={state} onDone={() => setLaunchDone(true)} />
 
@@ -431,6 +440,10 @@ function Flight({ session, config, daily }: { session: Session; config: Config; 
   // The anomaly card waiting for an answer, read from the state so a late joiner or a reload still sees it.
   const decision = pendingDecision(state)
   const console = ROLES.find((role) => role === decision?.console) ?? null
+  const tryFix = (fix: { params?: SimState['params'] }) => {
+    session.send({ type: 'reset', payload: {} })
+    for (const [key, value] of Object.entries(fix.params ?? {})) session.send({ type: 'set_param', payload: { key, value } })
+  }
   const decide = (decision_id: string, option_id: string) => session.send({ type: 'resolve_decision', payload: { decision_id, option_id } })
   return (
     <>
@@ -445,6 +458,9 @@ function Flight({ session, config, daily }: { session: Session; config: Config; 
         bonusGoal={bonusGoal}
         share={{ daily: daily?.date, anomalies: String(state.metrics.cards_drawn ?? '').split(',').filter(Boolean).length }}
         decision={decision}
+        fixes={fixes}
+        onTryFix={tryFix}
+        realMissions={REAL_MISSIONS}
         onDecide={decide}
         canDecide={canSend(me.role, { type: 'resolve_decision', payload: { decision_id: '', option_id: '' } }, players.map((p) => p.role), console)}
         spaceWeather={weather && typeof day === 'number' ? weather.weatherForMissionDay(weatherStart(config, daily?.seed ?? config.seed), day) : null}
