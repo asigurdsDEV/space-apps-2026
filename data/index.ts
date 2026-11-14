@@ -83,10 +83,12 @@ export function getDataset(id: Id): TableDataset | undefined {
  * Difficulty levels. Each one only scales scenario params the sim already reads.
  * shortcut: no deadline knob, because the sim's schedule rule needs build_months columns. Add one when they exist.
  */
+// `anomaly_cards` is how many cards app/ draws at each level (a scenario's own value wins). getScenario() leaves it out,
+// so headless callers that never answer a card keep working.
 export const DIFFICULTIES = {
-  easy: { label: 'Easy', budget: 1.5, science: 0.8, random_failures: false, event_rate_per_day: 0 },
-  normal: { label: 'Normal', budget: 1, science: 1, random_failures: false, event_rate_per_day: 0 },
-  hard: { label: 'Hard', budget: 0.95, science: 1, random_failures: true, event_rate_per_day: 0.03 },
+  easy: { label: 'Easy', budget: 1.5, science: 0.8, random_failures: false, event_rate_per_day: 0, anomaly_cards: 1 },
+  normal: { label: 'Normal', budget: 1, science: 1, random_failures: false, event_rate_per_day: 0, anomaly_cards: 2 },
+  hard: { label: 'Hard', budget: 0.95, science: 1, random_failures: true, event_rate_per_day: 0.03, anomaly_cards: 3 },
 } as const
 export type Difficulty = keyof typeof DIFFICULTIES
 
