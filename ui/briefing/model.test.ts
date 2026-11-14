@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { HOW_TO_WIN, KEY_TERMS, briefingFacts } from './model'
+import { glossaryEntry } from '../learn'
+import { HOW_TO_WIN, KEY_TERM_IDS, briefingFacts } from './model'
 
 const facts = (params: Record<string, number | string>, duration_s = 0) =>
   Object.fromEntries(briefingFacts({ params, duration_s }).map((f) => [f.label, f.value]))
@@ -23,7 +24,9 @@ describe('briefingFacts', () => {
 })
 
 it('has 4–6 key terms and a few win rules, all filled in', () => {
-  expect(KEY_TERMS.length).toBeGreaterThanOrEqual(4)
-  expect(KEY_TERMS.length).toBeLessThanOrEqual(6)
-  expect([...KEY_TERMS.map((t) => t.meaning), ...HOW_TO_WIN].every((s) => s.length > 20)).toBe(true)
+  expect(KEY_TERM_IDS.length).toBeGreaterThanOrEqual(4)
+  expect(KEY_TERM_IDS.length).toBeLessThanOrEqual(6)
+  // Every key term must exist in the shared glossary, or it would silently disappear.
+  expect(KEY_TERM_IDS.every((id) => glossaryEntry(id))).toBe(true)
+  expect(HOW_TO_WIN.every((s) => s.length > 20)).toBe(true)
 })

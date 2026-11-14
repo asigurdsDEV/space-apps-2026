@@ -14,6 +14,7 @@
   "params": {
     "objective": "mars-ice",
     "objective_text": "Fly to Mars (about 7 months), get into orbit, and send home enough data to reach the science goal within three years of launch, within budget. Hint: Mars is so far away that your radio may be the hardest part.",
+    "bonus_goal": "no_data_lost",
     "budget_usd": 500000000,
     "target_science_score": 65,
     "mission_duration_s": 94608000,

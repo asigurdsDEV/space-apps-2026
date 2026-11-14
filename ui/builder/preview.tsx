@@ -11,13 +11,13 @@ const entities: Entity[] = [
   e('orbit', 'leo', 'Low Earth orbit', { altitude_m: 500_000, eclipse_fraction: 0.38, contact_s_per_day: 2400, radiation_factor: 1, launch_capacity_column: 'payload_leo_kg', description: 'Close and cheap to reach. Frequent, short ground passes.' }),
   e('orbit', 'sso', 'Sun-synchronous', { altitude_m: 700_000, eclipse_fraction: 0.33, contact_s_per_day: 3000, radiation_factor: 1.2, launch_capacity_column: 'payload_sso_kg', description: 'Same lighting on every pass: great for photographing Earth.' }),
   e('orbit', 'geo', 'Geostationary', { altitude_m: 35_786_000, eclipse_fraction: 0.01, contact_s_per_day: 86400, radiation_factor: 3, launch_capacity_column: 'payload_gto_kg', description: 'Hovers over one spot with nonstop contact, but far and costly to reach.' }),
-  e('bus', 'cubesat-6u', '6U CubeSat', { dry_mass_kg: 8, max_added_mass_kg: 4, max_instruments: 1, base_power_w: 4, cost_usd: 150_000, description: 'Shoebox-sized. Cheap, but tight on mass and power.' }),
-  e('bus', 'smallsat', 'SmallSat bus', { dry_mass_kg: 120, max_added_mass_kg: 80, max_instruments: 3, base_power_w: 40, cost_usd: 6_000_000 }),
-  e('instrument', 'camera-basic', 'Basic camera', { mass_kg: 0.4, power_w: 2, data_rate_bps: 2_000_000, science_value: 0.05, cost_usd: 50_000 }),
-  e('instrument', 'camera-hires', 'High-res camera', { mass_kg: 3, power_w: 12, data_rate_bps: 20_000_000, science_value: 0.2, cost_usd: 900_000, description: 'Sharper pictures, but a lot more data to send home.' }),
+  e('bus', 'cubesat-6u', '6U CubeSat', { class: 'cubesat', dry_mass_kg: 8, max_added_mass_kg: 4, max_instruments: 1, base_power_w: 4, cost_usd: 150_000, description: 'Shoebox-sized. Cheap, but tight on mass and power.' }),
+  e('bus', 'smallsat', 'SmallSat bus', { class: 'smallsat', dry_mass_kg: 120, max_added_mass_kg: 80, max_instruments: 3, base_power_w: 40, cost_usd: 6_000_000 }),
+  e('instrument', 'camera-basic', 'Basic camera', { best_orbit: 'sso', mass_kg: 0.4, power_w: 2, data_rate_bps: 2_000_000, science_value: 0.05, cost_usd: 50_000 }),
+  e('instrument', 'camera-hires', 'High-res camera', { min_bus_class: 'smallsat', best_orbit: 'sso', mass_kg: 3, power_w: 12, data_rate_bps: 20_000_000, science_value: 0.2, cost_usd: 900_000, description: 'Sharper pictures, but a lot more data to send home.' }),
   e('instrument', 'magnetometer', 'Magnetometer', { mass_kg: 0.2, power_w: 0.5, data_rate_bps: 2_000, science_value: 0.02, cost_usd: 40_000 }),
   e('power_system', 'solar-deployable-small', 'Small deployable panels', { type: 'solar', mass_kg: 0.6, power_w: 20, cost_usd: 60_000 }),
-  e('power_system', 'solar-large', 'Large solar wings', { type: 'solar', mass_kg: 15, power_w: 400, cost_usd: 1_500_000 }),
+  e('power_system', 'solar-large', 'Large solar wings', { type: 'solar', min_bus_class: 'smallsat', mass_kg: 15, power_w: 400, cost_usd: 1_500_000 }),
   e('power_system', 'battery-small', 'Small battery', { type: 'battery', mass_kg: 0.3, capacity_wh: 40, cost_usd: 15_000 }),
   e('power_system', 'battery-large', 'Large battery', { type: 'battery', mass_kg: 4, capacity_wh: 600, cost_usd: 120_000 }),
   e('comms_system', 'uhf', 'UHF radio', { mass_kg: 0.1, power_w: 1, data_rate_bps: 9_600, cost_usd: 10_000 }),
@@ -48,9 +48,10 @@ function fakeBudgets(params: Params): Pick<SimState, 'metrics' | 'issues'> {
   if (genGb > downGb) issues.push({ code: 'data_backlog', severity: 'warning', resource: 'data', message: 'Instruments make data faster than the radio can send it home. Data that never reaches the ground earns no science.' })
   return {
     metrics: {
-      phase: 'design', mass_kg: mass, mass_limit_kg: limit, payload_mass_kg: sum('mass_kg'), payload_limit_kg: Number(bus?.props.max_added_mass_kg ?? 0),
+      phase: 'design', mass_kg: mass, mass_limit_kg: limit, added_mass_kg: sum('mass_kg'), added_mass_limit_kg: Number(bus?.props.max_added_mass_kg ?? 0),
+      battery_wh: Number(entities.find((p) => p.id === params.battery)?.props.capacity_wh ?? 0), battery_needed_wh: load * 1.6 * Number(orbit?.props.eclipse_fraction ?? 0),
       power_w: load, power_available_w: avail, cost_usd: sum('cost_usd'), budget_usd: 8_000_000,
-      data_generated_gb_per_day: genGb, downlink_gb_per_day: downGb, science_per_day: sciPerDay, science_goal: 30, mission_days: 365,
+      data_generated_gb_per_day: genGb, downlink_gb_per_day: downGb, science_expected: sciPerDay * 365, science_goal: 30, mission_days: 365,
     },
     issues,
   }

@@ -64,6 +64,42 @@ export const GLOSSARY: readonly GlossaryEntry[] = [
     meaning:
       'Power in versus power out. The source (usually solar panels plus a battery) has to cover every part that is on, including during eclipse.',
   },
+  {
+    id: 'reaction-wheel',
+    term: 'Reaction wheel',
+    meaning:
+      'A spinning wheel inside the spacecraft. Speeding it up or slowing it down turns the craft the other way, so the instruments can stay pointed at a target. If a wheel stops, the pointing gets coarse.',
+  },
+  {
+    id: 'high-gain-antenna',
+    term: 'High-gain antenna',
+    meaning:
+      'A dish that sends a lot of data in a tight beam toward Earth. It has to point at a ground station. If the dish jams, the small backup antenna can still call home, but much more slowly.',
+  },
+  {
+    id: 'drag',
+    term: 'Drag',
+    meaning:
+      'Air resistance on the spacecraft. A low orbit still flies through a thin atmosphere, and that air pulls the craft down. A solar storm can puff the air up and make the drag much stronger.',
+  },
+  {
+    id: 'safe-mode',
+    term: 'Safe mode',
+    meaning:
+      'A low-power state the spacecraft switches to when something goes wrong. It stops taking science, turns to a position that can survive, and waits for the ground team to tell it what to do next.',
+  },
+  {
+    id: 'south-atlantic-anomaly',
+    term: 'South Atlantic Anomaly',
+    meaning:
+      'A region over the South Atlantic where Earth’s radiation belts dip closest to the ground. Satellites in a low orbit often pause sensitive instruments while they pass through it.',
+  },
+  {
+    id: 'deep-space-network',
+    term: 'Deep Space Network',
+    meaning:
+      'NASA’s three big antenna sites, in California, Spain, and Australia. Many missions share them. A higher-priority event, such as a landing, can take the antenna time you were counting on.',
+  },
 ]
 
 const byId = new Map(GLOSSARY.map((entry) => [entry.id, entry]))
@@ -77,6 +113,16 @@ export const REQUIRED_TERM_IDS = [
   'data-rate',
   'duty-cycle',
   'reliability',
+] as const
+
+/** Ids the anomaly cards and the GO / NO-GO lines use. */
+export const ANOMALY_TERM_IDS = [
+  'reaction-wheel',
+  'high-gain-antenna',
+  'drag',
+  'safe-mode',
+  'south-atlantic-anomaly',
+  'deep-space-network',
 ] as const
 
 export function glossaryEntry(id: string): GlossaryEntry | undefined {

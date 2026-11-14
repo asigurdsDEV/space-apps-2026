@@ -15,3 +15,7 @@ Continue is host-only **navigation to briefing/design**, not the sim's launch co
 Copy uses the complete room ID without changing case. If clipboard permission/API fails, focuses/selects the read-only code field and explains manual copying. `code=null` shows local play instructions. `error` shows host rejections, `busy` disables actions. Names and codes are rendered as text.
 
 Scoped `.ls-*` CSS matches Start/mission dark defaults with optional --game-bg / --game-text / --game-panel overrides. No global selectors. Preview `/ui/lobby/preview.html` exercises host/guest views and role changes without WebRTC; the checkbox and output are preview-only.
+
+## Shared theme and glossary (follow-up)
+
+All palette/font values now use shared `--game-*` tokens, including focus, selected controls and accent text contrast. App imports `ui/theme/theme.css` once; the preview imports it itself. Orbit/reliability terms appear outside role buttons so tooltip buttons are never nested inside other buttons. Role ownership, copy handling and callbacks are unchanged. Preview theme selector is not an app preference control.

@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Sarah
 **Agent:** Claude Code (claude@sarah)
 **Branch:**
-**Last updated:** 2026-11-14 12:15
+**Last updated:** 2026-11-14 15:25
 
 ## Working on right now
 
@@ -22,15 +22,20 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** sarah-claude/mission-view
 
 ### Working on right now
-Nothing claimed. Waiting for Sarah to pick the next task.
+Nothing claimed. Looking for the next task.
 
 ### Files / folders I'm touching (hands off)
 - `ui/mission/` (I own it; ask with a handoff before changing it)
+- `data/space-weather/` (new subfolder; nothing else in `data/`, which is claude@jamie's)
 - `docs/game-design/` and `.agents/decisions/004-game-design.md` (PR #23; I own them, so send changes as a handoff). Not touching `docs/GAME_PLAN.md` (claude@aiden).
 - `docs/CHALLENGE_OFFICIAL.md` (PR #20; verbatim official text, don't edit, replace whole sections if the page changes). Not touching `docs/CHALLENGE.md` (claude@jamie) or `docs/NASA_SOURCES.md` (codex@jamie).
 - `.agents/status/sarah.md`: only the `## claude@sarah` section
 
 ### Just finished
+PR #52: no nameless bonus star, real mission match ("Your mission is most like …"), 3D orbit view on the fly screen, anomaly card wording fixes. 318 tests pass. Closed handoffs 1107, 1115, 1210 and my 1340 (Ethan wired it).
+
+Real NASA space weather: `data/space-weather/` (NASA SPDF OMNI, daily max Kp / G-level / Dst / F10.7 / sunspots, 1996-01-01 → 2026-10-29), tests against known storms, fly-screen strip, PR #34. Handoffs to claude@ethan (sim use) and claude@jamie (new subfolder in data/).
+
 Anomaly card + debrief (stars, what-if fixes with Try it, share card) in `ui/mission/`, PR #25 (built on #11). All optional props. tsc, 33 tests and build pass, checked in the browser on desktop and phone. Handoff to claude@ethan with the mount props.
 
 Game design "GO / NO-GO" (decision 004, proposed), PR #23: `docs/game-design/GAME_DESIGN.md` (pitch, loop, features with owners, accuracy rules), `ANOMALY_CARDS.md` (8 real-history cards), `BRAINSTORM.md` (12 concepts scored). Added 8 tasks to BOARD Open. Handoff to all.

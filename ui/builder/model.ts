@@ -1,4 +1,5 @@
 // Pure helpers for the mission builder. No React here, so they're easy to test.
+import type { ConsoleCall } from '../gonogo'
 import { canSend, ownerRole, type Command, type Entity, type Metrics, type Params, type ParamValue, type Player, type Role, type SimState } from '../../shared'
 
 /** One design choice on the builder screen: a `set_param` key filled from the sim's part entities. */
@@ -109,15 +110,23 @@ type BarSpec = { resource: string; label: string; used: (m: Metrics) => unknown;
 const num = (k: string) => (m: Metrics) => m[k]
 const BAR_SPECS: BarSpec[] = [
   { resource: 'mass', label: 'Launch mass', used: num('mass_kg'), limit: 'mass_limit_kg', unit: 'kg' },
-  { resource: 'mass', label: 'Bus capacity', used: num('payload_mass_kg'), limit: 'payload_limit_kg', unit: 'kg' },
+  { resource: 'mass', label: 'Bus capacity', used: num('added_mass_kg'), limit: 'added_mass_limit_kg', unit: 'kg' },
   { resource: 'power', label: 'Power', used: num('power_w'), limit: 'power_available_w', unit: 'W' },
+  // A goal: the battery has to hold at least one eclipse's worth of energy.
+  { resource: 'power', label: 'Battery vs. one eclipse', used: num('battery_wh'), limit: 'battery_needed_wh', unit: 'Wh', goal: true, skipZeroLimit: true },
   { resource: 'budget', label: 'Budget', used: num('cost_usd'), limit: 'budget_usd', unit: 'USD' },
   { resource: 'data', label: 'Data made vs. downlink', used: num('data_generated_gb_per_day'), limit: 'downlink_gb_per_day', unit: 'GB/day' },
   { resource: 'time', label: 'Schedule', used: num('schedule_months'), limit: 'deadline_months', unit: 'months', skipZeroLimit: true },
   {
     resource: 'science',
     label: 'Science (projected)',
-    used: (m) => (typeof m.science_per_day === 'number' && typeof m.mission_days === 'number' ? m.science_per_day * m.mission_days : undefined),
+    // The sim's forecast includes the radio bottleneck and fading power; the product is only a fallback.
+    used: (m) =>
+      typeof m.science_expected === 'number'
+        ? m.science_expected
+        : typeof m.science_per_day === 'number' && typeof m.mission_days === 'number'
+          ? m.science_per_day * m.mission_days
+          : undefined,
     limit: 'science_goal',
     unit: 'pts',
     goal: true,
@@ -210,4 +219,74 @@ export function changedBy(
     out[key] = playerLabel(holder, me) ?? (mySends.has(key) ? 'You' : 'A teammate')
   }
   return out
+}
+
+// ---------------------------------------------------------------- glossary tooltips
+
+const TERMS: Record<string, string> = {
+  // column names
+  eclipse_fraction: 'eclipse',
+  data_rate_bps: 'data-rate',
+  duty_cycle: 'duty-cycle',
+  reliability: 'reliability',
+  // slot keys
+  orbit: 'orbit',
+  // budget bar labels
+  'Launch mass': 'payload-capacity',
+  Power: 'power-budget',
+  'Data made vs. downlink': 'downlink',
+  'Battery vs. one eclipse': 'eclipse',
+}
+
+/** Glossary id (ui/learn) for a column, slot key or budget label, if that word gets a tooltip. */
+export function termFor(name: string): string | undefined {
+  return TERMS[name] ?? (/^payload_\w+_kg$/.test(name) ? 'payload-capacity' : undefined)
+}
+
+// ---------------------------------------------------------------- console lights
+
+/** "GO", "GO · 1 concern" or "NO-GO · 2": a console's call in words, so it never relies on colour. */
+export function callText(c: Pick<ConsoleCall, 'call' | 'reasons'>): string {
+  const n = c.reasons.length
+  if (c.call === 'go') return 'GO'
+  if (c.call === 'no-go') return `NO-GO · ${n}`
+  return `GO · ${n} concern${n === 1 ? '' : 's'}`
+}
+
+// ---------------------------------------------------------------- part compatibility
+
+/** Same order as BUS_CLASSES in sim/parts.ts (screens don't import sim/). */
+const BUS_CLASS_ORDER = ['cubesat', 'smallsat', 'medium', 'flagship']
+const BUS_CLASS_NAMES: Record<string, string> = { cubesat: 'CubeSat', smallsat: 'SmallSat', medium: 'medium', flagship: 'flagship' }
+
+export interface Badge {
+  text: string
+  tone: 'good' | 'warn' | 'bad'
+}
+
+/**
+ * Why a part does or doesn't suit the current design, using the sim's own rules:
+ * `min_bus_class` above the picked bus's class is the `bus_too_small` error (the row is dimmed),
+ * and an instrument outside its `best_orbit` earns half science (`off_best_orbit`).
+ */
+export function partFit(part: Entity, state: Pick<SimState, 'entities' | 'params'>): { badges: Badge[]; dim: boolean } {
+  const badges: Badge[] = []
+  let dim = false
+
+  const needs = part.props.min_bus_class
+  const bus = state.entities.find((e) => e.kind === 'bus' && e.id === state.params.bus)
+  const busRank = BUS_CLASS_ORDER.indexOf(String(bus?.props.class ?? ''))
+  if (typeof needs === 'string' && busRank >= 0 && BUS_CLASS_ORDER.indexOf(needs) > busRank) {
+    badges.push({ text: `Needs a ${BUS_CLASS_NAMES[needs] ?? needs} bus or bigger`, tone: 'bad' })
+    dim = true
+  }
+
+  const best = part.props.best_orbit
+  if (typeof best === 'string' && best !== '' && best !== 'any') {
+    const orbitName = state.entities.find((e) => e.kind === 'orbit' && e.id === best)?.name ?? best
+    if (state.params.orbit === best) badges.push({ text: 'Best in your orbit', tone: 'good' })
+    else if (typeof state.params.orbit === 'string' && state.params.orbit !== '')
+      badges.push({ text: `Half science here · best in ${orbitName}`, tone: 'warn' })
+  }
+  return { badges, dim }
 }
