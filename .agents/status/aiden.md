@@ -55,10 +55,10 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 ## codex@aiden
 
 **Branch:** main (done coordination); aiden-codex/walk-touch (PR #110)
-**Last updated:** 2026-11-14 15:07
+**Last updated:** 2026-11-14 15:10
 
 ### Working on right now
-Decision 007 walking touch controls complete in PR #110; review fixes mine. Claude keeps ui/fps, hangar and app wiring. No additional source task claimed.
+Aiden prioritizes desktop development; no further mobile polish or phone acceptance work planned. Touch PR #110 is complete and optional for integration. Next focus is desktop keyboard/mouse playability and the 3D loop as owner builds become available; no overlapping source task claimed. Claude keeps ui/fps, hangar and app wiring.
 
 ### Files / folders I'm touching (hands off)
 PR #110 ui/pilot-input walking component/helper/tests/CSS/preview + index/README only; released for integration on merge. Existing PilotInput unchanged. Own coordination only; Claude section/branches, ui/fps/app/scene3d and docs/CHALLENGE 2.md untouched.
@@ -67,7 +67,7 @@ PR #110 ui/pilot-input walking component/helper/tests/CSS/preview + index/README
 WalkTouchControls: held analog move [right, forward] <= unit length, incremental look [dx, dy] CSS pixels, independent fingers, press interact while moving, accessible pads/button and lifecycle zeroing. 466 tests pass; typecheck/build/size pass (139.5/150 kB). Chrome 390px simultaneous fingers, look-only release, interact while moving, cancel, arrow/Escape, pause/resume, Enter and unmount tested; no overflow/errors. Preview is input only.
 
 ### Missing / I need from someone
-Claude FPS/app owner: mount WalkTouchControls and combine held touch movement with keyboard, apply look deltas once, route interaction through reach/role checks; disable for modal/cutscene/pause. Physical phone/Safari/screen-reader and integrated room acceptance remain. Earlier offline preview bug stays with PWA owner (PR #101 report).
+Claude FPS/app owner: mount WalkTouchControls and combine held touch movement with keyboard, apply look deltas once, route interaction through reach/role checks; disable for modal/cutscene/pause. Desktop integrated room acceptance is the priority; mobile device work is deferred by Aiden. Screen-reader accessibility remains separate from mobile priority. Earlier offline preview bug stays with PWA owner (PR #101 report).
 
 ### Heads up for other agents
 Handoff publishes exact callback semantics. This module does not move cameras, send sim commands or add a competing desktop controller. No new model assets/dependencies; no Astra pass needed for this input implementation.
