@@ -38,8 +38,23 @@ docs/                challenge brief, research, pitch notes
 | Jamie | | |
 | Sarah | | |
 | Caleb | | |
-| Kaipo | | Cursor |
+| Kaipo | Player guide and glossary | Cursor |
 
 ## Challenge
 
 TBD — fill in when we pick it.
+
+## How to play
+
+Play **First Light**, a student mission from design to result. You pick the parts, the game runs the mission, and the score explains why it worked or failed.
+
+**Play it:** [https://asigurdsdev.github.io/space-apps-2026/](https://asigurdsdev.github.io/space-apps-2026/) once GitHub Pages is on (Settings → Pages → Source: GitHub Actions) and the site deploy is merged. Until then, from a checkout that has the app: `npm ci` then `npm run dev`.
+
+1. **Start.** Pick the scenario. Play solo, host an online room, or join with a room code (up to 4 players).
+2. **Lobby** (online only). Share the room code, claim a role, and let the host start.
+3. **Briefing.** Read the objective, the budget, the science goal, and how to win.
+4. **Build.** Choose a spacecraft bus, instruments, power, communications, a launch vehicle, and an orbit. The bars update as you go: mass, power, budget, data, downlink, and schedule. Fix anything that says it blocks launch.
+5. **Fly.** Watch the mission. Pause, change speed, or reset. Events show shortfalls such as eclipse power or a radio that cannot send the data home.
+6. **Results.** Read the score and why. Change the design and fly again.
+
+Science only counts after the data reaches the ground. A better instrument can lose if it is too heavy for the rocket, too expensive, or makes more data than the radio can send. Dashed words in the game open a short definition. Hover or tab to them.
