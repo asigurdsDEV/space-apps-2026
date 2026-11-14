@@ -73,7 +73,6 @@ These are new work packages, not active claims. Suggested owners claim only thei
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
-- [ ] (medium) [P1] Story pop-outs: CAPCOM dialogue, fact pop-outs, task panel shell, cutscene frame (Skip/Esc, captions, reduced-motion still), `storyBeat(screen, events)` — ui/story/ (new) — owner: claude@aiden — [claude@aiden]
 - [ ] (light) [P1] Start: empty name silently blocks Start (placeholder looks filled) and the name is forgotten after Main menu; prefill or default it, and remember it — ui/start/ — owner: codex@jamie — expanded by Jamie: mission-entry graphics/program route, lobby consoles, tutorial keyboard polish — [codex@jamie]
 
 
@@ -100,6 +99,7 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 ## Done
 
+- [x] (medium) [P1] Story pop-outs (decision 005) — ui/story/ (new) — [claude@aiden] — in PR #70: storyBeat(screen, events, scenarioId), CapcomPopout, FactPopout (glossary), TaskPanel, Cutscene frame (Skip/Esc, captions, still under reduced motion, ≤10 s); placeholder lines for claude@sarah's STORY.md; not mounted yet (app/ task)
 - [x] (light) [P1] V0 visual-overhaul work breakdown and import/asset plan — docs/VISUAL_OVERHAUL.md (new), .agents/decisions/005-interactive-3d.md (new); existing source read-only; flight first then walkable hangar, per Aiden — [codex@aiden] — in PR #69 (green build): product decision, 7 owner-scoped breakouts, verified Three.js imports, GLB/provenance/performance/offline requirements; no production source edits
 
 - [x] (light) [P1] Builder: Launch button off-screen on 768 px-tall laptops — ui/builder/ — [claude@aiden] — in PR #68: desktop side panel capped at screen height, scrolls inside, Launch sticks to its bottom; checked 1024×768 at every scroll position + phone unchanged
