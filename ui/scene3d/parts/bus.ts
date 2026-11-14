@@ -90,6 +90,8 @@ function medium(g: THREE.Object3D, [bx, by, bz]: Size, s: number) {
   }
   prism(1, by, -by / 2, [m.deck, m.blackMLI])
   for (const y of [by / 2 - 0.012 * s, -by / 2]) prism(1.012, 0.012 * s, y, m.alu)
+  // Bright tape along the eight upright edges outlines the dark body.
+  for (const [x, z] of corners) put(g, box(0.014 * s, by, 0.014 * s), m.alu, x, 0, z)
   // Mirror-tile radiators on the four cut corners, with thruster pods above and below them.
   const n = new THREE.Vector3(cz, 0, cx).normalize()
   for (const a of [-1, 1]) for (const b of [-1, 1]) {

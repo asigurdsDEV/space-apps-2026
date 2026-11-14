@@ -46,10 +46,10 @@ export function weatherImager(g: THREE.Object3D, L: number) {
   const m = mats()
   put(g, box(0.9 * L, 0.6 * L, 0.8 * L), m.goldMLI, 0, 0.3 * L, 0)
   put(g, box(0.5 * L, 0.012 * L, 0.5 * L), m.black, -0.14 * L, 0.607 * L, 0)
-  for (const a of [-1, 1]) put(g, box(0.52 * L, 0.36 * L, 0.02 * L), m.white, -0.14 * L, 0.78 * L, a * 0.26 * L)
-  put(g, box(0.02 * L, 0.36 * L, 0.54 * L), m.white, 0.12 * L, 0.78 * L, 0)
+  for (const a of [-1, 1]) put(g, box(0.52 * L, 0.22 * L, 0.02 * L), m.white, -0.14 * L, 0.71 * L, a * 0.26 * L)
+  put(g, box(0.02 * L, 0.5 * L, 0.54 * L), m.white, 0.12 * L, 0.85 * L, 0)
   // The mirror sweeps the view across the whole Earth disc, line by line.
-  put(g, box(0.5 * L, 0.02 * L, 0.46 * L), m.mirror, -0.14 * L, 0.78 * L, 0, 0, 0, 0.62)
+  put(g, box(0.5 * L, 0.02 * L, 0.46 * L), m.mirror, -0.14 * L, 0.8 * L, 0, 0, 0, 0.62)
   put(g, box(0.03 * L, 0.5 * L, 0.7 * L), m.white, 0.465 * L, 0.3 * L, 0)
   put(g, box(0.22 * L, 0.02 * L, 0.7 * L), m.white, 0.38 * L, 0.66 * L, 0, 0, 0, -0.55)
   put(g, cyl(0.07 * L, 0.07 * L, 0.12 * L, 14), m.aluDark, 0.28 * L, 0.66 * L, -0.26 * L)
@@ -192,8 +192,9 @@ export function telescope(g: THREE.Object3D, d: number) {
   put(g, cyl(0.06 * d, 0.06 * d, 0.6 * d, 10), m.aluDark, r + 0.07 * d, y0 + len * 0.45, 0)
   const door = new THREE.Group()
   door.position.set(0, y0 + len, -r)
-  door.rotation.x = -1.83
+  door.rotation.x = -1.75
   g.add(door)
-  put(door, cyl(r, r, 0.03 * d, 28), [m.white, m.white, m.black], 0, 0, r)
+  put(door, cyl(r, r, 0.03 * d, 28), [m.white, m.black, m.white], 0, 0.015 * d, r * 1.04)
+  for (const x of [-0.25, 0.25]) put(door, box(0.05 * d, 0.03 * d, 0.2 * d), m.steel, x * d, 0.015 * d, 0.06 * d)
   put(g, cyl(0.035 * d, 0.035 * d, 0.3 * d, 8), m.steel, 0, y0 + len, -r, 0, 0, Math.PI / 2)
 }

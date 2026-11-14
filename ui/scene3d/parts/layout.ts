@@ -84,15 +84,16 @@ export function modelKey(e: Entity): ModelKey {
 
 export interface WingShape { length: number; width: number; panels: number; yoke: boolean }
 
-/** One wing of a pair. Area follows the power (about 220 W per square meter); bigger arrays are longer and get more panels. */
+/** One wing of a pair. Area follows the power (about 300 W per square meter); bigger arrays get more panels. */
 export function wingShape(power_w: number, bus: [number, number, number]): WingShape {
   const p = Math.max(power_w, 1)
-  const area = p / 2 / 220
+  const area = p / 2 / 300
   const aspect = 2 + Math.log10(Math.max(p, 10) / 10)
-  const width = Math.min(Math.sqrt(area / aspect), bus[1])
-  // shortcut: wings longer than 3 bus lengths are drawn shorter than real, so the bus stays visible.
-  const length = Math.min(area / width, 3 * Math.max(...bus))
-  return { length, width, panels: clamp(Math.round(aspect), 1, 6), yoke: p >= 200 }
+  // Long wings are drawn wider and shorter (at most two bus lengths, as wide as the bus is tall), so the bus stays visible.
+  // shortcut: an array too big for that is drawn smaller than its real area.
+  const maxLength = 2 * Math.max(...bus)
+  const width = Math.min(Math.max(Math.sqrt(area / aspect), area / maxLength), bus[1])
+  return { length: Math.min(area / width, maxLength), width, panels: clamp(Math.round(aspect), 1, 6), yoke: p >= 200 }
 }
 
 /** Dish diameter in meters: grows with the link effort. Ka relay dish 1.1 m, Mars dish 2.7 m. */
