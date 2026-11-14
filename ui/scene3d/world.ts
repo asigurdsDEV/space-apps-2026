@@ -178,7 +178,7 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
   })
   const companions = (Object.entries(COMPANIONS) as [Body, Companion[]][]).flatMap(([around, list]) =>
     list.map((c) => {
-      const material = c.look === 'rock' ? rockMaterial : new THREE.ShaderMaterial({ ...planetShader, uniforms: { uSun, uBody: { value: BODY_INDEX[c.look] } } })
+      const material = c.look === 'rock' ? rockMaterial : new THREE.ShaderMaterial({ ...planetShader, uniforms: { uSun, uBody: { value: BODY_INDEX[c.look] }, ...bodyMaps.maps[c.look] } })
       const mesh = new THREE.Mesh(c.look === 'rock' ? rockGeometry : planet.geometry, material)
       mesh.scale.set(...c.size)
       sky.add(mesh)
@@ -191,7 +191,10 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
       if (!mesh.visible) continue
       mesh.position.set(...companionPosition(c, planet.rotation.y, sunXYZ))
       if (c.turnsPerSpin) mesh.rotation.y = planet.rotation.y * c.turnsPerSpin
-      else mesh.lookAt(sky.getWorldPosition(pos)) // one face always towards the planet
+      else {
+        mesh.lookAt(sky.getWorldPosition(pos)) // one face always towards the planet
+        if (c.look !== 'rock') mesh.rotateY(-Math.PI / 2) // lookAt aims +z; a mapped body's near side (longitude 0) is +x
+      }
     }
   }
 
