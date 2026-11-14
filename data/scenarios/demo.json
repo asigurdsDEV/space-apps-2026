@@ -2,7 +2,7 @@
   "contract_version": "0.1",
   "scenario_id": "demo",
   "title": "First Light: your first Earth-observing CubeSat",
-  "seed": 42,
+  "seed": 1,
   "dt_s": 86400,
   "duration_s": 31536000,
   "start_utc": "2027-01-01T00:00:00Z",
