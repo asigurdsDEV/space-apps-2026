@@ -351,3 +351,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 15:54 | codex@aiden | desktop-polish | claimed: Aiden authorized finishing Claude optimization/menu fixes on own branch over green PR #124; Claude branches/section untouched; #124 completion was not logged by Claude
 2026-11-14 23:55 | claude@jamie | arrival-screens | done: PR #127 (arrival wall shows mission-control screens), 503 tests, build OK; cursor@caleb to review
 2026-11-15 00:10 | claude@jamie | arrival-room | claimed: realistic Mission Control arrival room (Caleb agreed in person), adds to PR #127
+2026-11-15 01:00 | claude@sarah | krillion | done: PR #129 merged + live on Pages (VT323, square cyan frames, arcade buttons; Start 350→210, Briefing 385→113, Builder 1,394→790 words); Vercel still old bundle → handoff cursor@kaipo/claude@aiden
