@@ -1,4 +1,5 @@
 // Pure helpers for the mission builder. No React here, so they're easy to test.
+import type { ConsoleCall } from '../gonogo'
 import { canSend, ownerRole, type Command, type Entity, type Metrics, type Params, type ParamValue, type Player, type Role, type SimState } from '../../shared'
 
 /** One design choice on the builder screen: a `set_param` key filled from the sim's part entities. */
@@ -240,4 +241,14 @@ const TERMS: Record<string, string> = {
 /** Glossary id (ui/learn) for a column, slot key or budget label, if that word gets a tooltip. */
 export function termFor(name: string): string | undefined {
   return TERMS[name] ?? (/^payload_\w+_kg$/.test(name) ? 'payload-capacity' : undefined)
+}
+
+// ---------------------------------------------------------------- console lights
+
+/** "GO", "GO · 1 concern" or "NO-GO · 2": a console's call in words, so it never relies on colour. */
+export function callText(c: Pick<ConsoleCall, 'call' | 'reasons'>): string {
+  const n = c.reasons.length
+  if (c.call === 'go') return 'GO'
+  if (c.call === 'no-go') return `NO-GO · ${n}`
+  return `GO · ${n} concern${n === 1 ? '' : 's'}`
 }

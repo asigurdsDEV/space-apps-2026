@@ -4,6 +4,7 @@ import {
   DEFAULT_SLOTS,
   ROLE_TITLES,
   budgetBars,
+  callText,
   changedBy,
   commandAccess,
   playerLabel,
@@ -18,6 +19,7 @@ import {
   unitOf,
   type Slot,
 } from './model'
+import { poll } from '../gonogo'
 import { Term } from '../learn'
 import '../learn/learn.css'
 import { SpaceView } from '../scene3d'
@@ -160,6 +162,21 @@ export function MissionBuilder({ state, send, slots = DEFAULT_SLOTS, players = N
       </div>
 
       <aside className="mb-side" aria-label="Mission budgets">
+        <h2 className="mb-sr">Flight consoles</h2>
+        <ul className="mb-consoles">
+          {poll(state.issues).map((c) => {
+            const mine = coop && me?.role === c.role
+            return (
+              <li key={c.id} className={`mb-console is-${c.call}${mine ? ' is-mine' : ''}`} title={c.reasons.map((r) => r.message).join('\n') || undefined}>
+                <span className="mb-console-name">
+                  {c.label}
+                  {mine && <span className="mb-sr"> (your console)</span>}
+                </span>
+                <span className="mb-console-call">{callText(c)}</span>
+              </li>
+            )
+          })}
+        </ul>
         <h2>Budgets</h2>
         {bars.length === 0 && <p className="mb-muted">Pick parts to see your budgets.</p>}
         {bars.map((b) => (
