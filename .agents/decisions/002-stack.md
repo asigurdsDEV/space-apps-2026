@@ -57,8 +57,8 @@ interface Transport {
 
 ## Risks (and what we do about them)
 
-- **WebRTC can fail on strict networks** (school/venue wifi, symmetric NAT). PeerJS uses public STUN only; no TURN relay is configured. → Test on the venue wifi early; keep the same-screen fallback demo-ready.
-  `shortcut: no TURN server, add one (or swap PeerTransport for a small WebSocket relay behind the same Transport interface) if venue wifi blocks peer connections`
+- **WebRTC can fail on strict networks** (school/venue wifi, symmetric NAT). Decision 008 adds a Cloudflare TURN credential mint on Vercel (`/api/ice`, including TLS on port 443). Game traffic stays peer-to-peer; there is still no game server. GitHub Pages has no `/api/ice`. → Keep the same-screen fallback demo-ready.
+  `shortcut used: TURN credentials on Vercel, not a WebSocket game relay`
 - **The public PeerJS broker is a free shared service** with no uptime guarantee. → Same mitigation; the Transport interface keeps the swap to one file.
 - **If the host leaves, the game ends** (no host migration). Fine for a hackathon demo.
 
