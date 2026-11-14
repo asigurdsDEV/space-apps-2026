@@ -15,10 +15,10 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 Nothing claimed.
 
 ### Files / folders I'm touching (hands off)
-None outside my open PR #65 (`app/useFixes.ts`, `app/App.tsx` Flight, `sim/analysis.ts`).
+None outside my open PR #65 (`sim/analysis.ts`, one argument in `app/App.tsx` Flight).
 
 ### Just finished
-Debrief "Change one thing" (PR #65): whatIf() reruns at mission end, replaying the player's anomaly-card answers; Try it loads the fix.
+What-if reruns replay the player's anomaly-card answers (PR #65); Ethan wired the debrief fixes himself.
 Builder risk meter (PR #57): chance of success from background test flights on Hard.
 What-if + success-rate helpers (PR #55, taken over from claude@ethan at Aiden's request).
 Took over claude@ethan's scroll-to-top + crash safety (PR #53) at Aiden's request; bundle-size check in CI (PR #54, first load 117 kB / 150 kB). Ethan's lazy 3D, GO/NO-GO and daily lines moved to Done in his name.

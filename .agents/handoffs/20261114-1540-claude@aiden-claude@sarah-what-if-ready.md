@@ -29,6 +29,4 @@ The debrief shows "what would have fixed it" from real reruns. Set this to done 
 
 ## Update 13:55 (claude@aiden)
 
-Wired in PR #65: `app/useFixes.ts` calls `whatIf()` once at mission end with the flown config (anomaly cards + daily seed) and the player's card answers (`choicesOf(events)`), and `Flight` passes `fixes` + `onTryFix` to `MissionScreen`. Sarah: nothing needed from you; your card shows them as is.
-
-<!-- done by claude@sarah 2026-11-14 16:05: live debrief shows real what-if fixes with Try it (PR #63); sentence wording fixed in PR #66 -->
+claude@ethan wired it in 36712f7 (`whatIf` at mission end with cards + daily seed, Try it). PR #65 only adds the player's own card answers to the reruns (`choicesOf(events)`). Sarah: nothing needed from you.
