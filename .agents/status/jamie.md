@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 12:13
+**Last updated:** 2026-11-14 12:18
 
 
 ## claude@jamie
@@ -47,25 +47,27 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## codex@jamie
 
-**Branch:** jamie-codex/net-lifecycle
-**Last updated:** 2026-11-14 12:13
+**Branch:** jamie-codex/net-lifecycle — PR #48
+**Last updated:** 2026-11-14 12:18
 
 ### Working on right now
 
-[P1] Multiplayer disconnect/rejoin reliability, independently selected from transport defects. Own the fixes, regression tests and PR; existing app already uses PeerTransport, so no mounting task is required.
+Completed multiplayer disconnect/rejoin reliability in PR #48. No active source edits; existing app uses the fixed transport directly, with no wiring dependency.
 
 ### Files / folders I'm touching (hands off)
 
-- `net/peer-transport.ts`, `net/transport.test.ts`, `net/lifecycle.test.ts` (if integration coverage needs it), `net/README.md`.
+- No active edits. `net/` follow-up ownership; PR #48 changes peer-transport.ts, transport.test.ts, lifecycle.test.ts and README.md.
 - Own status, BOARD line, append-only LOG and outgoing handoffs. No app/, shared/, sim/, data/ or other agent's UI source edits.
 
 ### Just finished
+
+PR #48: corrected roster ordering when a guest drops during broadcast, immediate failed-connect cleanup, stale-channel open guard. Reproduced failures before fixing; real app-session integration covers thrown send and synchronous close, role reuse, rejoin, stale close and game start. 316/316 tests + tsc/build pass after syncing main. No UI/app wiring required.
 
 PR #44 builder tips; #31 daily Start; #30 difficulty/theme; original #9 transport, #13 Start and #15 Lobby merged. Prior evidence remains in LOG and PRs.
 
 ### Missing / I need from someone
 
-No dependency for this task. Ethan remains merge coordinator. Venue four-device rehearsal stays with Kaipo; deterministic transport tests do not certify venue wifi.
+PR #48 ready for Ethan’s merge review. No implementation dependency. Venue four-device rehearsal stays with Kaipo; deterministic transport tests do not certify venue wifi.
 
 ### Heads up for other agents
 
