@@ -45,3 +45,8 @@
   .bf-actions { flex-direction: column-reverse; }
   .bf-start, .bf-back { width: 100%; }
 }
+
+/* Bonus star goal (data/ bonus_goal, labels from ui/mission BONUS_GOALS). */
+.bf-bonus { margin: 16px 0 0; padding: 10px 14px; border: 1px solid var(--game-warning, #805200); border-radius: 10px; color: var(--bf-text); }
+.bf-bonus > span[aria-hidden] { color: var(--game-warning, #805200); }
+.bf-bonus-hint { color: var(--bf-muted); }

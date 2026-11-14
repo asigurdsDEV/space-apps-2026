@@ -1,5 +1,6 @@
 import type { Config } from '../../shared'
 import { glossaryEntry } from '../learn'
+import { BONUS_GOALS } from '../mission'
 import { HOW_TO_WIN, KEY_TERM_IDS, briefingFacts } from './model'
 import '../theme/theme.css'
 import './briefing.css'
@@ -16,6 +17,8 @@ export interface BriefingProps {
 export function Briefing({ config, onStart, onBack }: BriefingProps) {
   const objective = config.params.objective_text
   const facts = briefingFacts(config)
+  const bonusCode = config.params.bonus_goal
+  const bonus = typeof bonusCode === 'string' ? BONUS_GOALS[bonusCode] : undefined
 
   return (
     <main className="bf">
@@ -34,6 +37,13 @@ export function Briefing({ config, onStart, onBack }: BriefingProps) {
               </div>
             ))}
           </dl>
+        )}
+
+        {bonus && (
+          <p className="bf-bonus">
+            <span aria-hidden="true">★ </span>
+            <strong>Bonus star:</strong> {bonus.label}. <span className="bf-bonus-hint">Win the mission and do this too for a second star.</span>
+          </p>
         )}
 
         <section aria-labelledby="bf-win">
