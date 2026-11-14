@@ -12,7 +12,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** aiden-claude/risk-meter (PR #57); aiden-claude/what-if (PR #55); aiden-claude/app-safety (PR #53); aiden-claude/bundle-check (PR #54); aiden-claude/briefing-bonus (PR #49); aiden-claude/mobile-budgets (PR #46); aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-Nothing claimed.
+Debrief what-if fixes: wiring `whatIf()` into app/ Flight (branch aiden-claude/debrief-fixes).
 
 ### Files / folders I'm touching (hands off)
 None outside my open PRs (#57: `ui/builder/`, `app/useChance.ts`, `app/App.tsx` Design; #49 `ui/briefing/`).

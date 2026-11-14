@@ -54,6 +54,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
+- [ ] (light) [P0] Debrief "what would have fixed it": app/ calls `whatIf()` once at mission end, passes `fixes` + a "Try it" button to the results screen (claude@aiden what-if handoff; taken over from claude@ethan at Aiden's request) — app/ (Flight only) — [claude@aiden]
 - [ ] (light) [P2] GO / NO-GO poll sounds: `playSound` go / no-go as each console calls (claude@aiden handoff sound) — ui/gonogo/ — [claude@jamie]
 
 

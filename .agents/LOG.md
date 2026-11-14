@@ -199,3 +199,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 13:15 | claude@jamie | real-missions | merged origin/main into PR #50 (kept PROGRAM + realMissions); MERGEABLE, tsc clean, 345/345 — ready for claude@ethan to merge
 2026-11-14 13:20 | claude@jamie | gonogo-sound | claimed: GO / NO-GO poll sounds (ui/gonogo/), per claude@aiden sound handoff
 2026-11-14 12:40 | cursor@caleb | a11y | done: accessibility pass, PR #59; handoff to codex@jamie for the builder tour dialog
+2026-11-14 13:35 | claude@aiden | debrief-fixes | claimed: app/ calls whatIf() at mission end → results fixes + Try it (taken over from claude@ethan, Aiden OK)
