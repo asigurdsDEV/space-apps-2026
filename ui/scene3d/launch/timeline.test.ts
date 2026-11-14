@@ -91,7 +91,7 @@ describe('stageAt and the mission clock', () => {
 
 describe('rocketSpec', () => {
   it('knows every catalog row and keeps real proportions', () => {
-    for (const v of vehicles) expect(rocketSpec(v).livery, v.id).not.toBe('generic')
+    for (const v of vehicles) expect(rocketSpec(v).model, v.id).not.toBe('generic')
     expect(rocketHeight(rocketSpec(byId('electron')))).toBeCloseTo(18, 0)
     expect(rocketHeight(rocketSpec(byId('falcon-9')))).toBeCloseTo(70, 0)
     expect(rocketHeight(rocketSpec(byId('sls-block-1')))).toBeCloseTo(98, 0)
@@ -102,7 +102,7 @@ describe('rocketSpec', () => {
   it('sizes an unknown rocket by what it can lift', () => {
     const small = rocketSpec({ id: 'a', name: 'A', props: { payload_leo_kg: 300 } })
     const big = rocketSpec({ id: 'b', name: 'B', props: { payload_leo_kg: 60_000, payload_tli_kg: 'n/a' } })
-    expect(small.livery).toBe('generic')
+    expect(small.model).toBe('generic')
     expect(rocketHeight(big)).toBeGreaterThan(rocketHeight(small) * 2)
     expect(big.boosters).not.toBeNull()
     expect(payloadCapacityKg(undefined)).toBe(0)

@@ -9,7 +9,7 @@ Use an edited **30-second video**, not the previous three-minute walkthrough. If
 | 0–4 s | Start: Earth → Moon → Mars mission artwork | “Can your team build a spacecraft that brings its science home?” |
 | 4–10 s | Builder: change payload/radio, show resource bars and four consoles | “Four mission-control roles balance mass, power, cost and communications.” |
 | 10–15 s | Brief launch excerpt, then an anomaly choice with its historical story | “Design, launch, and respond to anomalies inspired by real missions.” |
-| 15–21 s | Operations: readable dated NASA weather strip | “Replay historical NASA space weather…” |
+| 15–21 s | Operations: the storm card on a real storm day, with the dated NASA weather strip behind it (First Light, Normal, seed 1 replays Sept 2017: real G4 storm on 7 Sep 2017, mission day 1) | “Real NASA space weather: this storm really hit on 7 September 2017…” |
 | 21–26 s | Results: reason and sourced real-mission comparison | “…then compare your spacecraft with a real mission in the debrief.” |
 | 26–30 s | Result → improved design; title, project URL and compact source credit | “Every result explains a trade-off, so your next design is a better-informed decision.” |
 
@@ -21,7 +21,7 @@ Use the full narration in [PITCH.md](PITCH.md), then time the spoken take. Captu
 - Starting parts: `cubesat-6u`, `camera-basic`, `solar-deployable-small`, `battery-small`, `s-band-patch`, `rideshare`, `sso`. Teaching point: science collection and downlink both constrain the result.
 - Reference improvement: bus `cubesat-12u`; instruments `camera-basic,ir-spectrometer`; solar `solar-deployable-large`; comms `x-band-transmitter`; retain the other scenario defaults. This is the reference design in `tests/playthrough.test.ts`, including tests with difficulty-specific anomaly cards answered with option `a`.
 - Optional blocking example: select `geo` with `rideshare`, show the launcher-reach issue, then restore `sso`. Do not spend the submission video on a second failure example.
-- Do not quote the old estimated dollar/science totals. Capture actual values and results from the recording build after the current data/physics fixes land.
+- For the storm shot, First Light seed 1 fires the real G4 storm card (7 Sep 2017) on mission day 1. Pick option A to keep the run safe. Do not quote the old estimated dollar/science totals. Capture actual values and results from the recording build after the current data/physics fixes land.
 - Keep the First Light losing-versus-improved story; the reference tests support it. Anomaly choices and difficulty affect outcomes, so record the complete settings and answers.
 
 ## Before recording

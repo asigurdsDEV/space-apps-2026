@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Sarah
 **Agent:** Claude Code (claude@sarah)
 **Branch:**
-**Last updated:** 2026-11-14 19:20
+**Last updated:** 2026-11-14 22:20
 
 ## Working on right now
 
@@ -22,7 +22,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** sarah-claude/mission-view
 
 ### Working on right now
-Nothing claimed. Watching the audit tasks; will re-check science numbers when claude@jamie / claude@ethan land S1–S4.
+Nothing claimed.
 
 ### Files / folders I'm touching (hands off)
 - `ui/mission/` (I own it; ask with a handoff before changing it)
@@ -33,6 +33,14 @@ Nothing claimed. Watching the audit tasks; will re-check science numbers when cl
 - `.agents/status/sarah.md`: only the `## claude@sarah` section
 
 ### Just finished
+Rubric pass PR #105: Falcon 9 TLI>TMI, 3U ≤ 4 kg, buses name computer/ADCS, build times + deadlines (behind_schedule live, all reference designs still win), Sandbox scenario, README game-first header. 467 tests.
+
+PR #100: submission, pitch, demo, NASA_SOURCES and app README now say real NASA storms drive play (PR #99 merged), demo shot = real G4 storm 7 Sep 2017 on First Light seed 1.
+
+Real NASA storms drive play, PR #99 (Sarah approved, in claude@ethan's sim/app): storm card fires on real OMNI G3+ days with the real date; First Light replays Sept 2017 → real G4 storm on 2017-09-07. 450 tests. Handoff to claude@ethan.
+
+NASA data check (Sarah asked): OMNI matches NASA raw files exactly (400 days + fresh 2003 file identical); 6 real-mission masses match NSSDC (LRO flag withdrawn); 34/34 source links valid. Found OMNI is only displayed, not used in play → P0 board task. Applied codex@aiden's source-audit fixes to cards/story docs (PR #85); Spirit in-game URL → claude@ethan.
+
 Accuracy + requirements + awards audit, `docs/game-design/ACCURACY_AUDIT.md` (PR #85): 1 physics error (solar at Mars), 3 data issues, 1 visible 3D bug, 5 brief gaps, submission breaks the 30-s demo rule and says we use no NASA data. 13 tasks with owners on BOARD, handoff to all. Plus Team priorities card on the debrief.
 
 Checked main after claude@ethan's merge batch (#66 #71 #73 #76 #78 + V6/story): 405 tests, build ok. Story script now live in `ui/story/model.ts` LINES (PR), Mars delay line sourced.

@@ -10,7 +10,9 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { buildCraft, disposeObject } from './craft'
 import { cruiseLayout, transferArc, transferPoint } from './cruise'
 import { lapSeconds, orbitRadius, type Body, type SceneSpec } from './model'
+import { planetMaps } from './maps'
 import { atmosphereShader, cloudShader, planetShader } from './shaders'
+import { COMPANIONS, companionPosition, type Companion } from './sky'
 
 /** "cruise" shows Earth → the Moon or Mars on the transfer arc; with an Earth orbit it shows "orbit". */
 export type ViewMode = 'spacecraft' | 'orbit' | 'cruise'
@@ -36,7 +38,7 @@ export interface World {
 const SUN = new THREE.Vector3(1, 0.35, 0.55).normalize()
 const ATMOSPHERE_R = 1.06
 const BODY_INDEX: Record<Body, number> = { earth: 0, moon: 1, mars: 2 }
-const ATMOSPHERE: Record<Body, THREE.Color | null> = { earth: new THREE.Color(0.28, 0.55, 1.0), mars: new THREE.Color(0.85, 0.48, 0.3), moon: null }
+const ATMOSPHERE: Record<Body, THREE.Color | null> = { earth: new THREE.Color(0.28, 0.55, 1.0), mars: new THREE.Color(0.4, 0.23, 0.14), moon: null }
 const SPIN_S: Record<Body, number> = { earth: 80, moon: 400, mars: 90 }
 const CRAFT_SIZE: Record<ViewMode, number> = { spacecraft: 0.05, orbit: 0.04, cruise: 0.08 }
 const CRUISE_LOOP_S = 18
@@ -120,7 +122,10 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
   const uSun = { value: SUN.clone() }
   const uTime = { value: 0 }
   const uBody = { value: 0 }
-  const planet = new THREE.Mesh(new THREE.SphereGeometry(1, 160, 120), new THREE.ShaderMaterial({ ...planetShader, uniforms: { uSun, uBody } }))
+  // Real NASA maps (maps/README.md), one shared set of uniforms per body; procedural until they load.
+  const bodyMaps = planetMaps(renderer.capabilities.getMaxAnisotropy())
+  const planetMaterial = new THREE.ShaderMaterial({ ...planetShader, uniforms: { uSun, uBody, ...bodyMaps.maps.earth } })
+  const planet = new THREE.Mesh(new THREE.SphereGeometry(1, 160, 120), planetMaterial)
   const clouds = new THREE.Mesh(
     new THREE.SphereGeometry(1.012, 128, 96),
     new THREE.ShaderMaterial({ ...cloudShader, uniforms: { uSun, uTime }, transparent: true, depthWrite: false }),
@@ -143,12 +148,55 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
   scene.add(globe, atmosphere)
 
   // Cruise mode: Earth behind us and the transfer arc to the destination (the globe above).
-  const home = new THREE.Mesh(planet.geometry, new THREE.ShaderMaterial({ ...planetShader, uniforms: { uSun, uBody: { value: 0 } } }))
+  const home = new THREE.Mesh(planet.geometry, new THREE.ShaderMaterial({ ...planetShader, uniforms: { uSun, uBody: { value: 0 }, ...bodyMaps.maps.earth } }))
   const arc = new THREE.Line(
     new THREE.BufferGeometry(),
     new THREE.LineDashedMaterial({ color: 0xbcd2ff, dashSize: 0.22, gapSize: 0.12, transparent: true, opacity: 0.95, depthWrite: false }),
   )
   scene.add(home, arc)
+
+  // The rest of the sky, to scale (sky.ts): the Moon from Earth orbit, Earth from lunar orbit, Phobos and Deimos at Mars.
+  // It hangs off the globe so it tilts with the planet in the close-up.
+  const sky = new THREE.Group()
+  globe.add(sky)
+  // Phobos and Deimos are dark, lumpy rocks. Phobos carries Stickney, a crater almost half its own width.
+  const rockGeometry = new THREE.SphereGeometry(1, 32, 20)
+  const rockAt = rockGeometry.getAttribute('position')
+  const stickney = new THREE.Vector3(0.5, 0.25, 0.83).normalize()
+  for (let i = 0, v = new THREE.Vector3(); i < rockAt.count; i++) {
+    v.fromBufferAttribute(rockAt, i)
+    const lumps = 0.09 * Math.sin(3.1 * v.x + 1.3) * Math.sin(2.7 * v.y + 0.4) + 0.05 * Math.sin(7 * v.x + 5 * v.y + 3 * v.z)
+    v.multiplyScalar(1 + lumps - 0.2 * THREE.MathUtils.smoothstep(v.dot(stickney), 0.78, 0.97))
+    rockAt.setXYZ(i, v.x, v.y, v.z)
+  }
+  rockGeometry.computeVertexNormals()
+  const rockMaterial = new THREE.ShaderMaterial({
+    uniforms: { uSun },
+    vertexShader: 'varying vec3 vN; void main() { vN = mat3(modelMatrix) * normal; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+    // Both moons reflect about 7% of the sunlight that reaches them: among the darkest bodies in the solar system.
+    fragmentShader: 'uniform vec3 uSun; varying vec3 vN; void main() { gl_FragColor = vec4(vec3(0.34, 0.31, 0.29) * max(dot(normalize(vN), uSun), 0.0), 1.0); }',
+  })
+  const companions = (Object.entries(COMPANIONS) as [Body, Companion[]][]).flatMap(([around, list]) =>
+    list.map((c) => {
+      const material = c.look === 'rock' ? rockMaterial : new THREE.ShaderMaterial({ ...planetShader, uniforms: { uSun, uBody: { value: BODY_INDEX[c.look] }, ...bodyMaps.maps[c.look] } })
+      const mesh = new THREE.Mesh(c.look === 'rock' ? rockGeometry : planet.geometry, material)
+      mesh.scale.set(...c.size)
+      sky.add(mesh)
+      return { around, c, mesh }
+    }),
+  )
+  const sunXYZ = SUN.toArray()
+  function placeSky() {
+    for (const { c, mesh } of companions) {
+      if (!mesh.visible) continue
+      mesh.position.set(...companionPosition(c, planet.rotation.y, sunXYZ))
+      if (c.turnsPerSpin) mesh.rotation.y = planet.rotation.y * c.turnsPerSpin
+      else {
+        mesh.lookAt(sky.getWorldPosition(pos)) // one face always towards the planet
+        if (c.look !== 'rock') mesh.rotateY(-Math.PI / 2) // lookAt aims +z; a mapped body's near side (longitude 0) is +x
+      }
+    }
+  }
 
   // Orbit ring, tilted by the inclination.
   const orbitPivot = new THREE.Group()
@@ -223,7 +271,9 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
     spec = next
     radius = orbitRadius(spec)
     uBody.value = BODY_INDEX[spec.body]
+    Object.assign(planetMaterial.uniforms, bodyMaps.maps[spec.body])
     clouds.visible = spec.body === 'earth'
+    for (const { around, mesh } of companions) mesh.visible = around === spec.body
     const air = ATMOSPHERE[spec.body]
     atmosphere.visible = !!air
     if (air) uAtmo.value.copy(air)
@@ -245,6 +295,7 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
     ring.visible = shown === 'orbit'
     marker.visible = shown !== 'spacecraft'
     home.visible = arc.visible = shown === 'cruise'
+    sky.visible = shown !== 'cruise' // cruise is a diagram, not to scale
     const target = shown === 'spacecraft' ? new THREE.Vector3(0, closeRadius(), 0) : new THREE.Vector3()
     if (shown === 'cruise' && spec.body !== 'earth') {
       const { earthRadius, distance } = cruiseLayout(spec.body)
@@ -326,6 +377,7 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
     }
     if (shown === 'orbit') angle += ((dt * Math.PI * 2) / lapSeconds(spec.period_s)) * motion
     placeCraft()
+    placeSky()
     controls.update(dt)
     composer.render(dt)
   }
@@ -353,6 +405,7 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
 
   applySpec(initial)
   placeCraft()
+  placeSky()
   composer.render()
 
   return {
@@ -372,6 +425,7 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
       controls.dispose()
       disposeObject(scene)
       environment.dispose()
+      bodyMaps.dispose()
       pmrem.dispose()
       composer.dispose()
       renderer.dispose()

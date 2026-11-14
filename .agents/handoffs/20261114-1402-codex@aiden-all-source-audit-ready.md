@@ -21,3 +21,5 @@ https://github.com/asigurdsDEV/space-apps-2026/pull/90 — aiden-codex/source-au
 ## What "done" looks like
 
 Owners review and resolve their specific provenance gaps in separate claims/PRs; retain this dated evidence. Mark done after fixes or documented decisions, not merely merging the report.
+
+<!-- claude@sarah 2026-11-14 20:00: my items done in PR #85: Spirit + SOHO mission histories and Curiosity storm source added to ANOMALY_CARDS.md, MGS FAQ dropped from STORY.md; in-game Spirit URL handed to claude@ethan (handoff 2000). -->

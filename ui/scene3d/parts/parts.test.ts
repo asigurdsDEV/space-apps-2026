@@ -6,7 +6,8 @@ import type { Entity, Params } from '../../../shared'
 import { catalogEntities } from '../../../sim/parts'
 import { buildCraft } from '../craft'
 import { sceneSpec } from '../model'
-import { SLOT, batterySize, craftLayout, dishDiameter, instrumentSize, modelKey, packDeck, triangles, wingShape, type Slot } from './index'
+import doc from './REFERENCES.md?raw'
+import { REFERENCES, SLOT, batterySize, buildBus, craftLayout, dishDiameter, instrumentSize, mats, modelKey, packDeck, referenceFor, triangles, wingShape, type Slot } from './index'
 
 const entities = catalogEntities(getDatasets())
 const of = (kind: string) => entities.filter((e) => e.kind === kind)
@@ -20,7 +21,7 @@ describe('model keys', () => {
     expect(key).toMatchObject({
       'cubesat-3u': 'cubesat', smallsat: 'smallsat', 'medium-bus': 'medium', 'flagship-bus': 'flagship',
       'solar-body-panels': 'body-cells', 'solar-deployable-small': 'wings', 'solar-array-large': 'wings', rtg: 'rtg', 'battery-small': 'battery',
-      'uhf-radio': 'turnstile', 's-band-patch': 'patch', 'x-band-transmitter': 'horn',
+      'uhf-radio': 'turnstile', 's-band-patch': 'patch', 'x-band-transmitter': 'reflectarray',
       'high-gain-dish': 'dish-gimbal', 'deep-space-transponder': 'dish-fixed', 'mars-hga': 'dish-deep',
       'camera-basic': 'camera', 'multispectral-imager': 'multispectral', 'weather-imager': 'weather-imager', magnetometer: 'magnetometer',
       'radiation-detector': 'particles', 'ir-spectrometer': 'spectrometer', 'microwave-sounder': 'sounder', 'laser-altimeter': 'altimeter',
@@ -31,16 +32,56 @@ describe('model keys', () => {
     for (const kind of ['comms_system', 'instrument']) expect(new Set(ids(kind).map((id) => key[id])).size).toBe(ids(kind).length)
   })
 
+  it('names the real hardware behind every catalog row', () => {
+    const rows = [...of('bus'), ...of('power_system'), ...of('comms_system'), ...of('instrument')]
+    expect(Object.keys(REFERENCES).sort()).toEqual(rows.map((e) => e.id).sort())
+    for (const e of rows) {
+      const ref = REFERENCES[e.id]!
+      // The reference is the one the model is built from, and REFERENCES.md documents it with its source.
+      expect(ref.model).toBe(modelKey(e))
+      expect(ref.hardware.length).toBeGreaterThan(8)
+      expect(ref.url).toMatch(/^https:\/\/([a-z0-9-]+\.)*nasa\.gov\//)
+      expect(doc).toContain(`\`${e.id}\``)
+      expect(doc).toContain(ref.url)
+    }
+    // A part the catalog has never seen borrows the reference of its model.
+    expect(referenceFor('mystery-dish', 'dish-deep')?.mission).toBe('Mars Reconnaissance Orbiter')
+    expect(referenceFor('mystery', 'generic')).toBeUndefined()
+  })
+
+  it('uses the real sizes', () => {
+    const wing = (id: string, bus: [number, number, number]) => wingShape(Number(entities.find((e) => e.id === id)!.props.power_w), bus)
+    // MRO's wings are 5.35 x 2.53 m; they fit a bus that is tall enough.
+    expect(wing('solar-array-large', [3.6, 4.6, 3.6])).toMatchObject({ length: 5.35, width: 2.53, panels: 2, mount: 'yoke', cant: 0 })
+    // MAVEN's gull wing, scaled from 3,600 W to the catalog's 1,000 W.
+    const maven = wing('solar-array-medium', [2.3, 2, 2.3])
+    expect(maven.cant).toBeCloseTo(0.349, 3)
+    expect(maven.length * maven.width * 2).toBeCloseTo((12 * 1000) / 3600, 1)
+    const dish = (id: string) => dishDiameter(entities.find((e) => e.id === id)!)
+    expect([dish('high-gain-dish'), dish('deep-space-transponder'), dish('mars-hga')]).toEqual([0.75, 1.3, 3])
+  })
+
+  it('draws rocket nozzles only on buses that can change their orbit', () => {
+    const nozzles = (id: string) => {
+      let n = 0
+      buildBus(craftLayout(craft({ bus: id })).bus).traverse((o) => void (o instanceof THREE.Mesh && o.material === mats().nozzle && n++))
+      return n
+    }
+    for (const bus of of('bus')) {
+      if (Number(bus.props.propulsion_delta_v_ms) > 0) expect(nozzles(bus.id)).toBeGreaterThan(0)
+      else expect(nozzles(bus.id)).toBe(0)
+    }
+    expect([nozzles('cubesat-3u'), nozzles('cubesat-6u'), nozzles('cubesat-12u')]).toEqual([0, 0, 8])
+  })
+
   it('tells rows that share a model apart by size', () => {
     const bus: [number, number, number] = [1.4, 1.7, 1.4]
     const wings = of('power_system').filter((e) => modelKey(e) === 'wings').map((e) => wingShape(Number(e.props.power_w), bus))
-    expect(wings.map((w) => w.panels)).toEqual([2, 3, 4, 5])
+    expect(wings.map((w) => w.mount)).toEqual(['hinge', 'drive', 'yoke', 'yoke'])
     wings.forEach((w, i) => i && expect(w.length * w.width).toBeGreaterThan(wings[i - 1]!.length * wings[i - 1]!.width))
     const packs = of('power_system').filter((e) => modelKey(e) === 'battery').map((e) => batterySize(e)[0])
     expect(packs[0]).toBeLessThan(packs[1]!)
     expect(packs[1]).toBeLessThan(packs[2]!)
-    const dish = (id: string) => dishDiameter(entities.find((e) => e.id === id)!)
-    expect(dish('mars-hga')).toBeGreaterThan(2 * dish('high-gain-dish'))
   })
 
   it('falls back by kind and props for ids it has never seen', () => {
@@ -60,7 +101,7 @@ describe('layout', () => {
   it('gives every family its own mount slot', () => {
     // Models that can be picked together must never share a slot; only the nadir deck holds several.
     const picks: (keyof typeof SLOT)[][] = [
-      ['body-cells'], ['wings', 'rtg'], ['battery', 'power-box'], ['turnstile', 'patch', 'horn', 'dish-gimbal', 'dish-fixed', 'dish-deep'],
+      ['body-cells'], ['wings', 'rtg'], ['battery', 'power-box'], ['turnstile', 'patch', 'reflectarray', 'dish-gimbal', 'dish-fixed', 'dish-deep'],
       ['magnetometer'], ['particles'], ['dipole-radar'], ['sar'], ['telescope'],
     ]
     const owner = new Map<Slot, number>()

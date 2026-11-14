@@ -12,12 +12,13 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** aiden-claude/app-walk (PR #87); aiden-claude/hangar (PR #80); aiden-claude/story-app (PR #74, after #70); aiden-claude/story-popouts (PR #70); aiden-claude/launch-visible (PR #68); aiden-claude/debrief-fixes (PR #65); aiden-claude/risk-meter (PR #57); aiden-claude/what-if (PR #55); aiden-claude/app-safety (PR #53); aiden-claude/bundle-check (PR #54); aiden-claude/briefing-bonus (PR #49); aiden-claude/mobile-budgets (PR #46); aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-Nothing claimed. Every Open board task has another owner.
+Nothing claimed. Storm card is claude@sarah's (claude@ethan's correction on my 2030 handoff).
 
 ### Files / folders I'm touching (hands off)
 PR #87: `app/Walk.tsx`, `app/Walk.test.tsx`, the `<Walk>` / `<WalkTo>` lines in `app/App.tsx`, the walk block in `app/app.css`. Otherwise none outside my open PRs #65 (`sim/analysis.ts`, one argument in `app/App.tsx` Flight) #68 (`ui/builder/builder.css`) #70 (`ui/story/`) and #80 (`ui/hangar/`), #74 (`app/StoryLayer.tsx`, `<StoryLayer>` lines + `online`/clock hold in `app/App.tsx`).
 
 ### Just finished
+Added Submission readiness to the board (record demo, submit, code freeze Sun 18:00, launch 20 s vs 10 s). Checked the walk + cutscenes on the live site at 375 px, keyboard and screen-reader structure: no change needed.
 Offline cache covers every file in public/, incl. cursor@kaipo's flight models (PR #93). Add a file to `public/` → add it to `pwa/public-files.ts` (a test tells you). Not checked: an offline reload in a browser.
 3D scenes inside the cutscene frame (cursor@caleb's handoff 1340, branch aiden-claude/cutscene-scenes): arrival, orbit, anomaly, ending in `app/StoryLayer.tsx`. Seen in the game: arrival, anomaly, ending (loss). Not seen in the game: Moon/Mars orbit, ending (success).
 Walk between stations (PR #87): `ui/hangar` behind every screen, each screen a panel over the hall; no WebGL = today's screens. Not checked: co-op in two browsers, a real phone, a screen reader.
@@ -53,20 +54,20 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** main (done coordination); aiden-codex/source-audit (PR #90)
-**Last updated:** 2026-11-14 14:02
+**Branch:** main (done coordination); aiden-codex/offline-qa (PR #101)
+**Last updated:** 2026-11-14 14:36
 
 ### Working on right now
-Source audit complete in PR #90. No new implementation claimed. Source/data/content fixes stay with their owners; optional V7 screen assembly still needs Ethan's scope/API agreement. Claude app-walk landed during this audit; no overlapping source work taken.
+Offline browser QA complete, PR #101. No new implementation claimed. Ethan has both V7 scene and app mount; earlier optional UI assembly offer withdrawn to avoid duplicate ownership.
 
 ### Files / folders I'm touching (hands off)
-No active source edits. PR #90: docs/qa/sources.md + sources.json only; review follow-ups mine. Own coordination only. Claude section/branches and all data/UI/app/sim source untouched; unrelated docs/CHALLENGE 2.md untouched.
+No active source edits. PR #101: docs/qa/offline-cache.md only, review fixes mine. Own coordination only. Claude section/branches and unrelated docs/CHALLENGE 2.md untouched.
 
 ### Just finished
-38 URL strings / 43 references at ef93ded snapshot: 37 literal GETs, 34 HTTP200, 3 HTTP403 (all readable via web retrieval); 1 shell template. Reviewed support by URL, recorded partial/background/conflicting evidence. No confirmed dead link. JSON/count/location assertions and diff check pass; no gameplay test rerun for docs-only change.
+Fresh-profile Chrome production preview: cached Start reloads with origin stopped; all six public files incl. three valid GLBs pass. Uncached negative control rejects. Offline first-use lazy Hangar/canvas/SpaceView imports fail and Builder hits error boundary; online control succeeds with two canvases. Same failure without page-level offline emulation. Build and 3 focused Vitest tests pass. Report separates preview finding from unverified live Pages impact.
 
 ### Missing / I need from someone
-Data owner: row-specific provenance; GRAIL primary-source mass conflict; GOES year; MMRTG source. Sarah: Spirit completed repair, SOHO longevity and Curiosity power citations. Kaipo: glossary sources/DSN wording. LRO cited source supports 1,846 kg; do not change on audit suspicion alone. Report and handoff list details. Integrated V7/device QA still pending owner work.
+Claude Aiden/PWA owner: reproduce local offline lazy-import failure and compare Pages behavior; board + handoff carry exact steps. Ethan: V7 integration; Kaipo: physical venue rehearsal. Remaining data/provenance tasks stay with owners. Sarah's source fixes and real-storm integration are now on main; no competing storm work requested.
 
 ### Heads up for other agents
-Sol audit finished. PR #90 does not change scientific values or claim full data/physics/license validation. Page availability can differ by client. Ethan remains merge coordinator; no source/branch takeover. Astra remains preferred when new model/visual design work begins.
+QA is complete, offline gameplay is not signed off. Vary: Origin/request matching is only a diagnostic lead; root cause unconfirmed. No physical phone, installed-PWA upgrade or V7 acceptance tested. Sol remains appropriate for QA; Astra for new model/design work.

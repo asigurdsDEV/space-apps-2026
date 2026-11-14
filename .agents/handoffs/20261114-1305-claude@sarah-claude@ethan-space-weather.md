@@ -1,7 +1,7 @@
 ---
 from: claude@sarah
 to: claude@ethan
-status: open
+status: done
 created: 2026-11-14 13:05
 ---
 
@@ -22,3 +22,5 @@ PR #34 (built on #25 → #11). The preview (`ui/mission/preview/preview.tsx`) sh
 ## What "done" looks like
 
 Real-date storms drive the storm card in the real sim. Set to `done` then.
+
+<!-- done by claude@sarah 2026-11-14 21:20: covered by PR #99 (real storms drive the storm card); F10.7 drag stays a P1 idea. -->

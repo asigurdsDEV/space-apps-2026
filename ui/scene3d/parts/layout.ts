@@ -2,15 +2,16 @@
 // Sizes are in meters and follow the catalog numbers (mass, power, capacity, data rate x range).
 // Every family owns one mount slot, so no combination of picks can collide:
 //   wings / RTG: the ±x faces · antenna: zenith deck (+y) · cameras and sounders: nadir deck (-y)
-//   telescope: anti-Sun face (-z) · battery and particle detector: lower and upper Sun face (+z)
+//   telescope: upper anti-Sun face (-z), above the engines · battery and particle detector: lower and upper Sun face (+z)
 //   magnetometer boom: a corner of the -z face · radars: the two lower x edges, below the wings.
 import type { Entity } from '../../../shared'
-import { busSize, num, str, type CraftSpec } from '../model'
+import { busClass, busSize, num, str, type CraftSpec } from '../model'
+import { ANTENNA, WINGS } from './references'
 
 export type PartKind = 'bus' | 'power' | 'comms' | 'instrument'
 export type BusKey = 'cubesat' | 'smallsat' | 'medium' | 'flagship'
 export type PowerKey = 'body-cells' | 'wings' | 'rtg' | 'battery' | 'power-box'
-export type CommsKey = 'turnstile' | 'patch' | 'horn' | 'dish-gimbal' | 'dish-fixed' | 'dish-deep'
+export type CommsKey = 'turnstile' | 'patch' | 'reflectarray' | 'dish-gimbal' | 'dish-fixed' | 'dish-deep'
 export type InstrumentKey =
   | 'camera' | 'multispectral' | 'weather-imager' | 'spectrometer' | 'sounder' | 'altimeter'
   | 'magnetometer' | 'particles' | 'dipole-radar' | 'sar' | 'telescope' | 'generic'
@@ -21,7 +22,7 @@ export type Slot =
 /** The one place each model mounts. Only `nadir` holds more than one part (packed side by side). */
 export const SLOT: Record<Exclude<ModelKey, BusKey>, Slot> = {
   'body-cells': 'skin', wings: 'x-faces', rtg: 'x-faces', battery: 'sun-low', 'power-box': 'sun-low',
-  turnstile: 'zenith', patch: 'zenith', horn: 'zenith', 'dish-gimbal': 'zenith', 'dish-fixed': 'zenith', 'dish-deep': 'zenith',
+  turnstile: 'zenith', patch: 'zenith', reflectarray: 'zenith', 'dish-gimbal': 'zenith', 'dish-fixed': 'zenith', 'dish-deep': 'zenith',
   camera: 'nadir', multispectral: 'nadir', 'weather-imager': 'nadir', spectrometer: 'nadir', sounder: 'nadir', altimeter: 'nadir', generic: 'nadir',
   magnetometer: 'corner-boom', particles: 'sun-high', 'dipole-radar': 'edge-x-minus', sar: 'edge-x-plus', telescope: 'anti-sun',
 }
@@ -29,14 +30,7 @@ export const SLOT: Record<Exclude<ModelKey, BusKey>, Slot> = {
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v))
 const text = (e: Entity) => `${e.id} ${e.name}`
 
-export function busKey(bus: Entity | undefined): BusKey {
-  if (!bus) return 'cubesat'
-  const c = str(bus.props.class)
-  if (c === 'cubesat' || c === 'smallsat' || c === 'medium' || c === 'flagship') return c
-  if (/cubesat|\b\d+\s*u\b/i.test(text(bus))) return 'cubesat'
-  const m = num(bus.props.dry_mass_kg, 120)
-  return m < 40 ? 'cubesat' : m < 400 ? 'smallsat' : m < 1800 ? 'medium' : 'flagship'
-}
+export const busKey: (bus: Entity | undefined) => BusKey = busClass
 
 export function powerKey(e: Entity): PowerKey {
   const type = str(e.props.type)
@@ -59,7 +53,7 @@ export function commsKey(e: Entity): CommsKey {
     return /transponder|DSN/i.test(`${t} ${band}`) ? 'dish-fixed' : 'dish-gimbal'
   }
   if (/UHF|VHF/i.test(`${band} ${t}`)) return 'turnstile'
-  if (/^X|^K/i.test(band) || /horn/i.test(t)) return 'horn'
+  if (/^X|^K/i.test(band) || /reflectarray/i.test(t)) return 'reflectarray'
   return 'patch'
 }
 
@@ -82,22 +76,23 @@ export function modelKey(e: Entity): ModelKey {
   return e.kind === 'bus' ? busKey(e) : e.kind === 'power_system' ? powerKey(e) : e.kind === 'comms_system' ? commsKey(e) : instrumentKey(e)
 }
 
-export interface WingShape { length: number; width: number; panels: number; yoke: boolean }
+export interface WingShape { length: number; width: number; panels: number; mount: 'hinge' | 'drive' | 'yoke'; cant: number }
 
-/** One wing of a pair. Area follows the power (about 300 W per square meter); bigger arrays get more panels. */
+/**
+ * One wing of a pair: the real wing whose power is nearest (MarCO, LunaH-Map, MAVEN, MRO), with its area
+ * scaled to the catalog power.
+ */
 export function wingShape(power_w: number, bus: [number, number, number]): WingShape {
   const p = Math.max(power_w, 1)
-  const area = p / 2 / 300
-  const aspect = 2 + Math.log10(Math.max(p, 10) / 10)
-  // Long wings are drawn wider and shorter (at most two bus lengths, as wide as the bus is tall), so the bus stays visible.
-  // shortcut: an array too big for that is drawn smaller than its real area.
-  const maxLength = 2 * Math.max(...bus)
-  const width = Math.min(Math.max(Math.sqrt(area / aspect), area / maxLength), bus[1])
-  return { length: Math.min(area / width, maxLength), width, panels: clamp(Math.round(aspect), 1, 6), yoke: p >= 200 }
+  const ref = WINGS.reduce((a, b) => (Math.abs(Math.log(p / b.power_w)) < Math.abs(Math.log(p / a.power_w)) ? b : a))
+  const k = Math.sqrt(p / ref.power_w)
+  // shortcut: a wing taller than the bus or longer than 2.2 bus lengths is drawn smaller than its real area, so it clears the decks.
+  const fit = Math.min(1, bus[1] / (ref.width * k), (2.2 * Math.max(...bus)) / (ref.length * k))
+  return { length: ref.length * k * fit, width: ref.width * k * fit, panels: ref.panels, mount: ref.mount, cant: ref.cant }
 }
 
-/** Dish diameter in meters: grows with the link effort. Ka relay dish 1.1 m, Mars dish 2.7 m. */
-export const dishDiameter = (e: Entity) => clamp(0.3 * (linkEffort(e) - 20.2), 0.4, 3.2)
+/** Dish diameter in meters: the real antenna of its family (LRO 0.75 m, Mars Odyssey 1.3 m, MRO 3 m). */
+export const dishDiameter = (e: Entity) => ANTENNA.dish[commsKey(e)] ?? 0.75
 
 /** Footprint side of an instrument in meters, from its mass (0.4 kg camera: 11 cm, 100 kg imager: 70 cm). */
 export const instrumentSize = (e: Entity) => 0.15 * Math.cbrt(clamp(num(e.props.mass_kg, 2), 0.05, 2000))
@@ -159,8 +154,8 @@ export interface CraftLayout {
   mounts: Mount[]
 }
 
-/** Share of the deck that parts may use: the medium bus is an octagon, so its corners are cut. */
-export const deckInset = (key: BusKey) => (key === 'medium' ? 0.78 : 0.9)
+/** Share of the deck that parts may use. */
+export const DECK_INSET = 0.9
 
 /** Every picked part with its model and slot. A second part for a single-part slot is drawn as a generic box on the nadir deck. */
 export function craftLayout(spec: CraftSpec): CraftLayout {
@@ -183,8 +178,7 @@ export function craftLayout(spec: CraftSpec): CraftLayout {
   for (const i of p.instruments) add('instrument', i, instrumentKey(i))
 
   const deck = mounts.filter((m) => m.slot === 'nadir')
-  const inset = deckInset(key)
-  const placed = packDeck(deck.map((m) => instrumentSize(m.entity)), size[0] * inset, size[2] * inset)
+  const placed = packDeck(deck.map((m) => instrumentSize(m.entity)), size[0] * DECK_INSET, size[2] * DECK_INSET)
   deck.forEach((m, i) => (m.at = placed[i]))
   return { bus: { key, id: p.bus?.id ?? 'bus', size, entity: p.bus }, mounts }
 }

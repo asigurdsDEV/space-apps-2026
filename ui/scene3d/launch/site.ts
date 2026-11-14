@@ -120,6 +120,13 @@ export function buildPad(height: number, footprint: number, bellDrop: number): P
   add(new THREE.BoxGeometry(height * 0.5, height * 0.16, height * 0.3), concrete, -ring * 4.5, height * 0.08, -ring * 2.2)
   add(new THREE.BoxGeometry(height * 0.52, height * 0.015, height * 0.32), dark, -ring * 4.5, height * 0.165, -ring * 2.2)
 
+  // A real-size van (6 m long) parked on the apron: the pad is sized to the rocket, so this is what shows how big the rocket is.
+  const vanX = mount + 7
+  const vanZ = mount * 1.5 + 5
+  add(new THREE.BoxGeometry(4.2, 2.3, 2.2), white, vanX - 0.9, 1.45, vanZ)
+  add(new THREE.BoxGeometry(1.8, 1.7, 2.2), steel, vanX + 2.1, 1.15, vanZ)
+  add(new THREE.BoxGeometry(5.4, 0.5, 2.3), dark, vanX, 0.35, vanZ)
+
   return { group, standoff, mount, arms }
 }
 

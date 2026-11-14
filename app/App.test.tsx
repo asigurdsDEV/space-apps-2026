@@ -6,7 +6,7 @@ import type { Command, Config, Player } from '../shared'
 import { simCore } from '../sim'
 import { demoConfig, fixtureDatasets, goodDesign } from '../sim/testing/fixtures'
 import { DIFFICULTIES, scenarios } from '../data'
-import { App, GameScreen, Room, SCENARIOS, weatherStart } from './App'
+import { App, GameScreen, Room, SCENARIOS, weatherStart, withCards } from './App'
 import { createGame } from './game'
 import { createSoloSession, type Session, type SessionSnapshot } from './session'
 
@@ -105,6 +105,11 @@ describe('game screen', () => {
   it('replays real space weather from a day the seed picks, inside the data for a three-year mission', () => {
     expect(weatherStart(config, 1)).toBe(weatherStart(config, 1))
     expect(weatherStart(config, 1)).not.toBe(weatherStart(config, 2))
+    // withCards hands the sim the same real start date plus that window's real G3+ storm days.
+    const flown = withCards(config)
+    expect(flown.params.weather_start).toBe(weatherStart(config, config.seed))
+    expect(typeof flown.params.real_storms).toBe('string')
+    expect(withCards({ ...config, params: { ...config.params, weather_start: '2003-10-01' } }).params.real_storms).toContain('28:5')
     for (const seed of [0, 1, 42, 20261114]) {
       const start = weatherStart(config, seed)
       expect(start >= '1996-01-01' && start <= '2022-01-06').toBe(true)

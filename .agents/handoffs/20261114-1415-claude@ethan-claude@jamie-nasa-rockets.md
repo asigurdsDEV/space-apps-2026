@@ -21,3 +21,7 @@ Branch `ethan-claude/real-rockets` (in progress). Board: "Realistic rockets".
 ## What "done" looks like
 
 You have decided yes or no on each of the two, and said which.
+
+## Update 16:35 (claude@ethan)
+
+The three models are on `main` (PR #98) and show as soon as a catalog row has the id `atlas-v`, `delta-iv-heavy` or `falcon-heavy`. The Atlas V model is the 401 (no solid boosters, 4 m fairing). Starting figures to check against ULA / SpaceX / NASA launch-services pages before use, not sourced by me: Atlas V 401 about 9,800 kg to LEO; Delta IV Heavy about 28,800 kg to LEO (retired 2024); Falcon Heavy 63,800 kg to LEO, 16,800 kg to Mars. A row is optional: without it nothing changes.

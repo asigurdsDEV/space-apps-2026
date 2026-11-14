@@ -17,7 +17,7 @@ import type {
   Summary,
 } from '../shared'
 import { CONTRACT_VERSION } from '../shared'
-import { cardById, cardContext, cardSchedule, CARDS, decisionOf, type Effect } from './cards'
+import { cardById, cardContext, cardSchedule, CARDS, decisionOf, realStormList, type Effect } from './cards'
 import { dayOfData, evaluateDesign, formatUsd, SCIENCE_TOLERANCE, uptimeAt, YEAR_S } from './design'
 import { bodyOf, circularState, transferState } from './orbit'
 import { applyParam, cleanParams, resolveAliases } from './params'
@@ -126,7 +126,7 @@ export function step(state: SimState, commands: Command[], dt_s: number): StepRe
   let outcome = str(state.metrics, 'outcome', 'in_design') as Outcome
   const params: Params = { ...state.params }
   // Anomaly cards (decision 004). What they need to remember is kept in flat metrics, so the state stays plain JSON.
-  const cardsOn = num(params, 'anomaly_cards') > 0 || state.metrics.card_rng !== undefined
+  const cardsOn = num(params, 'anomaly_cards') > 0 || state.metrics.card_rng !== undefined || realStormList(params).length > 0
   const list = (key: string) => str(state.metrics, key).split(',').filter(Boolean)
   const mult = (key: string) => (typeof state.metrics[key] === 'number' ? (state.metrics[key] as number) : 1)
   let cardDays = list('card_days').map(Number)
@@ -267,6 +267,9 @@ export function step(state: SimState, commands: Command[], dt_s: number): StepRe
     // ---- Anomaly cards: answer the one that is waiting, before any time passes.
     const today = () => Math.floor(t / DAY_S + 1e-9)
     const context = () => cardContext(params, entities, today() - Math.ceil(budgets.cruise_days), stored, budgets.budget_usd)
+    const realStorms = realStormList(params)
+    const realWeather = typeof params.real_storms === 'string'
+    const opsStartDay = Math.ceil(budgets.cruise_days)
     const apply = (effects: Effect[]): string[] => {
       const said: string[] = []
       for (const e of effects) {
@@ -350,10 +353,27 @@ export function step(state: SimState, commands: Command[], dt_s: number): StepRe
         finish()
         break
       }
+      // Real NASA storms (data/space-weather via app/): the storm card fires on the first real G3+ day
+      // this mission reaches, instead of at random. Outside the random schedule, so it adds to the count.
+      const realStorm = realStorms.find((s) => s.day <= today() && s.day >= opsStartDay)
+      if (realStorm && !cardsDrawn.includes('geomagnetic-storm')) {
+        const storm = cardById('geomagnetic-storm')!
+        const ctx = { ...context(), storm_g: realStorm.g }
+        cardsDrawn = [...cardsDrawn, storm.id] // drawn or not, this mission's storm moment has passed
+        if (storm.when(ctx)) {
+          decisionCard = storm.id
+          decisionId = `${storm.id}-${realStorm.day}`
+          events.push({ type: 'decision_required', tick, t_s: t, payload: decisionOf(storm, decisionId, params) })
+          break
+        }
+      }
       if (cardDays.length && today() >= cardDays[0]) {
         cardDays = cardDays.slice(1)
         const ctx = context()
-        const eligible = CARDS.filter((card) => !cardsDrawn.includes(card.id) && card.when(ctx))
+        // With real space weather, storms come only from the data, never from the random draw.
+        const eligible = CARDS.filter(
+          (card) => !cardsDrawn.includes(card.id) && card.when(ctx) && !(realWeather && card.id === 'geomagnetic-storm'),
+        )
         const pick = nextRandom(cardRng)
         cardRng = pick.state
         const card = eligible[Math.floor(pick.value * eligible.length)]

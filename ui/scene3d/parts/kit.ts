@@ -29,12 +29,12 @@ function crinkleNormal(): THREE.CanvasTexture | null {
     const rnd = rng(11)
     g.fillStyle = '#808080'
     g.fillRect(0, 0, s, s)
-    for (let i = 0; i < 520; i++) {
+    for (let i = 0; i < 170; i++) {
       const x = rnd() * s
       const y = rnd() * s
-      const r = 6 + rnd() * 26
+      const r = 14 + rnd() * 48
       const v = Math.floor(rnd() * 255)
-      g.fillStyle = `rgba(${v},${v},${v},0.5)`
+      g.fillStyle = `rgba(${v},${v},${v},0.42)`
       const pts = [0, 1, 2].map(() => [x + (rnd() - 0.5) * 2 * r, y + (rnd() - 0.5) * 2 * r] as const)
       // Drawn nine times so facets wrap around the edges.
       for (const ox of [-s, 0, s]) for (const oy of [-s, 0, s]) {
@@ -47,8 +47,8 @@ function crinkleNormal(): THREE.CanvasTexture | null {
     const out = g.createImageData(s, s)
     const h = (x: number, y: number) => src[(((y + s) % s) * s + ((x + s) % s)) * 4]! / 255
     for (let y = 0; y < s; y++) for (let x = 0; x < s; x++) {
-      const dx = (h(x + 1, y) - h(x - 1, y)) * 2.2
-      const dy = (h(x, y + 1) - h(x, y - 1)) * 2.2
+      const dx = (h(x + 1, y) - h(x - 1, y)) * 1.7
+      const dy = (h(x, y + 1) - h(x, y - 1)) * 1.7
       const l = Math.hypot(dx, dy, 1)
       const i = (y * s + x) * 4
       out.data[i] = (-dx / l * 0.5 + 0.5) * 255
@@ -66,16 +66,19 @@ function quiltMap(): THREE.CanvasTexture | null {
     const rnd = rng(5)
     g.fillStyle = '#fff'
     g.fillRect(0, 0, s, s)
-    for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) {
-      const v = 215 + Math.floor(rnd() * 40)
+    // Blankets are cut to fit: patches of different sizes, each a slightly different shade.
+    const cuts: [number, number, number, number][] = [[0, 0, 150, 96], [150, 0, 106, 160], [0, 96, 150, 160], [150, 160, 106, 96]]
+    for (const [x, y, w, h] of cuts) {
+      const v = 232 + Math.floor(rnd() * 23)
       g.fillStyle = `rgb(${v},${v},${v})`
-      g.fillRect(i * 128, j * 128, 128, 128)
-    }
-    g.strokeStyle = 'rgba(60,45,20,0.55)'
-    g.lineWidth = 2
-    for (const p of [1, 128]) {
-      g.strokeRect(p, -4, 0, s + 8)
-      g.strokeRect(-4, p, s + 8, 0)
+      g.fillRect(x, y, w, h)
+      // Seam: a strip of tape over the join, with a dark edge where the layers overlap.
+      g.strokeStyle = 'rgba(60,45,20,0.6)'
+      g.lineWidth = 2
+      g.strokeRect(x + 1, y + 1, w, h)
+      g.strokeStyle = 'rgba(255,255,255,0.5)'
+      g.lineWidth = 3
+      g.strokeRect(x + 4.5, y + 4.5, w, h)
     }
     g.fillStyle = 'rgba(40,30,15,0.6)'
     for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) {
@@ -89,7 +92,7 @@ function quiltMap(): THREE.CanvasTexture | null {
 /** Triple-junction solar cells: 2 x 4 dark blue cells per tile with cropped corners, grid fingers and bus bars. */
 function cellMap(): THREE.CanvasTexture | null {
   return texture(256, (g, s) => {
-    g.fillStyle = '#d9dbe0'
+    g.fillStyle = '#6f7690'
     g.fillRect(0, 0, s, s)
     const cw = s / 2
     const ch = s / 4
@@ -237,17 +240,71 @@ function radarMap(): THREE.CanvasTexture | null {
   })
 }
 
+/** Knitted gold wire mesh stretched over a web of triangles (NISAR's reflector): see-through, so it has an alpha channel. */
+function meshMap(): THREE.CanvasTexture | null {
+  return texture(256, (g, s) => {
+    g.clearRect(0, 0, s, s)
+    g.fillStyle = 'rgba(232,190,96,0.2)'
+    g.fillRect(0, 0, s, s)
+    g.strokeStyle = 'rgba(240,205,120,0.55)'
+    g.lineWidth = 1
+    for (let i = 0; i < s; i += 8) {
+      g.strokeRect(i + 0.5, 0, 0, s)
+      g.strokeRect(0, i + 0.5, s, 0)
+    }
+    // The cable web the mesh is tied to: triangles, two per tile.
+    g.strokeStyle = 'rgba(255,236,170,0.95)'
+    g.lineWidth = 2.5
+    g.strokeRect(1, 1, s, s)
+    for (const [x0, y0, x1, y1] of [[0, 0, s, s], [s / 2, 0, s / 2, s], [0, s / 2, s, s / 2], [0, s, s, 0]] as const) {
+      g.beginPath()
+      g.moveTo(x0, y0)
+      g.lineTo(x1, y1)
+      g.stroke()
+    }
+  })
+}
+
+/** MarCO's reflectarray: a circuit board printed with rows of copper patches whose sizes vary to focus the beam. */
+function reflectarrayMap(): THREE.CanvasTexture | null {
+  return texture(256, (g, s) => {
+    g.fillStyle = '#c9b98a'
+    g.fillRect(0, 0, s, s)
+    const n = 16
+    const c = s / n
+    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
+      // Patch size cycles with distance from the feed, which draws the rings seen on the real panel.
+      const k = 0.35 + 0.5 * (0.5 + 0.5 * Math.sin(Math.hypot(i - n / 2 + 0.5, j + 3) * 1.9))
+      g.fillStyle = '#b06a32'
+      g.fillRect(i * c + (c * (1 - k)) / 2, j * c + (c * (1 - k)) / 2, c * k, c * k)
+    }
+  })
+}
+
+/** Dish reflector face: white paint over the petals the reflector is laid up from. u runs round the dish, v from hub to rim. */
+function petalMap(): THREE.CanvasTexture | null {
+  return texture(256, (g, s) => {
+    g.fillStyle = '#eceef1'
+    g.fillRect(0, 0, s, s)
+    g.strokeStyle = 'rgba(120,128,140,0.55)'
+    g.lineWidth = 2
+    for (let i = 0; i < 12; i++) g.strokeRect(i * (s / 12) + 1, 0, 0, s)
+    g.lineWidth = 1.5
+    for (const v of [0.34, 0.67]) g.strokeRect(0, v * s, s, 0)
+  })
+}
+
 function build() {
   const normalMap = crinkleNormal()
   const quilt = quiltMap()
   const std = (o: THREE.MeshStandardMaterialParameters) => new THREE.MeshStandardMaterial(o)
   const foil = (color: number, roughness: number, metalness = 1) =>
-    std({ color, metalness, roughness, map: quilt, normalMap, normalScale: new THREE.Vector2(0.65, 0.65) })
+    std({ color, metalness, roughness, map: quilt, normalMap, normalScale: new THREE.Vector2(0.5, 0.5) })
   return {
     goldMLI: foil(0xf0b84a, 0.26),
     goldDouble: Object.assign(foil(0xf0b84a, 0.26), { side: THREE.DoubleSide }),
-    blackMLI: foil(0x2b2d35, 0.3, 0.85),
-    silverMLI: foil(0xd4d8df, 0.27),
+    blackMLI: foil(0x3a3c46, 0.32, 0.85),
+    silverMLI: foil(0xe6e9f0, 0.22),
     alu: std({ color: 0xc3c7cf, metalness: 0.9, roughness: 0.34 }),
     aluDark: std({ color: 0x24262c, metalness: 0.6, roughness: 0.5 }),
     tape: std({ color: 0xd8d2b4, metalness: 0.45, roughness: 0.4 }),
@@ -268,7 +325,10 @@ function build() {
     orange: std({ color: 0xe8731c, metalness: 0, roughness: 0.6 }),
     red: std({ color: 0xb3261e, metalness: 0, roughness: 0.6 }),
     rtgCore: std({ color: 0x2d2f35, metalness: 0.5, roughness: 0.6 }),
-    laser: std({ color: 0x0a2a12, emissive: 0x3dff7a, emissiveIntensity: 1.6, roughness: 0.2 }),
+    mesh: std({ map: meshMap(), color: hasDom ? 0xffffff : 0xe8be60, metalness: 0.6, roughness: 0.4, side: THREE.DoubleSide, transparent: true, depthWrite: false }),
+    reflectarray: std({ map: reflectarrayMap(), color: hasDom ? 0xffffff : 0xc9a060, metalness: 0.35, roughness: 0.5 }),
+    dishFace: std({ map: petalMap(), color: hasDom ? 0xffffff : 0xe6e8ec, metalness: 0, roughness: 0.6, side: THREE.DoubleSide }),
+    nozzle: std({ color: 0x5a524c, metalness: 0.9, roughness: 0.42, side: THREE.DoubleSide }),
     cells: std({ map: cellMap(), color: hasDom ? 0xffffff : 0x16245a, metalness: 0.45, roughness: 0.3 }),
     cellBack: std({ map: backMap(), color: hasDom ? 0xffffff : 0x22252b, metalness: 0.3, roughness: 0.6 }),
     cubePanel: std({ map: cubePanelMap(), color: hasDom ? 0xffffff : 0x23262d, metalness: 0.55, roughness: 0.5 }),
@@ -361,6 +421,13 @@ export function dishGeometry(radius: number, focal: number, seg = 36): THREE.Lat
     const r = (i / 10) * radius
     pts.push(new THREE.Vector2(r, (r * r) / (4 * focal)))
   }
+  return new THREE.LatheGeometry(pts, seg)
+}
+
+/** Rocket nozzle bell opening toward +y, throat at the origin. */
+export function bellGeometry(rExit: number, len: number, seg = 14): THREE.LatheGeometry {
+  const pts: THREE.Vector2[] = []
+  for (let i = 0; i <= 6; i++) pts.push(new THREE.Vector2(rExit * (0.28 + 0.72 * Math.sqrt(i / 6)), (len * i) / 6))
   return new THREE.LatheGeometry(pts, seg)
 }
 

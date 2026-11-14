@@ -2,7 +2,7 @@
 
 By claude@sarah for Sarah, 2026-11-14 18:45, against `main` after claude@ethan's merge batch (405 tests pass, build OK). Every finding that needs work is a task on `.agents/BOARD.md` → Open → "Accuracy audit + awards push", with an owner.
 
-**Verdict:** the game is in good shape scientifically. Orbits, the radio and power rules, the real missions, the real space weather and the anomaly stories hold up. There is **one real physics error** (solar power at Mars), **two data errors**, **one visible 3D bug**, **five brief items missing or thin**, and **the submission docs break the official demo rules and undersell our NASA data**. That last one costs the most points, and it's the cheapest to fix.
+**Verdict:** the game is in good shape scientifically. Orbits, the radio and power rules, the real missions, the real space weather and the anomaly stories hold up. There is **one real physics error** (solar power at Mars), **two data errors**, **real NASA data that was only shown, not used (fixed in PR #99)**, **one visible 3D bug**, **five brief items missing or thin**, and **the submission docs break the official demo rules and undersell our NASA data**. That last one costs the most points, and it's the cheapest to fix.
 
 ---
 
@@ -18,7 +18,7 @@ By claude@sarah for Sarah, 2026-11-14 18:45, against `main` after claude@ethan's
 | Mass and launch rules | Mass is checked against the launcher's capacity column for the chosen orbit, and delta-v against the bus engine | ✓ matches the brief's "check that mass and orbit are compatible with the launcher" |
 | Launch vehicles | Electron ~300 kg LEO, ~$7.5M, CAPSTONE-class lunar · Pegasus XL ~450 kg LEO · Falcon 9 17.5 t LEO (reusable), 5.5 t GTO · SLS Block 1 95 t LEO, 27 t TLI, ~$2B · rideshare ~$6k/kg | ✓ except the Falcon 9 lunar/Mars pair below |
 | Power parts | MMRTG 45 kg, ~110 W, ~4%/yr decline · CubeSat body cells ~7 W, small battery 40 Wh | ✓ |
-| Real missions (`data/real-missions.json`) | IceCube (3U, 883 GHz cloud ice), Terra (5 instruments, 1999), GOES-16 (2016), Lunar Prospector (1998, spin-stabilised, polar water hints), LADEE (deliberate far-side impact), GRAIL twins, CAPSTONE (12U, halo orbit), MAVEN, MRO (radar + big dish), Odyssey (polar ice), MarCO (first deep-space CubeSats) | ✓ one mass to verify (LRO) |
+| Real missions (`data/real-missions.json`) | IceCube (3U, 883 GHz cloud ice), Terra (5 instruments, 1999), GOES-16 (2016), Lunar Prospector (1998, spin-stabilised, polar water hints), LADEE (deliberate far-side impact), GRAIL twins, CAPSTONE (12U, halo orbit), MAVEN, MRO (radar + big dish), Odyssey (polar ice), MarCO (first deep-space CubeSats). **Launch masses checked against each row's NASA NSSDC page: Lunar Prospector 296.4, LRO 1,846, LADEE 383, GRAIL 202.4, MRO 2,180, Odyssey 725.0 kg: all exact.** | ✓ |
 | Space weather (`data/space-weather/`, NASA SPDF OMNI) | Halloween 2003 G5 / Kp 9 / Dst −383 nT · 10–11 May 2024 G5 · 3 Feb 2022 G1 (the Starlink storm) · June 2019 quiet. NOAA G-scale rounding matches SWPC's | ✓ tested in `space-weather.test.ts` |
 | Anomaly cards | All 8 stories checked by claude@aiden against NASA/JPL/ESA/NOAA/STScI pages (PR #28), plus three wording fixes (Starlink 38 of 49, SOHO 30 years, DSN launches) | ✓ |
 | CAPCOM story | No historical claims except the Earth–Mars delay, now sourced (NASA: ~4–20 min one way) | ✓ |
@@ -31,10 +31,22 @@ By claude@sarah for Sarah, 2026-11-14 18:45, against `main` after claude@ethan's
 | S1 | **Solar arrays give full power at Mars.** Mars is 1.524 AU from the Sun and gets 1/1.524² ≈ **43%** of Earth's sunlight (~590 vs 1,361 W/m²). | A judge who knows space will catch it. Fixing it also teaches a real trade: solar vs RTG at Mars (why Curiosity and Perseverance use RTGs). | Orbit column `solar_flux_factor` (Earth/Moon 1.0, Mars 0.43) (claude@jamie) and multiply solar output in the sim (claude@ethan / claude@aiden). Re-check the Mars reference design still wins. |
 | S2 | **Falcon 9 lifts more to Mars (4,000 kg) than to the Moon (3,500 kg).** Trans-lunar injection needs less energy than trans-Mars, so TLI capacity must be larger. SpaceX lists ~4,020 kg to Mars (expendable), so the TLI value is the one that's low. | Physically impossible ordering. | Raise `payload_tli_kg` above TMI (claude@jamie). |
 | S3 | **3U CubeSat totals 4.5 kg** (3 dry + 1.5 added). The CubeSat standard caps a 3U at 4.0 kg. | Real standard in the brief's own CubeSat 101 resource. | `max_added_mass_kg` 1.0 (claude@jamie). |
-| S4 | **LRO launch mass 1,846 kg:** most references give **1,916 kg**. | Small, but it's shown to players. | Verify against the row's source (claude@jamie). |
+| ~~S4~~ | ~~LRO launch mass~~: **withdrawn.** NSSDC says "launch mass of about 1846 kg", so the table is right and my recollection was wrong. | | none |
 | S5 | Glossary says DSN priority goes to events "such as a landing". The card was corrected to "launches" to match its source. | Consistency. | "such as a launch or landing" (cursor@kaipo). |
 
 Labelled approximations are fine and honest. The catalog `source` fields say "hand-tuned for gameplay", and the 3D caption says "altitude not to scale". Keep those labels.
+
+## 1b. Is the NASA data real, and is it used? (re-checked 19:45)
+
+| Data | Real NASA data? | Verified | Used in play? |
+|---|---|---|---|
+| **Space weather** (`data/space-weather/`) | **Yes, measured:** NASA SPDF OMNI2 hourly, 1996-01-01 → 2026-10-29 | 400 random days match NASA's raw files exactly, and today's NASA copy of the 2003 file is byte-identical. Famous storms right (tests) | ✓ **Drives play** (PR #99): storm card on real G3+ storm days, real date in the story, NOAA level sets the drag risk. Also shown in the strip |
+| **Real missions** (`data/real-missions.json`) | Facts from NASA/NOAA pages (NSSDC, science.nasa.gov, terra.nasa.gov, NESDIS) | 6 launch masses match NSSDC exactly; all links resolve | ✓ debrief "most like" card |
+| **Training targets** (`data/pilot-training/`) | Facts from NASA Earthdata (MODIS, FIRMS) and TDRS pages | links resolve | ✓ flight HUD facts (V7 pending) |
+| **Anomaly card stories** | NASA/JPL/ESA/NOAA/STScI pages | 34 of 34 source links valid (3 block scripts but open in a browser). Per codex@aiden's source audit (`docs/qa/sources.md`), added: Spirit mission history (completed repair), SOHO mission history (longevity), NASA's 2018 dust-storm article (Curiosity kept working). In-game Spirit card should link the mission history too (handoff to claude@ethan) | ✓ cards in play |
+| **Parts catalogs** (6 files) | **No:** team-authored approximations "loosely based" on NASA CubeSat 101, MDL, and provider figures. Orbit altitudes/periods are real values | labelled as approximations in each file's `source` | ✓ |
+
+**For judging (Relevance: "NASA data … integral, not a superficial addition"):** we have one measured NASA dataset, and today it's decoration. Making OMNI drive the storm card on real storm days (and drag, P1) turns it into the core, and gives the 30-second video its best line: *"a real 2003 storm hits your satellite."* The submission must also describe the catalogs honestly as approximations informed by NASA references.
 
 ## 2. 3D models and visuals
 
