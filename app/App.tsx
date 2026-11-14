@@ -23,6 +23,7 @@ import '../ui/theme/theme.css'
 import '../ui/learn/learn.css'
 import { Crew, Notice, RoomCode } from './Crew'
 import { ErrorBoundary } from './ErrorBoundary'
+import { StoryLayer } from './StoryLayer'
 import { startDriver, timerClock } from './driver'
 import { createGame, type Game } from './game'
 import { cleanRoomCode, openRoom } from './room'
@@ -270,7 +271,12 @@ export function Room({ active, onExit }: { active: Active; onExit: () => void })
   }
   // Someone who joins after launch goes straight to the flight.
   if (!briefed && state.metrics.phase === 'design') {
-    return <Briefing config={config} onStart={() => setBriefed(true)} onBack={onExit} />
+    return (
+      <>
+        <Briefing config={config} onStart={() => setBriefed(true)} onBack={onExit} />
+        <StoryLayer screen="briefing" scenarioId={state.scenario_id} />
+      </>
+    )
   }
   return <GameScreen session={session} config={config} onExit={onExit} roomCode={roomCode} daily={active.daily} />
 }
@@ -326,7 +332,7 @@ export function GameScreen({ session, config, onExit, roomCode, daily }: GameScr
           <Design session={session} config={config} />
         ) : (
           // Unmounts on reset, so every launch starts it fresh.
-          <Flight session={session} config={config} daily={daily} />
+          <Flight session={session} config={config} daily={daily} online={roomCode !== null} />
         )}
       </ErrorBoundary>
     </div>
@@ -360,12 +366,14 @@ function Design({ session, config }: { session: Session; config: Config }) {
           onLaunch={() => session.send({ type: 'launch', payload: {} })}
           onBack={() => setPolling(false)}
         />
+        <StoryLayer screen="poll" scenarioId={state.scenario_id} />
       </main>
     )
   }
   return (
     <>
       <BuilderTutorial />
+      <StoryLayer screen="design" scenarioId={state.scenario_id} />
       <MissionBuilder
         state={state}
         send={(command) => (command.type === 'launch' ? setPolling(true) : session.send(command))}
@@ -414,7 +422,7 @@ export function weatherStart(config: Config, seed: number): string {
 type SpaceWeatherData = typeof import('../data/space-weather')
 
 /** Everything after launch: (the launch sequence,) cruise and operations, then the results with the personal best. */
-function Flight({ session, config, daily }: { session: Session; config: Config; daily?: DailyMission }) {
+function Flight({ session, config, daily, online }: { session: Session; config: Config; daily?: DailyMission; online?: boolean }) {
   const { state, events, paused, speed, players, me } = useSession(session)
   const [launchDone, setLaunchDone] = useState(false)
   // 340 kB of real NASA data, so it is loaded only once a mission flies.
@@ -425,6 +433,19 @@ function Flight({ session, config, daily }: { session: Session; config: Config; 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   const ended = state.status === 'ended'
+  // Story cutscenes (decision 005) hold the mission clock so nothing happens unseen. Online the
+  // clock is shared by the whole crew, so it keeps running there.
+  const heldClock = useRef(false)
+  const holdClock = (playing: boolean) => {
+    if (online) return
+    if (playing && !session.getSnapshot().paused) {
+      heldClock.current = true
+      session.send({ type: 'pause', payload: {} })
+    } else if (!playing && heldClock.current) {
+      heldClock.current = false
+      session.send({ type: 'resume', payload: {} })
+    }
+  }
   // "What would have fixed it": the flown mission rerun with every single change, once, when it ends.
   const fixes = useMemo(
     () => (ended ? whatIf({ ...withCards(config), seed: daily?.seed ?? config.seed }, getDatasets(config.datasets), state.params) : undefined),
@@ -476,6 +497,7 @@ function Flight({ session, config, daily }: { session: Session; config: Config; 
           />
         </div>
       )}
+      <StoryLayer screen="flight" events={events} scenarioId={state.scenario_id} onCutscene={holdClock} />
     </>
   )
 }

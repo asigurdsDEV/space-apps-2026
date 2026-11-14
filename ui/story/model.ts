@@ -91,7 +91,9 @@ export function storyBeat(screen: StoryScreen, events: readonly SimEvent[], scen
         }
         if (e.type === 'decision_resolved') return { key: `resolved-${e.payload.decision_id}`, line: 'anomaly-resolved' }
         if (e.type === 'decision_required') return { key: `anomaly-${e.payload.decision_id}`, line: 'anomaly', cutscene: 'anomaly' }
-        if (e.type === 'phase_changed' && e.payload.to === 'operations') return { key: 'orbit', line: `orbit-${world}`, cutscene: 'orbit' }
+        // Earth orbit comes right after lift-off, so only the Moon and Mars get an arrival cutscene (decision 005).
+        if (e.type === 'phase_changed' && e.payload.to === 'operations')
+          return world === 'earth' ? { key: 'orbit', line: 'orbit-earth' } : { key: 'orbit', line: `orbit-${world}`, cutscene: 'orbit' }
       }
       return { key: 'launch', line: 'launch', cutscene: 'launch' }
   }

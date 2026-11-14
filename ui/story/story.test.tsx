@@ -27,6 +27,7 @@ describe('storyBeat', () => {
     expect(storyBeat('flight', log, 'moon')).toMatchObject({ key: 'launch', cutscene: 'launch' })
     log.push(phase('operations'))
     expect(storyBeat('flight', log, 'moon')).toMatchObject({ key: 'orbit', line: 'orbit-moon', cutscene: 'orbit' })
+    expect(storyBeat('flight', log, 'demo')).toEqual({ key: 'orbit', line: 'orbit-earth' }) // no cutscene right after lift-off
     log.push(card('d1'))
     expect(storyBeat('flight', log, 'moon')).toMatchObject({ key: 'anomaly-d1', cutscene: 'anomaly' })
     log.push(answered('d1'))
