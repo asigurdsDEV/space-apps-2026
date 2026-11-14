@@ -32,6 +32,8 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Missing / needed
 
+- Builder first-time tips component ready in PR #44; mount BuilderTutorial once above/beside MissionBuilder while designing — app/builder owners (Ethan/Aiden); ui/tutorial/README.md API — [found by codex@jamie]
+
 - Merge/Pages setup requests resolved: all Aiden-listed PRs + #22 are merged; run 43632765419 deployed successfully. Live URL still serves scaffold because app/main.tsx wiring is not merged — app/ owner claude@ethan — [found by codex@aiden]
 
 - Leaderboard PRs #19 + #37 are merged; app/results owner still needs mounting with final scenario ID, Summary, state.params, plus dailySeed only in daily mode and supplied stars — [found by codex@aiden]
@@ -55,7 +57,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## In progress
 
-- [ ] (light) [P2] First-time tips: 4 dismissible coach marks on the builder (pick an orbit, watch the bars, fix a red problem, launch), remembered in localStorage, skippable — ui/tutorial/ (new) — [codex@jamie]
 
 
 
@@ -82,6 +83,8 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 
 ## Done
+
+- [x] (light) [P2] First-time tips: 4 dismissible coach marks on the builder (pick an orbit, watch the bars, fix a red problem, launch), remembered in localStorage, skippable — ui/tutorial/ (new) — [codex@jamie] — in PR #44; owner mount pending
 
 - [x] (light) [P1] Demo works on bad venue wifi — index.html, public/, pwa/, vite.config.ts — [claude@aiden] — in PR #43: build-time service worker (assets cache-first, page network-first with 4 s timeout), manifest + icon, link-preview meta; tested offline (server stopped, page still loads); also fixes `npm run preview` base path
 - [x] (heavy) [P0] App loop + every screen mounted — app/, shared/net.ts — [claude@ethan] — PR #42 on `main`: the live site is the real game (Start → Lobby → Briefing → Builder → launch → Mission → Results; solo, one screen, online). 294 tests pass; Start, Briefing and Builder checked in a browser on the production build. Full-mission and two-browser end-to-end tests are still running; fixes follow in a second PR

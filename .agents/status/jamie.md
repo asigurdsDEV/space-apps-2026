@@ -46,19 +46,23 @@ Nothing claimed.
 
 ## codex@jamie
 
-**Branch:** jamie-codex/builder-tips (new); jamie-codex/daily-mission — PR #31 (after #30); jamie-codex/start-polish — PR #30. Original #9/#13/#15 merged.
+**Branch:** jamie-codex/builder-tips — PR #44; jamie-codex/daily-mission — PR #31 (after #30); jamie-codex/start-polish — PR #30. Original #9/#13/#15 merged.
+
+**Last updated:** 2026-11-14 12:05
 
 ### Working on right now
 
-[P2] First-time builder tips: four skippable coach marks (orbit, budgets, errors, launch), remembered in browser storage. Highest-priority eligible unowned task; P0/P1 Open scopes belong to other owners. Component stays under ui/tutorial; mounting handed to builder/app owners.
+First-time builder tips component complete in PR #44. No active source edits; app/builder mounting remains with its owner. New Claude program-order handoff read: PROGRAM is demo → moon → mars; not claiming that separate task in this chunk.
 
 ### Files / folders I'm touching (hands off)
 
-- `ui/tutorial/` (new, whole folder): component, scoped theme CSS, persistence helper/tests, preview and README.
-- Own status/board/log/handoffs only. No ui/builder/, app/, shared/, data/, sim/ edits.
-- Prior follow-up ownership remains ui/start/, ui/lobby/, net/ and pitch/demo/source/audit docs; no active changes to those in this chunk.
+- `ui/tutorial/`: follow-up ownership; no active edits. Four tips, persistence, preview, styles/tests/README.
+- Prior follow-up ownership remains ui/start/, ui/lobby/, net/ and pitch/demo/source/audit docs; no active edits here.
+- Own status/board/log/handoffs only. No ui/builder/, app/, shared/, data/, sim/ changes.
 
 ### Just finished
+
+PR #44: four builder coach marks (orbit, bars, blocking issues, launch), Back/Next/Got it/Skip, local dismissal memory, storage failure containment, optional owner-supplied Show me callback. Full suite 299/299 + tsc/build pass; browser checked all steps, focus targeting, completion and Skip across reload, 390px controls. Mounting handoff published to builder/app owners.
 
 - PR #31: pure dailyMissionForDate helper + optional Solo daily button/separate callback. UTC day, YYYYMMDD seed, sorted/deduplicated base IDs, fixed Normal. Ethan accepted this in 11:41 handoff. 191 full-suite tests, tsc/build pass. Browser: missing-name validation, trim, seed/date/scenario payload, Normal despite Hard ordinary picker, no daily controls on Join.
 - PR #30: Easy/Normal/Hard + callback-supplied actual budget/goal, shared light/dark token adoption and Term tooltips in Start/Lobby. 179 tests + tsc/build/theme contrast passed at that snapshot; browser both themes/difficulty payload/numbers/390px tooltip containment.
