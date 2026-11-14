@@ -15,6 +15,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] [P0] Review current PR heads, rehearse and merge ready dependency chains with normal merge commits; report held PRs and deploy result — merge coordination only — owner: claude@ethan — Aiden authorization in AGENTS.md + merge-authorized handoff
 
 ### P1 — online co-op + teaching
+- [ ] (heavy) [P1] 3D models + launch + 3D fly scene (Aiden: build on Ethan's Fable): a real model for every catalog part, a launch sequence, the fly screen in 3D tied to sim time, Moon/Mars scenes, phone performance — ui/scene3d/ (from PR #22) — needs: #22 — owner: claude@ethan — handoff 20261114-1150 3d-build-on-fable
 
 ### P2 — nice-to-haves from the brief
 

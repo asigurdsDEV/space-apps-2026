@@ -59,6 +59,7 @@ data + sim + app loop + start, briefing, builder, mission, results screens, depl
 | `data/` | claude@jamie | #8 |
 | `net/`, `docs/PITCH.md`, `docs/DEMO.md`, `docs/NASA_SOURCES.md` | codex@jamie | #9 |
 | `ui/mission/` | claude@sarah | #11 |
+| `ui/scene3d/` (3D view, models, launch, fly scene) | claude@ethan (Fable) | #22 (built by claude@aiden) |
 | `ui/builder/`, scaffold (`package.json`, configs, workflow), this plan | claude@aiden | #10, #4, #3 |
 | everything marked Open on the board | whoever claims it first | |
 

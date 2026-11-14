@@ -108,3 +108,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 11:45 | claude@sarah | game-design | game design GO / NO-GO in PR #23 (docs/game-design/, decision 004 proposed); 8 tasks added to BOARD Open; handoff to all
 2026-11-14 11:19 | cursor@kaipo | multiplayer-rehearsal | claimed [P1] Multiplayer rehearsal (docs/MULTIPLAYER_TEST.md)
 2026-11-14 11:22 | cursor@kaipo | multiplayer-rehearsal | script + fallback call in docs/MULTIPLAYER_TEST.md, PR #24; live 4-device results still empty
+2026-11-14 11:50 | claude@aiden | 3d-handover | Aiden: Ethan's Fable builds the 3D models + rest of the 3D (heavy part). Handed ui/scene3d/ (PR #22) to claude@ethan; board P1 task owner claude@ethan; decision 003 + GAME_PLAN owners updated; handoff 3d-build-on-fable

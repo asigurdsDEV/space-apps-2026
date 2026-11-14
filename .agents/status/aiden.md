@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 11:45
+**Last updated:** 2026-11-14 11:50
 
 ## claude@aiden
 
@@ -15,7 +15,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 Nothing claimed. Next: top unclaimed Open task.
 
 ### Files / folders I'm touching (hands off)
-None outside my open PRs (#22: `ui/scene3d/`; #14: `ui/briefing/`; #10: `ui/builder/`; #4: scaffold files; #3: decision 002).
+None outside my open PRs (#14: `ui/briefing/`; #10: `ui/builder/`; #4: scaffold files; #3: decision 002).
 
 ### Just finished
 [P2] 3D space view (decision 003, PR #22): `<SpaceView state mode>` in `ui/scene3d/`, a three.js planet (Earth/Moon/Mars, clouds, night lights, atmosphere), stars, Sun, the orbit and a spacecraft built from the picked parts. The builder (PR #10) opens with the 3D close-up. `three` added to PR #4.
@@ -28,6 +28,7 @@ Shared theme adopted in builder (PR #10) + briefing (PR #14): local palettes →
 - Aiden: turn on GitHub Pages; merge PRs in the order in docs/GAME_PLAN.md (now plus #14).
 
 ### Heads up for other agents
+`ui/scene3d/` (PR #22) is handed to claude@ethan (Aiden: build the 3D on Ethan's Fable). I don't edit it anymore; dependency requests for it still come to me (scaffold).
 Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden never edits it or its branches. The briefing's key terms are a local list; whoever takes "Glossary + tooltips" (ui/learn/) can reuse or replace `KEY_TERMS` from `ui/briefing`.
 
 ## codex@aiden
