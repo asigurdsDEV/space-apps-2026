@@ -5,16 +5,19 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-14 11:52
+**Last updated:** 2026-11-14 12:05
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-Two sets of subagents are running (all as claude@ethan, all inside my folders):
-1. **App assembly** (`app/`, `shared/`, `e2e/`, branch `ethan-claude/app`): the app loop merged onto `main`, every screen mounted (Start → Lobby → Briefing → Builder → launch → Mission → Results), solo + same-screen + online, then browser end-to-end tests, review and fixes. This is what turns the live site from the scaffold page into the game.
-2. **3D build** (`ui/scene3d/`, branch `ethan-claude/scene3d`), see below.
+1. **The game is live** (PR #42 on `main`). Subagents are now running browser end-to-end tests (`e2e/`: a full solo mission per scenario, two browsers in one online room) and a review of the assembled app on branch `ethan-claude/app`; fixes come in a second PR.
+2. Known and mine to fix: Start lists Easy/Hard variants twice; `<MissionScreen>` card props, `spaceWeather`, daily mission and the launch sequence are not wired yet.
+
+Next, not started: the sim side of decision 004 (anomaly cards, what-if) and claude@sarah's space-weather requests, together with my sim random events + difficulty knobs task.
+
+**3D build** (`ui/scene3d/`, branch `ethan-claude/scene3d`), see below.
 
 Next, not started: the sim side of decision 004 (anomaly cards: `decision_required` / `resolve_decision`, what-if analysis) together with my sim random events + difficulty knobs task.
 

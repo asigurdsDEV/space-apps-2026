@@ -5,24 +5,25 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 12:00
+**Last updated:** 2026-11-14 12:25
 
 
 ## claude@jamie
 
-**Branch:** jamie-claude/hard-mode (PR #36 open); jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
+**Branch:** jamie-claude/bonus-goal (PR #41 open); jamie-claude/hard-mode (PR #36 open); jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
 
 ### Working on right now
 Nothing claimed.
 
 ### Files / folders I'm touching (hands off)
 - `ui/gonogo/` until PR #33 merges
-- `data/`, `tests/playthrough.test.ts` until PR #36 merges
+- `data/`, `tests/playthrough.test.ts` until PR #36 merges; PR #41 also edits `data/scenarios/`, `data/index.ts`, `data/README.md`
 - `data/data.test.ts` (to drop its duplicate balance math once the playthrough test covers it)
 - `data/` (whole folder) until PR #8 merges. After that I'm still its owner, so send catalog changes via handoff.
 - `docs/CHALLENGE.md`, `docs/README.md`, and the `## Challenge` section + Team table of `README.md` until PR #6 merges
 
 ### Just finished
+- **[P1] Bonus star goal + program order (PR #41):** `params.bonus_goal` per scenario (demo/mars `no_data_lost`, moon `budget_left_20`, codes from ui/mission `BONUS_GOALS`), `PROGRAM` export. Each reference win earns its bonus on Normal (tested). tsc clean, 222/222. Handoffs: app passes bonusGoal (claude@ethan), briefing shows it (claude@aiden), program map (codex@jamie).
 - **[P0] Hard mode fix (PR #36):** demo seed 42 → 1 (42 lost every demo design to a day-193 bus failure; reference survives ~92/100 seeds). Normal's `random_failures` now false, README row fixed. New test: each reference win survives Hard with failures on. tsc clean, 189/189.
 - **[P0] GO / NO-GO poll (PR #33):** `ui/gonogo/` maps each sim issue to PLAN / SPACECRAFT / SCIENCE / COMMS; errors = NO-GO, warnings = GO with concerns; Launch disabled while any console is NO-GO. tsc clean, 189/189 tests on main. Not mounted yet (handoff to claude@ethan).
 - **[P1] Difficulty levels:** `DIFFICULTIES` + `withDifficulty()` + `getScenario(id, level)` in PR #8; easy ×1.5 budget/×0.8 goal/no failures, hard ×0.95 budget/3% daily events. All 9 scenario×level combos win with the reference design (PR #12). 106/107 on sim-data, tsc + build clean. Objective texts no longer hard-code numbers.
@@ -45,19 +46,23 @@ Nothing claimed.
 
 ## codex@jamie
 
-**Branch:** jamie-codex/daily-mission — PR #31 (after #30); jamie-codex/start-polish — PR #30. Original #9/#13/#15 merged.
+**Branch:** jamie-codex/builder-tips — PR #44; jamie-codex/daily-mission — PR #31 (after #30); jamie-codex/start-polish — PR #30. Original #9/#13/#15 merged.
+
+**Last updated:** 2026-11-14 12:05
 
 ### Working on right now
 
-Difficulty/theme/glossary follow-up and Daily mission Start UI/helper are complete and pushed. Waiting at app integration boundary: Ethan mounts screens, honors difficulty + preview callback, and applies the agreed daily seed. Net/live rehearsal remains open; no active extra source claim.
+First-time builder tips component complete in PR #44. No active source edits; app/builder mounting remains with its owner. New Claude program-order handoff read: PROGRAM is demo → moon → mars; not claiming that separate task in this chunk.
 
 ### Files / folders I'm touching (hands off)
 
-- Follow-up ownership (no active edits): `ui/start/`, `ui/lobby/`, `net/`.
-- Follow-up ownership: docs/PITCH.md, docs/DEMO.md, docs/NASA_SOURCES.md, docs/INTEGRATION_REPORT.md.
-- Own status section/board lines/log/handoffs only. No app/, data/, shared/, ui/theme/ or ui/learn/ source changes.
+- `ui/tutorial/`: follow-up ownership; no active edits. Four tips, persistence, preview, styles/tests/README.
+- Prior follow-up ownership remains ui/start/, ui/lobby/, net/ and pitch/demo/source/audit docs; no active edits here.
+- Own status/board/log/handoffs only. No ui/builder/, app/, shared/, data/, sim/ changes.
 
 ### Just finished
+
+PR #44: four builder coach marks (orbit, bars, blocking issues, launch), Back/Next/Got it/Skip, local dismissal memory, storage failure containment, optional owner-supplied Show me callback. Full suite 299/299 + tsc/build pass; browser checked all steps, focus targeting, completion and Skip across reload, 390px controls. Mounting handoff published to builder/app owners.
 
 - PR #31: pure dailyMissionForDate helper + optional Solo daily button/separate callback. UTC day, YYYYMMDD seed, sorted/deduplicated base IDs, fixed Normal. Ethan accepted this in 11:41 handoff. 191 full-suite tests, tsc/build pass. Browser: missing-name validation, trim, seed/date/scenario payload, Normal despite Hard ordinary picker, no daily controls on Join.
 - PR #30: Easy/Normal/Hard + callback-supplied actual budget/goal, shared light/dark token adoption and Term tooltips in Start/Lobby. 179 tests + tsc/build/theme contrast passed at that snapshot; browser both themes/difficulty payload/numbers/390px tooltip containment.
