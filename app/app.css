@@ -1,0 +1,212 @@
+/* The app's own chrome only: page, top bar, notice, crew menu, the one-screen strip, the
+   save-and-share section and the closed-room page. Every class starts with .app and every
+   colour is a ui/theme token, so it follows light and dark with the screens. */
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+body {
+  background: var(--game-bg);
+}
+.app,
+.app-page {
+  min-height: 100dvh;
+}
+.app-small {
+  min-height: 44px;
+  padding: var(--game-space-1) var(--game-space-3);
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+/* ---------- top bar + notice */
+.app-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--game-space-2);
+  padding: var(--game-space-2) var(--game-space-4);
+  background: var(--game-panel);
+  border-bottom: 1px solid var(--game-border);
+}
+.app-bar-title {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.app-notice {
+  margin: 0;
+  padding: var(--game-space-1) var(--game-space-2) var(--game-space-1) var(--game-space-4);
+  background: var(--game-surface);
+  border-bottom: 1px solid var(--game-border);
+  border-left: 4px solid var(--game-warning);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--game-space-3);
+}
+.app-notice-close {
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--game-text);
+  background: none;
+  border: 0;
+  border-radius: var(--game-radius-control);
+  min-width: 44px;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+/* ---------- crew menu (online rooms): the panel hangs from the bar, so it fits a phone */
+.app-crew-menu summary {
+  list-style: none;
+}
+.app-crew-menu summary::-webkit-details-marker {
+  display: none;
+}
+.app-crew-panel {
+  position: absolute;
+  right: var(--game-space-4);
+  top: calc(100% + var(--game-space-2));
+  z-index: 10;
+  width: min(360px, calc(100vw - 2 * var(--game-space-4)));
+  display: flex;
+  flex-direction: column;
+  gap: var(--game-space-3);
+  padding: var(--game-space-4);
+  background: var(--game-panel);
+  border: 1px solid var(--game-border);
+  border-radius: var(--game-radius);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.35);
+}
+.app-crew-panel p {
+  margin: 0;
+}
+.app-room {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--game-space-3);
+}
+.app-code {
+  font-family: var(--game-font-mono);
+  font-size: 1.25rem;
+  letter-spacing: 0.18em;
+  user-select: all;
+}
+.app-crew {
+  display: flex;
+  flex-direction: column;
+  gap: var(--game-space-3);
+}
+.app-crew-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--game-border);
+  border-radius: var(--game-radius-control);
+}
+.app-crew-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--game-space-3);
+  padding: var(--game-space-2) var(--game-space-3);
+}
+.app-crew-list li + li {
+  border-top: 1px solid var(--game-border);
+}
+.app-crew-role,
+.app-role-holder {
+  color: var(--game-muted);
+}
+.app-crew-role {
+  text-align: right;
+}
+.app-tag {
+  margin-left: var(--game-space-2);
+  padding: 1px var(--game-space-2);
+  border: 1px solid var(--game-border);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.app-roles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--game-space-2);
+}
+.app-role {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  text-align: left;
+}
+.app-role-holder {
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+
+/* ---------- under the start screen: play on one screen */
+.app-same-screen {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--game-space-4);
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: var(--game-space-6) clamp(20px, 5vw, 72px) var(--game-space-8);
+}
+.app-same-screen > div {
+  flex: 1 1 260px;
+}
+.app-same-screen h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+.app-same-screen p {
+  margin: 0;
+}
+.app-same-screen label {
+  flex: 1 1 220px;
+  font-size: 0.875rem;
+  color: var(--game-muted);
+}
+
+/* ---------- under the builder: save, share, compare */
+.app-share {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: var(--game-space-6) var(--game-space-4) var(--game-space-8);
+}
+.app-share h2 {
+  margin: 0 0 var(--game-space-3);
+  font-size: 1.1rem;
+}
+
+/* ---------- under the results: personal best */
+.app-best {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 var(--game-space-4) var(--game-space-8);
+}
+
+/* ---------- room closed */
+.app-closed {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: var(--game-space-4);
+}
+.app-closed .game-panel {
+  max-width: 480px;
+}
+.app-closed h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
