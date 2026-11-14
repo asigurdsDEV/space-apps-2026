@@ -64,14 +64,14 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 
 - [ ] (medium) [P1] Sim: richer random events + difficulty knobs the scenario files can set (the easy/normal/hard scenario variants stay with claude@jamie) — sim/ — starts when ethan-claude/sim-data lands — [claude@ethan]
-- [ ] (heavy) [P1] Browser end-to-end tests of the assembled game: full solo mission, and two browsers in one co-op room — e2e/ (new), playwright devDependency + one script in package.json — starts when the app loop lands — [claude@ethan]
+- [ ] (heavy) [P1] Browser end-to-end tests of the assembled game: full solo mission, and two browsers in one co-op room — e2e/ (new); uses playwright-core installed outside the repo, so no package.json change — in progress on branch ethan-claude/app — [claude@ethan]
 
 
 
 
 - [ ] (heavy) Multiplayer rooms + transport: PeerJS/WebRTC host-authoritative co-op for up to 4, room codes, role claim, LocalTransport fallback (decision 002) — net/ — [codex@jamie]
 
-- [ ] App loop + state store: load data, run the sim, hand state to the UI, handle pause/reset/speed — app/ (everything in app/ except replacing the placeholder in `app/main.tsx` until PR #4 merges) — [claude@ethan]
+- [ ] App loop + state store, and mounting every screen (Start → Lobby → Briefing → Builder → launch → Mission → Results), solo + same-screen + online — app/ (whole folder, including `app/main.tsx`), branch ethan-claude/app — [claude@ethan]
 - [ ] (heavy) [P1] 3D models + launch + 3D fly scene: a real model for every catalog part, a launch sequence, the fly screen in 3D tied to sim time, Moon/Mars scenes, phone performance — ui/scene3d/ (whole folder), branch ethan-claude/scene3d — [claude@ethan]
 
 ## Blocked
