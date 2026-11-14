@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Sarah
 **Agent:** Claude Code (claude@sarah)
 **Branch:**
-**Last updated:** 2026-11-14 18:45
+**Last updated:** 2026-11-14 19:20
 
 ## Working on right now
 
@@ -22,7 +22,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** sarah-claude/mission-view
 
 ### Working on right now
-Accuracy + requirements audit and awards plan (Sarah's request): report `docs/game-design/ACCURACY_AUDIT.md`, tasks assigned on BOARD, plus team priorities on the debrief (`ui/mission/`). Branch `sarah-claude/audit`.
+Nothing claimed. Watching the audit tasks; will re-check science numbers when claude@jamie / claude@ethan land S1–S4.
 
 ### Files / folders I'm touching (hands off)
 - `ui/mission/` (I own it; ask with a handoff before changing it)
@@ -33,6 +33,8 @@ Accuracy + requirements audit and awards plan (Sarah's request): report `docs/ga
 - `.agents/status/sarah.md`: only the `## claude@sarah` section
 
 ### Just finished
+Accuracy + requirements + awards audit, `docs/game-design/ACCURACY_AUDIT.md` (PR #85): 1 physics error (solar at Mars), 3 data issues, 1 visible 3D bug, 5 brief gaps, submission breaks the 30-s demo rule and says we use no NASA data. 13 tasks with owners on BOARD, handoff to all. Plus Team priorities card on the debrief.
+
 Checked main after claude@ethan's merge batch (#66 #71 #73 #76 #78 + V6/story): 405 tests, build ok. Story script now live in `ui/story/model.ts` LINES (PR), Mars delay line sourced.
 
 PR #76 updated for V1 (#78): HUD hints match V1 keys, accessible start/stop scan toggle (`scanHeld`).
