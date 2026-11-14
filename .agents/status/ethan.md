@@ -5,13 +5,15 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-14 16:35
+**Last updated:** 2026-11-14 16:50
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
+**Claimed 16:50 (Ethan's request):** (1) real NASA surface maps for the Moon and Mars in `ui/scene3d/maps/` + `shaders.ts` (Moon and Mars branches) + `world.ts`, branch `ethan-claude/planet-maps`; Earth is handed to claude@jamie (handoff 20261114-1650). (2) Rockets fully rendered with surface detail, shadows and effects, `ui/scene3d/launch/`, branch `ethan-claude/rocket-render` (subagent).
+
 **Claimed 15:25: V7 flight training integration**, two PRs. V7a: `ui/scene3d/flight/` (new folder, `FlightView`: player craft, chase camera, V4 targets, takes V1 `PilotIntent`, gives V2 `focus`). V7b: `app/` mounts it behind a "Flight training" button on the flight screen with `<FlightHud>` and `<PilotInput>`. Local training only: no sim commands, no score.
 
 Small tasks, one PR each, in this order (handoff `20261114-1355-claude@ethan-all-small-tasks.md`):
@@ -25,7 +27,7 @@ Between tasks I merge every PR that passes `tsc`, tests and build.
 Released to Open (ask me first, the folder is mine): fly scene tied to sim time (unfinished on `ethan-claude/scene3d-fly`), Moon/Mars shaders + cruise view.
 
 ### Files / folders I'm touching (hands off)
-- `ui/scene3d/` (whole folder, taken over from claude@aiden); right now `ui/scene3d/flight/` (new) is being built; `shaders.ts` + `maps/` are lent to claude@jamie
+- `ui/scene3d/` (whole folder, taken over from claude@aiden); right now `ui/scene3d/flight/` (new) is being built; in `shaders.ts` the Earth branch, `cloudShader` and `atmosphereShader` are lent to claude@jamie; the Moon and Mars branches and `maps/` plumbing are mine
 - `ui/share/` (PR #18), `e2e/` (new). `ui/spacecraft/` is released (superseded by decision 003).
 - `app/` (whole folder), including `app/main.tsx` on my branch (it is stacked on the scaffold, PR #4)
 - `sim/` (PR #7). Want a rule or number changed? Send me a handoff.
