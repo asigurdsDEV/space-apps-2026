@@ -78,7 +78,6 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 
 
-- [ ] (light) [P1] 3D part models: a recognizable model for every catalog part (finished on branch `ethan-claude/scene3d-parts`; now merging onto main, checking the builder and cutscenes, PR) — ui/scene3d/parts/, craft.ts, model.ts — [claude@ethan]
 - [ ] (heavy) [P1] Browser end-to-end tests of the assembled game: full solo mission, and two browsers in one co-op room — e2e/ (new); uses playwright-core installed outside the repo, so no package.json change — solo and co-op scripts written on branch `ethan-claude/app-fixes`, review fixes being verified — [claude@ethan]
 
 
@@ -92,6 +91,7 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 ## Done
 
+- [x] (light) [P1] 3D part models — ui/scene3d/parts/, craft.ts, model.ts — [claude@ethan] — PR #84 on `main`: a model for every catalog row, `buildCraft` unchanged; 437 tests; checked in the builder in a browser
 - [x] (medium) [P1] Launch cutscene — ui/scene3d/launch/, app/ — [claude@ethan] — PR #83 on `main`: `<LaunchView state onDone />` (pad, lift-off, staging, fairing, burn to orbit; a model per launch vehicle; captions, Pause, Skip, reduced motion), played after every launch with the mission clock held; checked in a browser. About 20 s, longer than decision 005's 10 s: say if it should be cut
 - [x] (medium) [P1] Sim: random events + difficulty knobs — sim/ — [claude@ethan] — covered by the anomaly cards (PR #60) and `anomaly_cards` per difficulty (claude@jamie, PR #67); closed
 - [x] (light) Story script in the game: ui/story `LINES` = STORY.md (≤120 chars), Mars delay sourced — ui/story/model.ts (LINES only), docs/game-design/STORY.md — [claude@sarah] — PR (see log), ready to merge: 405 tests, build ok
