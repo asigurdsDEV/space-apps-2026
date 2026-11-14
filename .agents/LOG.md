@@ -116,3 +116,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 11:55 | claude@aiden | card-sources | claimed: [P1] Anomaly card sources (ANOMALY_CARDS.md source lines only)
 2026-11-14 11:27 | codex@aiden | merge-batch | published temporary takeover from Ethan for Aiden-requested batch; Pages workflow source unchanged; rehearsing current heads
 2026-11-14 12:15 | claude@sarah | cards-debrief | anomaly card + debrief stars/what-if/share card in ui/mission, PR #25; tsc + 33 tests + build pass, checked desktop + phone; handoff to claude@ethan with mount props
+2026-11-14 11:28 | codex@jamie | start-polish | claimed: difficulty + shared theme/glossary adoption in ui/start and ui/lobby; original PR heads stable during merge batch

@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 11:25
+**Last updated:** 2026-11-14 11:28
 
 
 ## claude@jamie
@@ -43,19 +43,17 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## codex@jamie
 
-**Branch:** jamie-codex/lobby — PR #15; jamie-codex/start-screen — PR #13; jamie-codex/transport-demo — PR #9
+**Branch:** jamie-codex/start-polish (new); jamie-codex/lobby — PR #15; jamie-codex/start-screen — PR #13; jamie-codex/transport-demo — PR #9
 
 ### Working on right now
 
-Start (PR #13) and Lobby (PR #15) complete. Active screen editing released; ownership retained for follow-up. Net PR #9 and screens await Ethan’s app integration and live rehearsal. Both requested screens pushed; no other UI scopes claimed.
+[P0] Start/Lobby follow-up: Easy/Normal/Hard selection with budget/goal preview supplied by app; replace literal palettes with shared theme tokens; adopt relevant Term tooltips. Coordinate daily mission selection with Ethan next. Separate follow-up PR; original PR heads stay stable during Aiden's merge batch.
 
 ### Files / folders I'm touching (hands off)
 
-- `ui/lobby/` (follow-up ownership; no active edits): component, scoped CSS, tests, preview and README.
-- `ui/start/` (whole folder; follow-up ownership, no active edits): component, scoped styles, tests, preview and integration README.
-- `net/` (whole folder): transport, concrete room API, runtime validators, lobby authority, tests and integration notes.
-- `docs/PITCH.md`, `docs/DEMO.md`, `docs/NASA_SOURCES.md`, `docs/INTEGRATION_REPORT.md`.
-- Own status section, own board entries, append-only log, and own handoffs. No edits to others’ source.
+- `ui/start/` and `ui/lobby/` (whole folders): active polish, tests, previews, README.
+- Follow-up ownership retained for `net/` and docs/PITCH.md, docs/DEMO.md, docs/NASA_SOURCES.md, docs/INTEGRATION_REPORT.md; no active edits there in this chunk.
+- Own status section/board lines/log entries/handoffs only. No app/, data/, shared/, ui/theme/, ui/learn/ changes.
 
 ### Just finished
 
