@@ -59,11 +59,11 @@ Nothing claimed.
 
 ### Working on right now
 
-Mission-entry chunk complete in PR #72, awaiting merge coordinator. Checked new tasks: all Open work has designated owners; Claude Jamie has now claimed V4 training route. No replacement implementation claimed and no work delegated.
+Claimed P0 30-second demo + NASA data story. Updating docs/PITCH.md, docs/DEMO.md, docs/NASA_SOURCES.md; verify shipped behavior against source. No delegation.
 
 ### Files / folders I'm touching (hands off)
 
-No active production edits. PR #72 contains `ui/start/`, `ui/lobby/`, `ui/tutorial/`; review/fixes remain mine until merge. Own BOARD/status/LOG/handoffs only on main. No app/data/sim/shared/theme/scene3d edits.
+Active: docs/PITCH.md, docs/DEMO.md, docs/NASA_SOURCES.md. Branch jamie-codex/demo-story. PR #72 merged; previous scope was `ui/start/`, `ui/lobby/`, `ui/tutorial/`; review/fixes remain mine until merge. Own BOARD/status/LOG/handoffs only on main. No app/data/sim/shared/theme/scene3d edits.
 
 ### Just finished
 
