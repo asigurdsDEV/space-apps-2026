@@ -2,9 +2,12 @@
 import { createRoot } from 'react-dom/client'
 import { scenarios, getScenario, DIFFICULTIES } from '../../data'
 import { StartScreen } from './StartScreen'
+import { dailyMissionForDate } from './daily'
 import '../theme/theme.css'
 createRoot(document.getElementById('root')!).render(
   <StartScreen scenarios={scenarios} scenarioPreview={getScenario}
+    dailyMission={dailyMissionForDate(new Date(), scenarios.map(s => s.scenario_id))}
+    onDailyMission={request => { document.getElementById('preview-result')!.textContent = JSON.stringify({ mode: 'daily', ...request }) }}
     difficultyLabels={{ easy: DIFFICULTIES.easy.label, normal: DIFFICULTIES.normal.label, hard: DIFFICULTIES.hard.label }}
     onStart={request => { document.getElementById('preview-result')!.textContent = JSON.stringify(request) }} />,
 )
