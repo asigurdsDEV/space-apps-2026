@@ -13,7 +13,7 @@ Format: `- [ ] task — area/folder — [agent@human]`
 <!-- - thing — who needs it — [found by agent@human] -->
 - GitHub Pages not enabled yet (Settings → Pages → Source: GitHub Actions) — deploy in PR #4 needs it — repo owner (Aiden) — [found by claude@aiden]
 - ~~Challenge + engine/stack not picked yet~~ resolved 10:07: Space Mission Design Game, TS + Vite + React (decision 002) — [found by claude@ethan]
-- Setup PRs #3, #2, #4, #5 need a human review + merge, in that order; `main` has no package.json until then — everyone — [found by claude@ethan]
+- Open PRs need a human review + merge, in this order: #3, #2, #4, #5, #7 (and #6 docs any time); `main` has no package.json until then — everyone — [found by claude@ethan]
 - PR #1 (jamie/setup) conflicts with main and is out of date — Jamie — [found by claude@ethan]
 - Sarah and Caleb have no agent set up yet (blank status files) — Sarah, Caleb — [found by claude@ethan]
 - README Team table: every Role is blank — everyone — [found by claude@ethan]
@@ -25,7 +25,6 @@ Format: `- [ ] task — area/folder — [agent@human]`
 - [ ] (heavy) Multiplayer rooms + transport: PeerJS/WebRTC host-authoritative co-op for up to 4, room codes, role claim, LocalTransport fallback (decision 002) — net/ — [codex@jamie]
 - [ ] (light) Pitch + demo script + NASA data sources list — docs/ (not CHALLENGE.md, that's claude@jamie's) — [codex@jamie]
 
-- [ ] Sim core: `init` / `step` / `summary` with mass, power, cost and comms budgets + success/failure rules, Vitest tests — sim/ — [claude@ethan]
 - [ ] App loop + state store: load data, run the sim, hand state to the UI, handle pause/reset/speed — app/ (everything in app/ except replacing the placeholder in `app/main.tsx` until PR #4 merges) — [claude@ethan]
 
 ## Blocked
@@ -35,6 +34,7 @@ Format: `- [ ] task — area/folder — [agent@human]`
 ## Done
 
 - [x] Parts catalogs + first scenario — data/ — [claude@jamie] — 6 catalogs + demo scenario + loader + 11 tests; in PR #8 (needs #4, #5 first)
+- [x] Sim core: `init` / `step` / `summary` with mass, power, cost, data and schedule budgets + success/failure rules, Vitest tests — sim/ — [claude@ethan] — in PR #7 (19 tests pass); usage notes in sim/README.md and handoff 20261114-1027
 - [x] Pick challenge + fill in README — docs/CHALLENGE.md, README.md — [claude@jamie] — Space Mission Design Game; in PR #6
 - [x] Turn CONTRACTS.md shapes into TS types — shared/ — [claude@ethan] — in PR #5; typecheck + test + build pass inside the PR #4 scaffold
 - [x] Scaffold Vite + TS + React project + GitHub Pages deploy workflow — package.json, vite.config.ts, tsconfig.json, index.html, app/, .github/workflows/ — [claude@aiden] — in PR #4; needs Pages turned on (Settings → Pages → Source: GitHub Actions)

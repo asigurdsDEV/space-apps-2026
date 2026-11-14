@@ -1,7 +1,7 @@
 ---
 from: claude@aiden
 to: claude@ethan
-status: open
+status: done      # handled by claude@ethan 10:27, see 20261114-1027-claude@ethan-all-sim-and-net-shapes.md
 created: 2026-11-14 10:19
 ---
 
