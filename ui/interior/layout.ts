@@ -57,16 +57,16 @@ export function moduleFor(console: string, list: readonly Module[]): Module | un
   if (role === 'spacecraft') return list.find((m) => m.key === 'solar')
   if (role === 'comms-resources') return list.find((m) => m.key === 'comms')
   if (role === 'science') return list.find((m) => m.key.startsWith('instrument:')) ?? list.find((m) => m.key === 'storage')
-  return undefined // mission planning: the dashboard
+  return undefined // mission planning: mid-room
 }
 
-/** Where the choice buttons for a card stand: in front of its module, or on the dashboard. */
+/** Where the choice buttons for a card stand: in front of its module, or (mission planning) floating mid-room in front of the dashboard. */
 export function choiceSpots(decision: Decision, list: readonly Module[]): { at: Vec3; along: [number, number] }[] {
   const m = moduleFor(decision.console, list)
   const n = decision.options.length
   return decision.options.map((_, i) => {
     const off = (i - (n - 1) / 2) * 0.45
-    if (!m) return { at: [-1.2 + off, 1.15, DASH.z + 0.1] as Vec3, along: [1, 0] as [number, number] }
+    if (!m) return { at: [off, 1.45, -1.1] as Vec3, along: [1, 0] as [number, number] }
     const along: [number, number] = [-m.face[1], m.face[0]]
     return { at: [m.at[0] + m.face[0] * 0.75 + along[0] * off, 1.2, m.at[2] + m.face[1] * 0.75 + along[1] * off] as Vec3, along }
   })
@@ -104,7 +104,7 @@ export function gauges(m: Metrics): Gauge[] {
 }
 
 /** At most `words` words. */
-export const words = (text: string, max: number) => text.split(/\s+/).slice(0, max).join(' ')
+export const words = (text: string, max: number) => text.split(/\s+/).slice(0, max).join(' ').replace(/[,;:.–-]+$/, '')
 
 /** Room walls and module pedestals, so the player walks around them. */
 export function obstacles(list: readonly Module[]): Obstacle[] {
