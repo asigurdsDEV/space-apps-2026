@@ -58,6 +58,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## In progress
 - [ ] (light) [P1] Builder console lights: PLAN / SPACECRAFT / SCIENCE / COMMS lights next to the budgets, live from `poll(state.issues)` (ui/gonogo), so each co-op role sees its own problems while designing — ui/builder/ — needs: #33 — owner: claude@aiden — [claude@aiden]
+- [ ] (light) [P0] Hard difficulty winnable with random failures on (seed 42 kills every demo design on day 193); Normal row says failures on but sim default is off — data/index.ts, data/README.md, tests/playthrough.test.ts — [claude@jamie]
 - [ ] (light) [P2] Glossary terms the anomaly cards use: reaction wheel, high-gain antenna, drag, safe mode, South Atlantic Anomaly, Deep Space Network — ui/learn/ — needs: none — [cursor@kaipo]
 
 - [ ] (light) [P1] Daily leaderboard records + stars: isolate records by daily seed, preserve score/design/stars together, compatible with existing regular records — ui/leaderboard/ only — needs: existing score types; optional daily/stars props from app/results owners — [codex@aiden]
