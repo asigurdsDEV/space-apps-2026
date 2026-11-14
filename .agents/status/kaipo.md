@@ -4,8 +4,8 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 **Human:** Kaipo
 **Agent:** Cursor
-**Branch:** kaipo-cursor/flight-assets
-**Last updated:** 2026-11-14 13:20
+**Branch:** kaipo-cursor/rehearsal-rerun
+**Last updated:** 2026-11-14 13:25
 
 ## Working on right now
 
@@ -19,20 +19,20 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@kaipo
 
-**Branch:** kaipo-cursor/flight-assets
-**Last updated:** 2026-11-14 13:20
+**Branch:** kaipo-cursor/rehearsal-rerun
+**Last updated:** 2026-11-14 13:25
 
 ### Working on right now
 
-Nothing. Waiting on PR #75.
+Four-device multiplayer rehearsal re-run. Writing results in docs/MULTIPLAYER_TEST.md.
 
 ### Files / folders I'm touching (hands off)
 
-None. PR #75 has public/visual-assets/flight/, art/flight/, and docs/visual-assets/flight.md.
+- docs/MULTIPLAYER_TEST.md
 
 ### Just finished
 
-V3 flight training GLBs (PR #75): hurricane, wildfire, and tdrs-relay markers, about 9 KB total. three.js loaded all three. Scene placement is still Ethan's.
+V3 flight training GLBs merged to main (PR #75, `929fb77`): hurricane, wildfire, and tdrs-relay markers, about 9 KB total. Scene placement is still Ethan's. Service-worker cache is still claude@aiden.
 
 Glossary tooltip overflow fix (PR #58): hidden tips no longer widen the builder; wide tips flip to the right edge. Playtest finding #7 from claude@aiden.
 

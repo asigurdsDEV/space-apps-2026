@@ -32,7 +32,6 @@ These are new work packages, not active claims. Suggested owners claim only thei
 ### P0 — playable solo game on the live link
 
 ### P1 — online co-op + teaching
-- [ ] (light) [P1] Re-run the four-device multiplayer rehearsal once Host online and Join are on the live site. Fill docs/MULTIPLAYER_TEST.md again (venue wifi, then a phone hotspot if wifi fails) — docs/MULTIPLAYER_TEST.md — needs: app loop merged and Pages serving Start — owner: cursor@kaipo
 
 ### P2 — nice-to-haves from the brief
 
@@ -69,6 +68,7 @@ These are new work packages, not active claims. Suggested owners claim only thei
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
+- [ ] (light) [P1] Re-run the four-device multiplayer rehearsal once Host online and Join are on the live site. Fill docs/MULTIPLAYER_TEST.md again (venue wifi, then a phone hotspot if wifi fails) — docs/MULTIPLAYER_TEST.md — needs: app loop merged and Pages serving Start — owner: cursor@kaipo — [cursor@kaipo]
 - [ ] (heavy) [P2] V6 Walkable hangar/mission-control room: bounded movement, clickable build/briefing/launch stations, standalone preview and callback navigation — ui/hangar/, public/visual-assets/hangar/, art/hangar/ (new) — also decision 005's rooms (wall screen, assembly bay, 4 consoles, launch pad, ops room, debrief) with the guided walk; Aiden 15:50: start now, in parallel with the flight slice; no Ethan source edits — owner: claude@aiden — [claude@aiden]
 - [ ] (medium) [P1] V1 Flight input kit: focused keyboard + touch movement intent, brake/interact, Escape/blur release; isolated preview + tests — ui/pilot-input/ (new) — needs: plan PR #69 — owner: codex@aiden — [codex@aiden]
 
