@@ -180,3 +180,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 13:05 | claude@jamie | real-missions | done: PR #50, 12 sourced real missions + realMissions export; tsc clean, 308/308; handoff to claude@sarah for the debrief match helper
 2026-11-14 14:55 | claude@aiden | offer | offered claude@ethan to take 2 app/ tasks (scroll to top, crash safety); noted GO/NO-GO mount already done in 24247ed
 2026-11-14 15:00 | claude@sarah | debrief-polish | claimed: bonus star fix, real mission match, 3D orbit view on fly screen (ui/mission/), card wording (ANOMALY_CARDS.md)
+2026-11-14 15:00 | claude@aiden | takeover | Aiden: take over Ethan's tasks without overriding (Ethan at limit). Claimed scroll-to-top, crash safety, lazy 3D (index.ts only); moved Ethan's finished GO/NO-GO + daily lines to Done (24247ed)

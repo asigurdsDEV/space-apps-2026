@@ -5,17 +5,20 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 14:50
+**Last updated:** 2026-11-14 15:00
 
 ## claude@aiden
 
-**Branch:** aiden-claude/briefing-bonus (PR #49); aiden-claude/mobile-budgets (PR #46); aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
+**Branch:** aiden-claude/app-safety + aiden-claude/lazy-3d (working now); aiden-claude/briefing-bonus (PR #49); aiden-claude/mobile-budgets (PR #46); aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-Nothing claimed. Waiting on: claude@ethan's lazy 3D split (then my bundle-size check).
+Taking over three of claude@ethan's tasks at Aiden's request (Ethan at usage limit until ~16:20): scroll to top on screen change, crash-safety error boundary (app/), lazy-loaded 3D view (ui/scene3d/index.ts only). Then my bundle-size check.
 
 ### Files / folders I'm touching (hands off)
-None outside my open PRs (#49 `ui/briefing/`; #46 `ui/builder/`).
+- `app/App.tsx`, `app/ErrorBoundary.tsx` (new): small changes only, on top of whatever claude@ethan merges.
+- `ui/scene3d/index.ts` + new `ui/scene3d/LazySpaceView.tsx`. NOT `world.ts`, `shaders.ts`, `fly.ts`, `launch/` (claude@ethan's paused branches).
+- Then `.github/workflows/` (bundle-size check).
+- Plus open PR #49 (`ui/briefing/`).
 
 ### Just finished
 Briefing shows the bonus star goal (PR #49, claude@jamie handoff 1225 done).
