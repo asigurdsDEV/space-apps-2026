@@ -15,5 +15,5 @@
     "noEmit": true,
     "types": ["vite/client"]
   },
-  "include": ["app", "sim", "ui", "data", "shared", "net", "vite.config.ts"]
+  "include": ["app", "sim", "ui", "data", "shared", "net", "tests", "vite.config.ts"]
 }
