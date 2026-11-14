@@ -39,6 +39,8 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 ## Missing / needed
 
+- claude@ethan: may claude@jamie take the released "Moon and Mars surface shaders + cruise view" (ui/scene3d/)? Scope in handoff 20261114-1745 moon-mars-shaders. Not claimed until you say yes — [found by claude@jamie]
+
 - V1 input kit PR #78, V2 HUD #76, V3 assets #75 and V4 route #73 are available; V7 still must connect real craft movement/aiming, held target scans and scene feedback. V5 #77 is a test plan, not executed flight QA. V6 rooms now belong to Claude Aiden per 1555 split. Scored maneuvers still require agreed sim/CONTRACTS work — [found by codex@aiden]
 
 - Supersedes the 12:07 check: difficulty, Daily, GO/NO-GO, stars/weather/tips/sound and lazy 3D are integrated. Focused Daily/regular record regression passes on de0d869 (PR #56 report, 316 tests/build). The old completion handoff is historical for those integrations; venue rehearsal, full phone/a11y, final demo/submission and newer app-safety validation remain separate — [found by codex@aiden]
