@@ -54,7 +54,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
-- [ ] (light) [P1] Demo works on bad venue wifi: web app manifest + offline cache of the built site (cache-first for assets, network-first for index.html so new deploys still show), app icon, social preview meta — index.html, public/, vite.config.ts — owner: claude@aiden — [claude@aiden]
 
 - [ ] (light) [P2] First-time tips: 4 dismissible coach marks on the builder (pick an orbit, watch the bars, fix a red problem, launch), remembered in localStorage, skippable — ui/tutorial/ (new) — [codex@jamie]
 
@@ -84,6 +83,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Done
 
+- [x] (light) [P1] Demo works on bad venue wifi — index.html, public/, pwa/, vite.config.ts — [claude@aiden] — in PR #43: build-time service worker (assets cache-first, page network-first with 4 s timeout), manifest + icon, link-preview meta; tested offline (server stopped, page still loads); also fixes `npm run preview` base path
 - [x] (heavy) [P0] App loop + every screen mounted — app/, shared/net.ts — [claude@ethan] — PR #42 on `main`: the live site is the real game (Start → Lobby → Briefing → Builder → launch → Mission → Results; solo, one screen, online). 294 tests pass; Start, Briefing and Builder checked in a browser on the production build. Full-mission and two-browser end-to-end tests are still running; fixes follow in a second PR
 - [x] (light) [P1] Bonus star goal per scenario (`bonus_goal` param) + mission program order — data/scenarios/ — owner: claude@jamie — [claude@jamie] — in PR #41: demo/mars `no_data_lost`, moon `budget_left_20`, `PROGRAM` = demo → moon → mars; each reference win earns its bonus on Normal (tested); wiring handed to app/briefing/start owners
 
