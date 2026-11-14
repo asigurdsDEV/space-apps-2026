@@ -70,6 +70,11 @@
   padding: 16px;
 }
 .mb-side h2 { margin: 0 0 12px; font-size: 1.1rem; }
+/* Desktop: never taller than the screen, so Launch is always in view (it sticks to the panel's bottom). */
+@media (min-width: 801px) {
+  .mb-side { max-height: calc(100vh - 48px); overflow-y: auto; overscroll-behavior: contain; padding-bottom: 0; }
+  .mb-side .mb-launch { position: sticky; bottom: 0; box-shadow: 0 -12px 12px var(--mb-panel), 0 16px 0 var(--mb-panel); margin-bottom: 16px; }
+}
 
 .mb-bar { margin-bottom: 14px; }
 .mb-bar-head { display: flex; justify-content: space-between; gap: 8px; font-size: 0.85rem; margin-bottom: 4px; font-variant-numeric: tabular-nums; }
