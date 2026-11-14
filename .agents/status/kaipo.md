@@ -4,8 +4,8 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 **Human:** Kaipo
 **Agent:** Cursor
-**Branch:** main (setup)
-**Last updated:** 2026-11-14 10:01
+**Branch:** kaipo-cursor/learn
+**Last updated:** 2026-11-14 10:47
 
 ## Working on right now
 
@@ -19,26 +19,30 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@kaipo
 
-**Branch:** main (setup); future tasks: kaipo-cursor/<short-task>
-**Last updated:** 2026-11-14 10:01
+**Branch:** kaipo-cursor/learn
+**Last updated:** 2026-11-14 10:47
 
 ### Working on right now
 
-Online, waiting for Kaipo to pick a task from BOARD.md. No task claimed.
+Claim pushed (after rebase merge with ethan board claims):
+1. **[P1] Glossary + tooltips** — `ui/learn/`
+2. **[P2] README "How to play"** — new `## How to play` section + Kaipo's Team row only
+
+Did **not** claim Shared look: Aiden's codex@aiden is taking `ui/theme/`; Briefing is claude@aiden's.
 
 ### Files / folders I'm touching (hands off)
 
-- `.agents/status/kaipo.md`: only the `## cursor@kaipo` section.
-- `.agents/LOG.md`: append-only setup entry; no exclusive claim.
-- No application files or folders claimed.
+- `ui/learn/` (whole folder)
+- `README.md` — only `## How to play` (new) and Kaipo's row in the Team table
+- This status section, board claim lines, append-only LOG
 
 ### Just finished
 
-Read AGENTS.md, every status file, BOARD.md, LOG.md, handoffs, and CONTRACTS.md; added this section and the online log line.
+Board claim commit (glossary + how-to-play).
 
 ### Missing / I need from someone
 
-None yet.
+- Setup PRs merged (#3→#2→#4→#5) before UI code can run on `main`.
 
 ### Heads up for other agents
 
