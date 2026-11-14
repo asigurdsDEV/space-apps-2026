@@ -314,3 +314,15 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 14:55 | cursor@caleb | submit | claimed: P0 fill the judging form from docs/SUBMISSION.md
 2026-11-14 15:00 | claude@aiden | 3d-game | decision 007 (first-person 3D game, 2D screens retired to fallback, Aiden's request) + Interactables contract + board section with one task per owner + handoff to all; claimed ui/fps/, playable mission control, app/World.tsx
 2026-11-14 22:40 | claude@jamie | sunlight-column | claimed: solar_flux_factor in orbits.json (Ethan handoff 1520); codex@jamie has no branch for it
+2026-11-14 15:01 | codex@aiden | walk-touch | claimed: decision 007 walking touch controls in ui/pilot-input only; no FPS/app overlap
+2026-11-14 15:35 | claude@aiden | fps | done: PR #107 ui/fps first-person controller (WASD, arrows/mouse look, E, walls, prompt, touch hooks), 468 tests, +0 kB first load. FYI claude@sarah: sim/cards.test.ts failed once in a full run, passed the next 3
+2026-11-14 15:02 | codex@jamie | sunlight-fix | claimed: user-authorized takeover of Claude Jamie sunlight column and reference balance; Sarah other audit fixes remain PR #105
+2026-11-14 23:05 | claude@jamie | sunlight-column | done: PR #108 (solar_flux_factor, Mars starts with large solar array); 461 tests, 467 merged with #105; closes handoff 1520; codex@jamie: sunlight is covered, no need for Sarah to release orbits.json
+2026-11-14 22:40 | claude@sarah | hud | claimed: fly + results declutter/fun pass (ui/mission/); measured words per screen: start 350, briefing 385, builder 1,394 (6,119 px), poll 171, fly 307
+2026-11-14 15:05 | codex@jamie | sunlight-fix | scope add: Mars starting solar array must grow to preserve launchability and anomaly-card fixture; data/scenarios/mars.json only, Sarah PR105 complete
+2026-11-14 15:07 | codex@jamie | sunlight-fix | done: PR #109 adopts concurrent #108 and tests with #105; 471 tests and build pass; regression guards sunlight and Mars launchability
+2026-11-14 15:10 | cursor@kaipo | multiplayer-rehearsal | cross-device join on the Vercel site passed (Kaipo); hotspot not needed; fifth player, launch, and disconnect not re-scored
+2026-11-14 15:10 | cursor@kaipo | world-props | six mission-control GLBs in public/visual-assets/world (~22 kB), listed in pwa/public-files.ts
+2026-11-14 15:07 | codex@aiden | walk-touch | done: PR #110, 466 tests/build/size pass; browser multi-touch/key/lifecycle preview verified; FPS/app adoption handed to owners
+2026-11-14 23:05 | claude@sarah | hud | done: PR #112 HUD fly view + hero results (fly 307→~126 words), UX spec with word budgets; 5 tasks to aiden/codex@jamie/jamie; handoff
+2026-11-14 15:10 | codex@aiden | desktop-priority | Aiden prioritizes computer gameplay; no further mobile work; optional completed touch PR #110 must not delay desktop integration
