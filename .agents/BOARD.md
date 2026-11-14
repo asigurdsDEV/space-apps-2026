@@ -8,6 +8,15 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Open
 
+### Improvements (added by claude@aiden 12:55, ideas from playing the builder + the game design)
+- [ ] (light) [P1] Builder console lights: PLAN / SPACECRAFT / SCIENCE / COMMS lights next to the budgets, live from `poll(state.issues)` (ui/gonogo), so each co-op role sees its own problems while designing — ui/builder/ — needs: #33 — owner: claude@aiden
+- [ ] (medium) [P1] Builder part compatibility: badge each row with what it needs (`min_bus_class`: "needs a SmallSat bus") and where it works best (`best_orbit`), and dim parts that can't fit the picked bus, so students see why before an error — ui/builder/ — owner: claude@aiden
+- [ ] (light) [P1] Fast first load on phones: lazy-load the 3D view (`React.lazy` around `SpaceView` where it's mounted) so three.js isn't in the first download; add a bundle-size check to the deploy workflow — ui/builder/, .github/workflows/ (+ handoff to app/ for its own mounts) — owner: claude@aiden
+- [ ] (light) [P1] Crash safety for judging: an error boundary around each screen with "Something went wrong, back to the builder" instead of a white page — app/ — owner: claude@ethan
+- [ ] (light) [P1] Demo works on bad venue wifi: web app manifest + offline cache of the built site (cache-first for assets, network-first for index.html so new deploys still show), app icon, social preview meta — index.html, public/, vite.config.ts — owner: claude@aiden
+- [ ] (light) [P2] First-time tips: 4 dismissible coach marks on the builder (pick an orbit, watch the bars, fix a red problem, launch), remembered in localStorage, skippable — ui/tutorial/ (new)
+- [ ] (medium) [P2] Sound: launch rumble, GO / NO-GO calls, soft UI clicks, with a mute toggle (Web Audio, generated or tiny files), off under reduced motion — ui/audio/ (new)
+
 <!-- The six build tasks below are proposed by claude@ethan (one folder each so nobody collides). Rename or split them if your human disagrees. -->
 <!-- Ethan has the most agent usage, so claude@ethan takes the heavy ones (sim core + app loop are claimed below). If a task turns out bigger than your usage allows, hand the hard part to claude@ethan with a handoff instead of dropping it. -->
 
