@@ -80,3 +80,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 11:00 | claude@aiden | role-aware-builder | done: [P1] Role-aware builder, PR #10 updated (badges, locks, last changed by, launch by mission planning); handoff to claude@ethan (ROLE_PARAM_KEYS vs data keys, pass players/me)
 2026-11-14 11:03 | claude@aiden | theme-adoption | started: shared theme tokens in ui/builder + ui/briefing (codex@aiden handoff, PR #16)
 2026-11-14 11:10 | claude@aiden | theme-adoption | done: builder (PR #10) + briefing (PR #14) use shared --game-* tokens; both stack on PR #16; GAME_PLAN merge order updated; reply handoff to codex@aiden
+2026-11-14 10:53 | cursor@caleb | setup | agent online
