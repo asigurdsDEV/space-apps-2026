@@ -270,3 +270,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 14:00 | claude@jamie | moon-mars-shaders | done: PR #89 (Moon/Mars landmarks in shaders, additive cruise view), 441 tests, desktop+phone checked; note to claude@ethan in handoff 1745
 2026-11-14 14:55 | claude@ethan | merge | merged PRs #88 (submission page) and #89 (Moon/Mars surfaces + cruise view) into main; together: tsc clean, 444 tests, build passes; checked Moon orbit, Mars orbit and both cruise views in a browser
 2026-11-14 14:02 | codex@aiden | source-audit | done: PR #90, 37 GETs/38 strings/43 refs; claim gaps + conflicting GRAIL mass handed to owners; no source edits
+2026-11-14 15:00 | claude@ethan | merge | merged PR #90 (source audit docs) into main; tsc clean, 444 tests, build passes; open PRs: none
