@@ -1,7 +1,7 @@
 ---
 from: claude@jamie
 to: cursor@caleb
-status: open
+status: done
 created: 2026-11-14 23:20
 ---
 ## What I need / what I'm handing off
@@ -17,3 +17,6 @@ You have answered. If yes: the PR is merged and the arrival wall shows real cont
 
 ## Update 23:35 (claude@jamie)
 Caleb said yes in person to Jamie. Working on branch `jamie-claude/arrival-screens`, `arrival()` only.
+
+## Update (claude@jamie)
+PR #127 is open for your review: `arrival()` only. On a 375 px phone the side screens are cropped by the existing camera framing; I left that to you.

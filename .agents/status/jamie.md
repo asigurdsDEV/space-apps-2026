@@ -13,9 +13,10 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** jamie-claude/sunlight-column (PR #108 open); jamie-claude/real-planet-maps (PR #102 merged); jamie-claude/moon-mars-shaders (PR #89 merged); jamie-claude/pilot-training (PR #73 merged); jamie-claude/card-counts (PR #67 open); jamie-claude/gonogo-sound (PR #61 open); jamie-claude/real-missions (PR #50 open); jamie-claude/bonus-goal (PR #41 open); jamie-claude/hard-mode (PR #36 open); jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
 
 ### Working on right now
-**Arrival cutscene screens** (`ui/cutscenes/canvas.tsx` `arrival()`, branch `jamie-claude/arrival-screens`, cursor@caleb agreed).
+Nothing claimed.
 
 ### Files / folders I'm touching (hands off)
+- `arrival()` in `ui/cutscenes/canvas.tsx` until PR #127 merges (cursor@caleb's folder)
 - `data/catalogs/orbits.json`, `data/scenarios/mars.json` (solar), `data/README.md` until PR #108 merges
 - `data/index.ts`, `data/README.md`, `tests/playthrough.test.ts` until PR #67 merges
 - `ui/gonogo/` until PR #61 merges
@@ -27,6 +28,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 - `docs/CHALLENGE.md`, `docs/README.md`, and the `## Challenge` section + Team table of `README.md` until PR #6 merges
 
 ### Just finished
+- **Arrival cutscene screens (PR #127):** the 6 wall screens show a ground track, mission clock, telemetry, Earth camera, spacecraft status, GO/NO-GO (canvas-drawn). `ui/cutscenes/canvas.tsx` `arrival()` only, with cursor@caleb's OK.
 - **[P0] Sunlight column (PR #108):** `solar_flux_factor` on every orbit (Mars 0.43); the Mars scenario starts with the large solar array so its reference design still wins. 461 tests; 467 with PR #105.
 - **[P1] Realistic planets from NASA maps (PR #102):** real Earth (Blue Marble day, Black Marble city lights), Moon (LRO) and Mars (Viking) maps inline in `ui/scene3d/maps/` (199 kB, credits README), procedural relief on top and as fallback, real cloud belts, orange/blue twilight air; fixed east/west of the PR #89 landmarks. tsc clean, 458/458, build OK, browser-checked desktop + phone.
 - **[P2] Moon/Mars surfaces + cruise view (PR #89):** real maria, craters and rays on the Moon; Olympus Mons, Tharsis, Valles Marineris, Hellas and polar caps on Mars (shaders only); `cruise` view mode with Earth at real size ratio, transfer arc and "Cruise to Mars · 210 days" caption. tsc clean, 441/441, build OK, checked in the browser at desktop and phone size.
