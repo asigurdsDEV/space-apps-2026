@@ -46,7 +46,7 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 - Supersedes the 12:07 check: difficulty, Daily, GO/NO-GO, stars/weather/tips/sound and lazy 3D are integrated. Focused Daily/regular record regression passes on de0d869 (PR #56 report, 316 tests/build). The old completion handoff is historical for those integrations; venue rehearsal, full phone/a11y, final demo/submission and newer app-safety validation remain separate — [found by codex@aiden]
 
-- Builder first-time tips component ready in PR #44; mount BuilderTutorial once above/beside MissionBuilder while designing — app/builder owners (Ethan/Aiden); ui/tutorial/README.md API — [found by codex@jamie]
+- Resolved: builder tips are mounted in the app. PR #72 adds modal focus, Escape, Tab containment and replay; verified in the assembled builder — [found by codex@jamie]
 
 - Resolved 12:07: Pages serves the real game (PR #42); codex@aiden completed live solo Start → Results (First Light Normal, starting design, 60×, science_shortfall, 26 points). Older scaffold/Pages permission blockers below are historical; Caleb and Kaipo can resume their checks — [found by codex@aiden]
 
@@ -73,7 +73,6 @@ These are new work packages, not active claims. Suggested owners claim only thei
 - [ ] (light) [P1] V5 3D interaction QA: movement/target loop, touch/focus/Escape, loading/WebGL fallback, offline and measured phone FPS — docs/qa/flight3d.md (new); source read-only — needs: test plan now, V7 for execution — owner: cursor@caleb — [cursor@caleb]
 - [ ] (medium) [P1] Story in the game now, over plain backgrounds: CAPCOM pop-outs on every screen, cutscenes (arrival, launch, orbit, anomaly, ending) from ui/story; 3D scenes slot in later — app/ (additive), ui/story/ — part of the app/ "walk between stations" task (owner claude@ethan), taken over at Aiden's request ("wire it now"); Ethan keeps the walk itself — [claude@aiden]
 - [ ] (medium) [P1] V4 Training route: 3 target descriptors, observation/relay rules and educational feedback, local schema + tests; no score/command changes — data/pilot-training/ (new) — needs: plan PR #69; coordinate V1/V2/V7 interfaces — owner: claude@jamie — [claude@jamie]
-- [ ] (light) [P1] Start: empty name silently blocks Start (placeholder looks filled) and the name is forgotten after Main menu; prefill or default it, and remember it — ui/start/ — owner: codex@jamie — expanded by Jamie: mission-entry graphics/program route, lobby consoles, tutorial keyboard polish — [codex@jamie]
 
 
 
@@ -98,6 +97,8 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 
 ## Done
+
+- [x] (light) [P1] Start: empty name silently blocks Start (placeholder looks filled) and the name is forgotten after Main menu; prefill or default it, and remember it — ui/start/ — owner: codex@jamie — expanded by Jamie: mission-entry graphics/program route, lobby consoles, tutorial keyboard polish — [codex@jamie] — in PR #72: default/remembered name, PROGRAM route + SVG mission art, lobby console art, native modal tour; 363 tests/build, desktop/phone and keyboard checked
 
 - [x] (light) [P1] Story script: CAPCOM lines for every ui/story LineId + a glossary pop-out per beat, drop-in TS block — docs/game-design/STORY.md — [claude@sarah] — docs PR (see log); claude@aiden pastes it into ui/story (handoff)
 - [x] (medium) [P1] Story pop-outs (decision 005) — ui/story/ (new) — [claude@aiden] — in PR #70: storyBeat(screen, events, scenarioId), CapcomPopout, FactPopout (glossary), TaskPanel, Cutscene frame (Skip/Esc, captions, still under reduced motion, ≤10 s); placeholder lines for claude@sarah's STORY.md; not mounted yet (app/ task)

@@ -1,7 +1,7 @@
 ---
 from: codex@jamie
 to: all
-status: open
+status: done
 created: 2026-11-14 12:45
 ---
 
@@ -20,3 +20,7 @@ jamie-codex/mission-entry. Claim published before code. SVG/CSS graphics ship of
 ## What "done" looks like
 
 Codex opens the tested implementation PR and publishes desktop/mobile/light/dark and keyboard verification. This note is a scope notice only; no coding assignment is being delegated.
+
+## Completed by codex@jamie, 2026-11-14 13:11
+
+Implementation complete in PR #72; see 1311 mission-entry-ready handoff for verification. No coding delegated.

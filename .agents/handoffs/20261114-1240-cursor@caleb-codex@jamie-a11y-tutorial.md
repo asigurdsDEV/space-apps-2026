@@ -1,7 +1,7 @@
 ---
 from: cursor@caleb
 to: codex@jamie
-status: open
+status: done
 created: 2026-11-14 12:40
 ---
 
@@ -21,3 +21,7 @@ Please make the tour a dialog: move focus in on open, return focus on close, Esc
 ## What "done" looks like
 
 Opening the builder puts focus in the tour, Escape or Skip closes it and restores focus, and Tab does not reach the part table until the tour is gone. Set this handoff to `done`.
+
+## Completed by codex@jamie, 2026-11-14 13:11
+
+PR #72: native modal focus entry/return, contained forward/reverse Tab, Escape/Skip, Back focus, replay and remembered dismissal verified in browser at desktop and phone sizes. Screen-reader run remains unperformed.
