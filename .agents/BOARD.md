@@ -20,6 +20,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] (light) [P2] Glossary terms the anomaly cards use: reaction wheel, high-gain antenna, drag, safe mode, South Atlantic Anomaly, Deep Space Network — ui/learn/ — needs: none — owner: cursor@kaipo
 
 ### Game design (decision 004, proposed, see docs/game-design/GAME_DESIGN.md §8)
+- [ ] (light) [P0] Daily mission app integration: use dailyMissionForDate + apply descriptor seed before init, refresh at UTC midnight/resume — app/ — owner: claude@ethan — needs: #30 #31 (Start portion complete)
 - [ ] (heavy) [P0] Anomaly cards in the sim: `decision_required` event + `resolve_decision` command, seeded draws, effects vocabulary, encode the deck from docs/game-design/ANOMALY_CARDS.md — sim/, shared/, CONTRACTS.md — owner: claude@ethan
 - [ ] (medium) [P0] What-if + risk meter helper: `whatIf()` and `successRate()` reruns of the pure sim — sim/analysis.ts — owner: claude@ethan
 - [ ] (medium) [P1] Real missions table: ~10–15 real missions with sourced numbers for the debrief match — data/real-missions.json — owner: claude@jamie
@@ -33,9 +34,9 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 - Theme PR #16: builder + briefing adopted (Claude FYI); app wrapper and mission/results/start/lobby adoption still need owner confirmation — [found by codex@aiden]
 
-- Actual First Light data fails sim validation (bus dataset, power/comms choices, launcher capacity, science target/objective); candidate winning design cannot launch — Ethan adapting sim, catalog owner informed; reproduction in PR #9 docs/INTEGRATION_REPORT.md — [found by codex@jamie]
+- Resolved: original First Light catalog/sim mismatch fixed in sim-data #26, now on main; real-data playthrough tests pass. Historical snapshot remains in docs/INTEGRATION_REPORT.md — [found by codex@jamie]
 
-- Network needs finalized shared NetMessage validator/role policy, PeerJS package dependency, app wiring and live browser/venue rehearsal — net/app/shared/scaffold owners — [found by codex@jamie]
+- Network validators/role policy/PeerJS dependency are on main; remaining app wiring and live WebRTC/venue rehearsal are unverified — app/net owners + rehearsal team — [found by codex@jamie]
 <!-- anything an agent noticed is missing, broken, or needed by someone else -->
 <!-- - thing — who needs it — [found by agent@human] -->
 - GitHub Pages not enabled yet (Settings → Pages → Source: GitHub Actions) — deploy in PR #4 needs it — repo owner (Aiden) — [found by claude@aiden]
@@ -53,7 +54,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 - [ ] (light) [P1] Daily leaderboard records + stars: isolate records by daily seed, preserve score/design/stars together, compatible with existing regular records — ui/leaderboard/ only — needs: existing score types; optional daily/stars props from app/results owners — [codex@aiden]
 
-- [ ] (light) [P0] Daily mission: date picks scenario + seed (YYYYMMDD) — ui/start/ + app/ — owners: codex@jamie (start), claude@ethan (app) — [codex@jamie] (Start UI/helper only; app integration stays claude@ethan)
 
 
 
@@ -80,6 +80,8 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 
 ## Done
+
+- [x] (light) [P0] Daily mission Start UI/helper: UTC YYYYMMDD seed, sorted IDs, Normal; separate callback — ui/start/ — [codex@jamie] — in PR #31 (after #30); app seed application still pending
 
 - [x] (light) [P0] Builder budget bars match the reviewed sim — ui/builder/ — [claude@aiden] — in PR #32 (after #29): Bus capacity back, Science from `science_expected` (demo 1.7/30, was 10/30), new Battery-vs-eclipse bar; checked on real sim + data for demo/Moon/Mars
 - [x] (medium) [P0] GO / NO-GO poll, solo: 4 consoles vote from `state.issues`, Launch unlocks on all GO — ui/gonogo/ (new) — needs: builder — [claude@jamie] — in PR #33; app/ mounts it between builder and launch (handoff to claude@ethan)

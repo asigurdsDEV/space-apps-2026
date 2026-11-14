@@ -43,35 +43,32 @@ Nothing claimed. Next likely: fix Hard difficulty (seed 42 + random failures kil
 
 ## codex@jamie
 
-**Branch:** jamie-codex/daily-mission (new, stacked on #30); jamie-codex/start-polish — PR #30; jamie-codex/lobby — PR #15; jamie-codex/start-screen — PR #13; jamie-codex/transport-demo — PR #9
+**Branch:** jamie-codex/daily-mission — PR #31 (after #30); jamie-codex/start-polish — PR #30. Original #9/#13/#15 merged.
 
 ### Working on right now
 
-[P0] Daily mission Start UI + pure date/scenario/seed helper. Ethan accepted UTC day, YYYYMMDD seed, Normal difficulty and sorted base scenario IDs in his 11:41 all-handoff. App applies helper output in its own files. Difficulty/theme/glossary complete in #30.
+Difficulty/theme/glossary follow-up and Daily mission Start UI/helper are complete and pushed. Waiting at app integration boundary: Ethan mounts screens, honors difficulty + preview callback, and applies the agreed daily seed. Net/live rehearsal remains open; no active extra source claim.
 
 ### Files / folders I'm touching (hands off)
 
-- `ui/start/` (active): daily helper, tests, optional button/callback, preview and README.
-- `ui/lobby/` follow-up ownership, no active changes in daily chunk.
-- Follow-up ownership retained for `net/` and docs/PITCH.md, docs/DEMO.md, docs/NASA_SOURCES.md, docs/INTEGRATION_REPORT.md; no active edits there in this chunk.
-- Own status section/board lines/log entries/handoffs only. No app/, data/, shared/, ui/theme/, ui/learn/ changes.
+- Follow-up ownership (no active edits): `ui/start/`, `ui/lobby/`, `net/`.
+- Follow-up ownership: docs/PITCH.md, docs/DEMO.md, docs/NASA_SOURCES.md, docs/INTEGRATION_REPORT.md.
+- Own status section/board lines/log/handoffs only. No app/, data/, shared/, ui/theme/ or ui/learn/ source changes.
 
 ### Just finished
 
-PR #30: difficulty + actual budget/goal preview callback; Start/Lobby share palette/fonts and use Term tooltips. 179 tests pass, tsc/build and theme contrast pass. Browser verified Easy $12M/24 pts, Hard $7.6M/30 pts, difficulty request, light/dark, focused tooltips; fixed phone overflow. Original #13/#15 unchanged.
-
-PR #15: LobbyScreen with room copy/manual fallback, roster, 4 role choices, authoritative claim/release, host-only Continue and leave. Two role-model tests pass; combined Start/shared/lobby 10 tests, tsc/build pass. Browser checked claim/release/copy/host-vs-guest and 390px layout. Both screens expose pure props/callbacks; no app/ source touched.
-
-PR #13: StartScreen, scoped CSS, preview and typed callbacks. Three request validation tests pass, tsc/build clean against scaffold/shared. Browser verified solo/host/join payloads + 390px layout. App mounting handoff to Ethan.
-
-PR #9: PeerTransport, LocalTransport, HostRoom; concrete createLocalRoom/hostRoom/joinRoom requested by Ethan; shared NetMessage runtime validation, role release, authoritative roster, canSend enforcement. 22 owned net tests pass; 58 module tests pass in combined snapshot. Build passes after adding peerjs in temporary snapshot. Integrated actual-data probes both fail (documented in report). Claude supplied First Light designs and NASA sources, now included in docs.
+- PR #31: pure dailyMissionForDate helper + optional Solo daily button/separate callback. UTC day, YYYYMMDD seed, sorted/deduplicated base IDs, fixed Normal. Ethan accepted this in 11:41 handoff. 191 full-suite tests, tsc/build pass. Browser: missing-name validation, trim, seed/date/scenario payload, Normal despite Hard ordinary picker, no daily controls on Join.
+- PR #30: Easy/Normal/Hard + callback-supplied actual budget/goal, shared light/dark token adoption and Term tooltips in Start/Lobby. 179 tests + tsc/build/theme contrast passed at that snapshot; browser both themes/difficulty payload/numbers/390px tooltip containment.
+- Original transport, Start and Lobby are merged. Actual-data playthrough now passes after sim-data #26; the old integration report is explicitly a historical snapshot.
+- Responded to Ethan’s net questions: HostRoom.claimRole(from,null) and nullable authorize policy already work on main; avoid rebuilding lobby to release roles. Short room-code mapping belongs to app wrapper; raw PeerTransport still uses full peer IDs.
+- Caleb has pitch/demo/provenance guidance via polish-ready handoff; his submission file stays his.
 
 ### Missing / I need from someone
 
-- PeerJS is now in scaffold PR #4; app/live integration still pending.
-- Ethan: app integration using Room API; catalog/sim adapter. Snapshot fails on bus dataset id, power/comms params, launcher capacity, science goal and objective mapping. Exact reproduction in docs/INTEGRATION_REPORT.md on PR #9.
-- Team: merge/review PRs, enable Pages, then live two-browser/venue rehearsal. Network stays In progress until verified; demo winning design remains a candidate until integrated sim confirms it.
+- Ethan: merge/review #30 then #31, mount Start/Lobby, pass scenarioPreview=getScenario, honor request.difficulty, apply DailyMission.seed before init and refresh UTC day at midnight/resume. Full app/live WebRTC remains unverified here.
+- Program map/unlocks need scenario-order + star-progress data from their owners; not fabricated in Start.
+- Team: real device/venue rehearsal, then finalize demo/submission claims to the behavior actually shipped. Pages is enabled and the scaffold deploy is live; app-loop is still a separate owner’s integration task.
 
 ### Heads up for other agents
 
-Jamie authorized autonomous remaining-work selection and heavier tasks. Other owners keep their scopes. Room API follows Ethan’s requested signatures. New screen APIs in ui/start/README.md and ui/lobby/README.md on their PRs. All changes pushed. App owner controls guest navigation to briefing; lobby Continue is not spacecraft launch. No working live session claimed.
+Original PR heads were not rewritten during merge batch. Daily adds a separate callback, no new Command/NetMessage/StartRequest variant. UI never duplicates difficulty scaling or creates sessions. Latest APIs in ui/start/README.md. Keep claude@jamie’s section and ui/gonogo/data/tests scopes untouched.

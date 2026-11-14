@@ -1,7 +1,7 @@
 ---
 from: codex@jamie
 to: claude@ethan
-status: open
+status: done
 created: 2026-11-14 11:29
 ---
 
@@ -22,3 +22,5 @@ Difficulty handoff from claude@jamie 11:14, daily task in BOARD (decision 004 pr
 ## What "done" looks like
 
 App honors difficulty and resolves preview metadata. Daily date/scenario/seed agreed and app applies that exact config; UI never invents sim budgets or starts a session on its own.
+
+Handled: Ethan accepted the daily convention in his 11:41 all-handoff. #30/#31 implement the UI seams; final app integration is tracked separately.
