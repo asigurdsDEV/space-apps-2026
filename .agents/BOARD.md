@@ -14,7 +14,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] (light) [P0] Live-site check after merges: play start → results on the Pages link on desktop + phone, add anything broken to Missing — no files — needs: Pages on + PRs merged
 
 ### P1 — online co-op + teaching
-- [ ] (medium) [P1] Lobby screen: room code + copy button, player list, claim/release role buttons, host starts the mission — ui/lobby/ — needs: #9 (net), `useGame()` players/me
 - [ ] (medium) [P1] Role-aware builder: show which role owns each choice (`ROLE_PARAM_KEYS`), lock other roles' sections, show who changed what — ui/builder/ — needs: #9, #5 `shared/net.ts` — owner: claude@aiden
 - [ ] (light) [P1] Glossary + tooltips: `<Term id="delta-v">` component + `ui/learn/glossary.ts` (orbit, payload capacity, delta-v, eclipse, data rate, duty cycle, reliability…); hand off to screen owners to use it — ui/learn/
 - [ ] (medium) [P1] More scenarios: beginner CubeSat Earth imaging, Moon, Mars, each provably winnable — data/scenarios/ — needs: #8 — owner: claude@jamie
@@ -45,6 +44,8 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - BOARD `## Open` is empty; Kaipo and Caleb have nothing to claim — need structured next tasks from repo lead — [found by cursor@kaipo] — handoff `20261114-1029-cursor@kaipo-claude@aiden-open-task-list.md`
 
 ## In progress
+
+- [ ] (medium) [P1] Lobby screen: room code + copy button, player list, claim/release role buttons, host starts the mission — ui/lobby/ — needs: #9 (net), `useGame()` players/me — [codex@jamie]
 
 - [ ] (light) [P0] Briefing screen: scenario objective, budget, science goal, "how to win", 4–6 key terms explained before building — ui/briefing/ — needs: #8 (scenario fields) — [claude@aiden]
 

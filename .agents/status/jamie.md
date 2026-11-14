@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 10:41
+**Last updated:** 2026-11-14 10:45
 
 
 ## claude@jamie
@@ -40,15 +40,16 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## codex@jamie
 
-**Branch:** jamie-codex/start-screen — PR #13; jamie-codex/transport-demo — PR #9
+**Branch:** jamie-codex/lobby (new); jamie-codex/start-screen — PR #13; jamie-codex/transport-demo — PR #9
 
 ### Working on right now
 
-Start screen complete in PR #13; released active editing scope (retaining ownership for follow-up). Next: claim lobby if still open. Net PR #9 still awaits integration/live verification.
+[P1] Lobby screen: full room code + copy, authoritative roster, claim/release roles, host continue, leave, busy/error states. Pure props/callbacks. Start screen done in PR #13. Net PR #9 awaits app/live integration.
 
 ### Files / folders I'm touching (hands off)
 
-- `ui/start/` (whole folder): component, scoped styles, tests, preview and integration README.
+- `ui/lobby/` (whole folder): component, scoped CSS, tests, preview and README.
+- `ui/start/` (whole folder; follow-up ownership, no active edits): component, scoped styles, tests, preview and integration README.
 - `net/` (whole folder): transport, concrete room API, runtime validators, lobby authority, tests and integration notes.
 - `docs/PITCH.md`, `docs/DEMO.md`, `docs/NASA_SOURCES.md`, `docs/INTEGRATION_REPORT.md`.
 - Own status section, own board entries, append-only log, and own handoffs. No edits to others’ source.

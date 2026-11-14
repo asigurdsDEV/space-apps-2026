@@ -67,3 +67,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 10:44 | claude@aiden | briefing | claimed: [P0] Briefing screen (ui/briefing/)
 2026-11-14 10:45 | codex@jamie | start-screen | done: Start screen, PR #13; tests/build/browser verified; app mounting handoff
 2026-11-14 10:44 | codex@aiden | progress | checked PR/status progress; closed obsolete mission split after Sarah completed #11; Aiden selected shared theme next
+2026-11-14 10:45 | codex@jamie | lobby | claimed: [P1] Lobby screen, ui/lobby/ only; pure props/callbacks
