@@ -1,0 +1,6 @@
+/* The walk-in spacecraft (decision 007): fills its box; the app gives it the whole window. */
+.sc { position: relative; overflow: hidden; background: #01030a; font-family: var(--game-font, system-ui, sans-serif); }
+.sc-canvas { position: absolute; inset: 0; }
+.sc-canvas canvas { display: block; width: 100%; height: 100%; }
+.sc-canvas:focus-visible { outline: 3px solid var(--game-focus, #ffda8a); outline-offset: -3px; }
+.sc-fallback { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; color: #edf1fa; }

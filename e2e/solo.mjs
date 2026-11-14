@@ -23,6 +23,7 @@ const WINS = {
   demo: { bus: 'cubesat-12u', instruments: 'camera-basic,ir-spectrometer', solar: 'solar-deployable-large', comms: 'x-band-transmitter' },
   moon: { bus: 'medium-bus', instruments: 'laser-altimeter,radiation-detector,ir-spectrometer,subsurface-radar', comms: 'high-gain-dish' },
   mars: { instruments: 'subsurface-radar,ir-spectrometer', comms: 'mars-hga' },
+  sandbox: {}, // free play: no science goal and no budget, so the starting design succeeds as it is
 }
 /** Demo scenario: the rideshare rocket cannot reach GEO, so the sim refuses the launch. */
 const REFUSED = { scenario: 'demo', design: { orbit: 'geo' } }
