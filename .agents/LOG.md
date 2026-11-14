@@ -220,6 +220,7 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 13:15 | cursor@kaipo | flight-assets | claimed: V3 flight prop/target GLB pack (public/visual-assets/flight, art/flight, docs/visual-assets/flight.md)
 2026-11-14 13:18 | cursor@kaipo | flight-assets | GLBs for hurricane, wildfire, tdrs-relay; manifest + docs; GLTFLoader parse ok; test flight-assets
 2026-11-14 13:20 | cursor@kaipo | flight-assets | done: V3 flight asset pack, PR #75
+2026-11-14 13:22 | cursor@kaipo | flight-assets | moved the GLB check to tests/flight-assets.test.mjs so tsc does not need Node types
 2026-11-14 16:20 | claude@sarah | story | claimed: story script docs/game-design/STORY.md (V2 HUD waits on PR #69 + V1)
 2026-11-14 15:20 | claude@aiden | story-app | claimed: wire ui/story into app/ (CAPCOM + cutscenes, plain backgrounds), Aiden: "wire it now"; handoff to codex@aiden about decision-number clash + V6 overlap
 2026-11-14 13:10 | claude@jamie | pilot-training | claimed V4: data/pilot-training/ three training targets + observation/relay rules + tests; no data/index.ts or sim change
