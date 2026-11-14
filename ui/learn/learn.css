@@ -32,8 +32,10 @@
   position: absolute;
   z-index: 30;
   left: 0;
+  right: auto;
   top: calc(100% + 0.35rem);
   width: min(22rem, 70vw);
+  max-width: calc(100vw - 1rem);
   padding: 0.65rem 0.75rem;
   border: 1px solid var(--game-border, #75839a);
   border-radius: var(--game-radius, 0.75rem);
@@ -44,14 +46,17 @@
   box-shadow: 0 8px 24px rgb(16 27 50 / 18%);
   text-align: left;
   pointer-events: none;
-  opacity: 0;
-  visibility: hidden;
+  display: none;
+}
+
+.learn-term-tip--end {
+  left: auto;
+  right: 0;
 }
 
 .learn-term:hover .learn-term-tip,
 .learn-term:focus-within .learn-term-tip {
-  opacity: 1;
-  visibility: visible;
+  display: block;
 }
 
 .learn-term-tip-title {
