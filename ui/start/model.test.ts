@@ -13,8 +13,8 @@ describe('start requests', () => {
     expect(startRequest('join', 'Jamie', '', 'peer', 'easy')).toEqual({ mode: 'join', name: 'Jamie', code: 'peer' })
     expect(startRequest('solo', 'Jamie', 'demo', '', 'invalid' as never)).toBeNull()
   })
-  it('rejects missing or oversized names, missing scenarios and blank codes', () => {
-    expect(startRequest('solo', ' ', 'demo', '')).toBeNull()
+  it('defaults blank names, rejects oversized names, missing scenarios and blank codes', () => {
+    expect(startRequest('solo', ' ', 'demo', '')?.name).toBe('Mission planner')
     expect(startRequest('host', 'x'.repeat(41), 'demo', '')).toBeNull()
     expect(startRequest('solo', 'Jamie', '', '')).toBeNull()
     expect(startRequest('join', 'Jamie', 'demo', ' ')).toBeNull()
