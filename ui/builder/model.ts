@@ -252,3 +252,41 @@ export function callText(c: Pick<ConsoleCall, 'call' | 'reasons'>): string {
   if (c.call === 'no-go') return `NO-GO · ${n}`
   return `GO · ${n} concern${n === 1 ? '' : 's'}`
 }
+
+// ---------------------------------------------------------------- part compatibility
+
+/** Same order as BUS_CLASSES in sim/parts.ts (screens don't import sim/). */
+const BUS_CLASS_ORDER = ['cubesat', 'smallsat', 'medium', 'flagship']
+const BUS_CLASS_NAMES: Record<string, string> = { cubesat: 'CubeSat', smallsat: 'SmallSat', medium: 'medium', flagship: 'flagship' }
+
+export interface Badge {
+  text: string
+  tone: 'good' | 'warn' | 'bad'
+}
+
+/**
+ * Why a part does or doesn't suit the current design, using the sim's own rules:
+ * `min_bus_class` above the picked bus's class is the `bus_too_small` error (the row is dimmed),
+ * and an instrument outside its `best_orbit` earns half science (`off_best_orbit`).
+ */
+export function partFit(part: Entity, state: Pick<SimState, 'entities' | 'params'>): { badges: Badge[]; dim: boolean } {
+  const badges: Badge[] = []
+  let dim = false
+
+  const needs = part.props.min_bus_class
+  const bus = state.entities.find((e) => e.kind === 'bus' && e.id === state.params.bus)
+  const busRank = BUS_CLASS_ORDER.indexOf(String(bus?.props.class ?? ''))
+  if (typeof needs === 'string' && busRank >= 0 && BUS_CLASS_ORDER.indexOf(needs) > busRank) {
+    badges.push({ text: `Needs a ${BUS_CLASS_NAMES[needs] ?? needs} bus or bigger`, tone: 'bad' })
+    dim = true
+  }
+
+  const best = part.props.best_orbit
+  if (typeof best === 'string' && best !== '' && best !== 'any') {
+    const orbitName = state.entities.find((e) => e.kind === 'orbit' && e.id === best)?.name ?? best
+    if (state.params.orbit === best) badges.push({ text: 'Best in your orbit', tone: 'good' })
+    else if (typeof state.params.orbit === 'string' && state.params.orbit !== '')
+      badges.push({ text: `Half science here · best in ${orbitName}`, tone: 'warn' })
+  }
+  return { badges, dim }
+}

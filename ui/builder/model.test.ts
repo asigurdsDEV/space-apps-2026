@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Entity, Player } from '../../shared'
-import { DEFAULT_SLOTS, callText, changedBy, termFor, commandAccess, slotAccess, budgetBars, columnLabel, formatValue, parseIds, slotColumns, slotParts, toggleId, unitOf } from './model'
+import { DEFAULT_SLOTS, callText, partFit, changedBy, termFor, commandAccess, slotAccess, budgetBars, columnLabel, formatValue, parseIds, slotColumns, slotParts, toggleId, unitOf } from './model'
 
 const part = (id: string, kind: string, props: Entity['props'] = {}): Entity => ({ id, kind, name: id, props })
 const slot = (key: string) => DEFAULT_SLOTS.find((s) => s.key === key)!
@@ -143,5 +143,33 @@ describe('callText', () => {
     expect(callText({ call: 'go', reasons: [] })).toBe('GO')
     expect(callText({ call: 'go-concerns', reasons: [issue] })).toBe('GO · 1 concern')
     expect(callText({ call: 'no-go', reasons: [issue, issue] })).toBe('NO-GO · 2')
+  })
+})
+
+describe('partFit', () => {
+  const entities = [
+    part('cubesat-6u', 'bus', { class: 'cubesat' }),
+    part('smallsat', 'bus', { class: 'smallsat' }),
+    { ...part('sso', 'orbit'), name: 'Sun-synchronous orbit' },
+    part('leo-iss', 'orbit'),
+  ]
+  const sounder = part('microwave-sounder', 'instrument', { min_bus_class: 'smallsat', best_orbit: 'sso' })
+  const magnetometer = part('magnetometer', 'instrument', { min_bus_class: 'cubesat', best_orbit: 'any' })
+
+  it('flags parts too big for the picked bus, like the sim', () => {
+    expect(partFit(sounder, { entities, params: { bus: 'cubesat-6u' } })).toEqual({
+      badges: [{ text: 'Needs a SmallSat bus or bigger', tone: 'bad' }],
+      dim: true,
+    })
+    expect(partFit(sounder, { entities, params: { bus: 'smallsat' } }).dim).toBe(false)
+    expect(partFit(sounder, { entities, params: {} }).dim).toBe(false) // no bus picked yet
+  })
+
+  it('says whether an instrument suits the picked orbit', () => {
+    expect(partFit(sounder, { entities, params: { bus: 'smallsat', orbit: 'sso' } }).badges).toEqual([{ text: 'Best in your orbit', tone: 'good' }])
+    expect(partFit(sounder, { entities, params: { bus: 'smallsat', orbit: 'leo-iss' } }).badges).toEqual([
+      { text: 'Half science here · best in Sun-synchronous orbit', tone: 'warn' },
+    ])
+    expect(partFit(magnetometer, { entities, params: { bus: 'cubesat-6u', orbit: 'leo-iss' } })).toEqual({ badges: [], dim: false })
   })
 })
