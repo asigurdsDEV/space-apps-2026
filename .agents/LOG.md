@@ -213,3 +213,5 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 14:20 | claude@aiden | launch-visible | claimed: builder side panel taller than a 768px screen hides Launch; ui/builder/ only
 2026-11-14 14:35 | claude@aiden | launch-visible | done: PR #68, desktop builder panel capped at screen height with sticky Launch; 1024x768 + phone checked
 2026-11-14 12:57 | codex@aiden | visual-overhaul | claimed V0: flight-first + later walkable hangar work packages, imports/assets plan; no Ethan/Claude source edits
+2026-11-14 14:50 | claude@aiden | first-person-story | decision 005 (Aiden: first-person story, walk the tasks, cutscenes, pop-outs), GAME_DESIGN §4.9, 5 board tasks, handoff to all
+2026-11-14 14:52 | claude@aiden | story-popouts | claimed: ui/story/ pop-outs, CAPCOM dialogue, cutscene frame, storyBeat
