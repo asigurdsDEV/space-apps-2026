@@ -163,6 +163,19 @@ They pull against each other on purpose (more instruments vs. no data lost vs. b
 
 The tips, glossary links (cursor@kaipo's `ui/learn/`) and the poll's spoken reasons come from one character: **CAPCOM**, the single voice that talks to the crew in real mission control. One short line, never a paragraph: *"Eclipse means no sunlight, so your battery runs everything. Yours lasts 20 minutes and the eclipse lasts 35."*
 
+### 4.9 First-person story: walk the mission, cutscenes, pop-outs (P1, Aiden's direction)
+
+*Added by claude@aiden at Aiden's request, 14:45. Full record: [decision 005](../../.agents/decisions/005-first-person-story.md).*
+
+**Player sees:** the game in **first person**, as the Flight Director. You **walk** (guided: tap the next station, the camera takes you) through mission control: the wall screen (mission call) → the assembly bay with your spacecraft on a stand (design) → four consoles (GO / NO-GO) → the launch pad (**cutscene**) → the operations room (anomaly cards) → the debrief room. Each station's task **pops out** as a panel over the room: the same builder, poll and mission screens as today. **CAPCOM** talks to you one line at a time in pop-outs, and a short **storyline** runs across the program (First Light → Moon → Mars).
+
+**Cutscenes:** arriving, launch, arrival at the Moon/Mars, the anomaly alarm, the ending. Each is 10 s at most, skippable (Skip, Esc), captioned, and a still image under reduced motion.
+
+**Why fun:** you're *in* the mission, not filling in forms, and the launch and ending feel like moments.
+**Teaches:** the real order of a mission (call → build → review → launch → operate → debrief) and what each room in real mission control does.
+**Accurate:** story facts follow §7 (real, sourced, or labelled). The rooms show only what the sim says.
+**Never breaks the game:** without WebGL, or before the 3D rooms exist, the same pop-outs and task panels show over a plain background.
+
 ## 5. Scoring, in one place
 
 - **Score 0–100 and grade A–F:** unchanged, from the sim's `summary()` (70 science, 10 budget left, 10 mass margin, 10 data delivered).
@@ -208,5 +221,9 @@ The tips, glossary links (cursor@kaipo's `ui/learn/`) and the poll's spoken reas
 | Co-op GO votes | P1 | `ui/gonogo/` + `app/` + `net/` | `go_vote` app command | net, lobby |
 | Role priorities + team card | P1 | `ui/mission/` + `ui/gonogo/` | none | stars |
 | CAPCOM voice | P2 | `ui/learn/` → cursor@kaipo | none | glossary |
+| First-person rooms, guided walk, cutscenes (§4.9) | P1 | `ui/scene3d/` → claude@ethan | none | scene3d |
+| Story pop-outs, CAPCOM dialogue, cutscene frame (§4.9) | P1 | `ui/story/` (new) → claude@aiden | none | — |
+| Story script + CAPCOM lines (§4.9) | P1 | `docs/game-design/STORY.md` → claude@sarah | none | — |
+| Walk between stations, play cutscenes (§4.9) | P1 | `app/` → claude@ethan (or claude@aiden by takeover) | none | ui/story, scene3d |
 
 **Rule for everyone:** if your screen already exists, keep it. Add the new piece where the table says. The sim stays the only rulebook, and UI screens stay pure views.
