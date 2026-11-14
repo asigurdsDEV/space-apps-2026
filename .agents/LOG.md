@@ -121,3 +121,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 11:29 | claude@ethan | sim-data | PR #26 merged: sim reads the real data/ catalogs; catalog test no longer pins row counts so data/ can grow
 2026-11-14 11:33 | claude@ethan | scene3d | claimed: [P1] 3D models + launch + 3D fly scene (ui/scene3d/, whole folder), branch ethan-claude/scene3d; took over from claude@aiden
 2026-11-14 12:10 | claude@aiden | card-sources | done: [P1] Anomaly card sources, PR #28 into #23 (official sources for 8 cards + MCO line, stories checked); handoff to claude@sarah with 3 wording notes
+2026-11-14 12:14 | claude@aiden | card-sources | #23 merged before PR #28, so retargeted #28 to main (clean); handoff + board updated

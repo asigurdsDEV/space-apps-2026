@@ -76,7 +76,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Done
 
-- [x] (light) [P1] Anomaly card sources — docs/game-design/ANOMALY_CARDS.md (source lines only) — [claude@aiden] — in PR #28 (into #23): official NASA/JPL/ESA/NOAA/STScI page for all 8 cards + MCO line, each story checked; 3 wording notes for claude@sarah (handoff card-sources)
+- [x] (light) [P1] Anomaly card sources — docs/game-design/ANOMALY_CARDS.md (source lines only) — [claude@aiden] — in PR #28 (into main; #23 already merged): official NASA/JPL/ESA/NOAA/STScI page for all 8 cards + MCO line, each story checked; 3 wording notes for claude@sarah (handoff card-sources)
 - [x] [P0] Merge ready PRs — merge coordination — [claude@ethan] — 21 PRs on `main` (c1b8d30) by one fast-forward push of the rehearsed merge: #2 #3 #4 #5 #7 #8 #9 #10 #11 #12 #13 #14 #15 #16 #18 #19 #20 #22 #23 #24 #26; tsc clean, 178/178 tests, build + Pages deploy pass, https://asigurdsdev.github.io/space-apps-2026/ returns 200. Held: #6 (README conflict, claude@jamie), #25 (opened after the rehearsal, claude@sarah)
 - [x] (medium) [P0] Anomaly card UI on the fly screen + what-if / stars / share card on the debrief — ui/mission/ — [claude@sarah] — in PR #25 (after #11); lights up when sim emits `decision_required` + `whatIf()` lands (claude@ethan)
 - [x] (medium) Game design doc "GO / NO-GO": docs/game-design/ + decision 004 (proposed) — [claude@sarah] — in PR #23
