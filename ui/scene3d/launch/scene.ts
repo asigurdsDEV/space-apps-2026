@@ -86,6 +86,7 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
   scene.add(model.root)
   const payloadHome = model.payload.position.y
   const fairingHome = model.fairing[0].position.y
+  const escapeHome = model.escape?.position.y ?? 0
   const othersHome = model.others.map((o) => o.position.clone())
   const upperLen = spec.s2.length + spec.fairing.length
 
@@ -258,6 +259,12 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
       half.position.set(dir * spec.fairing.radius * (0.5 * open + 1.6 * open * open), fairingHome - spec.fairing.length * 0.35 * open * open, 0)
       half.rotation.z = -dir * Math.min(open * 0.8, 1.3)
     })
+    if (model.escape) {
+      // The abort tower's own motor pulls it straight off the nose.
+      const up = Math.max(sF, 0)
+      model.escape.visible = !over('fairing')
+      model.escape.position.y = escapeHome + spec.fairing.length * (0.3 * up + 1.2 * up * up)
+    }
     const sD = Math.max(since('deploy'), 0)
     model.payload.position.y = payloadHome + sD * model.payloadRadius * 0.9
     model.payload.rotation.y = sD * 0.25
@@ -275,8 +282,9 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
     else if (id === 'countdown') p1 = 0
     else if (id === 'ignition') p1 = smooth(0.08, 0.5, p)
     else p1 = 1
-    // Solid boosters light at T0 and cannot be shut down; they burn out just before they drop.
-    pBoost = met >= 0 ? 1 - smooth(-0.5, -0.1, sB) : 0
+    // Solid boosters light at T0 and cannot be shut down; liquid side cores start with the centre one.
+    // Either way they burn out just before they drop.
+    pBoost = (nb?.propellant === 'solid' ? (met >= 0 ? 1 : 0) : p1) * (1 - smooth(-0.5, -0.1, sB))
     p1 *= 1 - smooth(-0.3, -0.1, sS)
     p2 = smooth(0.5, 0.9, sS) * (1 - smooth(-0.05, 0.15, since('burn')))
     if (id === 'failure') p1 *= 1 - smooth(0.1, 0.16, p), pBoost *= 1 - smooth(0.1, 0.16, p)
@@ -284,7 +292,8 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
       const power = of === 's1' ? p1 : of === 's2' ? p2 : pBoost
       plume.set(power, of === 's2' ? 1 : thin, t)
       glow.visible = power > 0.01
-      glow.material.opacity = power * (of === 's2' ? 0.5 : 1)
+      // Many strap-ons side by side: their glows add up, so each gets a share.
+      glow.material.opacity = power * (of === 's2' ? 0.5 : of === 'booster' ? Math.min(1, 2 / model.boosters.length) : 1)
     }
     const thrust = Math.max(p1, pBoost)
     onAxis(-0.08, flame.position)
