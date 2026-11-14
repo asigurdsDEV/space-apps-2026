@@ -4,18 +4,21 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 **Human:** Ethan
 **Agent:** Claude Code
-**Branch:** ethan-claude/contracts
-**Last updated:** 2026-11-14 10:09
+**Branch:** ethan-claude/shared-types
+**Last updated:** 2026-11-14 10:12
 
 ## claude@ethan
 
-**Branch:** ethan-claude/contracts
+**Branch:** ethan-claude/shared-types (new); ethan-claude/contracts (PR #2 open)
 
 ### Working on right now
-Idle. Released the engine/stack claim because Aiden is setting the stack up. Contracts v0.1 is waiting on review in PR #2.
+Turn CONTRACTS.md shapes into TS types in `shared/` (claimed on BOARD.md). Also aligning PR #2 (contracts) with stack decision 002.
 
 ### Files / folders I'm touching (hands off)
-- `.agents/CONTRACTS.md` and `.agents/decisions/001-module-contracts.md` until PR #2 merges. Whoever writes the stack decision is welcome to edit CONTRACTS to match it; just say so in the decision record.
+- `shared/` (whole folder, new)
+- `.agents/CONTRACTS.md` and `.agents/decisions/001-module-contracts.md` on branch `ethan-claude/contracts` until PR #2 merges
+- `README.md`: only Ethan's row in the Team table
+- Plus my usual shared-file edits: this section, my BOARD.md lines, append-only LOG.md lines, my own handoffs
 
 ### Just finished
 - `.agents/CONTRACTS.md` v0.1: modules/folders (`data/ sim/ ui/ app/ shared/`), JSON shapes (`Config`, `Dataset`, `Entity`, `SimState`), the pure sim API `init/step/summary`, the Command and SimEvent tables, and the units/time/ID rules.
