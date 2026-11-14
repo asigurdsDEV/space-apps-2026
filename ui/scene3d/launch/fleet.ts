@@ -31,7 +31,7 @@ function falconCore(st: Stack, g: THREE.Object3D, o: { reusable: boolean; soot: 
   const merlin = bell(0.46, 1.1)
   ring(g, merlin, k.bell, 8, 1.3, -0.25)
   put(g, merlin, k.bell, 0, -0.25)
-  const carbon = paint(0x141518, 0.38, 0.3)
+  const carbon = paint(0x141518, 0.55, 0.1)
   if (o.reusable) {
     ring(g, shellPanel(R, 9.6, 1.9, 0.5, 0.3), carbon, 4, 0, 0.5, Math.PI / 4)
     const grid = skin({ base: '#8d9096', metalness: 0.8, roughness: 0.5, extra: (ctx, w, h) => {
@@ -189,7 +189,7 @@ function vulcan(spec: RocketSpec): RocketModel {
   }
 
   // Centaur V: bare stainless steel, two RL10 engines tucked inside the interstage.
-  put(upper, tube(R, R, spec.s2.length, 56), skin({ base: '#c6c9ce', seams: [0.05, 0.55, 0.95], roughness: 0.32, metalness: 0.85 }))
+  put(upper, tube(R, R, spec.s2.length, 56), skin({ base: '#b9bcc2', seams: [0.05, 0.55, 0.95], roughness: 0.5, metalness: 0.6 }))
   const rl10 = bell(0.75, 2, 20)
   for (const x of [-1.05, 1.05]) put(upper, rl10, k.bell, x, -0.2)
   put(upper, new THREE.SphereGeometry(R * 0.9, 24, 10, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2).scale(1, 0.35, 1), k.metal)

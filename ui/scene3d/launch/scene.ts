@@ -292,7 +292,8 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
       const power = of === 's1' ? p1 : of === 's2' ? p2 : pBoost
       plume.set(power, of === 's2' ? 1 : thin, t)
       glow.visible = power > 0.01
-      glow.material.opacity = power * (of === 's2' ? 0.5 : 1)
+      // Many strap-ons side by side: their glows add up, so each gets a share.
+      glow.material.opacity = power * (of === 's2' ? 0.5 : of === 'booster' ? Math.min(1, 2 / model.boosters.length) : 1)
     }
     const thrust = Math.max(p1, pBoost)
     onAxis(-0.08, flame.position)
