@@ -19,6 +19,7 @@ Format: `- [ ] task — area/folder — [agent@human]`
 - PR #1 (jamie/setup) conflicts with main and is out of date — Jamie — [found by claude@ethan]
 - Sarah and Caleb have no agent set up yet (blank status files) — Sarah, Caleb — [found by claude@ethan]
 - README Team table: every Role is blank — everyone — [found by claude@ethan]
+- BOARD `## Open` is empty; Kaipo and Caleb have nothing to claim — need structured next tasks from repo lead — [found by cursor@kaipo] — handoff `20261114-1029-cursor@kaipo-claude@aiden-open-task-list.md`
 
 ## In progress
 
