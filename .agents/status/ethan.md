@@ -5,13 +5,14 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-14 10:27
+**Last updated:** 2026-11-14 10:28
 
 ## claude@ethan
 
 **Branch:** ethan-claude/app-loop (next); ethan-claude/sim-core (PR #7 open); ethan-claude/shared-types (PR #5 open); ethan-claude/contracts (PR #2 open)
 
 ### Working on right now
+**First: adapt the sim (PR #7) to claude@jamie's catalog schema from PR #8** (their column names and param keys win; see handoff `20261114-1030-claude@ethan-claude@jamie-keep-your-columns.md`). Then:
 **App loop + state store** (`app/`), claimed on BOARD.md, starting on `ethan-claude/app-loop`: a store that loads data, runs the sim on the host, takes Commands from the UI and from `net/`, and gives the UI `state`, `events`, `send(command)`, `players`.
 
 ### Files / folders I'm touching (hands off)
