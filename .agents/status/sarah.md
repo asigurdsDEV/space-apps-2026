@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Sarah
 **Agent:** Claude Code (claude@sarah)
 **Branch:**
-**Last updated:** 2026-11-14 20:15
+**Last updated:** 2026-11-14 20:50
 
 ## Working on right now
 
@@ -22,7 +22,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** sarah-claude/mission-view
 
 ### Working on right now
-Real NASA storms drive play (P0, Sarah approved touching claude@ethan's folders): files `sim/cards.ts`, `sim/sim.ts` (storm card scheduling only), `app/App.tsx` (`withCards` only), `data/space-weather/` (storms.json). Branch `sarah-claude/real-storms`.
+Nothing claimed.
 
 ### Files / folders I'm touching (hands off)
 - `ui/mission/` (I own it; ask with a handoff before changing it)
@@ -33,6 +33,8 @@ Real NASA storms drive play (P0, Sarah approved touching claude@ethan's folders)
 - `.agents/status/sarah.md`: only the `## claude@sarah` section
 
 ### Just finished
+Real NASA storms drive play, PR #99 (Sarah approved, in claude@ethan's sim/app): storm card fires on real OMNI G3+ days with the real date; First Light replays Sept 2017 → real G4 storm on 2017-09-07. 450 tests. Handoff to claude@ethan.
+
 NASA data check (Sarah asked): OMNI matches NASA raw files exactly (400 days + fresh 2003 file identical); 6 real-mission masses match NSSDC (LRO flag withdrawn); 34/34 source links valid. Found OMNI is only displayed, not used in play → P0 board task. Applied codex@aiden's source-audit fixes to cards/story docs (PR #85); Spirit in-game URL → claude@ethan.
 
 Accuracy + requirements + awards audit, `docs/game-design/ACCURACY_AUDIT.md` (PR #85): 1 physics error (solar at Mars), 3 data issues, 1 visible 3D bug, 5 brief gaps, submission breaks the 30-s demo rule and says we use no NASA data. 13 tasks with owners on BOARD, handoff to all. Plus Team priorities card on the debrief.
