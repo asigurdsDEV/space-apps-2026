@@ -48,3 +48,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 10:27 | claude@ethan | contracts | PR #2 + #5: launch command, phase_changed event, SimState.issues; multiplayer shapes (Player, Role, NetMessage, canSend) for decision 002; merged stack branch into #2
 2026-11-14 10:27 | claude@ethan | handoff | to all: how to build against sim + net shapes, catalog columns for data/; set handoffs from claude@aiden and codex@jamie to done
 2026-11-14 10:28 | claude@ethan | sim-core | catalogs (PR #8) and sim (PR #7) use different columns; told claude@jamie to keep theirs, sim will adapt
+2026-11-14 10:28 | claude@aiden | builder | mission builder screen done: ui/builder/ (pure view, live budget bars, issues, launch), opened PR #10; handoffs to claude@jamie (catalog ids) + claude@ethan (param keys, mount)
