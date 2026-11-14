@@ -23,7 +23,7 @@ Numbers below are starting values for balance. claude@ethan may tune them. Keep 
 - **B. Try to restart the wheel:** `chance(0.6 × bus_reliability_factor, [], [lose_days(5), science_rate_mult(0.6)])`. *"Good chance it's fixed. If not, 5 days in safe mode and coarse pointing anyway."*
 - **Story (Kepler, 2013):** NASA's Kepler planet-hunting telescope lost the second of its four reaction wheels and could no longer point precisely. Engineers balanced it using the pressure of sunlight and flew a new mission, K2, for years more.
 - **Lesson:** spare parts and clever operations save missions. More reliable buses carry redundancy.
-- **source_url:** TODO: NASA Kepler / K2 mission page.
+- **source_url:** https://science.nasa.gov/mission/kepler/
 
 ### 2. `antenna-stuck`: high-gain antenna won't open
 
@@ -33,7 +33,7 @@ Numbers below are starting values for balance. claude@ethan may tune them. Keep 
 - **B. Keep pulsing the deploy motor:** `chance(0.3, [], [lose_days(3), downlink_mult(0.25)])`. *"Small chance it pops open. If not, 3 lost days and the backup anyway."*
 - **Story (Galileo, 1991):** Galileo's high-gain antenna jammed partly open on the way to Jupiter. The team pulsed its motor thousands of times without success, then rewrote the software to compress data and sent it home through the small low-gain antenna, and still returned most of the planned science.
 - **Lesson:** downlink is the bottleneck. Science only counts when the data gets home.
-- **source_url:** TODO: NASA Galileo mission page or JPL article about the antenna.
+- **source_url:** https://science.nasa.gov/mission/galileo/ · motor pulses (over 13,000): https://descanso.jpl.nasa.gov/DPSummary/Descanso5--Galileo_new.pdf
 
 ### 3. `geomagnetic-storm`: solar storm swells the atmosphere
 
@@ -43,7 +43,7 @@ Numbers below are starting values for balance. claude@ethan may tune them. Keep 
 - **B. Keep observing:** `chance(p_lowalt, [end_mission("reentry")], [])`, where `p_lowalt` = 0.25 below 400 km, 0.08 at 400–600 km, 0.01 above. *"Fine if you're high enough. Very risky in a low orbit."*
 - **Story (Starlink, 2022):** In February 2022, a geomagnetic storm raised drag on a batch of 49 newly launched Starlink satellites still in a very low orbit. About 40 of them couldn't climb away and re-entered the atmosphere.
 - **Lesson:** low orbits are cheaper to reach and see more detail, but drag and space weather shorten their lives.
-- **source_url:** TODO: SpaceX update, or a NASA space-weather article covering the February 2022 event.
+- **source_url:** https://repository.library.noaa.gov/view/noaa/53091 (NOAA space-weather study of the February 2022 Starlink loss)
 
 ### 4. `memory-fault`: on-board memory errors
 
@@ -53,7 +53,7 @@ Numbers below are starting values for balance. claude@ethan may tune them. Keep 
 - **B. Keep running on half the memory:** `storage_mult(0.5)`. *"Keep your data, but storage is half the size from now on."*
 - **Story (Spirit rover, 2004):** Two weeks after landing on Mars, NASA's Spirit rover got stuck rebooting because of a problem with its flash memory. Engineers diagnosed it from Earth and fixed it by reformatting the memory, and Spirit went on to drive for years.
 - **Lesson:** storage and downlink work together. Data on board isn't science yet.
-- **source_url:** TODO: NASA/JPL Spirit rover article about the 2004 flash memory anomaly.
+- **source_url:** https://www.jpl.nasa.gov/news/mars-rover-spirit-restored-to-health/
 
 ### 5. `dust-storm`: planet-wide dust storm
 
@@ -63,7 +63,7 @@ Numbers below are starting values for balance. claude@ethan may tune them. Keep 
 - **B. Keep working on battery:** `chance(p_battery, [end_mission("power_loss")], [science_rate_mult(0.8, for_days: 12)])`, where `p_battery` = 0.5 with no battery or the smallest `capacity_wh`, 0.2 with a mid-size one, 0.05 with the largest. *"Bigger battery, better odds."*
 - **Story (Opportunity rover, 2018):** A global dust storm on Mars blocked the sunlight that powered NASA's Opportunity rover. It went silent in June 2018 and never woke up, after nearly 15 years of driving. Curiosity, powered by a nuclear generator instead of solar panels, kept working through the same storm.
 - **Lesson:** power source choice matters, and battery margin is insurance.
-- **source_url:** TODO: NASA Opportunity mission-end page.
+- **source_url:** https://science.nasa.gov/missions/mer/nasas-opportunity-rover-mission-on-mars-comes-to-end/
 
 ### 6. `lost-contact`: spacecraft goes silent
 
@@ -73,7 +73,7 @@ Numbers below are starting values for balance. claude@ethan may tune them. Keep 
 - **B. Wait for it to fix itself:** `chance(0.55 × bus_reliability_factor, [lose_days(15)], [end_mission("lost_contact")])`. *"Free, but you might lose it for good."*
 - **Story (SOHO, 1998):** The Sun-watching SOHO observatory (ESA and NASA) lost contact in June 1998 after a command error sent it spinning. Teams found it by bouncing radar signals off it, slowly brought it back, and resumed science later that year. It's still observing today.
 - **Lesson:** ground stations are part of the mission, not just the spacecraft.
-- **source_url:** TODO: ESA or NASA SOHO page about the 1998 recovery.
+- **source_url:** https://www.esa.int/Newsroom/Press_Releases/SOHO_spacecraft_located_with_ground-based_radar · https://soho.nascom.nasa.gov/operations/Recovery/recovery_diary.html
 
 ### 7. `radiation-zone`: radiation hits in the South Atlantic Anomaly
 
@@ -83,7 +83,7 @@ Numbers below are starting values for balance. claude@ethan may tune them. Keep 
 - **B. Keep observing through it:** `chance(0.35, [lose_days(3)], [])`. *"Usually fine. Sometimes a reboot costs 3 days."*
 - **Story (inspired by Hubble and many LEO satellites):** Earth's radiation belts dip closest to the surface over the South Atlantic. Hubble and many other satellites in low orbit routinely pause sensitive work while passing through it.
 - **Lesson:** orbit choice decides your radiation environment.
-- **source_url:** TODO: NASA page on the South Atlantic Anomaly.
+- **source_url:** https://www.nasa.gov/missions/icon/nasa-researchers-track-slowly-splitting-dent-in-earths-magnetic-field/ · Hubble: https://hst-docs.stsci.edu/archives/hspcycle30/the-hubble-space-telescope-primer-for-cycle-30/hst-primer-orbital-constraints
 
 ### 8. `station-bumped`: ground station time bumped
 
@@ -93,7 +93,7 @@ Numbers below are starting values for balance. claude@ethan may tune them. Keep 
 - **B. Wait it out:** `downlink_mult(0.4, for_days: 7)`. *"Free, but data piles up. Watch your storage."*
 - **Story (inspired by the Deep Space Network):** NASA's Deep Space Network has only three sites, in California, Spain and Australia, shared by dozens of missions. Antenna time is scheduled in advance, and high-priority events like landings can take precedence.
 - **Lesson:** downlink capacity is a shared, scheduled resource.
-- **source_url:** TODO: NASA Deep Space Network overview page.
+- **source_url:** https://www.nasa.gov/directorates/somd/space-communications-navigation-program/what-is-the-deep-space-network/ · scheduling and priority: https://oig.nasa.gov/wp-content/uploads/2023/12/ig-23-016.pdf
 
 ---
 
@@ -101,7 +101,7 @@ Numbers below are starting values for balance. claude@ethan may tune them. Keep 
 
 When a NO-GO is about units or mass margin, CAPCOM may add one line of real history:
 
-- **Mars Climate Orbiter (1999):** lost because one team's software used imperial units and another expected metric. *"Double-check your units, Flight."* (source_url: TODO, NASA MCO mishap report page)
+- **Mars Climate Orbiter (1999):** lost because one team's software used imperial units and another expected metric. *"Double-check your units, Flight."* (source_url: https://www.jpl.nasa.gov/news/mars-climate-orbiter-team-finds-likely-cause-of-loss/)
 
 ## Ideas for more cards (need research before adding)
 
