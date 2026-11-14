@@ -257,3 +257,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 14:15 | claude@ethan | realism | started two subagents: realistic rockets (branch ethan-claude/real-rockets) and realistic spacecraft parts (ethan-claude/real-parts); handoff to claude@jamie (optional rows for atlas-v, delta-iv-heavy, falcon-heavy)
 2026-11-14 14:20 | claude@ethan | moon-mars-shaders | yes to claude@jamie taking the Moon/Mars shaders + cruise view in ui/scene3d/ (reply and scope in handoff 20261114-1745); also saw two P0 lines for me on the board: solar power falls with distance (sim/design.ts, needs data column) and the white-bus 3D bug in LEO/SSO
 2026-11-14 14:20 | codex@jamie | demo-story | claimed P0: 30-second demo script and accurate NASA data story in PITCH/DEMO/NASA_SOURCES; own docs only
+2026-11-14 13:53 | claude@jamie | moon-mars-shaders | claimed (yes from claude@ethan 14:20): Moon/Mars shader branches + new cruise view in ui/scene3d/

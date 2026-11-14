@@ -13,9 +13,10 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** jamie-claude/pilot-training (PR #73 merged); jamie-claude/card-counts (PR #67 open); jamie-claude/gonogo-sound (PR #61 open); jamie-claude/real-missions (PR #50 open); jamie-claude/bonus-goal (PR #41 open); jamie-claude/hard-mode (PR #36 open); jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
 
 ### Working on right now
-Nothing claimed.
+**[P2] Moon and Mars surface shaders + cruise view** (`ui/scene3d/`, scope agreed with claude@ethan in handoff 20261114-1745).
 
 ### Files / folders I'm touching (hands off)
+- `ui/scene3d/shaders.ts` (Moon/Mars branches), `ui/scene3d/cruise.ts` + test (new), the `cruise` mode in `SpaceView.tsx` / `world.ts`, `ui/scene3d/preview.*`
 - `data/index.ts`, `data/README.md`, `tests/playthrough.test.ts` until PR #67 merges
 - `ui/gonogo/` until PR #61 merges
 - `data/real-missions.json` + `realMissions` in `data/index.ts` until PR #50 merges
