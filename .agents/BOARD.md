@@ -49,6 +49,8 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 ## Missing / needed
 
+- Source audit PR #90: catalog references are background for exact game values; add Spirit completed-repair/SOHO longevity citations, reconcile conflicting GRAIL launch masses, add GOES launch-year evidence and glossary provenance. LRO 1,846 kg is supported by cited NSSDCA source. Owners: data claude@jamie, story claude@sarah, glossary cursor@kaipo; report/source-audit handoff contains evidence — [found by codex@aiden]
+
 - Current-main integration check (8c0f3cb): V1/V2/V3/V4, rooms, cutscenes and launch are merged; app still does not mount PilotInput/FlightHud or Hangar, StoryLayer supplies no non-launch 3D children, public GLBs are absent from explicit PWA precache. Claude owns active room mounting; Caleb's 1340 handoff covers cutscene mounting. Ethan: Codex offers new ui/flight-training/ screen assembly to reduce V7b work, pending your exact scope/public FlightView API approval (handoff readiness-next). No claim or app/scene3d takeover — [found by codex@aiden]
 
 
@@ -81,7 +83,6 @@ These are new work packages, not active claims. Suggested owners claim only thei
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
-- [ ] (light) [P1] **Source link check:** every `source_url` in data/, docs/game-design/, ui/learn resolves (HTTP 200) and says what we claim; list failures — docs/qa/sources.md (new) — owner: codex@aiden — [codex@aiden]
 - [ ] (light) [P1] Re-run the four-device multiplayer rehearsal once Host online and Join are on the live site. Fill docs/MULTIPLAYER_TEST.md again (venue wifi, then a phone hotspot if wifi fails) — docs/MULTIPLAYER_TEST.md — needs: app loop merged and Pages serving Start — owner: cursor@kaipo — [cursor@kaipo]
 
 
@@ -105,6 +106,8 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 
 ## Done
+
+- [x] (light) [P1] **Source link check:** every `source_url` in data/, docs/game-design/, ui/learn resolves (HTTP 200) and says what we claim; list failures — docs/qa/sources.md (new) — owner: codex@aiden — [codex@aiden] — in PR #90: 37 links checked (34 HTTP200, 3 HTTP403 readable via web), 1 template; complete evidence + owner findings
 - [x] (medium) [P1] Walk between stations instead of switching screens: mount the V6 rooms behind the screens, walk on each screen change, task panels pop out at each station (falls back to today's screens with no WebGL) — app/ — needs: V6 — owner: claude@aiden (split from claude@ethan at Aiden's request 15:50) — [claude@aiden] — in PR #87: hall behind every screen (`app/Walk.tsx`), walk on each screen change incl. the pad during launch, screens as panels; plain screens with no WebGL; full solo game played desktop + phone
 - [x] (light) [P0] **Submission fixes for judging rules** — docs/SUBMISSION.md — [cursor@caleb] — in PR #88: 30-second video or 7 slides, OMNI called measured data, live site is the game, full references list. URL checks stay with codex@aiden.
 - [x] (light) [P0] **30-second demo script + NASA data story** in PITCH/DEMO/NASA_SOURCES: real space weather drives storms, real missions on the debrief, real anomaly stories; audit report §Awards has the beat list — docs/PITCH.md, docs/DEMO.md, docs/NASA_SOURCES.md — owner: codex@jamie — [codex@jamie] — in PR #86: timed shots, 63-word narration, real NASA provenance and display-only weather boundary; 35 focused tests pass

@@ -51,20 +51,20 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** aiden-codex/source-audit
-**Last updated:** 2026-11-14 13:57
+**Branch:** main (done coordination); aiden-codex/source-audit (PR #90)
+**Last updated:** 2026-11-14 14:02
 
 ### Working on right now
-Source-link and claim audit assigned by Sarah: inventory every source_url and cited URL in data/, docs/game-design/, ui/learn; HTTP checks plus supporting-claim review, report failures and uncertainties.
+Source audit complete in PR #90. No new implementation claimed. Source/data/content fixes stay with their owners; optional V7 screen assembly still needs Ethan's scope/API agreement. Claude app-walk landed during this audit; no overlapping source work taken.
 
 ### Files / folders I'm touching (hands off)
-New docs/qa/sources.md and docs/qa/sources.json (URL/status/location evidence). Own coordination only; all data/UI/app/sim source read-only. Never edit Claude's section/branches. Unrelated docs/CHALLENGE 2.md untouched.
+No active source edits. PR #90: docs/qa/sources.md + sources.json only; review follow-ups mine. Own coordination only. Claude section/branches and all data/UI/app/sim source untouched; unrelated docs/CHALLENGE 2.md untouched.
 
 ### Just finished
-V1 PR #78 and plan #69 merged. Current audit claim is independent of Claude's app-walk and Ethan/Jamie's 3D work.
+38 URL strings / 43 references at ef93ded snapshot: 37 literal GETs, 34 HTTP200, 3 HTTP403 (all readable via web retrieval); 1 shell template. Reviewed support by URL, recorded partial/background/conflicting evidence. No confirmed dead link. JSON/count/location assertions and diff check pass; no gameplay test rerun for docs-only change.
 
 ### Missing / I need from someone
-Source owners will fix links/claims from report; HTTP 200 alone does not validate scientific numbers. No source changes included in this report task.
+Data owner: row-specific provenance; GRAIL primary-source mass conflict; GOES year; MMRTG source. Sarah: Spirit completed repair, SOHO longevity and Curiosity power citations. Kaipo: glossary sources/DSN wording. LRO cited source supports 1,846 kg; do not change on audit suspicion alone. Report and handoff list details. Integrated V7/device QA still pending owner work.
 
 ### Heads up for other agents
-Sol handles this audit. No new model/design work; Astra can be used later for that workflow. Claim push precedes report work.
+Sol audit finished. PR #90 does not change scientific values or claim full data/physics/license validation. Page availability can differ by client. Ethan remains merge coordinator; no source/branch takeover. Astra remains preferred when new model/visual design work begins.
