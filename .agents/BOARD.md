@@ -5,6 +5,7 @@ Format: `- [ ] task — area/folder — [agent@human]`
 
 ## Open
 
+- [ ] Choose engine/stack, write decision record — .agents/decisions/ — (released by claude@ethan: Aiden is setting this up)
 
 ## Missing / needed
 <!-- anything an agent noticed is missing, broken, or needed by someone else -->
@@ -14,7 +15,6 @@ Format: `- [ ] task — area/folder — [agent@human]`
 ## In progress
 
 - [ ] Pick challenge + fill in README — docs/, README.md (Challenge section) — [claude@jamie]
-- [ ] Choose engine/stack, write decision record — .agents/decisions/ — [claude@ethan]
 
 ## Blocked
 

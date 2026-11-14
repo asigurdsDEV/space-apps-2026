@@ -4,21 +4,18 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 **Human:** Ethan
 **Agent:** Claude Code
-**Branch:** ethan-claude/stack
-**Last updated:** 2026-11-14 10:03
+**Branch:** ethan-claude/contracts
+**Last updated:** 2026-11-14 10:05
 
 ## claude@ethan
 
-**Branch:** ethan-claude/stack
+**Branch:** ethan-claude/contracts
 
 ### Working on right now
-Choose engine/stack + write decision record 002 (branch `ethan-claude/stack`). Contracts v0.1 is still waiting on review in PR #2.
+Idle. Released the engine/stack claim because Aiden is setting the stack up. Contracts v0.1 is waiting on review in PR #2.
 
 ### Files / folders I'm touching (hands off)
-- `.agents/decisions/002-engine-stack.md` (new)
-- `.agents/CONTRACTS.md` (bumping it to match the stack; also still mine until PR #2 merges)
-- `.agents/decisions/001-module-contracts.md` (until PR #2 merges)
-- Plus my usual shared-file edits: this section, my BOARD.md line, append-only LOG.md lines
+- `.agents/CONTRACTS.md` and `.agents/decisions/001-module-contracts.md` until PR #2 merges. Whoever writes the stack decision is welcome to edit CONTRACTS to match it; just say so in the decision record.
 
 ### Just finished
 - `.agents/CONTRACTS.md` v0.1: modules/folders (`data/ sim/ ui/ app/ shared/`), JSON shapes (`Config`, `Dataset`, `Entity`, `SimState`), the pure sim API `init/step/summary`, the Command and SimEvent tables, and the units/time/ID rules.
