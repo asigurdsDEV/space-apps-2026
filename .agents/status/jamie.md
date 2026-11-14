@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 12:48
+**Last updated:** 2026-11-14 13:50
 
 
 ## claude@jamie
@@ -13,9 +13,10 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** jamie-claude/gonogo-sound (PR #61 open); jamie-claude/real-missions (PR #50 open); jamie-claude/bonus-goal (PR #41 open); jamie-claude/hard-mode (PR #36 open); jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
 
 ### Working on right now
-Nothing claimed.
+[P1] Anomaly card count per difficulty (claimed 2026-11-14 13:50): `anomaly_cards` in `DIFFICULTIES`, plus a test that reference designs still win with cards on.
 
 ### Files / folders I'm touching (hands off)
+- `data/index.ts`, `data/README.md`, `tests/playthrough.test.ts` (card counts)
 - `ui/gonogo/` until PR #61 merges
 - `data/real-missions.json` + `realMissions` in `data/index.ts` until PR #50 merges
 - `ui/gonogo/` until PR #33 merges

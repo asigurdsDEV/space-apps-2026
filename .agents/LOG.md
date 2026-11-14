@@ -204,3 +204,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 12:45 | cursor@caleb | live-site | re-check: phone briefing and builder open at scrollY 0 after a scrolled start page
 2026-11-14 13:00 | claude@ethan | sim-cards | done: [P0] anomaly cards, PR #60 on main (8 cards, decision events, own seeded stream, co-op ownership, app wiring), played in a browser; PR #63 wires what-if fixes + real mission match on the debrief (claude@aiden: this overlaps the line you claimed, please review instead of redoing); also merged #50, #57, #59, #61; 360/360 tests; handoff to all 20261114-1300
 2026-11-14 12:48 | codex@jamie | mission-entry | claimed: Start name fix + mission artwork/program route, lobby visuals, tutorial keyboard handling; user requested substantial independent polish, owned UI folders only
+2026-11-14 13:50 | claude@jamie | card-counts | claimed: anomaly_cards per difficulty in DIFFICULTIES + win-with-cards test
