@@ -1,9 +1,10 @@
 // what-if and success rate on the real data/ catalogs and scenarios (test-only import of data/).
 import { describe, expect, it } from 'vitest'
 import { getDatasets, getScenario } from '../data'
-import type { Config, Params } from '../shared'
-import { designOf, flyMission, oneChangeDesigns, successRate, whatIf } from './analysis'
+import type { Command, Config, Params, SimEvent } from '../shared'
+import { choicesOf, designOf, flyMission, oneChangeDesigns, successRate, whatIf } from './analysis'
 import { catalogEntities } from './parts'
+import { init, step, summary } from './sim'
 
 const scenario = (id: string, level: 'easy' | 'normal' | 'hard' = 'normal') => getScenario(id, level) as Config
 const demo = scenario('demo')
@@ -75,5 +76,35 @@ describe('successRate', () => {
 
   it('is null for a design that cannot launch', () => {
     expect(successRate(demo, datasets, { ...demo.params, launch_vehicle: 'not-a-rocket' }, 3)).toBeNull()
+  })
+})
+
+describe('anomaly cards in reruns', () => {
+  // A player who answers every card with option b, flown by hand like the app does.
+  const cards: Config = { ...demo, params: { ...demo.params, anomaly_cards: 3 } }
+  const design = designOf(WIN)
+  let state = init(cards, datasets)
+  const events: SimEvent[] = []
+  const go = (commands: Command[]) => {
+    const r = step(state, commands, cards.dt_s)
+    state = r.state
+    events.push(...r.events)
+  }
+  go(Object.entries(design).map(([key, value]) => ({ type: 'set_param', payload: { key, value } })))
+  go([{ type: 'launch', payload: {} }])
+  for (let n = 0; state.status !== 'ended' && n < 100_000; n++) {
+    const id = state.metrics.decision_id
+    go(id ? [{ type: 'resolve_decision', payload: { decision_id: String(id), option_id: 'b' } }] : [])
+  }
+  const real = summary(state)
+
+  it('reads the player\'s answers from the events', () => {
+    const choices = choicesOf(events)
+    expect(Object.keys(choices).length).toBeGreaterThan(0)
+    expect(Object.values(choices).every((o) => o === 'b')).toBe(true)
+  })
+
+  it('replays them, so the rerun of the flown design matches the real mission', () => {
+    expect(flyMission(cards, datasets, design, choicesOf(events))).toEqual(real)
   })
 })

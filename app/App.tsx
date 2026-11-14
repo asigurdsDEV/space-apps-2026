@@ -8,7 +8,7 @@ import { DIFFICULTIES, getDatasets, getScenario, realMissions, rowsAsObjects, sc
 import { LocalTransport } from '../net'
 import type { Config, NetMessage, SimEvent, SimState, Summary } from '../shared'
 import { canSend, ROLES } from '../shared'
-import { catalogEntities, pendingDecision, simCore, whatIf } from '../sim'
+import { catalogEntities, choicesOf, pendingDecision, simCore, whatIf } from '../sim'
 import { playSound, SoundToggle } from '../ui/audio'
 import { Briefing } from '../ui/briefing'
 import { MissionBuilder } from '../ui/builder'
@@ -425,9 +425,10 @@ function Flight({ session, config, daily }: { session: Session; config: Config; 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   const ended = state.status === 'ended'
-  // "What would have fixed it": the flown mission rerun with every single change, once, when it ends.
+  // "What would have fixed it": the flown mission rerun with every single change, once, when it ends,
+  // answering each anomaly card the way the player did.
   const fixes = useMemo(
-    () => (ended ? whatIf({ ...withCards(config), seed: daily?.seed ?? config.seed }, getDatasets(config.datasets), state.params) : undefined),
+    () => (ended ? whatIf({ ...withCards(config), seed: daily?.seed ?? config.seed }, getDatasets(config.datasets), state.params, choicesOf(events)) : undefined),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [ended],
   )
