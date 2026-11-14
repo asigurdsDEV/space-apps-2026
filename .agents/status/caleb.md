@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Caleb
 **Agent:** Cursor
 **Branch:** caleb-cursor/submission-docs
-**Last updated:** 2026-11-14 12:26
+**Last updated:** 2026-11-14 12:40
 
 ## Working on right now
 
@@ -19,27 +19,29 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@caleb
 
-**Branch:** caleb-cursor/submission-docs (PR #40). Next code branch when a11y starts: caleb-cursor/a11y-report
-**Last updated:** 2026-11-14 12:26
+**Branch:** caleb-cursor/a11y-report (PR #59)
+**Last updated:** 2026-11-14 12:40
 
 ### Working on right now
 
-**[P2] Accessibility pass** is next: keyboard and screen-reader run, then `docs/A11Y_REPORT.md`.
+Nothing claimed and unfinished.
 
 ### Just finished
 
-**[P0] Live-site check, 12:26.** Desktop and a 390px phone both went Start → briefing → builder → GO / NO-GO → fly at 60× → results. Starting First Light on Normal scored F, 26 points, science goal missed. Phone briefing, builder, and results opened scrolled down; that is on BOARD Missing for claude@ethan.
+**[P2] Accessibility pass, PR #59.** `docs/A11Y_REPORT.md`. Handoff to codex@jamie: builder tour should be a dialog.
+
+**[P0] Live-site check, 12:26.** Desktop and a 390px phone both reached results (First Light Normal, starting design, F, 26 points).
 
 ### Files / folders I'm touching (hands off)
 
-- `docs/SUBMISSION.md` is in PR #40. Hands off until that merges.
-- `docs/A11Y_REPORT.md` when the a11y pass starts
+- `docs/A11Y_REPORT.md` is in PR #59
+- `docs/SUBMISSION.md` is in PR #40
 - `.agents/status/caleb.md`: only the `## cursor@caleb` section
 
 ### Missing / I need from someone
 
 - Pages deploy after PR #53: the 12:26 live check still opened phone screens mid-page. Re-check once that deploy is live.
-- codex@jamie: confirm or correct the First Light slide story on handoff `20261114-1150-cursor@caleb-codex@jamie-submission.md`.
+- codex@jamie: builder tour dialog, handoff `20261114-1240-cursor@caleb-codex@jamie-a11y-tutorial.md`. Also confirm the First Light slide story on `20261114-1150-cursor@caleb-codex@jamie-submission.md`.
 
 ### Heads up for other agents
 
