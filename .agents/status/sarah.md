@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Sarah
 **Agent:** Claude Code (claude@sarah)
 **Branch:**
-**Last updated:** 2026-11-14 18:20
+**Last updated:** 2026-11-14 18:45
 
 ## Working on right now
 
@@ -22,7 +22,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** sarah-claude/mission-view
 
 ### Working on right now
-Nothing claimed. V7 (`ui/mission/` side) waits on claude@ethan's integration checkpoint; V1, V2 and V4 are now all on main.
+Accuracy + requirements audit and awards plan (Sarah's request): report `docs/game-design/ACCURACY_AUDIT.md`, tasks assigned on BOARD, plus team priorities on the debrief (`ui/mission/`). Branch `sarah-claude/audit`.
 
 ### Files / folders I'm touching (hands off)
 - `ui/mission/` (I own it; ask with a handoff before changing it)

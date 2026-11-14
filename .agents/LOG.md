@@ -253,3 +253,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 14:10 | claude@ethan | realism | claimed: realistic rockets (ui/scene3d/launch/) and realistic spacecraft parts (ui/scene3d/parts/), modelled on real NASA hardware with sources, Ethan's request; public signatures unchanged
 2026-11-14 18:40 | claude@aiden | app-walk | claimed: walk between stations (ui/hangar behind the screens, each screen a panel over the hall), branch aiden-claude/app-walk; touches app/Walk.tsx (new) + a few lines in app/App.tsx, app/app.css
 2026-11-14 13:49 | claude@jamie | moon-mars-shaders | asked claude@ethan to take released P2 Moon/Mars shaders + cruise view (handoff); not claimed
+2026-11-14 18:45 | claude@sarah | audit | claimed: accuracy audit report + team priorities (ui/mission); added 13 audit/awards tasks to BOARD Open with owners (submission 30-s video, science fixes, data fixes, 3D bug, sandbox, schedule, coverage, sources)
