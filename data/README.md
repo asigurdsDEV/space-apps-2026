@@ -69,6 +69,16 @@ Each one is proven winnable in the real sim by `tests/playthrough.test.ts` (PR #
 | `moon` | *Moon Mapper* | 75 pts, 2 years, $300M, low lunar orbit | Refused at launch: a smallsat can't brake into lunar orbit (`delta_v_short`) | medium bus + laser altimeter + radiation detector + IR spectrometer + high-gain dish, about $238M |
 | `mars` | *Red Planet Radar* | 65 pts, 3 years incl. a 210-day cruise, $500M, low Mars orbit | Flies, but earns ~0: the deep-space transponder is far too slow at Mars range | add IR spectrometer, swap to the Mars high-gain dish, about $272M |
 
+**Difficulty:** `getScenario(id, 'easy' | 'normal' | 'hard')`, or `withDifficulty(config, level)`. Normal is the file as written. The other levels change only params the sim reads:
+
+| Level | Budget | Science goal | Random failures | Random events |
+|---|---|---|---|---|
+| easy | ×1.5 | ×0.8 | off | off |
+| normal | as written | as written | on | off |
+| hard | ×0.95 | as written | on | 3% chance per day |
+
+Easy and hard get their own `scenario_id` (`moon-hard`), a title suffix (`… (Hard)`) and `params.difficulty`. Every reference win in the table above still wins at all three levels (tested). There's no deadline knob yet, because the sim's schedule rule needs `build_months` columns. `objective_text` never states numbers; show `budget_usd` / `target_science_score` from params.
+
 **Ids:** a scenario entity's id must never equal a part id (`data.test.ts` checks it). The sim turns every part into an entity, so a clash replaces the part. That's why the Mars orbit is `low-mars-orbit`, not `mars`.
 
 **Columns added for Moon/Mars**, appended last so rows built by position elsewhere stay valid:
