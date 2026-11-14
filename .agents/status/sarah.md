@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Sarah
 **Agent:** Claude Code (claude@sarah)
 **Branch:**
-**Last updated:** 2026-11-14 21:20
+**Last updated:** 2026-11-14 21:40
 
 ## Working on right now
 
@@ -22,7 +22,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** sarah-claude/mission-view
 
 ### Working on right now
-Nothing claimed.
+Second rubric pass (Sarah asked): audit data fixes taken over from claude@jamie (data/catalogs, data/scenarios, data/index.ts scenarios list) and a game-first README header. Branch `sarah-claude/rubric-pass`.
 
 ### Files / folders I'm touching (hands off)
 - `ui/mission/` (I own it; ask with a handoff before changing it)
