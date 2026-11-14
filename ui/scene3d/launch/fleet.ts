@@ -47,7 +47,7 @@ function falconCore(st: Stack, g: THREE.Object3D, o: { reusable: boolean; soot: 
   }
   if (o.nose) {
     put(g, tube(R, R, 1.6, 48), carbon, 0, L)
-    put(g, lathe([[R, 0], ...ogive(R, 4.2)], 32), st.k.white, 0, L + 1.6)
+    put(g, lathe([[R, 0], ...ogive(R, 4.2)], 32), k.white, 0, L + 1.6)
   } else {
     put(g, tube(R, R, spec.interstage.length, 48), carbon, 0, L)
   }
@@ -61,7 +61,12 @@ function falcon(spec: RocketSpec): RocketModel {
   // Rideshare flights go up on boosters that have flown many times; a NASA science launch often gets a newer one.
   // Falcon Heavy as it flew Psyche: side cores come back (legs, fins), the centre core is used up (bare).
   falconCore(st, st.stage1, { reusable: !heavy, soot: spec.rideshare ? 1 : 0, nose: false })
-  if (heavy) for (const a of [0, Math.PI]) falconCore(st, strapOn(st, a, 2 * R + 0.61), { reusable: true, soot: 0.5, nose: true })
+  if (heavy) {
+    // Built once: the second side core is a clone, so both share geometry, materials and textures.
+    const side = new THREE.Group()
+    falconCore(st, side, { reusable: true, soot: 0.5, nose: true })
+    for (const a of [0, Math.PI]) strapOn(st, a, 2 * R + 0.61).add(a ? side.clone() : side)
+  }
 
   put(upper, tube(R, R, spec.s2.length, 48), skin({ base: WHITE, seams: [0.03, 0.42, 0.97], roughness: 0.42 }))
   runUp(upper, k.dark, R, 0.5, 0.4, spec.s2.length * 0.95, 0.25)
@@ -70,7 +75,7 @@ function falcon(spec: RocketSpec): RocketModel {
   put(upper, bell(1.5, 3, 24), k.bell, 0, -0.8)
 
   const F = spec.fairing
-  const fairing = fairingHalves(st, [[R, 0], [F.radius, 1.3], [F.radius, 7.6], ...ogive(F.radius, F.length - 7.6, 7.6, 0.3)], whiteFairing([0.1]))
+  const fairing = fairingHalves(st, [[R, 0], [F.radius, 1.3], [F.radius, 7.6], ...ogive(F.radius, F.length - 7.6, 7.6, 0.14)], whiteFairing([0.1]))
   const bay = payloadBay(st, spec.s2.length, spec.s2.length + F.length, F.radius * 0.92, R * 0.8)
   const core = { y: -1.4, radius: R * 0.85, propellant: 'kerolox' as const }
   return finish(st, {
@@ -156,12 +161,12 @@ function vulcan(spec: RocketSpec): RocketModel {
   const { k, stage1, upper } = st
   const R = spec.s1.radius
   const L = spec.s1.length
-  // White booster with the red flame sweeping up from the base on one side.
+  // White booster with the red flame at the base, sweeping up round the body.
   const body = skin({ base: '#e6e8eb', seams: [0.36, 0.4, 0.975], roughness: 0.45, extra: (ctx, w, h) => {
     ctx.fillStyle = '#b3261e'
     ctx.beginPath()
     ctx.moveTo(0, h)
-    for (let x = 0; x <= w; x++) ctx.lineTo(x, h * (1 - 0.1 - 0.24 * Math.pow(0.5 + 0.5 * Math.cos(2 * Math.PI * (x / w - 0.1)), 1.6)))
+    for (let x = 0; x <= w; x++) ctx.lineTo(x, h * (0.94 - 0.26 * Math.pow((x / w + 0.8) % 1, 1.5)))
     ctx.lineTo(w, h)
     ctx.fill()
   } }, 512, 512)
@@ -195,7 +200,7 @@ function vulcan(spec: RocketSpec): RocketModel {
   put(upper, new THREE.SphereGeometry(R * 0.9, 24, 10, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2).scale(1, 0.35, 1), k.metal)
 
   const F = spec.fairing
-  const fairing = fairingHalves(st, [[R, 0], [R, 8.6], ...ogive(R, F.length - 8.6, 8.6, 0.25)], whiteFairing([0.02, 0.55]))
+  const fairing = fairingHalves(st, [[R, 0], [R, 8.6], ...ogive(R, F.length - 8.6, 8.6, 0.1)], whiteFairing([0.02, 0.55]))
   const bay = payloadBay(st, spec.s2.length, spec.s2.length + F.length, R * 0.92, R * 0.6)
   return finish(st, {
     fairing, ...bay,
@@ -250,8 +255,9 @@ function deltaCore(st: Stack, g: THREE.Object3D, nose: boolean): void {
   const L = spec.s1.length
   // From the bottom: engine section, hydrogen tank, the ribbed centerbody, oxygen tank.
   put(g, tube(R, R, L, 48), skin({ ...DELTA_FOAM, bands: [[0, 0.09, '#d6d1c4'], [0.6, 0.68, '#b3611f']], seams: [0.09, 0.6, 0.68, 0.985] }))
-  runUp(g, paint(0x8f4f1a, 0.9), R, 0.5, L * 0.09, L * 0.97, 0.35)
-  runUp(g, paint(0xa9601f, 0.9), R, -0.5, L * 0.1, L * 0.62, 0.4, true)
+  const darkFoam = paint(0x8f4f1a, 0.9)
+  runUp(g, darkFoam, R, 0.5, L * 0.09, L * 0.97, 0.35)
+  runUp(g, darkFoam, R, -0.5, L * 0.1, L * 0.62, 0.4, true)
   put(g, tube(1.4, R * 0.96, 1, 32), k.dark, 0, -1)
   put(g, bell(1.2, 3.2, 24), k.char, 0, -0.6)
   const I = spec.interstage.length
@@ -264,7 +270,9 @@ function delta(spec: RocketSpec): RocketModel {
   const { k, upper } = st
   const R = spec.s1.radius
   deltaCore(st, st.stage1, false)
-  for (const a of [0, Math.PI]) deltaCore(st, strapOn(st, a, 2 * R + 0.25), true)
+  const side = new THREE.Group()
+  deltaCore(st, side, true)
+  for (const a of [0, Math.PI]) strapOn(st, a, 2 * R + 0.25).add(a ? side.clone() : side)
 
   // The 5 m upper stage: only its foam-covered hydrogen tank shows; the oxygen tank and RL10 hang inside the interstage.
   put(upper, tube(R, R, spec.s2.length, 48), skin({ ...DELTA_FOAM, seams: [0.04, 0.96] }))
@@ -272,7 +280,7 @@ function delta(spec: RocketSpec): RocketModel {
   put(upper, bell(1.05, 2.4, 22), k.bell, 0, -1.3)
 
   const F = spec.fairing
-  const fairing = fairingHalves(st, [[R, 0], [R, 12.2], ...ogive(R, F.length - 12.2, 12.2, 0.2)], whiteFairing([0.02, 0.35]))
+  const fairing = fairingHalves(st, [[R, 0], [R, 12.2], ...ogive(R, F.length - 12.2, 12.2, 0.12)], whiteFairing([0.02, 0.35]))
   const bay = payloadBay(st, spec.s2.length, spec.s2.length + F.length, R * 0.92, R * 0.6)
   const rs68 = { y: -3.8, radius: 1.2, propellant: 'hydrolox' as const }
   return finish(st, {
