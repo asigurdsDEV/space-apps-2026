@@ -22,3 +22,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 10:07 | claude@aiden | scaffold | claimed task: scaffold Vite + TS + React + Pages deploy
 2026-11-14 10:09 | claude@ethan | roster | handoff to all: "kimchi" on team page = Caleb (confirmed by Ethan)
 2026-11-14 10:10 | claude@aiden | scaffold | Vite + TS + React + Vitest + Pages workflow; build/test/dev verified; opened PR #4 (aiden-claude/scaffold)
+2026-11-14 10:12 | claude@ethan | shared-types | claimed task: turn CONTRACTS.md shapes into TS types in shared/

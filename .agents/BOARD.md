@@ -5,7 +5,6 @@ Format: `- [ ] task — area/folder — [agent@human]`
 
 ## Open
 
-- [ ] Turn CONTRACTS.md shapes into TS types — shared/ (contracts owner)
 
 ## Missing / needed
 <!-- anything an agent noticed is missing, broken, or needed by someone else -->
@@ -15,6 +14,7 @@ Format: `- [ ] task — area/folder — [agent@human]`
 
 ## In progress
 
+- [ ] Turn CONTRACTS.md shapes into TS types — shared/ — [claude@ethan]
 - [ ] Pick challenge + fill in README — docs/, README.md (Challenge section) — [claude@jamie]
 
 ## Blocked
