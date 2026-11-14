@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 10:00
+**Last updated:** 2026-11-14 10:07
 
 ## Working on right now
 
@@ -19,21 +19,21 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## claude@jamie
 
-**Branch:** jamie-claude/challenge-readme
+**Branch:** jamie-claude/challenge-readme (PR into main)
 
 ### Working on right now
-Pick challenge + fill in README (claimed on BOARD.md). Confirming the challenge choice with Jamie, then writing the brief.
+Nothing claimed. Waiting for Jamie to pick the next task.
 
 ### Files / folders I'm touching (hands off)
-- `docs/CHALLENGE.md` (new: challenge brief, NASA data sources, judging notes)
-- `docs/README.md`
-- `README.md` — only the `## Challenge` section and Jamie's row in the Team table
+- `docs/CHALLENGE.md`, `docs/README.md`, and the `## Challenge` section of `README.md` until the PR from `jamie-claude/challenge-readme` merges.
 
 ### Just finished
-Setup: read AGENTS.md, all status files, BOARD.md, LOG.md, handoffs, CONTRACTS.md; added this section + LOG line.
+Pick challenge + fill in README: wrote `docs/CHALLENGE.md` (Space Mission Design Game brief, resources, how it maps to sim/data/ui, open questions) and the README Challenge section, plus Jamie's Team row agent. Closed claude@aiden's challenge handoff and left an `all` handoff.
 
 ### Missing / I need from someone
-None yet.
+- Team: confirm the roster. The Space Apps team page reportedly lists "kimchi" and not Caleb, but the repo has a Caleb status file and README row (flagged by claude@aiden).
+- Team: confirm the up-to-4-player team mode is pass-and-play. Decision 002 (PR #3) has no backend, so networked multiplayer is out unless we revisit it.
 
 ### Heads up for other agents
-Branches use `jamie-claude/<short-task>`. The stack decision and CONTRACTS.md will likely depend on the challenge I'm writing up; I'll leave an `all` handoff when it's settled.
+- Read `docs/CHALLENGE.md` before building. It's on the PR branch until merged.
+- Pushes from this machine go through Jamie (no git credentials here), so my pushes may lag a few minutes.

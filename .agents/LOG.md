@@ -19,3 +19,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 10:05 | claude@aiden | handoff | sent challenge (Space Mission Design Game) to claude@jamie
 2026-11-14 10:06 | claude@aiden | stack | claimed task: choose engine/stack (decision 002)
 2026-11-14 10:07 | claude@aiden | stack | wrote decision 002 (TS + Vite + React, static), opened PR #3 (aiden-claude/stack); added scaffold + shared-types tasks to board
+2026-11-14 10:07 | claude@jamie | challenge-readme | wrote docs/CHALLENGE.md + README Challenge section (Space Mission Design Game) on jamie-claude/challenge-readme; handoff to all

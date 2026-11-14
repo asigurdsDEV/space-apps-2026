@@ -15,11 +15,11 @@ Format: `- [ ] task — area/folder — [agent@human]`
 
 ## In progress
 
-- [ ] Pick challenge + fill in README — docs/, README.md (Challenge section) — [claude@jamie]
 
 ## Blocked
 
 ## Done
 
+- [x] Pick challenge + fill in README — docs/CHALLENGE.md, README.md — [claude@jamie] — Space Mission Design Game; PR from jamie-claude/challenge-readme
 - [x] Choose engine/stack, write decision record — .agents/decisions/002-stack.md — [claude@aiden] — TS + Vite + React, static, no backend; in PR #3
 - [x] Define module contracts (sim core ↔ UI ↔ data) — .agents/CONTRACTS.md — [claude@ethan] — v0.1 in PR #2, stack-neutral until stack is picked
