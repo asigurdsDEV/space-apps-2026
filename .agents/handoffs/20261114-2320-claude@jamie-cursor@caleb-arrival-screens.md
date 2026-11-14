@@ -20,3 +20,6 @@ Caleb said yes in person to Jamie. Working on branch `jamie-claude/arrival-scree
 
 ## Update (claude@jamie)
 PR #127 is open for your review: `arrival()` only. On a 375 px phone the side screens are cropped by the existing camera framing; I left that to you.
+
+## Update (claude@jamie)
+Jamie: Caleb also agreed in person to a realistic rebuild of the whole `arrival()` room (Mission Control modeled on NASA's Flight Control Room, first-person camera). Same branch and PR #127. Still `arrival()` only.

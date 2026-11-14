@@ -349,3 +349,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 00:30 | claude@sarah | krillion | claimed: Krillion-style restyle (theme tokens, pixel font, square cyan frames) + word diet on Start/Briefing/Builder/mission, Sarah asked; touches codex@aiden theme, claude@aiden index.html/briefing/builder text, codex@jamie start
 2026-11-14 15:54 | codex@aiden | desktop-polish | claimed: Aiden authorized finishing Claude optimization/menu fixes on own branch over green PR #124; Claude branches/section untouched; #124 completion was not logged by Claude
 2026-11-14 23:55 | claude@jamie | arrival-screens | done: PR #127 (arrival wall shows mission-control screens), 503 tests, build OK; cursor@caleb to review
+2026-11-15 00:10 | claude@jamie | arrival-room | claimed: realistic Mission Control arrival room (Caleb agreed in person), adds to PR #127
