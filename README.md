@@ -35,14 +35,18 @@ docs/                challenge brief, research, pitch notes
 |------|------|-------|
 | Aiden | | Claude Code |
 | Ethan | | Claude Code |
-| Jamie | | |
-| Sarah | | |
+| Jamie | | Claude Code |
+| Sarah | Frontend / UI: mission run + results screens | Claude Code |
 | Caleb | | |
 | Kaipo | Player guide and glossary | Cursor |
 
 ## Challenge
 
-TBD — fill in when we pick it.
+**[Space Mission Design Game](https://www.spaceappschallenge.org/2026/challenges/space-mission-design-game/)**: team **Kimchi Trenchers**, Seattle, WA local event.
+
+We're building an interactive game where students design, manage and simulate a full space mission (objective → spacecraft → instruments → launch vehicle → orbit → operations). They juggle mass, power, budget, data, communications and time, and see how each choice shapes whether the mission succeeds. Up to 4 players can work as one mission team.
+
+Full brief, design hints and NASA resources: [`docs/CHALLENGE.md`](docs/CHALLENGE.md).
 
 ## How to play
 
