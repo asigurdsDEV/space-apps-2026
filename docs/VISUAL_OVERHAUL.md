@@ -2,7 +2,7 @@
 
 Aiden's direction, 2026-11-14: **both** an interactive spacecraft flight experience and a walkable mission-control/hangar, **starting with spacecraft flight**. Decision 006 records this extension of decision 003. This is a work breakdown, not a claim that the new mode is implemented.
 
-[Decision 005](../.agents/decisions/005-first-person-story.md) covers guided station walking, story and cutscenes. V6 below is held because it duplicates those rooms; do not start a second room implementation or transfer Ethan’s ownership. Flight training V1–V5/V7 remains independent.
+[Decision 005](../.agents/decisions/005-first-person-story.md) covers guided station walking, story and cutscenes. V6 is the same room task. The newer 1555 handoff records Aiden assigning it to claude@aiden in `ui/hangar/`; do not start a second room implementation or alter Ethan’s existing `ui/scene3d/` claim. Flight training V1–V5/V7 remains independent.
 
 ## What exists and what is missing
 
@@ -105,7 +105,7 @@ Suggested owners are **not active claims**. Finish/release any current task, the
 | **V3 — cursor@kaipo** | New `public/visual-assets/flight/`, `art/flight/`, `docs/visual-assets/flight.md` | One optimized prop/target pack, source/credit manifest and measurable size/axis/bounds metadata. No edits to `ui/scene3d/`, existing planets or catalog-part builders. | No source dependency; coordinate with existing venue rehearsal priority |
 | **V4 — claude@jamie** | New `data/pilot-training/` only initially | Three educational targets and route rules with stable IDs, objective text, observation/relay feedback; validate the local schema in its own tests/README. No `data/index.ts` edit or scored sim change in this package. | Standalone data draft can start now; reconcile with V1/V2/V7 |
 | **V5 — cursor@caleb** | New `docs/qa/flight3d.md`; source read-only | Test matrix for movement, actual target interactions, touch, focus/escape, reduced motion, failed model loads, WebGL fallback, offline and phone performance. Record results as V7 becomes available. | Test plan can start now; execution needs V7 |
-| **V6 — held; duplicate of decision 005 rooms** | No active scope; proposed `ui/hangar/` and assets are not authorized | Resolve into the existing first-person room task with one agreed owner. Do not start a parallel room implementation. | First flight slice accepted; explicit room ownership resolution; Ethan retains existing scene claim |
+| **V6 — claude@aiden, same task as decision 005 rooms** | `ui/hangar/` (new), claimed per 1555 handoff | Guided station walking and task-panel navigation; no duplicate rooms. Aiden’s newer split allows this owner to work in parallel. | Story frame/navigation callbacks; Ethan retains existing scene3d source and branches |
 | **V7 — existing owners only** | `ui/scene3d/` + `app/`: claude@ethan; `ui/mission/`: claude@sarah; `pwa/`/config: claude@aiden | Integrate the modules at a checkpoint Ethan chooses. Publish optional compatible API additions, then mount one large flight viewport + HUD; preserve existing build/fly/result callers and co-op rules. Model cache/config changes stay with scaffold owner. | V1/V2/V4 reviewed; V3 optional; contracts agreement before any scored control |
 
 Ethan's current renderer, all catalog-part models, planets, launch sequence and sim work retain their existing claim. V7 is a later integration request, not a demand to stop or rebase his current work. Never change or merge his work-in-progress branches from another agent.
