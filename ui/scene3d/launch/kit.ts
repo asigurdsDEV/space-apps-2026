@@ -1,6 +1,7 @@
 // Building blocks shared by every rocket: painted skins (canvas textures), PBR materials and the
 // handful of shapes rockets are made of. Meters; every shape sits on y = 0 and grows up unless it says otherwise.
 import * as THREE from 'three'
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js'
 
 // Tests build the models in Node, where there is no canvas: skins fall back to their base colour.
 const canDraw = typeof document !== 'undefined'
@@ -10,12 +11,32 @@ function rng(seed: number): () => number {
   return () => (s = (s * 1664525 + 1013904223) >>> 0) / 4294967296
 }
 
+/** A marking or fitting painted on the skin, centred at (u, v); `size` is its height in meters. */
+export interface Mark {
+  kind: 'flag' | 'text' | 'door' | 'vent' | 'checker'
+  u: number
+  v: number
+  size: number
+  /** Width in meters of a door, vent or target (default: square). */
+  width?: number
+  text?: string
+  /** Letters one under another, the way lettering runs down a rocket. */
+  stacked?: boolean
+  color?: string
+}
+
 /** What is painted on a body of revolution. Lengths are fractions from the bottom; `u` is the angle as a fraction of a turn (0 faces +z, 0.25 faces +x). */
 export interface Skin {
   base: string
   bands?: [from: number, to: number, color: string][]
-  /** Thin dark rings: weld seams, segment joints. */
+  /** Weld rings and segment joints: thin dark grooves round the body. */
   seams?: number[]
+  /** Lengthwise welds: how many panels make up the circumference. */
+  panels?: number
+  /** Raised lengthwise ribs (stringers, corrugation, cooling tubes): [from, to, how many round the body]. */
+  ribs?: [from: number, to: number, count: number][]
+  /** Rows of fasteners round the body. */
+  rivets?: number[]
   /** Lengthwise stripes: [u, width, colour, from, to]. */
   stripes?: [u: number, width: number, color: string, from?: number, to?: number][]
   /** Frost on a cryogenic tank: [from, to, strength 0..1]. */
@@ -24,75 +45,234 @@ export interface Skin {
   soot?: number
   /** Blotchiness, 0 to 1: spray-on foam is mottled, paint is not. */
   grain?: number
-  /** Anything else, drawn last. x runs around the body, y down from the top. */
+  marks?: Mark[]
+  /** Anything else, drawn last on the colour. x runs around the body, y down from the top. Give a `key` so the result can be shared. */
   extra?: (ctx: CanvasRenderingContext2D, w: number, h: number) => void
+  key?: string
   roughness?: number
   metalness?: number
+  /** How strongly the relief catches the light. */
+  relief?: number
   /** Visible from inside too (fairing halves). */
   shell?: boolean
 }
 
-export function skin(s: Skin, w = 256, h = 512): THREE.MeshStandardMaterial {
-  const params: THREE.MeshStandardMaterialParameters = { roughness: s.roughness ?? 0.5, metalness: s.metalness ?? 0.05, side: s.shell ? THREE.DoubleSide : THREE.FrontSide }
-  if (!canDraw) return new THREE.MeshStandardMaterial({ ...params, color: s.base })
-  const canvas = document.createElement('canvas')
-  canvas.width = w
-  canvas.height = h
-  const ctx = canvas.getContext('2d')!
+type Ctx = CanvasRenderingContext2D
+type SkinMaps = { map: THREE.CanvasTexture; relief: THREE.CanvasTexture }
+const TEXT_PX = 100
+
+/**
+ * The relief canvas packs three maps: red is height, green roughness, blue metalness.
+ * A pen changes one of them and leaves the other two alone: amount -1..0 lowers it, 0..1 raises it.
+ */
+function pen(d: Ctx, channel: 0 | 1 | 2, amount: number): void {
+  const c = amount < 0 ? [255, 255, 255] : [0, 0, 0]
+  c[channel] = Math.round(amount < 0 ? 255 * (1 + amount) : 255 * amount)
+  d.globalCompositeOperation = amount < 0 ? 'multiply' : 'lighter'
+  d.fillStyle = d.strokeStyle = `rgb(${c.join(',')})`
+}
+
+function drawMark(c: Ctx, d: Ctx, m: Mark, x: number, y: number, sx: number, sy: number): void {
+  const mh = m.size * sy
+  const mw = (m.width ?? m.size) * sx
+  if (m.kind === 'flag') {
+    const fw = m.size * 1.9 * sx
+    const x0 = x - fw / 2
+    const y0 = y - mh / 2
+    for (let i = 0; i < 13; i++) {
+      c.fillStyle = i % 2 ? '#f1f1f1' : '#b22234'
+      c.fillRect(x0, y0 + (i * mh) / 13, fw, mh / 13 + 0.5)
+    }
+    c.fillStyle = '#3c3b6e'
+    c.fillRect(x0, y0, fw * 0.4, (mh * 7) / 13)
+    c.fillStyle = '#ffffff'
+    const star = Math.max(1, mh * 0.035)
+    for (let row = 0; row < 5; row++) for (let col = 0; col < 6; col++) c.fillRect(x0 + (fw * 0.4 * (col + 0.5)) / 6 - star / 2, y0 + (mh * 7 * (row + 0.5)) / 65 - star / 2, star, star)
+  } else if (m.kind === 'text') {
+    const letters = m.stacked ? [...(m.text ?? '')] : [m.text ?? '']
+    c.save()
+    c.translate(x, y)
+    // Texels are not square on the body, so letters are drawn in meters.
+    c.scale(sx / TEXT_PX, sy / TEXT_PX)
+    c.font = `700 ${m.size * TEXT_PX}px "Helvetica Neue", Arial, sans-serif`
+    c.textAlign = 'center'
+    c.textBaseline = 'middle'
+    c.fillStyle = m.color ?? '#1b1c20'
+    letters.forEach((ch, i) => c.fillText(ch, 0, (i - (letters.length - 1) / 2) * m.size * TEXT_PX * 1.08))
+    c.restore()
+  } else if (m.kind === 'checker') {
+    // Black-and-white squares: targets the tracking cameras measure the vehicle by.
+    for (let i = 0; i < 4; i++) {
+      c.fillStyle = i % 3 === 0 ? '#16171a' : '#f1f1f1'
+      c.fillRect(x - mw / 2 + ((i % 2) * mw) / 2, y - mh / 2 + (Math.floor(i / 2) * mh) / 2, mw / 2, mh / 2)
+    }
+  } else if (m.kind === 'vent') {
+    c.fillStyle = m.color ?? '#131417'
+    c.fillRect(x - mw / 2, y - mh / 2, mw, mh)
+    pen(d, 0, -0.7)
+    d.fillRect(x - mw / 2, y - mh / 2, mw, mh)
+  } else {
+    // An access door: a cut line round it and a fastener in each corner.
+    c.strokeStyle = 'rgba(0,0,0,0.4)'
+    c.lineWidth = d.lineWidth = 1
+    c.strokeRect(x - mw / 2, y - mh / 2, mw, mh)
+    pen(d, 0, -0.55)
+    d.strokeRect(x - mw / 2, y - mh / 2, mw, mh)
+    c.fillStyle = 'rgba(0,0,0,0.45)'
+    for (const [i, j] of [[-1, -1], [1, -1], [-1, 1], [1, 1]] as const) c.fillRect(x + i * (mw / 2 - 2.5) - 0.5, y + j * (mh / 2 - 2.5) - 0.5, 1.5, 1.5)
+  }
+}
+
+/** Paints a skin's colour canvas and its relief canvas, `w` x `h` texels at `sx` and `sy` texels per meter. */
+function paintSkin(s: Skin, w: number, h: number, sx: number, sy: number): SkinMaps {
+  const canvas = () => {
+    const el = document.createElement('canvas')
+    el.width = w
+    el.height = h
+    return el
+  }
+  const colour = canvas()
+  const height = canvas()
+  const c = colour.getContext('2d')!
+  const d = height.getContext('2d')!
   const rand = rng(w * 31 + h + s.base.length * 977 + (s.bands?.length ?? 0) * 131)
   const y = (f: number) => h * (1 - f)
-  ctx.fillStyle = s.base
-  ctx.fillRect(0, 0, w, h)
+  c.fillStyle = s.base
+  c.fillRect(0, 0, w, h)
+  d.fillStyle = `rgb(128,${Math.round((s.roughness ?? 0.5) * 255)},${Math.round((s.metalness ?? 0.05) * 255)})`
+  d.fillRect(0, 0, w, h)
   for (const [from, to, color] of s.bands ?? []) {
-    ctx.fillStyle = color
-    ctx.fillRect(0, y(to), w, y(from) - y(to))
+    c.fillStyle = color
+    c.fillRect(0, y(to), w, y(from) - y(to))
   }
   if (s.grain) {
+    // Spray-on foam goes on in passes that weather differently, and its surface is orange-peel rough.
+    for (let top = 0; top < h; ) {
+      const pass = (0.5 + rand() * 1.6) * sy
+      c.fillStyle = rand() < 0.5 ? `rgba(70,25,0,${rand() * 0.07 * s.grain})` : `rgba(255,225,170,${rand() * 0.05 * s.grain})`
+      c.fillRect(0, top, w, pass)
+      top += pass
+    }
     for (let i = 0; i < (w * h) / 24; i++) {
-      ctx.fillStyle = rand() < 0.5 ? `rgba(60,20,0,${rand() * 0.05 * s.grain})` : `rgba(255,235,200,${rand() * 0.04 * s.grain})`
+      c.fillStyle = rand() < 0.5 ? `rgba(60,20,0,${rand() * 0.05 * s.grain})` : `rgba(255,235,200,${rand() * 0.04 * s.grain})`
       const size = 1 + rand() * 7
-      ctx.fillRect(rand() * w, rand() * h, size, size * (0.5 + rand() * 2))
+      const px = rand() * w
+      const py = rand() * h
+      c.fillRect(px, py, size, size * (0.5 + rand() * 2))
+      pen(d, 0, (rand() - 0.5) * 0.22 * s.grain)
+      d.fillRect(px, py, 1 + size * 0.4, 1 + size * 0.4)
     }
   }
   if (s.soot) {
-    const g = ctx.createLinearGradient(0, 0, 0, h)
+    const g = c.createLinearGradient(0, 0, 0, h)
     g.addColorStop(0, `rgba(40,36,32,${0.4 * s.soot})`)
     g.addColorStop(1, `rgba(40,36,32,${0.92 * s.soot})`)
-    ctx.fillStyle = g
-    ctx.fillRect(0, 0, w, h)
+    c.fillStyle = g
+    c.fillRect(0, 0, w, h)
+    pen(d, 1, 0.3 * s.soot)
+    d.fillRect(0, 0, w, h)
     for (let i = 0; i < 90; i++) {
-      ctx.fillStyle = `rgba(${rand() < 0.3 ? '230,230,230' : '20,18,16'},${rand() * 0.3 * s.soot})`
-      ctx.fillRect(rand() * w, rand() * h, 1 + rand() * 4, h * (0.03 + rand() * 0.15))
+      c.fillStyle = `rgba(${rand() < 0.3 ? '230,230,230' : '20,18,16'},${rand() * 0.3 * s.soot})`
+      c.fillRect(rand() * w, rand() * h, 1 + rand() * 4, h * (0.03 + rand() * 0.15))
     }
   }
   for (const [from, to, strength] of s.frost ?? []) {
     // A soft-edged white coat, patchier toward its ends, with streaks where ice has let go.
     const top = y(to)
     const len = y(from) - top
-    const g = ctx.createLinearGradient(0, top, 0, top + len)
+    const g = c.createLinearGradient(0, top, 0, top + len)
     g.addColorStop(0, 'rgba(240,246,252,0)')
     g.addColorStop(0.08, `rgba(240,246,252,${strength})`)
     g.addColorStop(0.9, `rgba(240,246,252,${strength})`)
     g.addColorStop(1, 'rgba(240,246,252,0)')
-    ctx.fillStyle = g
-    ctx.fillRect(0, top, w, len)
+    c.fillStyle = g
+    c.fillRect(0, top, w, len)
+    // Frost is matt and crusty, and hides the metal under it.
+    pen(d, 1, 0.45 * strength)
+    d.fillRect(0, top + len * 0.04, w, len * 0.9)
+    pen(d, 2, -0.8 * strength)
+    d.fillRect(0, top + len * 0.04, w, len * 0.9)
     for (let i = 0; i < 60; i++) {
-      ctx.fillStyle = `rgba(${rand() < 0.5 ? '255,255,255' : '120,130,140'},${rand() * 0.25 * strength})`
-      ctx.fillRect(rand() * w, top + rand() * len, 1 + rand() * 3, len * (0.05 + rand() * 0.2))
+      c.fillStyle = `rgba(${rand() < 0.5 ? '255,255,255' : '120,130,140'},${rand() * 0.25 * strength})`
+      const px = rand() * w
+      const py = top + rand() * len
+      const streak = len * (0.05 + rand() * 0.2)
+      c.fillRect(px, py, 1 + rand() * 3, streak)
+      pen(d, 0, (rand() - 0.5) * 0.3 * strength)
+      d.fillRect(px, py, 2, streak)
     }
   }
   for (const [u, width, color, from = 0, to = 1] of s.stripes ?? []) {
-    ctx.fillStyle = color
-    ctx.fillRect(u * w, y(to), Math.max(width * w, 1), y(from) - y(to))
+    c.fillStyle = color
+    c.fillRect(u * w, y(to), Math.max(width * w, 1), y(from) - y(to))
   }
-  ctx.fillStyle = 'rgba(0,0,0,0.38)'
-  for (const f of s.seams ?? []) ctx.fillRect(0, y(f) - 1, w, 2)
-  s.extra?.(ctx, w, h)
-  const map = new THREE.CanvasTexture(canvas)
-  map.colorSpace = THREE.SRGBColorSpace
-  map.wrapS = THREE.RepeatWrapping
-  map.anisotropy = 4
-  return new THREE.MeshStandardMaterial({ ...params, map })
+  for (const [from, to, count] of s.ribs ?? []) {
+    // No finer than four texels a rib, or they blur into grey.
+    const n = Math.min(count, Math.floor(w / 4))
+    const pitch = w / n
+    for (let i = 0; i < n; i++) {
+      c.fillStyle = 'rgba(0,0,0,0.13)'
+      c.fillRect(i * pitch, y(to), Math.max(pitch * 0.3, 1), y(from) - y(to))
+      pen(d, 0, 0.3)
+      d.fillRect((i + 0.4) * pitch, y(to), pitch * 0.5, y(from) - y(to))
+    }
+  }
+  for (let i = 0; i < (s.panels ?? 0); i++) {
+    const px = ((i + 0.37) * w) / s.panels!
+    c.fillStyle = 'rgba(0,0,0,0.16)'
+    c.fillRect(px, 0, 1, h)
+    pen(d, 0, -0.35)
+    d.fillRect(px, 0, 1.5, h)
+  }
+  for (const f of s.seams ?? []) {
+    c.fillStyle = 'rgba(0,0,0,0.38)'
+    c.fillRect(0, y(f) - 1, w, 2)
+    pen(d, 0, -0.5)
+    d.fillRect(0, y(f) - 1, w, 2)
+  }
+  for (const f of s.rivets ?? []) {
+    const pitch = Math.max(3, Math.round(0.3 * sx))
+    for (let px = 0; px < w; px += pitch) {
+      c.fillStyle = 'rgba(0,0,0,0.3)'
+      c.fillRect(px, y(f), 1, 1)
+      pen(d, 0, 0.35)
+      d.fillRect(px - 0.5, y(f) - 0.5, 2, 2)
+    }
+  }
+  // A mark may straddle the texture's edge: that is the side facing the camera.
+  for (const m of s.marks ?? []) for (const turn of [-1, 0, 1]) drawMark(c, d, m, (m.u + turn) * w, y(m.v), sx, sy)
+  s.extra?.(c, w, h)
+  const texture = (el: HTMLCanvasElement, srgb: boolean) => {
+    const t = new THREE.CanvasTexture(el)
+    if (srgb) t.colorSpace = THREE.SRGBColorSpace
+    t.wrapS = THREE.RepeatWrapping
+    t.anisotropy = 4
+    return t
+  }
+  return { map: texture(colour, true), relief: texture(height, false) }
+}
+
+// Painted once and shared by every rocket that uses the same skin. Disposing a scene frees the GPU copies; the canvases stay for the next launch.
+const skins = new Map<string, SkinMaps>()
+
+/** Bytes of texture the painted skins take on the GPU, mipmaps included (4 bytes a texel, two canvases a skin). */
+export const skinBytes = () => [...skins.values()].reduce((n, t) => n + (t.map.image.width * t.map.image.height * 8 * 4) / 3, 0)
+
+/**
+ * The material for a body `around` meters round and `length` meters long, at `density` texels per meter
+ * (no canvas is larger than 1024). Identical skins share their textures, across rockets too.
+ */
+export function skin(s: Skin, around = 1, length = 1, density = 8): THREE.MeshStandardMaterial {
+  const side = s.shell ? THREE.DoubleSide : THREE.FrontSide
+  if (!canDraw) return new THREE.MeshStandardMaterial({ color: s.base, roughness: s.roughness ?? 0.5, metalness: s.metalness ?? 0.05, side })
+  const size = (meters: number) => Math.min(1024, Math.max(4, Math.round(meters * density)))
+  const w = size(around)
+  const h = size(length)
+  const key = s.extra && !s.key ? '' : JSON.stringify([s, w, h])
+  const maps = skins.get(key) ?? paintSkin(s, w, h, w / around, h / length)
+  if (key) skins.set(key, maps)
+  // The relief canvas carries roughness and metalness itself, so the material's own factors stay at 1.
+  return new THREE.MeshStandardMaterial({ map: maps.map, bumpMap: maps.relief, bumpScale: s.relief ?? 1.5, roughnessMap: maps.relief, metalnessMap: maps.relief, roughness: 1, metalness: 1, side })
 }
 
 export const paint = (color: number, roughness: number, metalness = 0, extra: THREE.MeshStandardMaterialParameters = {}) =>
@@ -107,10 +287,10 @@ export function palette() {
     metal: paint(0x9a9ea6, 0.4, 0.85),
     /** Heat shields, raceways, anything dark and dull. */
     dark: paint(0x25272c, 0.65, 0.4),
-    /** Engine bells: you see inside them, so both faces draw. */
-    bell: paint(0x4a4440, 0.4, 0.9, { side: THREE.DoubleSide }),
+    /** Regeneratively cooled bells: a wall of brazed tubes with stiffening bands, heat-stained toward the throat. Both faces draw: you see inside them. */
+    bell: skin({ base: '#5a524d', bands: [[0, 0.2, '#6b5645'], [0.2, 0.34, '#4d4a52']], ribs: [[0, 1, 32]], seams: [0.3, 0.62, 0.93], roughness: 0.38, metalness: 0.9, relief: 2, shell: true }, 1, 1, 128),
     /** Ablative nozzles of solid motors and the RS-68. */
-    char: paint(0x221f1d, 0.8, 0.1, { side: THREE.DoubleSide }),
+    char: skin({ base: '#221f1d', grain: 0.6, seams: [0.3, 0.9], roughness: 0.85, metalness: 0.1, shell: true }, 1, 1, 64),
     foil: paint(0xd8a740, 0.35, 1),
     cells: paint(0x16245a, 0.25, 0.6),
   }
@@ -159,14 +339,42 @@ export function ogive(R: number, L: number, y0 = 0, blunt = 0.05, n = 10): Profi
   return [...pts, ...dome(at(cut), L - cut, y0 + cut, 4)]
 }
 
-/** A bell nozzle hanging down from y = 0: throat at the top, exit `len` below. */
+/** A bell nozzle hanging down from y = 0: throat at the top, exit `len` below, with a rolled lip. */
 export function bell(exitRadius: number, len: number, seg = 18): THREE.LatheGeometry {
-  const pts: THREE.Vector2[] = []
+  const pts: Profile = []
   for (let i = 0; i <= 8; i++) {
     const u = i / 8
-    pts.push(new THREE.Vector2(exitRadius * (0.3 + 0.7 * Math.sqrt(u)), -u * len))
+    pts.push([exitRadius * (0.3 + 0.7 * Math.sqrt(u)), -u * len])
   }
-  return new THREE.LatheGeometry(pts, seg)
+  pts.push([exitRadius * 1.05, -len])
+  return lathe(pts, seg)
+}
+
+/** Where the engines of a cluster sit, as [x, z]: `n` in a ring of radius `r` (the first at angle `turn`), plus one in the middle. */
+export function cluster(n: number, r: number, turn = 0, centre = false): [number, number][] {
+  const spots: [number, number][] = centre ? [[0, 0]] : []
+  for (let i = 0; i < n; i++) spots.push([Math.sin(turn + (i / n) * Math.PI * 2) * r, Math.cos(turn + (i / n) * Math.PI * 2) * r])
+  return spots
+}
+
+/**
+ * Engines at `spots`, their throats at height y: one mesh of bells and one of throats, which `glow` lights when they fire.
+ * With `heads`, also what sits on top of an engine you can see: chamber, turbopumps, propellant duct and gimbal block.
+ */
+export function engines(parent: THREE.Object3D, k: Palette, glow: THREE.Material, spots: [number, number][], exit: number, len: number, y: number, o: { heads?: boolean; mat?: THREE.Material; seg?: number } = {}): void {
+  // One mesh per kind of part, however many engines: a Falcon Heavy has 27.
+  const all = (geo: THREE.BufferGeometry) => mergeGeometries(spots.map(([x, z]) => geo.clone().translate(x, y, z)))
+  put(parent, all(bell(exit, len, o.seg ?? 18)), o.mat ?? k.bell)
+  put(parent, all(new THREE.CircleGeometry(exit * 0.42, 12).rotateX(Math.PI / 2).translate(0, -len * 0.04, 0)), glow)
+  if (!o.heads) return
+  const pump = new THREE.CylinderGeometry(exit * 0.17, exit * 0.17, exit * 0.9, 8)
+  put(parent, all(mergeGeometries([
+    new THREE.CylinderGeometry(exit * 0.4, exit * 0.3, exit * 0.55, 12).translate(0, exit * 0.27, 0),
+    new THREE.CylinderGeometry(exit * 0.15, exit * 0.22, exit * 0.4, 8).translate(0, exit * 0.75, 0),
+    pump.clone().translate(exit * 0.58, exit * 0.4, 0),
+    pump.clone().translate(-exit * 0.58, exit * 0.4, 0),
+    new THREE.TorusGeometry(exit * 0.5, exit * 0.06, 5, 14).rotateX(Math.PI / 2).translate(0, exit * 0.1, 0),
+  ])), k.metal)
 }
 
 /** Lean a shape toward +x as it rises: the canted nose cones of strap-on boosters. */
