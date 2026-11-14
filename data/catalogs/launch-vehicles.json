@@ -1,0 +1,28 @@
+{
+  "id": "launch-vehicles",
+  "source": "Hand-tuned for gameplay; capacities and prices loosely based on public launch provider figures and NASA 'Design and Develop Science Missions'",
+  "source_url": "https://www.nasa.gov/wp-content/uploads/2025/04/250323-design-and-develop-science-mission.pdf",
+  "license": "team-authored (CC0); not authoritative figures",
+  "retrieved_utc": "2026-11-14T10:20:00Z",
+  "kind": "table",
+  "units": {
+    "payload_leo_kg": "kg",
+    "payload_sso_kg": "kg",
+    "payload_gto_kg": "kg",
+    "payload_tli_kg": "kg",
+    "cost_usd": "USD",
+    "cost_per_kg_usd": "USD/kg",
+    "reliability": ""
+  },
+  "data": {
+    "columns": ["id", "name", "provider", "payload_leo_kg", "payload_sso_kg", "payload_gto_kg", "payload_tli_kg", "cost_usd", "cost_per_kg_usd", "reliability", "description"],
+    "rows": [
+      ["rideshare", "Rideshare slot", "shared launch", 0, 200, 0, 0, 300000, 6000, 0.97, "Share a big rocket with dozens of other satellites. Cheap, but you only go where the rocket goes (sun-synchronous orbit)."],
+      ["electron", "Electron", "Rocket Lab", 300, 200, 0, 30, 7500000, 0, 0.92, "A small dedicated rocket. Your own ride to low orbit, and a tiny payload can even reach the Moon."],
+      ["pegasus-xl", "Pegasus XL", "Northrop Grumman", 450, 325, 0, 0, 40000000, 0, 0.93, "Launched from under an airplane. Flexible, but expensive for how little it carries."],
+      ["falcon-9", "Falcon 9", "SpaceX", 17500, 13000, 5500, 3500, 70000000, 0, 0.99, "Workhorse medium-lift rocket. Reaches every orbit in this game."],
+      ["vulcan-centaur", "Vulcan Centaur", "United Launch Alliance", 27000, 20000, 14400, 10000, 110000000, 0, 0.95, "Heavy lifter for big spacecraft headed to high orbits or the Moon."],
+      ["sls-block-1", "Space Launch System (Block 1)", "NASA", 95000, 0, 0, 27000, 2000000000, 0, 0.95, "NASA's Moon rocket. Enormous capacity and an enormous price tag."]
+    ]
+  }
+}
