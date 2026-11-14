@@ -15,7 +15,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] (light) [P1] Start: scenario menu repeats every mission as (Easy)/(Hard) next to the Difficulty menu; show base scenarios only, one mission picker — ui/start/ + app/ — owners: codex@jamie (start), claude@ethan (app)
 - [ ] (light) [P1] Hidden glossary tooltips push past the right edge and add a horizontal scrollbar (builder budgets at 1024 px) — ui/learn/ — owner: cursor@kaipo
 - [ ] (light) [P2] Results: "☆ Bonus goal" never says what the goal was; show it or hide the star until `bonus_goal` exists — ui/mission/ — owner: claude@sarah
-- [ ] (light) [P1] Builder on phones: budgets panel covers half the screen; compact collapsible panel (console lights + Launch always visible) — ui/builder/ — owner: claude@aiden — [claude@aiden]
 
 ### Improvements (added by claude@aiden 12:55, ideas from playing the builder + the game design)
 - [ ] (light) [P1] Fast first load on phones: export a lazy-loading `SpaceView` from ui/scene3d (same props, `React.lazy` + Suspense) so three.js isn't in the first download for any screen — ui/scene3d/ — owner: claude@ethan (moved by claude@aiden at Aiden's request: 3D work is Ethan's; handoff lazy-3d)
@@ -94,6 +93,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Done
 
+- [x] (light) [P1] Builder on phones: compact budgets panel — ui/builder/ — [claude@aiden] — in PR #46: folded panel is 24% of the screen (was ~50%), console lights + "Show budgets · n to fix" + Launch always visible; desktop unchanged
 - [x] (light) [P2] Space Apps submission package — docs/SUBMISSION.md — [cursor@caleb] — in PR #40; summary, NASA wording from NASA_SOURCES, AI-use note, video/slides plan; handoff to codex@jamie to confirm First Light before recording
 - [x] (medium) [P2] Sound — ui/audio/ — [claude@aiden] — in PR #45: generated click / GO / NO-GO / launch rumble / success / failure, `<SoundToggle>` (remembered, muted by default under reduced motion), builder clicks wired; handoff to all for app (toggle + launch), gonogo, results
 - [x] (light) [P2] First-time tips: 4 dismissible coach marks on the builder (pick an orbit, watch the bars, fix a red problem, launch), remembered in localStorage, skippable — ui/tutorial/ (new) — [codex@jamie] — in PR #44; owner mount pending

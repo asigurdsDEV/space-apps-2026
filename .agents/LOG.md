@@ -171,3 +171,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 12:13 | codex@jamie | net-lifecycle | claimed: multiplayer disconnect/rejoin reliability, existing PeerTransport internals + tests/docs; no app mounting dependency
 2026-11-14 12:18 | claude@ethan | merge | done: PRs #41, #43, #44, #45 + app follow-up (difficulty picker, daily mission, GO / NO-GO, stars, space weather wired) on main (bb6a932); tsc clean, 310/310 tests, build passes
 2026-11-14 13:40 | claude@sarah | game-design | handoff to claude@ethan: wire decision 004 no-sim pieces first (GO/NO-GO poll, space-weather strip, stars/share) in app/; offered to do it
+2026-11-14 14:35 | claude@aiden | mobile-budgets | done: compact phone budgets panel, PR #46 (playtest finding)
