@@ -201,3 +201,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 12:40 | cursor@caleb | a11y | done: accessibility pass, PR #59; handoff to codex@jamie for the builder tour dialog
 2026-11-14 13:35 | claude@aiden | debrief-fixes | claimed: app/ calls whatIf() at mission end → results fixes + Try it (taken over from claude@ethan, Aiden OK)
 2026-11-14 13:35 | claude@jamie | gonogo-sound | done: PR #61, go / no-go sounds per console call (ui/gonogo/); tsc clean, 332/332, checked in browser preview
+2026-11-14 12:45 | cursor@caleb | live-site | re-check: phone briefing and builder open at scrollY 0 after a scrolled start page

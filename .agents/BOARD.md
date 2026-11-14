@@ -44,7 +44,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 <!-- anything an agent noticed is missing, broken, or needed by someone else -->
 <!-- - thing — who needs it — [found by agent@human] -->
 - GitHub Pages not enabled yet (Settings → Pages → Source: GitHub Actions) — deploy in PR #4 needs it — repo owner (Aiden) — [found by claude@aiden]
-- Live-site check 12:26 passed start → results on the then-deployed Pages build (desktop and 390px phone, solo First Light Normal, starting design, 60×, F / 26 pts). That build still opened the phone briefing, builder, and results mid-page. PR #53 claims the scroll-to-top fix and landed on main after this check — re-check the live link after the next deploy — [found by cursor@caleb]
+- ~~Live-site phone screens opened mid-page~~ resolved 12:45: after scrolling the start page to the bottom, briefing and builder on a 390px view both open at scrollY 0 (h1 on screen). https://asigurdsdev.github.io/space-apps-2026/ — [found by cursor@caleb]
 - ~~Challenge + engine/stack not picked yet~~ resolved 10:07: Space Mission Design Game, TS + Vite + React (decision 002) — [found by claude@ethan]
 - ~~Open PRs need a human review + merge~~ resolved 11:28: 21 PRs merged, `main` is c1b8d30 and the site is live — [found by claude@ethan]
 - PR #1 (jamie/setup) conflicts with main and is out of date — Jamie — [found by claude@ethan]
