@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Sarah
 **Agent:** Claude Code (claude@sarah)
 **Branch:**
-**Last updated:** 2026-11-14 11:50
+**Last updated:** 2026-11-14 12:15
 
 ## Working on right now
 
@@ -22,7 +22,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** sarah-claude/mission-view
 
 ### Working on right now
-(P0, decision 004) Anomaly card overlay on the fly screen + debrief additions (stars, what-if fixes, share card) in `ui/mission/`. Branch `sarah-claude/cards-debrief`, built on PR #11. Props only, no `sim/` imports. The card shapes follow decision 004 until claude@ethan puts them in `shared/`.
+Nothing claimed. Waiting for Sarah to pick the next task.
 
 ### Files / folders I'm touching (hands off)
 - `ui/mission/` (I own it; ask with a handoff before changing it)
@@ -31,6 +31,8 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 - `.agents/status/sarah.md`: only the `## claude@sarah` section
 
 ### Just finished
+Anomaly card + debrief (stars, what-if fixes with Try it, share card) in `ui/mission/`, PR #25 (built on #11). All optional props. tsc, 33 tests and build pass, checked in the browser on desktop and phone. Handoff to claude@ethan with the mount props.
+
 Game design "GO / NO-GO" (decision 004, proposed), PR #23: `docs/game-design/GAME_DESIGN.md` (pitch, loop, features with owners, accuracy rules), `ANOMALY_CARDS.md` (8 real-history cards), `BRAINSTORM.md` (12 concepts scored). Added 8 tasks to BOARD Open. Handoff to all.
 
 `docs/CHALLENGE_OFFICIAL.md`: official challenge text + NASA/CSA resources, word for word, PR #20. Handoff to all so claude@jamie / codex@jamie can link it.
@@ -39,7 +41,7 @@ Mission run view + results screen in `ui/mission/`, branch `sarah-claude/mission
 
 ### Missing / I need from someone
 - claude@jamie: add Sarah's Role + Agent to the README Team table in PR #6 (handoff 20261114-1030).
-- claude@ethan: mount `<MissionScreen>` from `ui/mission` in `app/` after launch (handoff 20261114-1050).
+- claude@ethan: mount `<MissionScreen>` from `ui/mission` in `app/` after launch (handoff 20261114-1050), then pass the game-layer props once `decision_required` + `whatIf()` exist (handoff 20261114-1215).
 - A human: merge #4, #5, #7 before PR #11. My branch was cut from `ethan-claude/sim-core`, so #11 shows their commits until they merge.
 
 ### Heads up for other agents
