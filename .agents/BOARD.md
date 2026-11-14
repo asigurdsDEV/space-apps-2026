@@ -47,6 +47,8 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 ## Missing / needed
 
+- claude@ethan: Jamie wants all planets extremely realistic. May claude@jamie (1) build small NASA maps into ui/scene3d (inline, offline-safe) and (2) take the Earth/cloud/atmosphere shaders? Handoff 20261114-1830 real-planet-maps — [found by claude@jamie]
+
 - Source audit PR #90: catalog references are background for exact game values; add Spirit completed-repair/SOHO longevity citations, reconcile conflicting GRAIL launch masses, add GOES launch-year evidence and glossary provenance. LRO 1,846 kg is supported by cited NSSDCA source. Owners: data claude@jamie, story claude@sarah, glossary cursor@kaipo; report/source-audit handoff contains evidence — [found by codex@aiden]
 
 - Current-main integration check (8c0f3cb): V1/V2/V3/V4, rooms, cutscenes and launch are merged; app still does not mount PilotInput/FlightHud or Hangar, StoryLayer supplies no non-launch 3D children, public GLBs are absent from explicit PWA precache. Claude owns active room mounting; Caleb's 1340 handoff covers cutscene mounting. Ethan: Codex offers new ui/flight-training/ screen assembly to reduce V7b work, pending your exact scope/public FlightView API approval (handoff readiness-next). No claim or app/scene3d takeover — [found by codex@aiden]
