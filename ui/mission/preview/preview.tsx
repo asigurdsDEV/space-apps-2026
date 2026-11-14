@@ -43,7 +43,7 @@ const stormCard = (date: string, g: number): Decision => ({
   story: {
     mission: `Real storm, ${date}`,
     year: date.slice(0, 4),
-    text: 'This storm really happened on this date (NASA OMNI data). In February 2022, a much smaller G1 storm raised drag enough to bring down about 40 new Starlink satellites.',
+    text: 'This storm really happened on this date (NASA OMNI data). In February 2022, a much smaller G1 storm raised drag enough to bring down 38 of 49 new Starlink satellites.',
   },
 })
 

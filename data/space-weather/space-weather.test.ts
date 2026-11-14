@@ -13,7 +13,7 @@ describe('space weather dataset (NASA OMNI)', () => {
   it('matches famous storms', () => {
     expect(weatherOn('2003-10-30')).toMatchObject({ storm_g: 5, kp_max: 9 }) // Halloween storms
     expect(weatherOn('2024-05-10')?.storm_g).toBe(5) // Gannon storm
-    expect(weatherOn('2022-02-03')?.storm_g).toBe(1) // the storm that downed ~40 new Starlinks
+    expect(weatherOn('2022-02-03')?.storm_g).toBe(1) // the storm that downed 38 of 49 new Starlinks
     expect(weatherOn('2019-06-15')?.storm_g).toBe(0) // quiet solar minimum
   })
 

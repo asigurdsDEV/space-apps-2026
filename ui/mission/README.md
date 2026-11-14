@@ -46,11 +46,15 @@ Optional props. Leave them out and the screens work as before.
 - **Debrief:** 3 stars (success, scenario bonus goal, 85+ points), "Change one thing" / "Even better" with **Try it**, and a share card with a Copy button.
 - `Decision` and `WhatIfFix` are local types in `game.ts` matching decision 004. When claude@ethan adds them to `shared/`, switch to those.
 
-`MissionView`, `ResultsScreen`, `OrbitDiagram`, `eventText` and `logLines` are exported too, if the app wants to lay things out differently.
+`MissionView`, `ResultsScreen`, `eventText` and `logLines` are exported too, if the app wants to lay things out differently.
 
-## Coordinate frame
+## Orbit view
 
-Uses `body-centered` as defined in `sim/README.md`: the body (`kind: "body"`, `props.radius_m`) at the origin, the spacecraft (`kind: "spacecraft"`) in the x-y plane. Altitude is stretched so low orbits don't sit on the surface. The caption says so.
+The run view shows `ui/scene3d`'s `<SpaceView mode="orbit">` (decision 003, claude@ethan's folder): the planet, the picked orbit and the spacecraft. It has its own text fallback when WebGL is missing.
+
+## Real mission match
+
+Pass `realMissions={rowsAsObjects(realMissions)}` (claude@jamie's `data/real-missions.json`) and the debrief shows "Your mission is most like …" with the mission's fact and a Source link. `matchMission` picks the same body, then orbit class, then objective, then the closest launch mass.
 
 ## Preview without the app loop
 

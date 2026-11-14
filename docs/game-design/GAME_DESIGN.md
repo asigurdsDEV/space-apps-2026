@@ -9,7 +9,7 @@ This is the **basis every screen builds toward**. It doesn't replace GAME_PLAN.m
 
 ## 1. The pitch (say this to a judge)
 
-> **You're the Flight Director.** NASA-style mission calls come in: map crops from orbit, relay signals from the Moon, watch weather on Mars. Design the spacecraft, then win a **GO from every flight controller**, each of whom checks a real constraint. Launch, and **keep it alive** when things break, with choices real missions faced: Kepler's broken reaction wheels, Galileo's stuck antenna, the storm that took down 40 satellites. The debrief shows **exactly what would have saved your mission** and **which real NASA mission yours resembles**.
+> **You're the Flight Director.** NASA-style mission calls come in: map crops from orbit, relay signals from the Moon, watch weather on Mars. Design the spacecraft, then win a **GO from every flight controller**, each of whom checks a real constraint. Launch, and **keep it alive** when things break, with choices real missions faced: Kepler's broken reaction wheels, Galileo's stuck antenna, the storm that took down 38 satellites. The debrief shows **exactly what would have saved your mission** and **which real NASA mission yours resembles**.
 
 One mission takes **5–8 minutes**. Failing takes 2 seconds to recover from.
 

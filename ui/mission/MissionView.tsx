@@ -16,7 +16,7 @@ import {
   str,
 } from './format'
 import { STORM_LABEL, type Decision, type SpaceWeather } from './game'
-import { OrbitDiagram } from './OrbitDiagram'
+import { SpaceView } from '../scene3d'
 
 /** Speed buttons. The multiplier goes straight into `set_speed`; the app decides what 1x means. */
 export const SPEEDS = [1, 5, 20, 60] as const
@@ -65,8 +65,6 @@ export function MissionView({
   const missionDays = num(m, 'mission_days')
   const missionDay = num(m, 'mission_day')
   const cruiseDays = num(m, 'cruise_days')
-  const orbit = state.entities.find((e) => e.kind === 'orbit' && e.id === state.params.orbit)
-  const targetAltitudeKm = typeof orbit?.props.altitude_km === 'number' ? orbit.props.altitude_km : undefined
 
   const scienceGoal = num(m, 'science_goal')
   const science = num(m, 'science_score')
@@ -158,7 +156,7 @@ export function MissionView({
       )}
 
       <div className="mv-body">
-        <OrbitDiagram entities={state.entities} targetAltitudeKm={targetAltitudeKm} />
+        <SpaceView state={state} mode="orbit" className="mv-space" />
 
         <div className="mv-panels">
           <div className="mv-card">
