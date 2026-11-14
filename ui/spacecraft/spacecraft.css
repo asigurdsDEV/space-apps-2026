@@ -1,0 +1,40 @@
+/* Spacecraft drawing. Every class starts with .sc. Lines take the page's text color (currentColor), so it
+   reads on light and dark pages; set --sc-solar / --sc-rtg / --sc-battery / --sc-instrument to recolor parts. */
+
+.sc {
+  display: block;
+  width: 100%;
+  height: auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.sc-bus,
+.sc-dish {
+  fill: currentColor;
+  fill-opacity: 0.12;
+}
+.sc-bus--none {
+  fill: none;
+  stroke-dasharray: 5 4;
+}
+.sc-panel {
+  fill: var(--sc-solar, #3f7fd6);
+}
+.sc-rtg {
+  fill: var(--sc-rtg, #d9822b);
+}
+.sc-battery {
+  fill: var(--sc-battery, #2fa36b);
+}
+.sc-instrument {
+  fill: var(--sc-instrument, #a66bd4);
+}
+.sc-text {
+  fill: currentColor;
+  stroke: none;
+  font: 13px system-ui, sans-serif;
+  text-anchor: middle;
+}
