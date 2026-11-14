@@ -61,6 +61,11 @@ function engines(g: THREE.Object3D, s: number, [bx, by, bz]: Size, n: number, sm
   const m = mats()
   const R = 0.19 * Math.min(bx, by)
   const c = V(0, -0.27 * by, -bz / 2)
+  if (n > 0) {
+    // Service panel on the Sun face: the capped valves the propellant tank was filled through.
+    put(g, box(0.16 * s, 0.07 * s, 0.006 * s), m.alu, 0.36 * bx, -0.4 * by, bz / 2 + 0.003 * s)
+    for (const x of [-1, 0, 1]) put(g, cyl(0.012 * s, 0.012 * s, 0.03 * s, 8), x ? m.gold : m.red, 0.36 * bx + x * 0.045 * s, -0.4 * by, bz / 2 + 0.018 * s, Math.PI / 2)
+  }
   put(g, cyl(R, R, 0.05 * s, 40, true), m.greyDouble, c.x, c.y, c.z - 0.025 * s, Math.PI / 2)
   put(g, new THREE.TorusGeometry(R, 0.01 * s, 6, 40), m.alu, c.x, c.y, c.z - 0.05 * s)
   put(g, cyl(R * 0.97, R * 0.97, 0.008 * s, 32), m.goldMLI, c.x, c.y, c.z - 0.004 * s, Math.PI / 2)

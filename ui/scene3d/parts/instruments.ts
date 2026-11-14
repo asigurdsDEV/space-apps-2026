@@ -239,7 +239,7 @@ export function sar(g: THREE.Object3D, D: number, s: number) {
   ref.updateMatrix()
   // Boom: four hinges, as on NISAR's 9 m boom, from the bus to the rim of the drum.
   const root = V(0.03 * s, -0.03 * s, 0.1 * D)
-  const rim = V(-R * Math.cos(Math.asin(0.2)), back, 0.2 * R).applyMatrix4(ref.matrix)
+  const rim = V(R * Math.cos(Math.asin(0.2)), back, 0.2 * R).applyMatrix4(ref.matrix)
   const elbow = root.clone().lerp(rim, 0.5).add(V(0, 0.02 * D, 0))
   const knuckle = new THREE.SphereGeometry(0.014 * D, 8, 6)
   const path = [root, root.clone().lerp(elbow, 0.5), elbow, elbow.clone().lerp(rim, 0.5), rim]

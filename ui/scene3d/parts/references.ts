@@ -79,8 +79,8 @@ export const BUS: Record<'smallsat' | 'medium' | 'flagship', { size: Size3; dry_
   smallsat: { size: [0.95, 1.09, 0.76], dry_kg: 201 },
   // MAVEN: 2.3 x 2.3 m and 2 m high, 809 kg dry (NSSDCA, press kit).
   medium: { size: [2.3, 2.0, 2.3], dry_kg: 809 },
-  // MRO: 6.5 m tall with its 3 m dish, 1,031 kg dry (press kit). The body box is est. from that.
-  flagship: { size: [2.5, 3.2, 2.5], dry_kg: 1031 },
+  // MRO: 6.5 m tall with its 3 m dish, 1,031 kg dry (press kit). The body box is est. from photos: the dish is about 1.4 x as wide as the bus.
+  flagship: { size: [2.1, 3.0, 2.1], dry_kg: 1031 },
 }
 
 export interface WingRef { power_w: number; length: number; width: number; panels: number; mount: 'hinge' | 'drive' | 'yoke'; cant: number }
