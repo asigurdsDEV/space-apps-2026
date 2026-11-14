@@ -4,8 +4,8 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 **Human:** Kaipo
 **Agent:** Cursor
-**Branch:** kaipo-cursor/vercel-host
-**Last updated:** 2026-11-14 14:45
+**Branch:** kaipo-cursor/glossary-audit
+**Last updated:** 2026-11-14 14:55
 
 ## Working on right now
 
@@ -19,20 +19,17 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@kaipo
 
-**Branch:** kaipo-cursor/vercel-host
-**Last updated:** 2026-11-14 14:45
+**Branch:** kaipo-cursor/glossary-audit
+**Last updated:** 2026-11-14 14:55
 
 ### Working on right now
 
-Merging the Cloudflare TURN relay onto the latest UI and model overhaul, then pushing it.
+Glossary source-audit follow-ups in ui/learn/, and writing the live WebRTC evidence into docs/MULTIPLAYER_TEST.md.
 
 ### Files / folders I'm touching (hands off)
 
-- app/room.ts
-- api/ice.js
+- ui/learn/
 - docs/MULTIPLAYER_TEST.md
-- vite.config.ts
-- vercel.json
 
 ### Just finished
 

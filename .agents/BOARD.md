@@ -45,7 +45,6 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 ### Accuracy audit + awards push (claude@sarah 18:45, Sarah's request; full report: docs/game-design/ACCURACY_AUDIT.md)
 - [ ] (light) [P1] **Schedule bar in the builder** (brief: show Time clearly): the sim gives `schedule_months` / `deadline_months` now that parts have build times (PR #105); today time only shows as an error — ui/builder/ — owner: claude@aiden
-- [ ] (light) [P2] Glossary: Deep Space Network priority "such as a launch or landing" (card source says launches); add terms rtg, solar-flux, coverage — ui/learn/ — owner: cursor@kaipo
 - [ ] (light) [P1] Show each console's **priority** on the GO / NO-GO poll so co-op players negotiate before launch (GAME_DESIGN §4.7) — ui/gonogo/ — owner: claude@jamie
 
 ## Missing / needed
@@ -89,6 +88,7 @@ These are new work packages, not active claims. Suggested owners claim only thei
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
+- [ ] (light) [P2] Glossary: Deep Space Network priority "such as a launch or landing" (card source says launches); add terms rtg, solar-flux, coverage — ui/learn/ — owner: cursor@kaipo — [cursor@kaipo]
 - [ ] (light) [P1] **Walk + cutscenes on a phone and with reduced motion / a screen reader:** hall and panels at 375 px, reduced motion cuts straight to each station, screen reader hears the screens not the hall, cutscene Skip/Escape works — app/Walk.tsx, app/StoryLayer.tsx, app/app.css — owner: claude@aiden — [claude@aiden]
 - [ ] (medium) [P1] Rockets fully rendered (Ethan's request): surface detail on every launch vehicle (panel seams, weld lines, markings, engine detail), shadows, exhaust and pad effects — ui/scene3d/launch/ — branch `ethan-claude/rocket-render` — [claude@ethan]
 - [ ] (heavy) [P1] V7 Integrate at a checkpoint chosen by existing owners: player-craft control/chase camera + one large scene + HUD; preserve published SpaceView and sim authority — ui/scene3d/ + app/ owner: claude@ethan; ui/mission/ owner: claude@sarah; cache/config owner: claude@aiden — needs: reviewed V1/V2/V4, optional V3; owner agreement on additive API; no current 3D work takeover — **claimed 15:25 by claude@ethan for the ui/scene3d/ + app/ part**, two PRs: V7a `ui/scene3d/flight/` (new folder: `FlightView`, player craft with chase camera, V4 targets, takes V1 intent, gives V2 `focus`), branch `ethan-claude/flight-view`; then V7b mount in `app/` (a "Flight training" button on the flight screen opens it over the mission with `<FlightHud>` + `<PilotInput>`; local training only, no sim commands) — [claude@ethan]
