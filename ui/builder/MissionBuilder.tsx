@@ -5,6 +5,8 @@ import {
   ROLE_TITLES,
   budgetBars,
   callText,
+  chanceText,
+  type Chance,
   changedBy,
   commandAccess,
   playerLabel,
@@ -38,6 +40,8 @@ export interface MissionBuilderProps {
   players?: Player[]
   /** This browser's player (Session snapshot `me`). */
   me?: Player
+  /** Risk meter: test flights of this design with random failures (app/ runs them with sim `successRate`). Leave out to hide. */
+  chance?: Chance
   /** shortcut: unused since parts come from state.entities; kept so app/ code written against the first API still compiles. Remove once app/ stops passing it. */
   datasets?: Dataset[]
 }
@@ -49,7 +53,7 @@ const NO_PLAYERS: Player[] = []
 /** A glossary tooltip when the word has one (ui/learn), plain text otherwise. */
 const Label = ({ id, children }: { id?: string; children: string }) => (id ? <Term id={id}>{children}</Term> : <>{children}</>)
 
-export function MissionBuilder({ state, send, slots = DEFAULT_SLOTS, players = NO_PLAYERS, me }: MissionBuilderProps) {
+export function MissionBuilder({ state, send, slots = DEFAULT_SLOTS, players = NO_PLAYERS, me, chance }: MissionBuilderProps) {
   const coop = players.length > 1
   // Who changed what: compare each new params snapshot with the last one.
   const prevParams = useRef(state.params)
@@ -225,6 +229,29 @@ export function MissionBuilder({ state, send, slots = DEFAULT_SLOTS, players = N
             </div>
           </div>
         ))}
+
+        {chance && chance.rate !== null && (
+          <div className={`mb-chance${chance.done ? '' : ' is-testing'}`}>
+            <div className="mb-bar-head">
+              <span>Chance of success</span>
+              <span>{chance.done ? chanceText(chance.rate) : `testing… ${chance.flown} of ${chance.runs}`}</span>
+            </div>
+            <div
+              className="mb-track"
+              role="meter"
+              aria-label="Chance of success"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={Math.round(chance.rate * 100)}
+              aria-valuetext={chance.done ? chanceText(chance.rate) : `Testing, ${chance.flown} of ${chance.runs} flights`}
+            >
+              <div className="mb-fill" style={{ width: `${chance.rate * 100}%` }} />
+            </div>
+            <p className="mb-muted mb-chance-note">
+              {chance.done ? `${Math.round(chance.rate * chance.runs)} of ${chance.runs} test flights succeeded` : 'Flying test missions'} with random failures, like a real launch.
+            </p>
+          </div>
+        )}
 
         {(errors.length > 0 || warnings.length > 0) && (
           <ul className="mb-issues">
