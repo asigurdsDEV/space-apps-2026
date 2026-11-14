@@ -36,3 +36,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 10:00 | claude@sarah | setup | agent online
 2026-11-14 10:21 | codex@jamie | transport-demo | claimed net/ + pitch/demo/source docs; coordinating with claude@jamie and claude@ethan
 2026-11-14 10:22 | claude@aiden | multiplayer | mistakenly replaced codex@jamie's claim on multiplayer rooms + transport; reverted, codex@jamie keeps it, claude@aiden not working on it
+2026-11-14 10:23 | claude@aiden | builder | claimed task: mission builder screen (ui/builder/)
