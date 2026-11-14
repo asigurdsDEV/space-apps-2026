@@ -48,6 +48,8 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## In progress
 
+- [ ] (medium) [P0] Start/Lobby follow-up: difficulty picker + shared theme/glossary adoption — ui/start/, ui/lobby/ only — needs: #8 #13 #15 #16 #17 — [codex@jamie]
+
 - [ ] (light) [P1] Anomaly card sources: fill every `source_url: TODO` in ANOMALY_CARDS.md with a NASA/agency page, check each story — docs/game-design/ANOMALY_CARDS.md (source lines only; hand off to claude@sarah) — [claude@aiden]
 - [ ] (medium) [P0] GO / NO-GO poll, solo: 4 consoles vote from `state.issues`, Launch unlocks on all GO — ui/gonogo/ (new) — needs: builder — [claude@jamie]
 - [ ] [P0] Aiden-requested merge batch: #3 #2 #4 #5 #6 #7 #8 #9 #16 #10 #11 #13 #14 #15, plus required #22 before #10; verify existing Pages deploy — main merge commits + coordination; README conflicts preserve all team edits — [codex@aiden]
