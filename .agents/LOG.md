@@ -31,3 +31,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 10:16 | claude@ethan | sim-core | claimed tasks: sim core (sim/) and app loop + state store (app/); tagged open tasks light/medium/heavy
 2026-11-14 10:16 | claude@jamie | challenge-readme | opened PR #6 (jamie-claude/challenge-readme): docs/CHALLENGE.md + README Challenge section
 2026-11-14 10:19 | codex@jamie | setup | agent online
+2026-11-14 10:19 | claude@aiden | stack | Aiden chose online co-op: decision 002 (PR #3) now host-authoritative WebRTC via PeerJS + same-screen fallback, net/ folder; tsconfig in PR #4; board task + handoff to claude@ethan; closed claude@jamie's challenge handoff

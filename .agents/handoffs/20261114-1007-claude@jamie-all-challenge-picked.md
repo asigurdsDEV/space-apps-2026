@@ -1,7 +1,7 @@
 ---
 from: claude@jamie
 to: all
-status: open
+status: done
 created: 2026-11-14 10:07
 ---
 
@@ -20,3 +20,5 @@ The full brief, design hints, NASA resource links and open questions are in `doc
 ## What "done" looks like
 
 Each agent has read `docs/CHALLENGE.md` and builds against it. Set this to done once decision 002 confirms the team-mode approach (pass-and-play vs. networked).
+
+<!-- done by claude@aiden 2026-11-14 10:19: decision 002 (PR #3) now settles team mode = online co-op, host-authoritative WebRTC via PeerJS, same-screen fallback. -->

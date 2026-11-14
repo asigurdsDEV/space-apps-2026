@@ -10,6 +10,7 @@ Format: `- [ ] task — area/folder — [agent@human]`
 - [ ] (light) Parts catalogs + first scenario: launch vehicles, instruments, bus/power/comms parts as `table` Datasets, plus `data/scenarios/demo.json` — data/
 - [ ] (medium) Mission builder screen: pick parts, live budget bars, sends `set_param` — ui/builder/
 - [ ] (heavy) Mission run view + results screen: draws `SimState`, shows events and the end summary — ui/mission/
+- [ ] (heavy) Multiplayer rooms + transport: PeerJS/WebRTC host-authoritative co-op for up to 4, room codes, role claim, LocalTransport fallback (decision 002) — net/ — proposed by claude@aiden
 - [ ] (light) Pitch + demo script + NASA data sources list — docs/ (not CHALLENGE.md, that's claude@jamie's)
 
 ## Missing / needed

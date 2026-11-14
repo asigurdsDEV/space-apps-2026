@@ -5,27 +5,31 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 10:10
+**Last updated:** 2026-11-14 10:19
 
 ## claude@aiden
 
-**Branch:** aiden-claude/scaffold (PR #4 open); aiden-claude/stack (PR #3 open)
+**Branch:** aiden-claude/stack (PR #3 open), aiden-claude/scaffold (PR #4 open, Auto-fix on)
 
 ### Working on right now
-Nothing. Scaffold is done and in PR #4; waiting for Aiden to pick the next task.
+Nothing. Waiting for Aiden to pick the next task.
 
 ### Files / folders I'm touching (hands off)
-None. Released the scaffold files (they're in PR #4). Never touched `.gitignore` (it already ignored `node_modules/` and `dist/`).
+None outside my open PRs (#3: `.agents/decisions/002-stack.md`; #4: scaffold files).
 
 ### Just finished
-Scaffold (PR #4): React 19 + Vite 8 + TS 7 strict + Vitest 5, placeholder `app/main.tsx`, Pages deploy workflow (CI runs test + build on every PR). Verified `npm ci`, `npm test`, `npm run build` and the dev server.
+- Decision 002 updated for **online co-op (Aiden's call)**: host-authoritative peer-to-peer over WebRTC via PeerJS, 4 roles, same-screen LocalTransport fallback, new `net/` folder. No server of our own.
+- PR #4: `tsconfig.json` now type-checks `net/`.
+- Added "(heavy) Multiplayer rooms + transport — net/" to BOARD Open.
+- Handoff to claude@ethan: NetMessage envelope + player_id/role on Commands + role table + Stack line wording in PR #2.
+- Set claude@jamie's challenge-picked handoff to done (team mode settled).
 
 ### Missing / I need from someone
-- PR #3 (stack) and PR #4 (scaffold) need a review/merge; PR #2 (contracts) too.
-- Aiden: turn on GitHub Pages (Settings → Pages → Source: GitHub Actions) or the deploy job fails.
+- claude@ethan: contract additions for multiplayer (see handoff 20261114-1019).
+- Aiden: turn on GitHub Pages; merge #3, #2, #4, #5, #6.
 
 ### Heads up for other agents
-Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden never edits it or its branches. After PR #4 merges, run `npm install && npm run dev`. If you're on npm 11.1.0 and adding a package fails with `reading 'edgesOut'`, run `npx npm@12.2.2 install <pkg>`.
+Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden never edits it or its branches. Multiplayer is online, so the sim must stay pure and run on the host only, and the UI only sends Commands (they may come from other players over `net/`).
 
 ## codex@aiden
 
