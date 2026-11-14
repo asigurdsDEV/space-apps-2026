@@ -12,7 +12,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** aiden-claude/app-walk (PR #87); aiden-claude/hangar (PR #80); aiden-claude/story-app (PR #74, after #70); aiden-claude/story-popouts (PR #70); aiden-claude/launch-visible (PR #68); aiden-claude/debrief-fixes (PR #65); aiden-claude/risk-meter (PR #57); aiden-claude/what-if (PR #55); aiden-claude/app-safety (PR #53); aiden-claude/bundle-check (PR #54); aiden-claude/briefing-bonus (PR #49); aiden-claude/mobile-budgets (PR #46); aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-Nothing claimed. Storm card is claude@sarah's (claude@ethan's correction on my 2030 handoff).
+Walk-in spacecraft (board P0, taken at Aiden's request 15:30), new folder `ui/interior/` + the flight lines in `app/World.tsx`, branch `aiden-claude/interior`. Handoff notes kept current in `ui/interior/README.md` so anyone can continue.
 
 ### Files / folders I'm touching (hands off)
 PR #87: `app/Walk.tsx`, `app/Walk.test.tsx`, the `<Walk>` / `<WalkTo>` lines in `app/App.tsx`, the walk block in `app/app.css`. Otherwise none outside my open PRs #65 (`sim/analysis.ts`, one argument in `app/App.tsx` Flight) #68 (`ui/builder/builder.css`) #70 (`ui/story/`) and #80 (`ui/hangar/`), #74 (`app/StoryLayer.tsx`, `<StoryLayer>` lines + `online`/clock hold in `app/App.tsx`).
@@ -54,20 +54,20 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** main (done coordination); aiden-codex/offline-qa (PR #101)
-**Last updated:** 2026-11-14 14:36
+**Branch:** aiden-codex/desktop-world-qa
+**Last updated:** 2026-11-14 15:32
 
 ### Working on right now
-Offline browser QA complete, PR #101. No new implementation claimed. Ethan has both V7 scene and app mount; earlier optional UI assembly offer withdrawn to avoid duplicate ownership.
+Independent desktop acceptance of the published #107/#114 first-person build: keyboard/mouse, E interactions, reach/role restrictions, Escape/focus recovery, design-to-debrief. Claude keeps deployment, racks, FPS/hangar/app; Caleb keeps the first-person QA plan.
 
 ### Files / folders I'm touching (hands off)
-No active source edits. PR #101: docs/qa/offline-cache.md only, review fixes mine. Own coordination only. Claude section/branches and unrelated docs/CHALLENGE 2.md untouched.
+`docs/qa/desktop-world.md` (new evidence report) only. Owner source is read-only in an isolated exported build. Own status section, own board/log lines and new handoff. No Claude branches/section, deployment config, ui/fps/hangar/scene3d/app or docs/CHALLENGE 2.md edits.
 
 ### Just finished
-Fresh-profile Chrome production preview: cached Start reloads with origin stopped; all six public files incl. three valid GLBs pass. Uncached negative control rejects. Offline first-use lazy Hangar/canvas/SpaceView imports fail and Builder hits error boundary; online control succeeds with two canvases. Same failure without page-level offline emulation. Build and 3 focused Vitest tests pass. Report separates preview finding from unverified live Pages impact.
+Desktop-first direction pushed. Optional touch input PR #110 complete with green CI; no further mobile development or phone acceptance planned. Earlier source audit PR #90 and offline QA PR #101 are complete.
 
 ### Missing / I need from someone
-Claude Aiden/PWA owner: reproduce local offline lazy-import failure and compare Pages behavior; board + handoff carry exact steps. Ethan: V7 integration; Kaipo: physical venue rehearsal. Remaining data/provenance tasks stay with owners. Sarah's source fixes and real-storm integration are now on main; no competing storm work requested.
+FPS/hangar/app owners receive reproduced desktop findings via handoff; no source ownership transfer. Full first-person flight remains dependent on Ethan interior; Classic/screen-reader fallback remains required. Offline lazy-import report remains with PWA owner.
 
 ### Heads up for other agents
-QA is complete, offline gameplay is not signed off. Vary: Origin/request matching is only a diagnostic lead; root cause unconfirmed. No physical phone, installed-PWA upgrade or V7 acceptance tested. Sol remains appropriate for QA; Astra for new model/design work.
+This is independent desktop evidence, not a competing controller or Caleb's docs/qa/first-person.md plan. No new assets/dependencies/model work; Sol is suitable.

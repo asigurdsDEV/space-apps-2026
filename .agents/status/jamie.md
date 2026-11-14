@@ -5,18 +5,18 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 13:11
+**Last updated:** 2026-11-14 15:02
 
 
 ## claude@jamie
 
-**Branch:** jamie-claude/real-planet-maps (PR #102 open); jamie-claude/moon-mars-shaders (PR #89 merged); jamie-claude/pilot-training (PR #73 merged); jamie-claude/card-counts (PR #67 open); jamie-claude/gonogo-sound (PR #61 open); jamie-claude/real-missions (PR #50 open); jamie-claude/bonus-goal (PR #41 open); jamie-claude/hard-mode (PR #36 open); jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
+**Branch:** jamie-claude/sunlight-column (PR #108 open); jamie-claude/real-planet-maps (PR #102 merged); jamie-claude/moon-mars-shaders (PR #89 merged); jamie-claude/pilot-training (PR #73 merged); jamie-claude/card-counts (PR #67 open); jamie-claude/gonogo-sound (PR #61 open); jamie-claude/real-missions (PR #50 open); jamie-claude/bonus-goal (PR #41 open); jamie-claude/hard-mode (PR #36 open); jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
 
 ### Working on right now
 Nothing claimed.
 
 ### Files / folders I'm touching (hands off)
-- `ui/scene3d/shaders.ts`, `ui/scene3d/maps/`, the planet/cloud/atmosphere/home material lines in `world.ts` until PR #102 merges
+- `data/catalogs/orbits.json`, `data/scenarios/mars.json` (solar), `data/README.md` until PR #108 merges
 - `data/index.ts`, `data/README.md`, `tests/playthrough.test.ts` until PR #67 merges
 - `ui/gonogo/` until PR #61 merges
 - `data/real-missions.json` + `realMissions` in `data/index.ts` until PR #50 merges
@@ -27,6 +27,7 @@ Nothing claimed.
 - `docs/CHALLENGE.md`, `docs/README.md`, and the `## Challenge` section + Team table of `README.md` until PR #6 merges
 
 ### Just finished
+- **[P0] Sunlight column (PR #108):** `solar_flux_factor` on every orbit (Mars 0.43); the Mars scenario starts with the large solar array so its reference design still wins. 461 tests; 467 with PR #105.
 - **[P1] Realistic planets from NASA maps (PR #102):** real Earth (Blue Marble day, Black Marble city lights), Moon (LRO) and Mars (Viking) maps inline in `ui/scene3d/maps/` (199 kB, credits README), procedural relief on top and as fallback, real cloud belts, orange/blue twilight air; fixed east/west of the PR #89 landmarks. tsc clean, 458/458, build OK, browser-checked desktop + phone.
 - **[P2] Moon/Mars surfaces + cruise view (PR #89):** real maria, craters and rays on the Moon; Olympus Mons, Tharsis, Valles Marineris, Hellas and polar caps on Mars (shaders only); `cruise` view mode with Earth at real size ratio, transfer arc and "Cruise to Mars · 210 days" caption. tsc clean, 441/441, build OK, checked in the browser at desktop and phone size.
 - **[P1] V4 Training route (PR #73, merged by Ethan):** `data/pilot-training/` with 3 targets (hurricane, wildfire, TDRS relay), feedback texts, a sourced NASA fact each, `interact()` + `routeComplete()`. Any design can finish (missing instrument → `partial` with a hint). tsc clean, 364/364. Handoffs: V2 HUD (claude@sarah), V7 scene (claude@ethan).
@@ -57,29 +58,20 @@ Nothing claimed.
 
 ## codex@jamie
 
-**Branch:** main (coordination); jamie-codex/mission-entry (PR #72)
-**Last updated:** 2026-11-14 13:11
+**Branch:** main (coordination); jamie-codex/sunlight-fix (PR #109)
+**Last updated:** 2026-11-14 15:07
 
 ### Working on right now
-
-Jamie explicitly asked Codex to take over Claude Jamie after its usage limit. Verified Sarah already claimed the audit catalog/scenario work; handoff 1446 asks for exact remaining/released scope, especially sunlight column + Mars balance. Main ecbada6 still has the audited bad values. No overlapping production edits. Codex is now Jamie's contact for remaining audit/data/gonogo responsibilities.
+Audit takeover verification complete, PR #109. Claude Jamie published #108 during work; adopted it instead of duplicating the fix. Sarah #105 and Claude #108 tested together.
 
 ### Files / folders I'm touching (hands off)
-
-PR #86: docs/PITCH.md, docs/DEMO.md, docs/NASA_SOURCES.md (review fixes only). Branch jamie-codex/demo-story. PR #72 merged; previous scope was `ui/start/`, `ui/lobby/`, `ui/tutorial/`; review/fixes remain mine until merge. Own BOARD/status/LOG/handoffs only on main. No app/data/sim/shared/theme/scene3d edits.
+No active production edits. Review fixes for PR #109: data/data.test.ts and tests/playthrough.test.ts. Its dependency commits are the original #105/#108 commits.
 
 ### Just finished
-
-PR #86: 30-second shot list + 63-word narration, First Light reference setup, actual OMNI provenance/provider credits, real-mission/card distinctions. Weather is display-only in checked source; recording/timing evidence remains unfilled. 35 playthrough/weather tests pass. Submission handoff sent to Caleb and Claude Jamie.
-
-PR #72: default/remembered name; PROGRAM-ordered mission route; local SVG Earth/Moon/Mars and spacecraft art; illustrated lobby consoles; modal builder tour with focus entry/return, Tab containment, Escape/Skip, replay and remembered dismissal. 363 tests, TypeScript/build and size check pass (129.5 kB gzip / 150 kB). Browser checked desktop/390px layouts, light/dark visuals, name persistence, lobby claim/release and guest controls, tour keyboard/phone behavior. No overflow in checked phone views.
-
-PR #48 merged: transport disconnect/rejoin reliability; 316 tests/build at completion. Prior Start/Lobby/daily/tutorial PRs merged and mounted.
+471 tests and TypeScript/production build pass with #105/#108 together. Added catalog sunlight regression and real-sim Mars power test: large starting array is launchable, medium array gives 266.6 W and a power error. Existing reference wins, cards and Hard mode pass. Corrected the old data balance check to include sunlight.
 
 ### Missing / I need from someone
-
-Ethan: review/merge PR #72. No app wiring required; exported props unchanged. Four-device venue rehearsal remains Kaipo's; no physical-device or screen-reader run in this chunk. Interactive 3D/story integration remains with assigned owners.
+Ethan: review/merge #105 then #108 then #109; fixes are not yet verified on live main. Browser gameplay not checked this chunk.
 
 ### Heads up for other agents
-
-Claude Jamie: PROGRAM handoff completed, all three missions remain accessible; no data edits or assignment to you. Caleb: dialog keyboard handoff completed and browser verified. Latest all-handoff has evidence and remaining boundaries. SVG/CSS assets add no dependencies or remote downloads.
+Jamie authorized takeover after Claude limit. Claude's completed #108 is preserved. Remaining short catalog labels and console priorities are still open; this PR is solely audit validation.
