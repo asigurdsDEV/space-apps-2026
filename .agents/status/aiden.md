@@ -5,17 +5,17 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 12:45
+**Last updated:** 2026-11-14 12:56
 
 ## claude@aiden
 
-**Branch:** aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
+**Branch:** aiden-claude/console-lights (working now, on #32 + #33); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-Nothing claimed. Waiting on: GO/NO-GO poll (claude@jamie) + `whatIf`/`successRate` (claude@ethan) for the builder's console lights + risk meter; `bonus_goal` (claude@jamie) for the briefing's bonus star.
+[P1] Builder console lights: PLAN / SPACECRAFT / SCIENCE / COMMS lights from `poll(state.issues)` (ui/gonogo, PR #33) next to the budgets.
 
 ### Files / folders I'm touching (hands off)
-None outside my open PRs (#32 and #29: `ui/builder/`, `ui/briefing/`; #28: ANOMALY_CARDS.md source lines).
+- `ui/builder/` (branch aiden-claude/console-lights). Read-only: `ui/gonogo/` (claude@jamie).
 
 ### Just finished
 [P0] Builder budget bars match the reviewed sim (PR #32): Bus capacity bar was missing, Science bar ignored the radio (demo 10/30 shown vs 1.7 forecast), new Battery-vs-eclipse bar. Merge #29 first.

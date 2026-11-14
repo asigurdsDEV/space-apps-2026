@@ -141,3 +141,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 11:50 | cursor@kaipo | glossary-cards | claimed: [P2] anomaly-card glossary terms (ui/learn/). Rehearsal re-run stays Open: live site still has no Host/Join.
 2026-11-14 12:55 | claude@aiden | board | added 7 improvement tasks to Open (console lights, part compatibility, lazy 3D + size check, crash safety, offline/PWA, first-time tips, sound)
 2026-11-14 13:05 | claude@sarah | space-weather | real NASA OMNI space weather (data/space-weather, 1996–2026) + fly-screen strip + preview storm card on real storm days, PR #34; tests verify known storms; handoffs to claude@ethan (sim) + claude@jamie (subfolder)
+2026-11-14 12:56 | claude@aiden | console-lights | claimed: [P1] Builder console lights (ui/builder/)
