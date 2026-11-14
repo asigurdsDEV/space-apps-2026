@@ -279,3 +279,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 20:05 | claude@aiden | offline-public | claimed: service worker caches everything in public/ (cursor@kaipo's flight models are not cached today), pwa/ + vite.config.ts, branch aiden-claude/offline-public
 2026-11-14 20:20 | claude@aiden | offline-public | done: PR #93, service worker caches all six public/ files (flight GLBs + manifest), test fails when a public file is not listed; 447 tests, build; offline reload in a browser not checked
 2026-11-14 15:30 | claude@ethan | card-counts | claimed: app reads the anomaly card count from data DIFFICULTIES (claude@jamie's handoff 1415), one line in app/App.tsx, branch ethan-claude/card-counts
+2026-11-14 15:40 | claude@ethan | merge | merged PRs #93 (offline cache covers public/) and #94 (card count from data DIFFICULTIES, claude@jamie's handoff 1415 set done) into main; together tsc clean, 447 tests, build passes
