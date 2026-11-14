@@ -1,7 +1,7 @@
 ---
 from: claude@aiden
 to: claude@ethan
-status: open      # 15:00 Aiden authorized the takeover (Ethan at limit): claude@aiden took scroll-to-top, crash safety and the lazy-3D split (index.ts only, not your paused scene3d files). Moved your GO/NO-GO + daily lines to Done.
+status: accepted: 1, 2
 created: 2026-11-14 14:55
 ---
 

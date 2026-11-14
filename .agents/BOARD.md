@@ -10,7 +10,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ### Playtest 14:15 (claude@aiden played main start → results; details in handoff 20261114-1420 playtest)
 - [ ] (light) [P1] Start: empty name silently blocks Start (placeholder looks filled) and the name is forgotten after Main menu; prefill or default it, and remember it — ui/start/ — owner: codex@jamie
-- [ ] (light) [P1] Start: scenario menu repeats every mission as (Easy)/(Hard) next to the Difficulty menu; show base scenarios only, one mission picker — ui/start/ + app/ — owners: codex@jamie (start), claude@ethan (app)
 - [ ] (light) [P1] Hidden glossary tooltips push past the right edge and add a horizontal scrollbar (builder budgets at 1024 px) — ui/learn/ — owner: cursor@kaipo
 
 ### Improvements (added by claude@aiden 12:55, ideas from playing the builder + the game design)
@@ -60,7 +59,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 ## In progress
 - [ ] (light) [P0] Scroll to top on every screen change (briefing and builder open ~350 px down) — app/ — owner: claude@ethan — taken over by claude@aiden at Aiden's request (claude@ethan at usage limit until ~16:20; handoff offer-app-tasks); does not touch his paused ui/scene3d branches — [claude@aiden]
 - [ ] (light) [P1] Crash safety for judging: an error boundary around each screen with "Something went wrong, back to the builder" instead of a white page — app/ — owner: claude@ethan — taken over by claude@aiden at Aiden's request (claude@ethan at usage limit until ~16:20; handoff offer-app-tasks); does not touch his paused ui/scene3d branches — [claude@aiden]
-- [ ] (light) [P1] Fast first load on phones: export a lazy-loading `SpaceView` from ui/scene3d (same props, `React.lazy` + Suspense) so three.js isn't in the first download for any screen — ui/scene3d/ — owner: claude@ethan (moved by claude@aiden at Aiden's request: 3D work is Ethan's; handoff lazy-3d) — taken over by claude@aiden at Aiden's request (claude@ethan at usage limit until ~16:20; handoff offer-app-tasks); does not touch his paused ui/scene3d branches — [claude@aiden]
 - [ ] (light) [P2] Results: hide the bonus star when the scenario has no known `bonus_goal` (playtest) — ui/mission/ — [claude@sarah]
 - [ ] (light) [P1] Debrief "Your mission is most like …" real NASA mission match (GAME_DESIGN §4.4, claude@jamie's PR #50 data) — ui/mission/ — [claude@sarah]
 - [ ] (light) [P1] 3D `SpaceView mode="orbit"` on the fly screen (claude@aiden handoff 1115), 2D diagram kept as the fallback — ui/mission/ — [claude@sarah]
@@ -92,6 +90,8 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Done
 
+- [x] (light) [P1] Fast first load on phones — ui/scene3d/ — [claude@ethan] — PR #51 on `main`: lazy `SpaceView`, first-load script 959 kB → 352 kB (113 kB gzipped); 3D chunk loads when the builder opens
+- [x] (light) [P1] Start: scenario menu repeated Easy/Hard — app/ — [claude@ethan] — fixed on `main`: app passes only the three base scenarios, the Difficulty menu picks the level
 - [x] (light) [P0] Put the GO / NO-GO poll (#33) between the builder's Launch and the mission — app/ — owner: claude@ethan — [claude@ethan] — done in 24247ed (Launch opens GoNoGoPoll); moved to Done by claude@aiden
 - [x] (light) [P0] Daily mission app integration: use dailyMissionForDate + apply descriptor seed before init, refresh at UTC midnight/resume — app/ — owner: claude@ethan — needs: #30 #31 (Start portion complete) — [claude@ethan] — done in 24247ed (dailyMissionForDate, UTC midnight refresh); moved to Done by claude@aiden
 - [x] (medium) [P1] Real missions table: ~10–15 real missions with sourced numbers for the debrief match — data/real-missions.json — owner: claude@jamie — [claude@jamie] — in PR #50: 12 missions (Earth 3, Moon 5, Mars 4), launch mass + year each from a cited NASA/NOAA page, tested no-URL-no-row; match helper handed to claude@sarah

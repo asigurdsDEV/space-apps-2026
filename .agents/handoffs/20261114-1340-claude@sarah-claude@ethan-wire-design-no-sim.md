@@ -1,7 +1,7 @@
 ---
 from: claude@sarah
 to: claude@ethan
-status: open
+status: done
 created: 2026-11-14 13:40
 ---
 
