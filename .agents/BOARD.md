@@ -14,8 +14,10 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 ### P0 — playable solo game on the live link
 
 ### P1 — online co-op + teaching
+- [ ] (light) [P1] Re-run the four-device multiplayer rehearsal once Host online and Join are on the live site. Fill docs/MULTIPLAYER_TEST.md again (venue wifi, then a phone hotspot if wifi fails) — docs/MULTIPLAYER_TEST.md — needs: app loop merged and Pages serving Start — owner: cursor@kaipo
 
 ### P2 — nice-to-haves from the brief
+- [ ] (light) [P2] Glossary terms the anomaly cards use: reaction wheel, high-gain antenna, drag, safe mode, South Atlantic Anomaly, Deep Space Network — ui/learn/ — needs: none — owner: cursor@kaipo
 
 ### Game design (decision 004, proposed, see docs/game-design/GAME_DESIGN.md §8)
 - [ ] (heavy) [P0] Anomaly cards in the sim: `decision_required` event + `resolve_decision` command, seeded draws, effects vocabulary, encode the deck from docs/game-design/ANOMALY_CARDS.md — sim/, shared/, CONTRACTS.md — owner: claude@ethan
@@ -43,6 +45,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - Sarah and Caleb have no agent set up yet (blank status files) — Sarah, Caleb — [found by claude@ethan]
 - README Team table: every Role is blank — everyone — [found by claude@ethan]
 - BOARD `## Open` is empty; Kaipo and Caleb have nothing to claim — need structured next tasks from repo lead — [found by cursor@kaipo] — handoff `20261114-1029-cursor@kaipo-claude@aiden-open-task-list.md`
+- Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
 
@@ -51,7 +54,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] (medium) [P0] GO / NO-GO poll, solo: 4 consoles vote from `state.issues`, Launch unlocks on all GO — ui/gonogo/ (new) — needs: builder — [claude@jamie]
 - [ ] [P0] Aiden-requested merge batch: #3 #2 #4 #5 #6 #7 #8 #9 #16 #10 #11 #13 #14 #15, plus required #22 before #10; verify existing Pages deploy — main merge commits + coordination; README conflicts preserve all team edits — [codex@aiden]
 
-- [ ] (light) [P1] Multiplayer rehearsal: 4 devices on venue wifi + a phone hotspot, write results + fallback call in docs/MULTIPLAYER_TEST.md — docs/MULTIPLAYER_TEST.md — needs: #9 + app wiring merged (human-heavy) — [cursor@kaipo] — script + fallback in PR #24; live four-device results still empty
 
 
 - [ ] (light) [P0] Live-site check after merges: play start → results on the Pages link on desktop + phone, add anything broken to Missing — no files — needs: Pages on + PRs merged — [cursor@caleb]
@@ -77,6 +79,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 ## Done
 
 - [x] (light) [P1] Anomaly card sources — docs/game-design/ANOMALY_CARDS.md (source lines only) — [claude@aiden] — in PR #28 (into main; #23 already merged): official NASA/JPL/ESA/NOAA/STScI page for all 8 cards + MCO line, each story checked; 3 wording notes for claude@sarah (handoff card-sources)
+- [x] (light) [P1] Multiplayer rehearsal: 4 devices on venue wifi + a phone hotspot, write results + fallback call in docs/MULTIPLAYER_TEST.md — docs/MULTIPLAYER_TEST.md — [cursor@kaipo] — script in PR #24 (merged); first attempt in PR #27: fail, live site and localhost are still the scaffold, no Host/Join. Venue re-run is a new Open task (owner: cursor@kaipo) once the app loop is live.
 - [x] [P0] Merge ready PRs — merge coordination — [claude@ethan] — 21 PRs on `main` (c1b8d30) by one fast-forward push of the rehearsed merge: #2 #3 #4 #5 #7 #8 #9 #10 #11 #12 #13 #14 #15 #16 #18 #19 #20 #22 #23 #24 #26; tsc clean, 178/178 tests, build + Pages deploy pass, https://asigurdsdev.github.io/space-apps-2026/ returns 200. Held: #6 (README conflict, claude@jamie), #25 (opened after the rehearsal, claude@sarah)
 - [x] (medium) [P0] Anomaly card UI on the fly screen + what-if / stars / share card on the debrief — ui/mission/ — [claude@sarah] — in PR #25 (after #11); lights up when sim emits `decision_required` + `whatIf()` lands (claude@ethan)
 - [x] (medium) Game design doc "GO / NO-GO": docs/game-design/ + decision 004 (proposed) — [claude@sarah] — in PR #23

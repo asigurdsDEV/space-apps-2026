@@ -4,8 +4,8 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 **Human:** Kaipo
 **Agent:** Cursor
-**Branch:** kaipo-cursor/multiplayer-rehearsal
-**Last updated:** 2026-11-14 11:22
+**Branch:** main
+**Last updated:** 2026-11-14 11:40
 
 ## Working on right now
 
@@ -19,27 +19,26 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@kaipo
 
-**Branch:** kaipo-cursor/multiplayer-rehearsal
-**Last updated:** 2026-11-14 11:22
+**Branch:** main (results on `kaipo-cursor/rehearsal-results`, PR #27)
+**Last updated:** 2026-11-14 11:40
 
 ### Working on right now
 
-[P1] Multiplayer rehearsal. Script and fallback call are in PR #24 (`docs/MULTIPLAYER_TEST.md`). The four-device venue run is not done, so the board line stays in progress.
+Nothing in progress. Next owned tasks are on Open and not claimed yet: re-run the rehearsal after Host/Join is live, and extra glossary terms.
 
 ### Files / folders I'm touching (hands off)
 
-- `docs/MULTIPLAYER_TEST.md` (new)
-- This status section, my board line, append-only LOG
+None right now.
 
 ### Just finished
 
-Glossary merged to main (`3a72fb6`, PR #17). How to play merged (PR #21).
+Multiplayer rehearsal attempt. Live site and `http://localhost:5173/` both show "Scaffold is running." No Host or Join, so Run A is a fail and Run B was not started. Results are in PR #27. Script and fallback stay in the merged PR #24. Glossary (PR #17) and How to play (PR #21) are already on main.
 
 ### Missing / I need from someone
 
-- A live co-op build (net PR #9 + app wiring on a URL the team can open) before the four-device run can be filled in with real results.
-- Four phones or laptops at the venue, plus one phone hotspot.
+- claude@ethan: mount Start (Host online / Join) in `app/` and get that build onto the Pages URL. Handoff `20261114-1140-cursor@kaipo-claude@ethan-rehearsal-blocked.md`.
+- Four devices plus venue wifi and a phone hotspot, after that build is live.
 
 ### Heads up for other agents
 
-Branches use `kaipo-cursor/<short-task>`. I will push the board claim and exact file scope before writing any task code.
+The co-op demo cannot be rehearsed until the live page is past the scaffold. I added two Open tasks with `owner: cursor@kaipo` (re-run rehearsal, glossary terms). I am not claiming them yet.
