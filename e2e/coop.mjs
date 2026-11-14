@@ -367,6 +367,25 @@ await check('join: a wrong room code shows a clear error', async () => {
   return message
 })
 
+// No `leave` message is sent here, as when a tab is closed, a phone sleeps or the Wi-Fi drops.
+await check('leave: a guest who closes the tab is dropped from the crew', async () => {
+  const fourth = pages.find(([who]) => who === 'fourth')?.[1]
+  must(fourth && (await text(host, '.app-crew-menu summary')).startsWith('Crew (4)'), 'needs four players in the room')
+  const closed = Date.now()
+  await fourth.context().close()
+  await until(() => text(host, '.app-crew-menu summary'), (t) => t.startsWith('Crew (3)'), '45 s later the host still counts the closed tab in the crew', 45_000)
+  return `after ${Math.round((Date.now() - closed) / 1000)} s`
+})
+
+await check('leave: the host goes to the main menu and the guests are told the room is closed', async () => {
+  await host.getByRole('button', { name: 'Main menu' }).click()
+  await host.waitForSelector('.ss-root')
+  for (const [who, page] of pages.filter(([who]) => who === 'guest' || who === 'third')) {
+    const message = await until(() => text(page, '.app-closed'), (t) => t !== '', `${who} is not told the room is closed`, 20_000)
+    must(/host closed the room/i.test(message), `${who} is told: "${message}"`)
+  }
+})
+
 // ------------------------------------------------------------------ play on one screen (no network)
 const local = await open('one-screen')
 
