@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { CONTRACT_VERSION } from '../shared'
 import {
-  BUS_CLASSES, CATALOG_IDS, PARAM_CATALOG, catalogs, getDataset, getDatasets, getPart, getScenario,
-  parseIdList, rowsAsObjects, scenarios,
+  BUS_CLASSES, CATALOG_IDS, DIFFICULTIES, PARAM_CATALOG, catalogs, getDataset, getDatasets, getPart, getScenario,
+  parseIdList, rowsAsObjects, scenarios, withDifficulty,
 } from './index'
 
 const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/
@@ -157,5 +157,28 @@ describe('helpers', () => {
     expect(getPart(CATALOG_IDS.launchVehicles, 'falcon-9')?.payload_leo_kg).toBe(17500)
     expect(getPart(CATALOG_IDS.launchVehicles, 'nope')).toBeUndefined()
     expect(getPart('nope', 'falcon-9')).toBeUndefined()
+  })
+})
+
+describe('difficulty', () => {
+  it('normal is the scenario as written; easy and hard scale it without touching the original', () => {
+    const demo = getScenario('demo')!
+    const before = JSON.stringify(demo)
+    expect(getScenario('demo', 'normal')).toBe(demo)
+    const easy = withDifficulty(demo, 'easy')
+    const hard = withDifficulty(demo, 'hard')
+    expect(JSON.stringify(demo)).toBe(before)
+    expect(easy.scenario_id).toBe('demo-easy')
+    expect(easy.title).toBe(`${demo.title} (Easy)`)
+    expect(easy.params).toMatchObject({ difficulty: 'easy', budget_usd: 12_000_000, target_science_score: 24, random_failures: false })
+    expect(hard.params).toMatchObject({ difficulty: 'hard', budget_usd: 7_600_000, target_science_score: 30, random_failures: true })
+    expect(Number(hard.params.event_rate_per_day)).toBeGreaterThan(0)
+    for (const level of Object.keys(DIFFICULTIES) as (keyof typeof DIFFICULTIES)[]) {
+      for (const c of scenarios) expect(getScenario(c.scenario_id, level)!.scenario_id).toMatch(KEBAB)
+    }
+  })
+
+  it('objective texts carry no numbers, so they stay true at every difficulty', () => {
+    for (const c of scenarios) expect(String(c.params.objective_text), c.scenario_id).not.toMatch(/\d+ science points|\$\d/)
   })
 })

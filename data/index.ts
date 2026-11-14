@@ -72,8 +72,40 @@ export function getDataset(id: Id): TableDataset | undefined {
   return catalogs.find((d) => d.id === id)
 }
 
-export function getScenario(id: Id): Config | undefined {
-  return scenarios.find((s) => s.scenario_id === id)
+/**
+ * Difficulty levels. Each one only scales scenario params the sim already reads.
+ * shortcut: no deadline knob, because the sim's schedule rule needs build_months columns. Add one when they exist.
+ */
+export const DIFFICULTIES = {
+  easy: { label: 'Easy', budget: 1.5, science: 0.8, random_failures: false, event_rate_per_day: 0 },
+  normal: { label: 'Normal', budget: 1, science: 1, random_failures: true, event_rate_per_day: 0 },
+  hard: { label: 'Hard', budget: 0.95, science: 1, random_failures: true, event_rate_per_day: 0.03 },
+} as const
+export type Difficulty = keyof typeof DIFFICULTIES
+
+/** A copy of `config` at `level`. Normal returns the scenario as written. */
+export function withDifficulty(config: Config, level: Difficulty): Config {
+  if (level === 'normal') return config
+  const d = DIFFICULTIES[level]
+  const p = config.params
+  return {
+    ...config,
+    scenario_id: `${config.scenario_id}-${level}`,
+    title: `${config.title} (${d.label})`,
+    params: {
+      ...p,
+      difficulty: level,
+      budget_usd: Math.round(Number(p.budget_usd) * d.budget),
+      target_science_score: Math.round(Number(p.target_science_score) * d.science),
+      random_failures: d.random_failures,
+      event_rate_per_day: d.event_rate_per_day,
+    },
+  }
+}
+
+export function getScenario(id: Id, level: Difficulty = 'normal'): Config | undefined {
+  const base = scenarios.find((s) => s.scenario_id === id)
+  return base && withDifficulty(base, level)
 }
 
 export type PartRow = Record<string, ParamValue | null> & { id: Id }

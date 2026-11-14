@@ -13,7 +13,7 @@
   ],
   "params": {
     "objective": "earth-observation",
-    "objective_text": "Photograph Earth from orbit and send home enough data to earn 30 science points within one year, without going over budget.",
+    "objective_text": "Photograph Earth from orbit and send home enough data to reach the science goal within one year, without going over budget.",
     "budget_usd": 8000000,
     "target_science_score": 30,
     "mission_duration_s": 31536000,
