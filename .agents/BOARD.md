@@ -59,7 +59,6 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 ### Accuracy audit + awards push (claude@sarah 18:45, Sarah's request; full report: docs/game-design/ACCURACY_AUDIT.md)
 - [ ] (light) [P1] **Schedule bar in the builder** (brief: show Time clearly): the sim gives `schedule_months` / `deadline_months` now that parts have build times (PR #105); today time only shows as an error — ui/builder/ — owner: claude@aiden
-- [ ] (light) [P2] Glossary: Deep Space Network priority "such as a launch or landing" (card source says launches); add terms rtg, solar-flux, coverage — ui/learn/ — owner: cursor@kaipo
 - [ ] (light) [P1] Show each console's **priority** on the GO / NO-GO poll so co-op players negotiate before launch (GAME_DESIGN §4.7) — ui/gonogo/ — owner: claude@jamie
 
 ## Missing / needed
@@ -69,7 +68,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 - Offline QA PR #101: local preview fresh-cache offline Builder fails on lazy Hangar/canvas/SpaceView imports; online control succeeds. All six public files pass offline. Root cause and Pages impact unconfirmed; PWA owner claude@aiden follow-up — [found by codex@aiden]
 
 
-- Source audit PR #90: catalog references are background for exact game values; add Spirit completed-repair/SOHO longevity citations, reconcile conflicting GRAIL launch masses, add GOES launch-year evidence and glossary provenance. LRO 1,846 kg is supported by cited NSSDCA source. Owners: data claude@jamie, story claude@sarah, glossary cursor@kaipo; report/source-audit handoff contains evidence — [found by codex@aiden]
+- Source audit PR #90: catalog references are background for exact game values; reconcile conflicting GRAIL launch masses and add GOES launch-year evidence. LRO 1,846 kg is supported by the cited NSSDCA source. Story citations are done (PR #85). Glossary provenance is in ui/learn/README.md (DSN, reaction wheel, RTG, solar flux, coverage). Data rows stay with claude@sarah / codex@jamie — [found by codex@aiden, glossary updated by cursor@kaipo]
 
 - Updated after 8c0f3cb snapshot: rooms, non-launch cutscene mounting and all public-file precache landed (#87/#91/#93). Ethan has claimed both V7a scene + V7b app mount; earlier optional Codex assembly offer is withdrawn to avoid duplicate ownership. V7/device acceptance remains with owners; separate offline preview finding in PR #101 — [found by codex@aiden]
 
@@ -88,7 +87,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 - Resolved: original First Light catalog/sim mismatch fixed in sim-data #26, now on main; real-data playthrough tests pass. Historical snapshot remains in docs/INTEGRATION_REPORT.md — [found by codex@jamie]
 
-- Network validators/role policy/PeerJS dependency are on main; remaining app wiring and live WebRTC/venue rehearsal are unverified — app/net owners + rehearsal team — [found by codex@jamie]
+- Live WebRTC on one computer is verified in docs/MULTIPLAYER_TEST.md (localhost 4-tab room LL2KQG; Vercel two-tab room V3XD2E). App wiring and PeerJS are on main. Still open: a second network after Cloudflare TURN, venue Run A, hotspot Run B, fifth player, launch, and disconnect — owner: cursor@kaipo — [found by codex@jamie, updated by cursor@kaipo]
 <!-- anything an agent noticed is missing, broken, or needed by someone else -->
 <!-- - thing — who needs it — [found by agent@human] -->
 - GitHub Pages not enabled yet (Settings → Pages → Source: GitHub Actions) — deploy in PR #4 needs it — repo owner (Aiden) — [found by claude@aiden]
@@ -129,6 +128,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 
 ## Done
+- [x] (light) [P2] Glossary: Deep Space Network priority "such as a launch or landing" (card source says launches); add terms rtg, solar-flux, coverage — ui/learn/ — owner: cursor@kaipo — [cursor@kaipo] — in PR #106: DSN says launch or landing; reaction wheel no longer treats every failure as coarse pointing; provenance in ui/learn/README.md
 - [x] (medium) [P1] Planet relief from real elevation (Ethan's request) — ui/scene3d/shaders.ts, maps/, world.ts — [claude@ethan] — in PR #104, on top of claude@jamie's maps (PR #102): LOLA (Moon) and MOLA (Mars) elevation shade real crater walls, basins, Olympus Mons, Tharsis and Valles Marineris at the day/night line (drawn 5x steeper, said in maps/README.md); Earth seen from the Moon and the Moon seen from Earth use the NASA maps. Sources in `ui/scene3d/maps/README.md` (cursor@caleb: two new rows for the References list).
 - [x] (light) [P1] **Walk + cutscenes on a phone and with reduced motion / a screen reader:** hall and panels at 375 px, reduced motion cuts straight to each station, screen reader hears the screens not the hall, cutscene Skip/Escape works — app/Walk.tsx, app/StoryLayer.tsx, app/app.css — owner: claude@aiden — [claude@aiden] — checked on the live site, no change needed: 375 px panel fits (no sideways scroll), hall inert + aria-hidden, Skip focused on open (44 px) and Escape skips; reduced motion by code (walk wait 0, hall cuts, cutscene shows its still). Small leftovers: phone CAPCOM overlaps the panel top 14 px for ≤ 9 s; during a walk (≤ 2.4 s) the hidden panel is still tabbable. Not checked: a real phone, a real screen reader
 - [x] (medium) [P1] Cloudflare TURN relay for cross-network rooms — api/ice.js, app/room.ts, vercel.json — [cursor@kaipo] — live at https://kimchispacemission.vercel.app (`/api/ice` returns turns:443). GitHub Pages keeps the direct PeerJS path. Four-player cap unchanged.

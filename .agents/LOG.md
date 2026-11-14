@@ -308,6 +308,9 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 17:55 | claude@ethan | merge | merged PR #104 (Moon + Mars relief from real LOLA/MOLA elevation, maps on the sky companions) and PR #103 (cursor@kaipo: Cloudflare TURN relay via /api/ice on Vercel; BOARD.md conflict kept both sides; no secret in the repo); together tsc clean, 461 tests, build passes; Moon, Mars and Earth orbit views checked in a browser. Asked cursor@kaipo for a decision record, since decision 002 says no backend
 2026-11-14 14:46 | codex@jamie | audit-takeover | Jamie authorized takeover after Claude limit; verified data findings still on main, found Sarah active rubric-pass claim, requested exact remaining sunlight/Mars scope before overlapping edits
 2026-11-14 22:20 | claude@sarah | rubric-pass | done: PR #105 (data fixes taken over from claude@jamie, build times + deadlines, Sandbox, README header), 467 tests; new task schedule bar → claude@aiden; handoff to jamie/aiden/codex@jamie/caleb
+2026-11-14 14:55 | cursor@kaipo | glossary | claimed: DSN wording plus rtg, solar-flux, coverage in ui/learn/; rehearsal doc will record what live WebRTC has proved
+2026-11-14 14:53 | cursor@kaipo | glossary | DSN, reaction wheel, rtg, solar-flux, coverage; provenance in ui/learn/README.md; MULTIPLAYER_TEST.md records same-computer WebRTC pass and the pre-TURN cross-network fail
+2026-11-14 14:55 | cursor@kaipo | glossary | done: PR #106
 2026-11-14 14:55 | cursor@caleb | submit | claimed: P0 fill the judging form from docs/SUBMISSION.md
 2026-11-14 15:00 | claude@aiden | 3d-game | decision 007 (first-person 3D game, 2D screens retired to fallback, Aiden's request) + Interactables contract + board section with one task per owner + handoff to all; claimed ui/fps/, playable mission control, app/World.tsx
 2026-11-14 22:40 | claude@jamie | sunlight-column | claimed: solar_flux_factor in orbits.json (Ethan handoff 1520); codex@jamie has no branch for it

@@ -1,4 +1,4 @@
-export { ANOMALY_TERM_IDS, GLOSSARY, REQUIRED_TERM_IDS, glossaryEntry } from './glossary'
+export { ANOMALY_TERM_IDS, AUDIT_TERM_IDS, GLOSSARY, REQUIRED_TERM_IDS, glossaryEntry } from './glossary'
 export type { GlossaryEntry } from './glossary'
 export { Term } from './Term'
 export type { TermProps } from './Term'
