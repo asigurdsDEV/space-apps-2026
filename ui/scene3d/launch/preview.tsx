@@ -2,15 +2,23 @@
 // Query: ?vehicle=<id>&t=<seconds>&paused=1 freezes the sequence at a screen time; &failed=1 plays the failure
 // ending; &still=1 forces the reduced-motion stepper; &bus=, &solar=, &comms=, &instruments=a,b, &orbit= pick the spacecraft.
 // &w=390&h=780 draws the view in a box that size (headless Chrome cannot make a window narrower than about 500 px).
+// ?lineup=all (or a list of ids) shows the rockets side by side at true scale instead; &yaw=, &pitch= (degrees),
+// &zoom=, &cx=, &cy= (0 to 1) move the camera for close-ups.
 import { StrictMode, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { getDatasets, scenarios } from '../../../data'
 import { catalogEntities } from '../../../sim/parts'
 import type { Params } from '../../../shared'
+import { showHangar } from './hangar'
 import { LaunchView } from './LaunchView'
+import { KNOWN, rocketSpec } from './vehicles'
 
 const query = new URLSearchParams(location.search)
 const entities = catalogEntities(getDatasets())
+// Rockets that are modelled but have no catalog row yet get a stand-in row here, so they can be previewed.
+for (const id of Object.keys(KNOWN)) {
+  if (!entities.some((e) => e.id === id)) entities.push({ id, kind: 'launch_vehicle', name: id, props: { reliability: 0.95 } })
+}
 const params: Params = { ...scenarios[0]!.params }
 for (const key of ['bus', 'solar', 'comms', 'instruments', 'orbit'] as const) {
   const v = query.get(key)
@@ -51,4 +59,13 @@ function Preview() {
   )
 }
 
-createRoot(document.getElementById('root')!).render(<StrictMode><Preview /></StrictMode>)
+const lineup = query.get('lineup')
+if (lineup) {
+  const ids = lineup === 'all' ? [...Object.keys(KNOWN), 'unknown'] : lineup.split(',')
+  const num = (key: string, fallback: number) => Number(query.get(key) ?? fallback)
+  showHangar(document.getElementById('root')!, ids.map((id) => rocketSpec(entities.find((e) => e.id === id) ?? { id, name: id, props: { payload_leo_kg: 8000 } })), {
+    yaw: num('yaw', 14), pitch: num('pitch', 4), zoom: num('zoom', 1), cx: num('cx', 0.5), cy: num('cy', 0.5),
+  })
+} else {
+  createRoot(document.getElementById('root')!).render(<StrictMode><Preview /></StrictMode>)
+}

@@ -48,16 +48,16 @@ export function skin(s: Skin, w = 256, h = 512): THREE.MeshStandardMaterial {
     ctx.fillRect(0, y(to), w, y(from) - y(to))
   }
   if (s.grain) {
-    for (let i = 0; i < (w * h) / 40; i++) {
-      ctx.fillStyle = rand() < 0.5 ? `rgba(0,0,0,${rand() * 0.1 * s.grain})` : `rgba(255,255,255,${rand() * 0.08 * s.grain})`
-      const size = 2 + rand() * 14
-      ctx.fillRect(rand() * w, rand() * h, size, size * (0.5 + rand()))
+    for (let i = 0; i < (w * h) / 24; i++) {
+      ctx.fillStyle = rand() < 0.5 ? `rgba(60,20,0,${rand() * 0.05 * s.grain})` : `rgba(255,235,200,${rand() * 0.04 * s.grain})`
+      const size = 1 + rand() * 7
+      ctx.fillRect(rand() * w, rand() * h, size, size * (0.5 + rand() * 2))
     }
   }
   if (s.soot) {
     const g = ctx.createLinearGradient(0, 0, 0, h)
-    g.addColorStop(0, `rgba(40,36,32,${0.25 * s.soot})`)
-    g.addColorStop(1, `rgba(40,36,32,${0.85 * s.soot})`)
+    g.addColorStop(0, `rgba(40,36,32,${0.4 * s.soot})`)
+    g.addColorStop(1, `rgba(40,36,32,${0.92 * s.soot})`)
     ctx.fillStyle = g
     ctx.fillRect(0, 0, w, h)
     for (let i = 0; i < 90; i++) {
@@ -133,19 +133,6 @@ export function lathe(points: Profile, seg = 40, phiStart = 0, phiLength = Math.
   return geo
 }
 
-/** Points of a slightly blunt ogive nose: from just above radius R at y0 up to the tip at y0 + L. */
-export function ogive(R: number, L: number, y0 = 0, n = 10): Profile {
-  const long = L * 1.05
-  const rho = (R * R + long * long) / (2 * R)
-  const pts: Profile = []
-  for (let i = 1; i <= n; i++) {
-    const h = (i / n) * L
-    pts.push([Math.sqrt(rho * rho - h * h) + R - rho, y0 + h])
-  }
-  pts.push([0, y0 + L])
-  return pts
-}
-
 /** A rounded tank end: from radius R at y0 to the pole `rise` above (or below, when negative). */
 export function dome(R: number, rise: number, y0 = 0, n = 6): Profile {
   const pts: Profile = []
@@ -154,6 +141,22 @@ export function dome(R: number, rise: number, y0 = 0, n = 6): Profile {
     pts.push([R * Math.cos(a), y0 + rise * Math.sin(a)])
   }
   return pts
+}
+
+/**
+ * Points of an ogive nose: from just above radius R at y0 up to the tip at y0 + L. `blunt` rounds the tip off:
+ * 0.05 is nearly sharp, 0.3 is the fat rounded nose of a big composite fairing.
+ */
+export function ogive(R: number, L: number, y0 = 0, blunt = 0.05, n = 10): Profile {
+  const long = L * (1 + blunt)
+  const rho = (R * R + long * long) / (2 * R)
+  const at = (h: number) => Math.sqrt(rho * rho - h * h) + R - rho
+  // The curve stops where a dome 0.7 as tall as it is wide closes it off exactly at L.
+  let cut = L
+  for (let i = 0; i < 4; i++) cut = L - 0.7 * at(cut)
+  const pts: Profile = []
+  for (let i = 1; i <= n; i++) pts.push([at((i / n) * cut), y0 + (i / n) * cut])
+  return [...pts, ...dome(at(cut), L - cut, y0 + cut, 4)]
 }
 
 /** A bell nozzle hanging down from y = 0: throat at the top, exit `len` below. */
