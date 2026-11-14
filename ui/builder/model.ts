@@ -211,3 +211,24 @@ export function changedBy(
   }
   return out
 }
+
+// ---------------------------------------------------------------- glossary tooltips
+
+const TERMS: Record<string, string> = {
+  // column names
+  eclipse_fraction: 'eclipse',
+  data_rate_bps: 'data-rate',
+  duty_cycle: 'duty-cycle',
+  reliability: 'reliability',
+  // slot keys
+  orbit: 'orbit',
+  // budget bar labels
+  'Launch mass': 'payload-capacity',
+  Power: 'power-budget',
+  'Data made vs. downlink': 'downlink',
+}
+
+/** Glossary id (ui/learn) for a column, slot key or budget label, if that word gets a tooltip. */
+export function termFor(name: string): string | undefined {
+  return TERMS[name] ?? (/^payload_\w+_kg$/.test(name) ? 'payload-capacity' : undefined)
+}

@@ -8,6 +8,7 @@ import {
   commandAccess,
   playerLabel,
   slotAccess,
+  termFor,
   columnLabel,
   formatValue,
   parseIds,
@@ -17,6 +18,8 @@ import {
   unitOf,
   type Slot,
 } from './model'
+import { Term } from '../learn'
+import '../learn/learn.css'
 import { SpaceView } from '../scene3d'
 import '../theme/theme.css'
 import './builder.css'
@@ -38,6 +41,9 @@ export interface MissionBuilderProps {
 const UNIT_HEADERS = new Set(['kg', 'W', 'Wh', 'pts'])
 
 const NO_PLAYERS: Player[] = []
+
+/** A glossary tooltip when the word has one (ui/learn), plain text otherwise. */
+const Label = ({ id, children }: { id?: string; children: string }) => (id ? <Term id={id}>{children}</Term> : <>{children}</>)
 
 export function MissionBuilder({ state, send, slots = DEFAULT_SLOTS, players = NO_PLAYERS, me }: MissionBuilderProps) {
   const coop = players.length > 1
@@ -80,7 +86,7 @@ export function MissionBuilder({ state, send, slots = DEFAULT_SLOTS, players = N
           return (
             <fieldset key={slot.key} className={`mb-slot${locked ? ' is-locked' : ''}`} disabled={locked}>
               <legend>
-                {slot.label}
+                <Label id={termFor(slot.key)}>{slot.label}</Label>
                 {slot.multi && <span className="mb-muted"> (pick any)</span>}
                 {coop && (
                   <span className="mb-role">
@@ -106,7 +112,7 @@ export function MissionBuilder({ state, send, slots = DEFAULT_SLOTS, players = N
                         <th scope="col">Part</th>
                         {columns.map((c) => (
                           <th scope="col" key={c}>
-                            {columnLabel(c)}
+                            <Label id={termFor(c)}>{columnLabel(c)}</Label>
                             {UNIT_HEADERS.has(unitOf(c)) && <span className="mb-muted"> ({unitOf(c)})</span>}
                           </th>
                         ))}
@@ -159,7 +165,9 @@ export function MissionBuilder({ state, send, slots = DEFAULT_SLOTS, players = N
         {bars.map((b) => (
           <div key={b.label} className={`mb-bar${b.bad ? ' is-bad' : ''}${b.goal ? ' is-goal' : ''}`}>
             <div className="mb-bar-head">
-              <span>{b.label}</span>
+              <span>
+                <Label id={termFor(b.label)}>{b.label}</Label>
+              </span>
               <span>
                 {formatValue(b.used, b.unit)} / {formatValue(b.limit, b.unit)}
                 {b.bad && (

@@ -1,5 +1,6 @@
 import type { Config } from '../../shared'
-import { HOW_TO_WIN, KEY_TERMS, briefingFacts } from './model'
+import { glossaryEntry } from '../learn'
+import { HOW_TO_WIN, KEY_TERM_IDS, briefingFacts } from './model'
 import '../theme/theme.css'
 import './briefing.css'
 
@@ -47,12 +48,17 @@ export function Briefing({ config, onStart, onBack }: BriefingProps) {
         <section aria-labelledby="bf-terms">
           <h2 id="bf-terms">Words you’ll see</h2>
           <dl className="bf-terms">
-            {KEY_TERMS.map((t) => (
-              <div key={t.term} className="bf-term">
-                <dt>{t.term}</dt>
-                <dd>{t.meaning}</dd>
-              </div>
-            ))}
+            {KEY_TERM_IDS.map((id) => {
+              const entry = glossaryEntry(id)
+              return (
+                entry && (
+                  <div key={id} className="bf-term">
+                    <dt>{entry.term}</dt>
+                    <dd>{entry.meaning}</dd>
+                  </div>
+                )
+              )
+            })}
           </dl>
         </section>
 
