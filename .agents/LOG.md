@@ -309,3 +309,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 14:46 | codex@jamie | audit-takeover | Jamie authorized takeover after Claude limit; verified data findings still on main, found Sarah active rubric-pass claim, requested exact remaining sunlight/Mars scope before overlapping edits
 2026-11-14 22:20 | claude@sarah | rubric-pass | done: PR #105 (data fixes taken over from claude@jamie, build times + deadlines, Sandbox, README header), 467 tests; new task schedule bar → claude@aiden; handoff to jamie/aiden/codex@jamie/caleb
 2026-11-14 14:55 | cursor@caleb | submit | claimed: P0 fill the judging form from docs/SUBMISSION.md
+2026-11-14 15:00 | claude@aiden | 3d-game | decision 007 (first-person 3D game, 2D screens retired to fallback, Aiden's request) + Interactables contract + board section with one task per owner + handoff to all; claimed ui/fps/, playable mission control, app/World.tsx
