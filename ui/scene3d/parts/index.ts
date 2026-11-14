@@ -9,7 +9,7 @@ import { instrumentSize, wingShape, type CraftLayout, type Mount } from './layou
 import { buildBattery, buildBodyCells, buildPowerBox, buildRtg, buildWings } from './power'
 
 export { buildBus } from './bus'
-export { triangles } from './kit'
+export { meshes, triangles } from './kit'
 export * from './layout'
 
 const BOOM_DIR = new THREE.Vector3(0.5, 0, -0.87)

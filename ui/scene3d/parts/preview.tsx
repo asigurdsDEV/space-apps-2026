@@ -14,7 +14,7 @@ import { buildCraft } from '../craft'
 import { sceneSpec } from '../model'
 import { SpaceView } from '../SpaceView'
 import type { ViewMode } from '../world'
-import { buildBus, buildPart, craftLayout, modelKey, triangles } from './index'
+import { buildBus, buildPart, craftLayout, meshes, modelKey, triangles } from './index'
 
 const q = new URLSearchParams(location.search)
 const entities = catalogEntities(getDatasets())
@@ -54,7 +54,7 @@ else if (q.has('part')) {
   craftParams = Object.fromEntries(['orbit', 'bus', 'solar', 'battery', 'comms', 'instruments'].filter((k) => q.has(k)).map((k) => [k, q.get(k)!]))
   const spec = sceneSpec({ entities, params: craftParams })
   const object = buildCraft(spec.craft)
-  cells.push({ title: [spec.names.bus ?? 'No bus', spec.names.power, spec.names.battery, spec.names.comms, ...spec.names.instruments].filter(Boolean).join(' + '), note: `${Math.round(triangles(object))} triangles`, object })
+  cells.push({ title: [spec.names.bus ?? 'No bus', spec.names.power, spec.names.battery, spec.names.comms, ...spec.names.instruments].filter(Boolean).join(' + '), note: `${Math.round(triangles(object))} triangles in ${meshes(object)} meshes`, object })
 }
 
 const grid = document.getElementById('grid')!

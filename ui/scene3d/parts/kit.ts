@@ -242,7 +242,7 @@ function build() {
   const quilt = quiltMap()
   const std = (o: THREE.MeshStandardMaterialParameters) => new THREE.MeshStandardMaterial(o)
   const foil = (color: number, roughness: number, metalness = 1) =>
-    std({ color, metalness, roughness, map: quilt, normalMap, normalScale: new THREE.Vector2(0.9, 0.9) })
+    std({ color, metalness, roughness, map: quilt, normalMap, normalScale: new THREE.Vector2(0.65, 0.65) })
   return {
     goldMLI: foil(0xf0b84a, 0.26),
     goldDouble: Object.assign(foil(0xf0b84a, 0.26), { side: THREE.DoubleSide }),
@@ -269,7 +269,7 @@ function build() {
     red: std({ color: 0xb3261e, metalness: 0, roughness: 0.6 }),
     rtgCore: std({ color: 0x2d2f35, metalness: 0.5, roughness: 0.6 }),
     laser: std({ color: 0x0a2a12, emissive: 0x3dff7a, emissiveIntensity: 1.6, roughness: 0.2 }),
-    cells: std({ map: cellMap(), color: hasDom ? 0xffffff : 0x16245a, metalness: 0.6, roughness: 0.22 }),
+    cells: std({ map: cellMap(), color: hasDom ? 0xffffff : 0x16245a, metalness: 0.45, roughness: 0.3 }),
     cellBack: std({ map: backMap(), color: hasDom ? 0xffffff : 0x22252b, metalness: 0.3, roughness: 0.6 }),
     cubePanel: std({ map: cubePanelMap(), color: hasDom ? 0xffffff : 0x23262d, metalness: 0.55, roughness: 0.5 }),
     deck: std({ map: deckMap(), color: hasDom ? 0xffffff : 0xb9bdc6, metalness: 0.85, roughness: 0.4 }),
@@ -364,5 +364,12 @@ export function triangles(obj: THREE.Object3D): number {
   obj.traverse((o) => {
     if (o instanceof THREE.Mesh) n += (o.geometry.index ? o.geometry.index.count : o.geometry.getAttribute('position').count) / 3
   })
+  return n
+}
+
+/** Meshes in an object: one draw call each. */
+export function meshes(obj: THREE.Object3D): number {
+  let n = 0
+  obj.traverse((o) => void (o instanceof THREE.Mesh && n++))
   return n
 }
