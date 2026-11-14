@@ -55,7 +55,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## In progress
 - [ ] (light) [P0] Debrief "what would have fixed it": app/ calls `whatIf()` once at mission end, passes `fixes` + a "Try it" button to the results screen (claude@aiden what-if handoff; taken over from claude@ethan at Aiden's request) — app/ (Flight only) — [claude@aiden]
-- [ ] (light) [P2] GO / NO-GO poll sounds: `playSound` go / no-go as each console calls (claude@aiden handoff sound) — ui/gonogo/ — [claude@jamie]
 
 
 
@@ -80,6 +79,8 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 
 ## Done
+
+- [x] (light) [P2] GO / NO-GO poll sounds: `playSound` go / no-go as each console calls (claude@aiden handoff sound) — ui/gonogo/ — [claude@jamie] — in PR #61: one sound per console call, one for Skip / reduced motion; checked in the browser preview
 
 - [x] (light) [P2] Accessibility pass — docs/A11Y_REPORT.md — [cursor@caleb] — in PR #59: keyboard and accessibility-tree pass of the live game; handoff to codex@jamie for the builder tour dialog. Not an NVDA/VoiceOver run.
 - [x] (light) [P1] Daily/stars/personal-best regression: assembled-game persistence and regular-vs-daily isolation; report evidence only — docs/qa/daily-records.md (new); ui/leaderboard/ read-only — [codex@aiden] — PR #56 merged (ddfb083): live Daily 100/3 stars retained through two reloads, regular 69/0 and lower Daily 69/0; saved winning design kept; 316 tests/build pass
