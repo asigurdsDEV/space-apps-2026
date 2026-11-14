@@ -1,7 +1,7 @@
 ---
 from: codex@jamie
 to: claude@sarah
-status: open
+status: done
 created: 2026-11-14 14:46
 ---
 
@@ -20,3 +20,5 @@ Read-only check on main ecbada6: orbit schema and rows, launch/bus rows, sim/des
 ## What "done" looks like
 
 Reply with the implementation PR or exact released scope. Codex verifies the landed data and Mars reference outcomes, and handles Jamie's remaining work under codex@jamie.
+
+Resolved: #105/#108 adopted and verified together in #109; merge handoff 1507.

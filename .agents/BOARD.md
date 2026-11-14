@@ -62,7 +62,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 ## Missing / needed
 
-- Jamie reached Claude usage limit; codex@jamie takes over Jamie follow-ups. Sarah already owns active audit data fixes; handoff 1446 requests exact remaining scope and confirms whether solar_flux_factor + Mars balance are included. No duplicate source claim — [found by codex@jamie]
+- Jamie reached Claude usage limit; codex@jamie takes over Jamie follow-ups. Sarah fixes are PR #105; Claude Jamie sunlight is PR #108; Codex regression/integration checks are PR #109. Merge coordinator Ethan has the handoff — [found by codex@jamie]
 
 - Offline QA PR #101: local preview fresh-cache offline Builder fails on lazy Hangar/canvas/SpaceView imports; online control succeeds. All six public files pass offline. Root cause and Pages impact unconfirmed; PWA owner claude@aiden follow-up — [found by codex@aiden]
 
@@ -103,7 +103,6 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 ## In progress
 - [ ] (medium) [P0] Fly + results screens: far less text, HUD over a big 3D view, compact controls, collapsible log, animated score/stars, short anomaly cards with a "this really happened" fold — ui/mission/ — [claude@sarah] — Sarah asked: UI less cluttered, easier, more fun
 - [ ] (medium) [P1] Touch controls for walking: left-thumb move pad, drag to look, E button; gives `{ move: [x, y], look: [dx, dy] }` + interact — ui/pilot-input/ — by Sat 20:00 — owner: codex@aiden — [codex@aiden]
-- [ ] (light) [P0] Sunlight audit takeover, authorized by Jamie after Claude limit; supersedes Claude Jamie sunlight claim below. Scope: orbits.json, data.test.ts, playthrough.test.ts, data/README.md — [codex@jamie]
 - [ ] (light) [P0] **Submit:** judging form filled from docs/SUBMISSION.md, video link, every external resource in References, project page link checked in a private window — docs/SUBMISSION.md — owner: cursor@caleb (+ a human to press Submit) — [cursor@caleb]
 - [ ] (light) [P1] **Walk + cutscenes on a phone and with reduced motion / a screen reader:** hall and panels at 375 px, reduced motion cuts straight to each station, screen reader hears the screens not the hall, cutscene Skip/Escape works — app/Walk.tsx, app/StoryLayer.tsx, app/app.css — owner: claude@aiden — [claude@aiden]
 - [ ] (medium) [P1] Rockets fully rendered (Ethan's request): surface detail on every launch vehicle (panel seams, weld lines, markings, engine detail), shadows, exhaust and pad effects — ui/scene3d/launch/ — branch `ethan-claude/rocket-render` — [claude@ethan]
@@ -129,6 +128,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 
 ## Done
+- [x] (light) [P0] Sunlight audit takeover, authorized by Jamie after Claude limit; supersedes Claude Jamie sunlight claim below. Scope: orbits.json, data.test.ts, playthrough.test.ts, data/README.md — [codex@jamie] — in PR #109: adopted #108, verified with #105, 471 tests/build pass
 - [x] (light) [P0] **Sunlight column:** `solar_flux_factor` in data/catalogs/orbits.json (Earth/Moon 1, Mars 0.43, handoff 1520 from claude@ethan); Mars reference design must still win — data/catalogs/orbits.json — [claude@jamie] — in PR #108: Mars now starts with the large solar array (medium gives 266 W of the 450 W needed); 461 tests, 467 with PR #105 merged
 - [x] (light) [P2] Glossary: Deep Space Network priority "such as a launch or landing" (card source says launches); add terms rtg, solar-flux, coverage — ui/learn/ — owner: cursor@kaipo — [cursor@kaipo] — in PR #106: DSN says launch or landing; reaction wheel no longer treats every failure as coarse pointing; provenance in ui/learn/README.md
 - [x] (medium) [P1] Planet relief from real elevation (Ethan's request) — ui/scene3d/shaders.ts, maps/, world.ts — [claude@ethan] — in PR #104, on top of claude@jamie's maps (PR #102): LOLA (Moon) and MOLA (Mars) elevation shade real crater walls, basins, Olympus Mons, Tharsis and Valles Marineris at the day/night line (drawn 5x steeper, said in maps/README.md); Earth seen from the Moon and the Moon seen from Earth use the NASA maps. Sources in `ui/scene3d/maps/README.md` (cursor@caleb: two new rows for the References list).

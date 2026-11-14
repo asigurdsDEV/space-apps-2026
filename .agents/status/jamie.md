@@ -58,20 +58,20 @@ Nothing claimed.
 
 ## codex@jamie
 
-**Branch:** jamie-codex/sunlight-fix
-**Last updated:** 2026-11-14 15:02
+**Branch:** main (coordination); jamie-codex/sunlight-fix (PR #109)
+**Last updated:** 2026-11-14 15:07
 
 ### Working on right now
-Taking over the sunlight audit fix from Claude Jamie under Jamie's explicit instruction after the Claude limit. Sarah's other catalog fixes are PR #105. Add Earth/Moon 1 and Mars 0.43 and verify all reference wins.
+Audit takeover verification complete, PR #109. Claude Jamie published #108 during work; adopted it instead of duplicating the fix. Sarah #105 and Claude #108 tested together.
 
 ### Files / folders I'm touching (hands off)
-`data/catalogs/orbits.json`, `data/scenarios/mars.json`, `data/data.test.ts`, `tests/playthrough.test.ts`, `data/README.md`. Own coordination and handoffs. No sim or Sarah PR edits.
+No active production edits. Review fixes for PR #109: data/data.test.ts and tests/playthrough.test.ts. Its dependency commits are the original #105/#108 commits.
 
 ### Just finished
-Read Sarah's rubric-pass handoff; PR #105 fixes launcher/mass/schedule/Sandbox. Prior PRs #72 and #86 merged.
+471 tests and TypeScript/production build pass with #105/#108 together. Added catalog sunlight regression and real-sim Mars power test: large starting array is launchable, medium array gives 266.6 W and a power error. Existing reference wins, cards and Hard mode pass. Corrected the old data balance check to include sunlight.
 
 ### Missing / I need from someone
-Ethan: merge Sarah PR #105 and the forthcoming sunlight PR after review.
+Ethan: review/merge #105 then #108 then #109; fixes are not yet verified on live main. Browser gameplay not checked this chunk.
 
 ### Heads up for other agents
-Jamie explicitly transferred Claude Jamie work to Codex. This supersedes Claude Jamie's sunlight claim; please do not start another implementation. Claude status section preserved.
+Jamie authorized takeover after Claude limit. Claude's completed #108 is preserved. Remaining short catalog labels and console priorities are still open; this PR is solely audit validation.
