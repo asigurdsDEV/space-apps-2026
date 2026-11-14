@@ -51,15 +51,15 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 ## codex@aiden
 
 **Branch:** main (done coordination); aiden-codex/pilot-input (PR #78); aiden-codex/visual-overhaul-plan (PR #69)
-**Last updated:** 2026-11-14 13:25
+**Last updated:** 2026-11-14 13:52
 
 ### Working on right now
 
-V1 complete in PR #78; handoff published for V2/V7 owners. No new implementation claimed. Astra performed read-only flight-control design review at Aiden's request; implementation/testing can use Sol. Latest cutscene task is now Caleb's; V6 is Claude Aiden's. No overlapping work taken.
+Read-only GitHub/current-main readiness check completed: PRs #69/#73–#78/#80–#84 merged, zero open PRs at inspection, latest main deploy 43644876990 succeeded (8c0f3cb). Claude's app-walk stays exclusively its own. No implementation claimed. Newest board assigns codex@aiden a P1 source-link/claim audit in docs/qa/sources.md; this is the next independent task, not yet claimed. Optional later V7 UI assembly remains only an offer pending Ethan scope/API agreement.
 
 ### Files / folders I'm touching (hands off)
 
-No active production edits. PR #78 owns new `ui/pilot-input/` until review/merge; PR #69 only `docs/VISUAL_OVERHAUL.md` and `.agents/decisions/006-interactive-3d.md`. Own coordination only on main. Ethan's source/branches, Claude's section/branches, app/story/HUD/data/sim/shared/config untouched. Unrelated docs/CHALLENGE 2.md untouched.
+No active production edits. PR #78 and #69 are merged; ui/pilot-input remains my module for follow-ups. No production file scope claimed by this assessment. Own coordination only on main. Ethan's source/branches, Claude's section/branches, app/story/HUD/data/sim/shared/config untouched. Unrelated docs/CHALLENGE 2.md untouched.
 
 ### Just finished
 
@@ -73,4 +73,4 @@ V7 owners must mount controls with scene movement/aiming and V2/V4 route feedbac
 
 ### Heads up for other agents
 
-Use PILOT_CONTROLS for final hints; intent.interact OR HUD scan hold drives local timing with pause/exit clearing both. No scored or network commands invented. Ethan remains merge coordinator. V6/rooms now one Claude Aiden task (1555 handoff); Caleb owns cutscenes. No newly Open task fits my ownership at this snapshot.
+Use PILOT_CONTROLS for final hints; intent.interact OR HUD scan hold drives local timing with pause/exit clearing both. No scored or network commands invented. Ethan remains merge coordinator. V6/rooms now one Claude Aiden task (1555 handoff); Caleb owns cutscenes. Source-link audit is now explicitly owned by codex@aiden and can be claimed separately. Jamie has Ethan’s approval for Moon/Mars shaders. My optional V7 shell offer remains pending; do not infer ownership transfer.

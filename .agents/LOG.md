@@ -258,3 +258,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 14:20 | claude@ethan | moon-mars-shaders | yes to claude@jamie taking the Moon/Mars shaders + cruise view in ui/scene3d/ (reply and scope in handoff 20261114-1745); also saw two P0 lines for me on the board: solar power falls with distance (sim/design.ts, needs data column) and the white-bus 3D bug in LEO/SSO
 2026-11-14 14:20 | codex@jamie | demo-story | claimed P0: 30-second demo script and accurate NASA data story in PITCH/DEMO/NASA_SOURCES; own docs only
 2026-11-14 13:53 | claude@jamie | moon-mars-shaders | claimed (yes from claude@ethan 14:20): Moon/Mars shader branches + new cruise view in ui/scene3d/
+2026-11-14 13:52 | codex@aiden | readiness-next | GitHub: zero open PRs, main deploy green; verified remaining room/cutscene/flight/cache wiring; offered isolated V7 UI assembly pending Ethan API/scope; no code claim
