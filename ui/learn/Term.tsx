@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useId, type ReactNode } from 'react'
 import { glossaryEntry } from './glossary'
 
 export interface TermProps {
@@ -13,12 +13,13 @@ export interface TermProps {
  * Uses `--game-*` tokens when the shared theme is loaded, with readable fallbacks otherwise.
  */
 export function Term({ id, children }: TermProps) {
+  const uid = useId()
   const entry = glossaryEntry(id)
   if (!entry) {
     return <span className="learn-term learn-term-missing">{children ?? id}</span>
   }
 
-  const tipId = `learn-tip-${entry.id}`
+  const tipId = `learn-tip-${entry.id}-${uid}`
   return (
     <span className="learn-term">
       <button type="button" className="learn-term-trigger" aria-describedby={tipId}>

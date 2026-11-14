@@ -15,14 +15,24 @@ import {
   splitSentences,
   str,
 } from './format'
+import { bestFixes, shareText, stars, type ShareInfo, type WhatIfFix } from './game'
+import { ShareCard } from './ShareCard'
 
 export interface ResultsScreenProps {
   summary: Summary
   onCommand: (command: Command) => void
   title?: string
+  /** Scenario `bonus_goal` param, for the second star. */
+  bonusGoal?: string
+  /** Results of `whatIf()` (sim/analysis.ts): the same mission rerun with one change each. */
+  fixes?: readonly WhatIfFix[]
+  /** "Try it": load the design with this change back into the builder. */
+  onTryFix?: (fix: WhatIfFix) => void
+  /** Daily date and anomaly count for the share card. */
+  share?: Pick<ShareInfo, 'daily' | 'anomalies'>
 }
 
-export function ResultsScreen({ summary, onCommand, title }: ResultsScreenProps) {
+export function ResultsScreen({ summary, onCommand, title, bonusGoal, fixes, onTryFix, share }: ResultsScreenProps) {
   const outcome = str(summary, 'outcome', 'in_design')
   const tone = outcomeTone(outcome)
   const score = num(summary, 'score')
@@ -39,6 +49,10 @@ export function ResultsScreen({ summary, onCommand, title }: ResultsScreenProps)
   const downlinked = num(summary, 'data_downlinked_gb')
   const lost = num(summary, 'data_lost_gb')
   const days = num(summary, 'mission_days_flown')
+  const starList = stars(summary, bonusGoal)
+  const top = bestFixes(fixes ?? [], score)
+  const won = outcome === 'success'
+  const text = shareText(summary, { title, bonusGoal, ...share })
 
   return (
     <section className={`mv mv-results mv-tone-${tone}`} aria-label="Mission results">
@@ -53,8 +67,40 @@ export function ResultsScreen({ summary, onCommand, title }: ResultsScreenProps)
             <strong>{Math.round(score)}</strong> / 100 points
             {days > 0 && <span className="mv-muted"> · {Math.floor(days)} days flown</span>}
           </p>
+          <ul className="mv-stars" aria-label={`${starList.filter((s) => s.earned).length} of 3 stars`}>
+            {starList.map((star) => (
+              <li key={star.label} className={star.earned ? 'is-earned' : undefined}>
+                <span aria-hidden="true">{star.earned ? '★' : '☆'}</span> {star.label}
+              </li>
+            ))}
+          </ul>
         </div>
       </header>
+
+      {top.length > 0 && (
+        <div className="mv-card mv-fixes">
+          <h3>{won ? 'Even better' : 'Change one thing'}</h3>
+          <ul>
+            {top.map((fix) => (
+              <li key={fix.change}>
+                <span>
+                  With <strong>{fix.change}</strong>, this exact mission scores{' '}
+                  <strong>
+                    {Math.round(fix.score)}
+                    {fix.grade ? ` (${fix.grade})` : ''}
+                  </strong>{' '}
+                  instead of {Math.round(score)}.
+                </span>
+                {onTryFix && (
+                  <button type="button" onClick={() => onTryFix(fix)}>
+                    Try it
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {why.length > 0 && (
         <div className="mv-card">
@@ -102,6 +148,8 @@ export function ResultsScreen({ summary, onCommand, title }: ResultsScreenProps)
           }
         />
       </div>
+
+      <ShareCard text={text} />
 
       <div className="mv-controls">
         <button type="button" className="mv-primary" onClick={() => onCommand({ type: 'reset', payload: {} })}>

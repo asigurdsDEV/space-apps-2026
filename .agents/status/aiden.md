@@ -5,20 +5,23 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 12:18
+**Last updated:** 2026-11-14 13:20
 
 ## claude@aiden
 
-**Branch:** aiden-claude/glossary-terms (working now); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
+**Branch:** aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-Adopting the glossary (cursor@kaipo handoff 1102, PR #17 merged) in my screens: briefing "Words you'll see" from the shared glossary, builder column headers / Orbit / budget labels as `<Term>` tooltips.
+Nothing claimed. Next of mine on the board: lazy-loaded 3D + bundle size check, offline/PWA.
 
 ### Files / folders I'm touching (hands off)
-- `ui/briefing/`, `ui/builder/` (branch aiden-claude/glossary-terms off main). Read-only: `ui/learn/` (cursor@kaipo).
-- Plus open PR #28 (ANOMALY_CARDS.md source lines).
+None outside my open PRs (#39, #35, #32, #29: `ui/builder/`, `ui/briefing/`).
 
 ### Just finished
+[P1] Builder part compatibility (PR #39): bus-class and best-orbit badges, parts too big for the bus dimmed, same rules as the sim.
+[P1] Builder console lights (PR #35): live PLAN / SPACECRAFT / SCIENCE / COMMS calls from ui/gonogo. Also added 7 improvement tasks to the board (12:55).
+[P0] Builder budget bars match the reviewed sim (PR #32): Bus capacity bar was missing, Science bar ignored the radio (demo 10/30 shown vs 1.7 forecast), new Battery-vs-eclipse bar. Merge #29 first.
+Glossary adopted (PR #29): briefing terms from the shared glossary, builder tooltips on the Orbit heading, 4 columns and 3 budget labels. Asked cursor@kaipo for unique tooltip ids (`useId`).
 [P1] Anomaly card sources (PR #28, into main): an official source for every card + the MCO line, each story checked; Starlink count, SOHO "still observing" and DSN "landings" wording flagged to claude@sarah.
 [P2] 3D space view (decision 003, PR #22): `<SpaceView state mode>` in `ui/scene3d/`, a three.js planet (Earth/Moon/Mars, clouds, night lights, atmosphere), stars, Sun, the orbit and a spacecraft built from the picked parts. The builder (PR #10) opens with the 3D close-up. `three` added to PR #4.
 Shared theme adopted in builder (PR #10) + briefing (PR #14): local palettes → `--game-*` tokens, dark palettes removed. Both PRs now stack on PR #16 (merge #16 first).
@@ -35,25 +38,25 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** main; aiden-codex/merge-challenge-docs kept as merge receipt
-**Last updated:** 2026-11-14 11:37
+**Branch:** main; aiden-codex/daily-records (PR #37, merged)
+**Last updated:** 2026-11-14 11:56
 
 ### Working on right now
 
-Requested PR merge/Pages verification batch complete. Ethan resumes merge coordination. No active application source edits.
+Daily leaderboard follow-up complete and merged. No active source edits. App assembly remains with Ethan; the production entry still needs his wiring.
 
 ### Files / folders I'm touching (hands off)
 
-Only own coordination/status/handoffs. ui/theme/ and ui/leaderboard/ remain follow-up ownership. No source branches deleted/modified; Claude Aiden's section/branches untouched.
+ui/leaderboard/ and ui/theme/: follow-up ownership only, no active edits. Own status/BOARD/log/handoffs. No other source folders or Claude sections/branches changed. Unrelated untracked local docs/CHALLENGE 2.md was left untouched.
 
 ### Just finished
 
-Verified every user-listed PR (#3 #2 #4 #5 #6 #7 #8 #9 #16 #10 #11 #13 #14 #15) plus required #22 is MERGED. Ethan's integration landed the others while I rehearsed. Codex resolved #6 README conflict on an isolated branch, keeping challenge text, player guide and all team rows; normal merge commit 4b8feef, integrated main cacabf0. Actual combined code passes 178/178 tests + typecheck/build. Existing Vite deploy.yml matches #4 byte-for-byte; only that workflow exists. Run 43632765419 succeeded. Live browser opens https://asigurdsdev.github.io/space-apps-2026/ and shows the scaffold (no 404).
+PR #37 merged by Ethan: optional dailySeed isolates each scenario/day from regular records; optional supplied stars stay with the saved score/design. Lower/tied scores keep all original metadata; legacy records retain their keys and are not assigned another run's stars. Validated seed/stars, blocked storage fallback preserved. 20 leaderboard tests pass; actual merged main at 94387e3 has 216/216 tests + clean build. Browser checked separate days, zero stars, lower-score matching metadata, reload persistence and 390px no-overflow layout.
 
 ### Missing / I need from someone
 
-Ethan: publish/merge app-loop wiring so the deployed entry mounts start/lobby/briefing/builder/mission/results rather than scaffold. This is an app integration gap, not Pages configuration. Other source follow-ups remain with their owners; #25 is outside this requested batch.
+Ethan/Sarah: mount the leaderboard only on ended missions and pass daily descriptor seed only when Daily was selected; use count of earned items from existing stars(summary, bonusGoal) helper. Exact handoff published. This does not calculate star rules or program unlocks. App wiring/live full mission remains unverified by Codex because app/ is actively being assembled by its owner.
 
 ### Heads up for other agents
 
-No Jekyll/Static HTML Configure action used, no generic workflow, Pages source unchanged. Temporary Codex merge takeover is over; Ethan is merge coordinator again. README source PR #6 is merged without modifying Jamie's branch. Browser live co-op/full playthrough was not claimed; the entry still shows a placeholder.
+No app/shared/sim/data/start/mission source changes in PR #37. Regular calls still work unchanged. Record stars are for the matching best-score design, not an independent maximum-star progression store. Existing local-only/unverified score and multi-tab limits remain. Ethan is merge coordinator; I did not run a competing merge batch.

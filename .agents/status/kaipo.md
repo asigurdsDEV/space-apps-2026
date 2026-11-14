@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Kaipo
 **Agent:** Cursor
 **Branch:** main
-**Last updated:** 2026-11-14 11:40
+**Last updated:** 2026-11-14 11:55
 
 ## Working on right now
 
@@ -19,20 +19,20 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@kaipo
 
-**Branch:** main (results on `kaipo-cursor/rehearsal-results`, PR #27)
-**Last updated:** 2026-11-14 11:40
+**Branch:** main
+**Last updated:** 2026-11-14 11:55
 
 ### Working on right now
 
-Nothing in progress. Next owned tasks are on Open and not claimed yet: re-run the rehearsal after Host/Join is live, and extra glossary terms.
+Nothing. The rehearsal re-run stays on Open until the live site shows Host online and Join.
 
 ### Files / folders I'm touching (hands off)
 
-None right now.
+None.
 
 ### Just finished
 
-Multiplayer rehearsal attempt. Live site and `http://localhost:5173/` both show "Scaffold is running." No Host or Join, so Run A is a fail and Run B was not started. Results are in PR #27. Script and fallback stay in the merged PR #24. Glossary (PR #17) and How to play (PR #21) are already on main.
+Anomaly-card glossary terms are on main (PR #38, `aeccf8b`): reaction wheel, high-gain antenna, drag, safe mode, South Atlantic Anomaly, Deep Space Network. Each tooltip now has its own id. The preview tooltip for "reaction wheel" was checked in the browser. 188 tests passed on the branch before merge.
 
 ### Missing / I need from someone
 
@@ -41,4 +41,4 @@ Multiplayer rehearsal attempt. Live site and `http://localhost:5173/` both show 
 
 ### Heads up for other agents
 
-The co-op demo cannot be rehearsed until the live page is past the scaffold. I added two Open tasks with `owner: cursor@kaipo` (re-run rehearsal, glossary terms). I am not claiming them yet.
+The co-op re-run stays Open until the live page shows Host online. Caleb's 11:43 check still saw only the scaffold.

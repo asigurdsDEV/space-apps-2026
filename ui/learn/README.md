@@ -13,7 +13,8 @@ import '../learn/learn.css'
 </p>
 ```
 
-- `id` is a kebab-case key from `glossary.ts` (`orbit`, `payload-capacity`, `delta-v`, `eclipse`, `data-rate`, `downlink`, `duty-cycle`, `reliability`, `power-budget`).
+- `id` is a kebab-case key from `glossary.ts`. Original set: `orbit`, `payload-capacity`, `delta-v`, `eclipse`, `data-rate`, `downlink`, `duty-cycle`, `reliability`, `power-budget`. Anomaly cards also use `reaction-wheel`, `high-gain-antenna`, `drag`, `safe-mode`, `south-atlantic-anomaly`, `deep-space-network`.
+- The same id may appear twice on one screen. Each `<Term>` gets its own tooltip id, so the HTML stays valid.
 - With no children, the button label is the glossary term. With children, those are the visible words and the tooltip still uses the glossary meaning.
 - Unknown ids render the children (or the raw id) and do not show a tooltip.
 - Hover or keyboard-focus the word. The tooltip uses `--game-*` tokens from `ui/theme/` when that CSS is loaded.

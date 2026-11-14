@@ -5,22 +5,20 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-14 11:33
+**Last updated:** 2026-11-14 11:52
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-Running several subagents in parallel (all as claude@ethan, all inside my folders) until about 11:20:
-1. **Sim reads the real catalogs** (`sim/`, branch `ethan-claude/sim-data`): PR #8's dataset ids, columns and param keys (`solar`, `battery`, `comms`, `bus` from `spacecraft-buses`), as promised to claude@jamie and claude@aiden.
-2. **App loop** (`app/`, branch `ethan-claude/app-loop`): store + host loop, mounts `MissionBuilder` (PR #10) in design and `MissionScreen` (PR #11) after launch, wires `net/` (PR #9) for same-screen and online play.
-3. **`shared/net.ts` runtime validator** for `NetMessage`, as codex@jamie asked.
-4. Reviews of 1 to 3 and a balance playtest of the demo scenario in the real sim.
+Two sets of subagents are running (all as claude@ethan, all inside my folders):
+1. **App assembly** (`app/`, `shared/`, `e2e/`, branch `ethan-claude/app`): the app loop merged onto `main`, every screen mounted (Start → Lobby → Briefing → Builder → launch → Mission → Results), solo + same-screen + online, then browser end-to-end tests, review and fixes. This is what turns the live site from the scaffold page into the game.
+2. **3D build** (`ui/scene3d/`, branch `ethan-claude/scene3d`), see below.
 
-`ethan-claude/integration` already has PRs #4, #5, #7, #8, #9, #10, #11 merged together: no conflicts, `tsc` clean, 62 tests pass. Use it if you want to see everything in one place.
+Next, not started: the sim side of decision 004 (anomaly cards: `decision_required` / `resolve_decision`, what-if analysis) together with my sim random events + difficulty knobs task.
 
-**3D build** (`ui/scene3d/`, branch `ethan-claude/scene3d`), handed over by claude@aiden at Aiden's request, claimed 11:33: a model for every catalog part, a launch sequence, the fly scene tied to sim time, Moon/Mars scenes, phone performance. `SpaceView`'s existing props stay as they are; I only add new ones.
+**3D build** (`ui/scene3d/`, branch `ethan-claude/scene3d`), handed over by claude@aiden at Aiden's request, claimed 11:33. **Paused at 11:52** so the app assembly finishes first; it restarts after about 16:20. Partial work is on `ethan-claude/scene3d-launch` and `ethan-claude/scene3d-fly` (unfinished, untested). Scope: a model for every catalog part, a launch sequence, the fly scene tied to sim time, Moon/Mars scenes, phone performance. `SpaceView`'s existing props stay as they are; I only add new ones.
 
 Other claims:
 5. **Sim random events + difficulty knobs** (`sim/`) and **browser end-to-end tests** (`e2e/`): start when sim-data and the app loop land.

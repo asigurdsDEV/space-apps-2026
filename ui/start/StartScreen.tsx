@@ -1,10 +1,20 @@
-import { useId, useState, type FormEvent } from 'react'
+import { useId, useRef, useState, type FormEvent } from 'react'
 import type { Config } from '../../shared'
+import type { Difficulty } from '../../data'
+import { Term } from '../learn'
+import '../learn/learn.css'
+import type { DailyMission, DailyMissionRequest } from './daily'
 import { startRequest, type StartMode, type StartRequest } from './model'
 import './start.css'
 
+export type StartScenario = Pick<Config, 'scenario_id' | 'title' | 'params'>
+
 export interface StartScreenProps {
-  scenarios: readonly Pick<Config, 'scenario_id' | 'title' | 'params'>[]
+  scenarios: readonly StartScenario[]
+  scenarioPreview?: (id: string, difficulty: Difficulty) => StartScenario | undefined
+  difficultyLabels?: Record<Difficulty, string>
+  dailyMission?: DailyMission | null
+  onDailyMission?: (request: DailyMissionRequest) => void
   onStart: (request: StartRequest) => void
   busy?: boolean
   error?: string | null
@@ -15,22 +25,35 @@ const modes: { mode: StartMode; title: string; detail: string }[] = [
   { mode: 'join', title: 'Join a room', detail: 'Bring a room code from your host.' },
 ]
 
-export function StartScreen({ scenarios, onStart, busy = false, error }: StartScreenProps) {
+export function StartScreen({ scenarios, onStart, scenarioPreview, dailyMission, onDailyMission, difficultyLabels = { easy: 'Easy', normal: 'Normal', hard: 'Hard' }, busy = false, error }: StartScreenProps) {
   const id = useId()
+  const nameInput = useRef<HTMLInputElement>(null)
   const [mode, setMode] = useState<StartMode>('solo')
+  const [difficulty, setDifficulty] = useState<Difficulty>('normal')
   const [name, setName] = useState('')
   const [scenarioId, setScenarioId] = useState(scenarios[0]?.scenario_id ?? '')
   const [code, setCode] = useState('')
   const [validation, setValidation] = useState<string | null>(null)
   const scenario = scenarios.find(item => item.scenario_id === scenarioId) ?? scenarios[0]
+  const preview = scenario && (scenarioPreview ? scenarioPreview(scenario.scenario_id, difficulty) : difficulty === 'normal' ? scenario : undefined)
+  const budget = preview?.params.budget_usd
+  const goal = preview?.params.target_science_score
+  const dailyScenario = dailyMission && scenarios.find(item => item.scenario_id === dailyMission.scenarioId)
   const message = validation || error
   function submit(event: FormEvent) {
     event.preventDefault()
     if (busy) return
-    const request = startRequest(mode, name, scenario?.scenario_id ?? '', code)
+    const request = startRequest(mode, name, scenario?.scenario_id ?? '', code, difficulty)
     if (!request) { setValidation('Enter your name and choose a scenario, or enter a room code to join.'); return }
     setValidation(null)
     onStart(request)
+  }
+  function playDaily() {
+    if (busy || !dailyMission || !onDailyMission || !dailyScenario) return
+    const request = startRequest('solo', name, dailyMission.scenarioId, '', 'normal')
+    if (!request) { setValidation('Enter your name to play the daily mission.'); nameInput.current?.focus(); return }
+    setValidation(null)
+    onDailyMission({ ...dailyMission, name: request.name })
   }
   return (
     <main className="ss-root">
@@ -39,6 +62,7 @@ export function StartScreen({ scenarios, onStart, busy = false, error }: StartSc
           <p className="ss-eyebrow">Kimchi Trenchers · Space Mission Design Game</p>
           <h1>Big ideas.<br /><span>Finite resources.</span></h1>
           <p className="ss-lede">Design a spacecraft, balance its resources, and discover what it takes to bring science home.</p>
+          <p className="ss-hint">Learn the trade-offs in your <Term id="power-budget" /> and <Term id="downlink" />.</p>
           <ol className="ss-steps"><li>Choose your mission</li><li>Make the trade-offs</li><li>Fly and learn</li></ol>
         </header>
         <form className="ss-panel" onSubmit={submit} onChange={() => setValidation(null)} aria-busy={busy}>
@@ -53,7 +77,7 @@ export function StartScreen({ scenarios, onStart, busy = false, error }: StartSc
               ))}
             </div>
             <label htmlFor={`${id}-name`}>Your name</label>
-            <input id={`${id}-name`} value={name} onChange={event => setName(event.target.value)}
+            <input ref={nameInput} id={`${id}-name`} value={name} onChange={event => setName(event.target.value)}
               required maxLength={40} autoComplete="nickname" placeholder="Mission planner" />
             {mode === 'join' ? <>
               <label htmlFor={`${id}-code`}>Room code</label>
@@ -68,12 +92,27 @@ export function StartScreen({ scenarios, onStart, busy = false, error }: StartSc
                 {!scenarios.length && <option value="">No scenarios available</option>}
                 {scenarios.map(item => <option key={item.scenario_id} value={item.scenario_id}>{item.title}</option>)}
               </select>
+              <label htmlFor={`${id}-difficulty`}>Difficulty</label>
+              <select id={`${id}-difficulty`} value={difficulty} onChange={event => setDifficulty(event.target.value as Difficulty)}>
+                {(['easy', 'normal', 'hard'] as const).map(level => <option key={level} value={level}>{difficultyLabels[level]}</option>)}
+              </select>
+              <dl className="ss-stats" aria-live="polite">
+                {typeof budget === 'number' && Number.isFinite(budget) && <div><dt>Budget</dt><dd>{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(budget)}</dd></div>}
+                {typeof goal === 'number' && Number.isFinite(goal) && <div><dt>Science goal</dt><dd>{goal} points</dd></div>}
+              </dl>
+              {!preview && <p className="ss-hint">Adjusted budget and goal will appear in the mission briefing.</p>}
               <p className="ss-hint">{typeof scenario?.params.objective_text === 'string' ? scenario.params.objective_text : 'Choose a mission, then read the briefing before you build.'}</p>
             </>}
             {message && <p className="ss-error" role="alert">{message}</p>}
             <button className="ss-primary" type="submit" disabled={busy || (mode !== 'join' && !scenario)}>
               {busy ? 'Connecting…' : mode === 'solo' ? 'Start mission' : mode === 'host' ? 'Create room' : 'Join room'}
             </button>
+            {mode === 'solo' && dailyMission && dailyScenario && onDailyMission && <section className="ss-daily" aria-labelledby={`${id}-daily`}>
+              <h2 id={`${id}-daily`}>Daily mission</h2>
+              <p className="ss-hint"><time dateTime={dailyMission.date}>{dailyMission.date}</time> (UTC) · {dailyScenario.title}</p>
+              <p className="ss-hint">Same mission and starting conditions for everyone today. Normal difficulty, regardless of the picker above.</p>
+              <button className="ss-daily-button" type="button" onClick={playDaily} disabled={busy}>Play daily mission</button>
+            </section>}
             <p className="ss-hint">Solo play works on one device. Online play needs a connection; use solo if the venue network blocks it.</p>
           </fieldset>
         </form>

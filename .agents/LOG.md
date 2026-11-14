@@ -125,3 +125,31 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 11:40 | cursor@kaipo | multiplayer-rehearsal | done: first attempt failed, PR #27. Live site and localhost are still the scaffold (no Host/Join). Run B not started. Venue re-run and glossary terms added to Open, owner cursor@kaipo. Handoff to claude@ethan.
 2026-11-14 12:18 | claude@aiden | glossary-terms | started: glossary tooltips in ui/briefing + ui/builder (cursor@kaipo handoff 1102)
 2026-11-14 11:37 | codex@aiden | merge-batch | done: all 14 requested PRs + #22 merged; resolved #6 README, 178 tests/build pass, Pages run 43632765419 success; live scaffold verified; Ethan resumes coordinator
+2026-11-14 11:41 | claude@ethan | app | started: assembling the real app on main's screens (branch ethan-claude/app) + browser e2e tests in e2e/; sim review fixes summarised with requests per owner in handoff 20261114-1141 (to all)
+2026-11-14 11:41 | claude@ethan | merge | PRs #25, #27, #28 rehearsed together on main: tsc clean, 186/186 tests, build passes; waiting on Ethan's go-ahead to push
+2026-11-14 12:25 | claude@aiden | glossary-terms | done: glossary in briefing + builder, PR #29; handoff to cursor@kaipo (unique Term ids via useId)
+2026-11-14 11:41 | codex@jamie | start-polish | done: difficulty + theme/glossary adoption, PR #30; 179 tests + tsc/build/contrast + desktop/phone browser checks pass
+2026-11-14 11:42 | codex@jamie | daily-mission | claimed: Start UI/helper only; Ethan accepted UTC day + YYYYMMDD seed + normal + sorted IDs; app stays his
+2026-11-14 11:47 | claude@ethan | merge | done: PRs #25, #27, #28 on main (b57df67), Ethan's go-ahead; tsc clean, 186/186 tests, build + Pages deploy pass
+2026-11-14 12:35 | claude@aiden | budget-bars | claimed: [P0] builder budget bars match the reviewed sim (probe on real data: Bus capacity bar missing, science bar 10 vs sim forecast 1.7 on demo)
+2026-11-14 11:43 | cursor@caleb | live-site | ran P0 check: Pages 200 but scaffold only on desktop and phone; start to results blocked on app loop
+2026-11-14 12:45 | claude@aiden | budget-bars | done: builder bars match reviewed sim, PR #32 (after #29); ethan's no_station_keeping ask: builder never handled it, nothing to drop
+2026-11-14 12:40 | claude@sarah | space-weather | claimed: real NASA OMNI space weather dataset (data/space-weather/ new subfolder) + fly-screen strip + design spec
+2026-11-14 11:43 | codex@aiden | daily-records | claimed: daily-seeded leaderboard + supplied stars, ui/leaderboard/ only; app assembly remains Ethan
+2026-11-14 11:46 | claude@jamie | gonogo | done: GO / NO-GO poll in PR #33 (ui/gonogo/), tsc clean, 189/189 tests; handoff to claude@ethan to mount it in app/
+2026-11-14 11:46 | codex@jamie | daily-mission | done: Start daily helper/UI, PR #31 after #30; 191 tests + tsc/build/browser pass; app integration task stays Ethan-owned; net clarification handoff
+2026-11-14 11:50 | cursor@kaipo | glossary-cards | claimed: [P2] anomaly-card glossary terms (ui/learn/). Rehearsal re-run stays Open: live site still has no Host/Join.
+2026-11-14 12:55 | claude@aiden | board | added 7 improvement tasks to Open (console lights, part compatibility, lazy 3D + size check, crash safety, offline/PWA, first-time tips, sound)
+2026-11-14 13:05 | claude@sarah | space-weather | real NASA OMNI space weather (data/space-weather, 1996–2026) + fly-screen strip + preview storm card on real storm days, PR #34; tests verify known storms; handoffs to claude@ethan (sim) + claude@jamie (subfolder)
+2026-11-14 12:56 | claude@aiden | console-lights | claimed: [P1] Builder console lights (ui/builder/)
+2026-11-14 11:52 | claude@jamie | hard-mode | claimed: make Hard winnable with random failures on; fix Normal row in data README
+2026-11-14 11:52 | claude@ethan | scene3d | paused the 3D build until about 16:20 so the app assembly (the playable game) finishes first; partial work pushed to ethan-claude/scene3d-launch and -fly; ui/scene3d/ stays claimed
+2026-11-14 13:05 | claude@aiden | console-lights | done: builder console lights, PR #35 (merge after #29, #32, #33)
+2026-11-14 11:58 | claude@ethan | merge | done: PRs #29, #30, #31, #32, #33, #34, #35 on main (07b6c1f); tsc clean, 201/201 tests, build passes; Ethan gave standing approval to merge PRs that pass those three checks, so tell me when yours is ready
+2026-11-14 12:00 | claude@jamie | hard-mode | done: PR #36, demo seed 42 -> 1, Normal failures off, failures-on Hard test; tsc clean, 189/189; handoff to claude@ethan (sim/README seed note)
+2026-11-14 12:00 | claude@ethan | merge | done: PRs #36, #37 on main (bec90dc); tsc clean, 214/214 tests, build passes
+2026-11-14 13:08 | claude@aiden | part-fit | claimed: [P1] Builder part compatibility (ui/builder/)
+2026-11-14 11:55 | cursor@kaipo | glossary-cards | done: anomaly-card glossary terms merged, PR #38. Six ids in ui/learn/. Term tooltip ids are unique. Rehearsal re-run still Open.
+2026-11-14 13:20 | claude@aiden | part-fit | done: builder part compatibility badges, PR #39 (after #35)
+2026-11-14 11:55 | claude@ethan | merge | done: PRs #39 on main (8fb9e4c); tsc clean, 218 passed (218), build passes
+2026-11-14 11:56 | codex@aiden | daily-records | done: PR #37 merged; daily seed isolation + matching stars, 20 owned tests; actual main 216 tests/build pass; app/results integration handoff

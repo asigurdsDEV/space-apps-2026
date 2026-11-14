@@ -3,6 +3,12 @@ import type { Params } from '../../shared'
 export interface PersonalBest {
   score: number
   design: Params
+  stars?: number
+}
+
+export interface RecordOptions {
+  dailySeed?: number
+  stars?: number
 }
 
 export interface SaveResult {
@@ -20,14 +26,24 @@ function validBest(value: unknown): value is PersonalBest {
   if (value === null || typeof value !== 'object' || Array.isArray(value)) return false
   const entry = value as Record<string, unknown>
   return typeof entry.score === 'number' && Number.isFinite(entry.score) && validDesign(entry.design)
+    && (entry.stars === undefined || validStars(entry.stars))
+}
+
+function validStars(value: unknown): value is number {
+  return typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 3
 }
 
 /** Equal scores keep the first design; failed/blocked storage never prevents results rendering. */
 // shortcut: simultaneous writes from multiple tabs are not coordinated; add coordination if cross-tab play is supported.
-export function savePersonalBest(scenarioId: string, score: number, design: Params): SaveResult {
+export function savePersonalBest(scenarioId: string, score: number, design: Params, { dailySeed, stars }: RecordOptions = {}): SaveResult {
   if (!scenarioId.trim() || !Number.isFinite(score) || !validDesign(design)) return { best: null, stored: false }
+  if (stars !== undefined && !validStars(stars)) return { best: null, stored: false }
+  if (dailySeed !== undefined && (!Number.isSafeInteger(dailySeed) || dailySeed < 0)) return { best: null, stored: false }
   let best: PersonalBest = { score, design: { ...design } }
-  const key = `space-apps-2026:best:v1:${encodeURIComponent(scenarioId)}`
+  if (stars !== undefined) best.stars = stars
+  const key = dailySeed === undefined
+    ? `space-apps-2026:best:v1:${encodeURIComponent(scenarioId)}`
+    : `space-apps-2026:daily-best:v1:${encodeURIComponent(scenarioId)}:${dailySeed}`
   try {
     const storage = globalThis.localStorage
     const raw = storage.getItem(key)

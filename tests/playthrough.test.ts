@@ -49,6 +49,12 @@ describe('playthrough (real sim + real data)', () => {
     },
   )
 
+  // Hard turns random failures on, so the scenario's own seed must not doom a good design.
+  it.each(Object.keys(WINS))('%s (hard, random failures on): the reference design survives its seed', (id) => {
+    const r = play(getScenario(id, 'hard')!, WINS[id])
+    expect(r.ended?.payload).toMatchObject({ reason: 'success' })
+  })
+
   it.each(Object.keys(WINS))('%s: the starting design does not win', (id) => {
     const r = play(sandbox(id))
     expect(r.ended?.payload.reason ?? 'refused at launch').not.toBe('success')
@@ -74,7 +80,7 @@ describe('playthrough (real sim + real data)', () => {
   })
 
   it('the same seed gives the same result (with random failures on)', () => {
-    const demo = getScenario('demo')!
+    const demo = getScenario('demo', 'hard')!
     expect(play(demo).state.metrics).toEqual(play(demo).state.metrics)
   })
 })
