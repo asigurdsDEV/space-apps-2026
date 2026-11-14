@@ -290,3 +290,24 @@ export function partFit(part: Entity, state: Pick<SimState, 'entities' | 'params
   }
   return { badges, dim }
 }
+
+// ---------------------------------------------------------------- risk meter
+
+/** Test flights of the current design (app/ flies them in the background with sim `successRate`). */
+export interface Chance {
+  /** Share of the flights so far that succeeded, 0 to 1. null: the design can't launch. */
+  rate: number | null
+  flown: number
+  runs: number
+  done: boolean
+}
+
+/** "Very likely (95%)": the chance in words first, so it isn't just a number. */
+export function chanceText(rate: number): string {
+  const pct = `${Math.round(rate * 100)}%`
+  if (rate >= 0.9) return `Very likely (${pct})`
+  if (rate >= 0.7) return `Likely (${pct})`
+  if (rate >= 0.4) return `Risky (${pct})`
+  if (rate > 0) return `Unlikely (${pct})`
+  return 'Fails every test flight (0%)'
+}

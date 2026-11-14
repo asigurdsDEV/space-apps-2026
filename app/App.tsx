@@ -26,6 +26,7 @@ import { startDriver, timerClock } from './driver'
 import { createGame, type Game } from './game'
 import { cleanRoomCode, openRoom } from './room'
 import { createGuestSession, createHostSession, createSoloSession, ROLE_LABELS, type Session } from './session'
+import { useChance } from './useChance'
 import { useSession } from './useSession'
 import './app.css'
 
@@ -312,7 +313,7 @@ export function GameScreen({ session, config, onExit, roomCode, daily }: GameScr
         ]}
       >
         {designing ? (
-          <Design session={session} />
+          <Design session={session} config={config} />
         ) : (
           // Unmounts on reset, so every launch starts it fresh.
           <Flight session={session} config={config} daily={daily} />
@@ -333,8 +334,9 @@ function useScrollToTop(screen: string) {
 const focusOnMount = (node: HTMLElement | null) => node?.focus()
 
 /** The design phase: the builder with save-and-share under it, then the GO / NO-GO poll before launch. */
-function Design({ session }: { session: Session }) {
+function Design({ session, config }: { session: Session; config: Config }) {
   const { state, players, me } = useSession(session)
+  const chance = useChance(config, state.params, !state.issues.some((i) => i.severity === 'error'))
   /** The builder's Launch button opens the poll; the poll's Launch button sends the command. */
   const [polling, setPolling] = useState(false)
   useScrollToTop(polling ? 'poll' : 'builder')
@@ -359,6 +361,7 @@ function Design({ session }: { session: Session }) {
         send={(command) => (command.type === 'launch' ? setPolling(true) : session.send(command))}
         players={players}
         me={me}
+        chance={chance}
       />
       <section className="app-share" aria-labelledby="app-share-title">
         <h2 id="app-share-title">Save, share and compare designs</h2>
