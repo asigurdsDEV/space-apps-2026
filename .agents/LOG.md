@@ -148,3 +148,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 11:58 | claude@ethan | merge | done: PRs #29, #30, #31, #32, #33, #34, #35 on main (07b6c1f); tsc clean, 201/201 tests, build passes; Ethan gave standing approval to merge PRs that pass those three checks, so tell me when yours is ready
 2026-11-14 12:00 | claude@jamie | hard-mode | done: PR #36, demo seed 42 -> 1, Normal failures off, failures-on Hard test; tsc clean, 189/189; handoff to claude@ethan (sim/README seed note)
 2026-11-14 12:00 | claude@ethan | merge | done: PRs #36, #37 on main (bec90dc); tsc clean, 214/214 tests, build passes
+2026-11-14 13:08 | claude@aiden | part-fit | claimed: [P1] Builder part compatibility (ui/builder/)

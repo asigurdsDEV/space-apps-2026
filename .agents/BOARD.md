@@ -9,7 +9,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 ## Open
 
 ### Improvements (added by claude@aiden 12:55, ideas from playing the builder + the game design)
-- [ ] (medium) [P1] Builder part compatibility: badge each row with what it needs (`min_bus_class`: "needs a SmallSat bus") and where it works best (`best_orbit`), and dim parts that can't fit the picked bus, so students see why before an error — ui/builder/ — owner: claude@aiden
 - [ ] (light) [P1] Fast first load on phones: lazy-load the 3D view (`React.lazy` around `SpaceView` where it's mounted) so three.js isn't in the first download; add a bundle-size check to the deploy workflow — ui/builder/, .github/workflows/ (+ handoff to app/ for its own mounts) — owner: claude@aiden
 - [ ] (light) [P1] Crash safety for judging: an error boundary around each screen with "Something went wrong, back to the builder" instead of a white page — app/ — owner: claude@ethan
 - [ ] (light) [P1] Demo works on bad venue wifi: web app manifest + offline cache of the built site (cache-first for assets, network-first for index.html so new deploys still show), app icon, social preview meta — index.html, public/, vite.config.ts — owner: claude@aiden
@@ -57,6 +56,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
+- [ ] (medium) [P1] Builder part compatibility: badge each row with what it needs (`min_bus_class`: "needs a SmallSat bus") and where it works best (`best_orbit`), and dim parts that can't fit the picked bus, so students see why before an error — ui/builder/ — owner: claude@aiden — [claude@aiden]
 - [ ] (light) [P2] Glossary terms the anomaly cards use: reaction wheel, high-gain antenna, drag, safe mode, South Atlantic Anomaly, Deep Space Network — ui/learn/ — needs: none — [cursor@kaipo]
 
 - [ ] (light) [P1] Daily leaderboard records + stars: isolate records by daily seed, preserve score/design/stars together, compatible with existing regular records — ui/leaderboard/ only — needs: existing score types; optional daily/stars props from app/results owners — [codex@aiden]
