@@ -25,6 +25,27 @@ import { MissionScreen } from '../ui/mission'
 - "Start over" and "Design a new mission" both send `reset`.
 - It brings its own CSS (`mission.css`, every class prefixed `.mv`) inside a `.mv-root` wrapper.
 
+### Game layer (decision 004, `docs/game-design/GAME_DESIGN.md`)
+
+Optional props. Leave them out and the screens work as before.
+
+```tsx
+<MissionScreen
+  {...above}
+  decision={openCard}                 // latest unresolved `decision_required` payload, or null
+  onDecide={(decision_id, option_id) => send({ type: 'resolve_decision', payload: { decision_id, option_id } })}
+  canDecide={myConsoleOwnsIt}         // co-op: false greys out the options for other players
+  bonusGoal={config.params.bonus_goal} // 'no_data_lost' | 'budget_left_20' | 'mass_margin_10'
+  fixes={whatIf(...)}                  // from sim/analysis.ts; best 3 that beat the score are shown
+  onTryFix={(fix) => loadIntoBuilder(fix.params)}
+  share={{ daily: '2026-11-14', anomalies: cardsAnswered }}
+/>
+```
+
+- **Anomaly card:** shown above the run view while `decision` is set. Pause and speed are locked, because the sim doesn't advance time until the card is answered. Focus moves to option A for keyboard players.
+- **Debrief:** 3 stars (success, scenario bonus goal, 85+ points), "Change one thing" / "Even better" with **Try it**, and a share card with a Copy button.
+- `Decision` and `WhatIfFix` are local types in `game.ts` matching decision 004. When claude@ethan adds them to `shared/`, switch to those.
+
 `MissionView`, `ResultsScreen`, `OrbitDiagram`, `eventText` and `logLines` are exported too, if the app wants to lay things out differently.
 
 ## Coordinate frame
@@ -37,7 +58,7 @@ Uses `body-centered` as defined in `sim/README.md`: the body (`kind: "body"`, `p
 npm run dev
 ```
 
-Then open <http://localhost:5173/ui/mission/preview/preview.html>. It runs the real sim with `sim/testing/fixtures.ts`, designs the fixture's good spacecraft and launches it. Add `?sandbox` for no random failures, or `?seed=7` to change the dice.
+Then open <http://localhost:5173/ui/mission/preview/preview.html>. It runs the real sim with `sim/testing/fixtures.ts`, designs the fixture's good spacecraft and launches it. Add `?sandbox` for no random failures, `?seed=7` to change the dice, or `?weak` to fly a one-ground-station design that loses data, so the debrief has fixes to show. A stand-in anomaly card pops up on day 20 until the sim emits real ones. The what-if fixes are real reruns of the sim.
 
 ## Tests
 

@@ -4,7 +4,7 @@
 Format: `- [ ] (size) [priority] task — folder — needs: … — owner: … — [agent@human]`
 Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
-**Current go-ahead:** Aiden authorizes non-overlapping owned/claimed work; claude@ethan is the sole merge coordinator. Pages is enabled for Actions; app deployment is pending. Read AGENTS.md + the newest codex@aiden all-agent go-ahead handoff. Older permission/Pages requests below are answered by this note; technical blockers still require verification.
+**Current go-ahead:** Aiden authorizes non-overlapping owned/claimed work; claude@ethan is the sole merge coordinator. Pages is deployed through Actions (scaffold live); the app loop remains unmerged. Read AGENTS.md + the newest codex@aiden all-agent go-ahead handoff. Older permission/Pages requests below are answered by this note; technical blockers still require verification.
 
 ## Open
 
@@ -22,11 +22,12 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 ### Game design (decision 004, proposed, see docs/game-design/GAME_DESIGN.md §8)
 - [ ] (heavy) [P0] Anomaly cards in the sim: `decision_required` event + `resolve_decision` command, seeded draws, effects vocabulary, encode the deck from docs/game-design/ANOMALY_CARDS.md — sim/, shared/, CONTRACTS.md — owner: claude@ethan
 - [ ] (medium) [P0] What-if + risk meter helper: `whatIf()` and `successRate()` reruns of the pure sim — sim/analysis.ts — owner: claude@ethan
-- [ ] (light) [P0] Daily mission: date picks scenario + seed (YYYYMMDD) — ui/start/ + app/ — owners: codex@jamie (start), claude@ethan (app)
 - [ ] (medium) [P1] Real missions table: ~10–15 real missions with sourced numbers for the debrief match — data/real-missions.json — owner: claude@jamie
 - [ ] (light) [P1] Bonus star goal per scenario (`bonus_goal` param) + mission program order — data/scenarios/ — owner: claude@jamie
 
 ## Missing / needed
+
+- Merge/Pages setup requests resolved: all Aiden-listed PRs + #22 are merged; run 43632765419 deployed successfully. Live URL still serves scaffold because app/main.tsx wiring is not merged — app/ owner claude@ethan — [found by codex@aiden]
 
 - Leaderboard PR #19 needs results mounting by ui/mission/ or app/ owner with final scenario ID, Summary and state.params; component/storage are complete — [found by codex@aiden]
 
@@ -49,10 +50,11 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## In progress
 
-- [ ] (medium) [P0] Start/Lobby follow-up: difficulty picker + shared theme/glossary adoption — ui/start/, ui/lobby/ only — needs: #8 #13 #15 #16 #17 — [codex@jamie]
+- [ ] (light) [P0] Builder budget bars match the reviewed sim: Bus capacity from `added_mass_kg`/`added_mass_limit_kg` (bar is missing today), science from `science_expected` (today it ignores the radio: demo shows 10/30, sim forecasts 1.7), new Battery-vs-eclipse bar — ui/builder/ — owner: claude@aiden — [claude@aiden]
+- [ ] (light) [P0] Daily mission: date picks scenario + seed (YYYYMMDD) — ui/start/ + app/ — owners: codex@jamie (start), claude@ethan (app) — [codex@jamie] (Start UI/helper only; app integration stays claude@ethan)
+
 
 - [ ] (medium) [P0] GO / NO-GO poll, solo: 4 consoles vote from `state.issues`, Launch unlocks on all GO — ui/gonogo/ (new) — needs: builder — [claude@jamie]
-- [ ] [P0] Aiden-requested merge batch: #3 #2 #4 #5 #6 #7 #8 #9 #16 #10 #11 #13 #14 #15, plus required #22 before #10; verify existing Pages deploy — main merge commits + coordination; README conflicts preserve all team edits — [codex@aiden]
 
 
 
@@ -63,14 +65,14 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 
 - [ ] (medium) [P1] Sim: richer random events + difficulty knobs the scenario files can set (the easy/normal/hard scenario variants stay with claude@jamie) — sim/ — starts when ethan-claude/sim-data lands — [claude@ethan]
-- [ ] (heavy) [P1] Browser end-to-end tests of the assembled game: full solo mission, and two browsers in one co-op room — e2e/ (new), playwright devDependency + one script in package.json — starts when the app loop lands — [claude@ethan]
+- [ ] (heavy) [P1] Browser end-to-end tests of the assembled game: full solo mission, and two browsers in one co-op room — e2e/ (new); uses playwright-core installed outside the repo, so no package.json change — in progress on branch ethan-claude/app — [claude@ethan]
 
 
 
 
 - [ ] (heavy) Multiplayer rooms + transport: PeerJS/WebRTC host-authoritative co-op for up to 4, room codes, role claim, LocalTransport fallback (decision 002) — net/ — [codex@jamie]
 
-- [ ] App loop + state store: load data, run the sim, hand state to the UI, handle pause/reset/speed — app/ (everything in app/ except replacing the placeholder in `app/main.tsx` until PR #4 merges) — [claude@ethan]
+- [ ] App loop + state store, and mounting every screen (Start → Lobby → Briefing → Builder → launch → Mission → Results), solo + same-screen + online — app/ (whole folder, including `app/main.tsx`), branch ethan-claude/app — [claude@ethan]
 - [ ] (heavy) [P1] 3D models + launch + 3D fly scene: a real model for every catalog part, a launch sequence, the fly screen in 3D tied to sim time, Moon/Mars scenes, phone performance — ui/scene3d/ (whole folder), branch ethan-claude/scene3d — [claude@ethan]
 
 ## Blocked
@@ -78,8 +80,12 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Done
 
+- [x] (medium) [P0] Start/Lobby follow-up: difficulty picker + shared theme/glossary adoption — ui/start/, ui/lobby/ only — needs: #8 #13 #15 #16 #17 — [codex@jamie] — in PR #30; app must honor difficulty/preview callback
+
 - [x] (light) [P1] Anomaly card sources — docs/game-design/ANOMALY_CARDS.md (source lines only) — [claude@aiden] — in PR #28 (into main; #23 already merged): official NASA/JPL/ESA/NOAA/STScI page for all 8 cards + MCO line, each story checked; 3 wording notes for claude@sarah (handoff card-sources)
 - [x] (light) [P1] Multiplayer rehearsal: 4 devices on venue wifi + a phone hotspot, write results + fallback call in docs/MULTIPLAYER_TEST.md — docs/MULTIPLAYER_TEST.md — [cursor@kaipo] — script in PR #24 (merged); first attempt in PR #27: fail, live site and localhost are still the scaffold, no Host/Join. Venue re-run is a new Open task (owner: cursor@kaipo) once the app loop is live.
+- [x] Aiden-requested merge batch + existing Pages deploy — [codex@aiden] — all 14 listed PRs + required #22 confirmed merged; Ethan landed the integration set, Codex resolved/merged #6 (4b8feef) preserving README; 178 tests + build pass, deploy run 43632765419 success; scaffold live, app loop still needed.
+
 - [x] [P0] Merge ready PRs — merge coordination — [claude@ethan] — 21 PRs on `main` (c1b8d30) by one fast-forward push of the rehearsed merge: #2 #3 #4 #5 #7 #8 #9 #10 #11 #12 #13 #14 #15 #16 #18 #19 #20 #22 #23 #24 #26; tsc clean, 178/178 tests, build + Pages deploy pass, https://asigurdsdev.github.io/space-apps-2026/ returns 200. Held: #6 (README conflict, claude@jamie), #25 (opened after the rehearsal, claude@sarah)
 - [x] (medium) [P0] Anomaly card UI on the fly screen + what-if / stars / share card on the debrief — ui/mission/ — [claude@sarah] — in PR #25 (after #11); lights up when sim emits `decision_required` + `whatIf()` lands (claude@ethan)
 - [x] (medium) Game design doc "GO / NO-GO": docs/game-design/ + decision 004 (proposed) — [claude@sarah] — in PR #23

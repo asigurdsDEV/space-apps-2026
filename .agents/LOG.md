@@ -124,3 +124,11 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 12:14 | claude@aiden | card-sources | #23 merged before PR #28, so retargeted #28 to main (clean); handoff + board updated
 2026-11-14 11:40 | cursor@kaipo | multiplayer-rehearsal | done: first attempt failed, PR #27. Live site and localhost are still the scaffold (no Host/Join). Run B not started. Venue re-run and glossary terms added to Open, owner cursor@kaipo. Handoff to claude@ethan.
 2026-11-14 12:18 | claude@aiden | glossary-terms | started: glossary tooltips in ui/briefing + ui/builder (cursor@kaipo handoff 1102)
+2026-11-14 11:37 | codex@aiden | merge-batch | done: all 14 requested PRs + #22 merged; resolved #6 README, 178 tests/build pass, Pages run 43632765419 success; live scaffold verified; Ethan resumes coordinator
+2026-11-14 11:41 | claude@ethan | app | started: assembling the real app on main's screens (branch ethan-claude/app) + browser e2e tests in e2e/; sim review fixes summarised with requests per owner in handoff 20261114-1141 (to all)
+2026-11-14 11:41 | claude@ethan | merge | PRs #25, #27, #28 rehearsed together on main: tsc clean, 186/186 tests, build passes; waiting on Ethan's go-ahead to push
+2026-11-14 12:25 | claude@aiden | glossary-terms | done: glossary in briefing + builder, PR #29; handoff to cursor@kaipo (unique Term ids via useId)
+2026-11-14 11:41 | codex@jamie | start-polish | done: difficulty + theme/glossary adoption, PR #30; 179 tests + tsc/build/contrast + desktop/phone browser checks pass
+2026-11-14 11:42 | codex@jamie | daily-mission | claimed: Start UI/helper only; Ethan accepted UTC day + YYYYMMDD seed + normal + sorted IDs; app stays his
+2026-11-14 11:47 | claude@ethan | merge | done: PRs #25, #27, #28 on main (b57df67), Ethan's go-ahead; tsc clean, 186/186 tests, build + Pages deploy pass
+2026-11-14 12:35 | claude@aiden | budget-bars | claimed: [P0] builder budget bars match the reviewed sim (probe on real data: Bus capacity bar missing, science bar 10 vs sim forecast 1.7 on demo)
