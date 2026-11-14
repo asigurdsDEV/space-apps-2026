@@ -57,6 +57,8 @@ uniform sampler2D uMap;
 uniform float uHasMap;
 uniform sampler2D uNight;
 uniform float uHasNight;
+uniform sampler2D uHeight;
+uniform float uHasHeight;
 varying vec3 vObj;
 varying vec3 vWorldN;
 varying vec3 vWorldPos;
@@ -75,6 +77,19 @@ vec2 mapUv(vec3 p) {
   float u2 = fract(u1 + 0.5) - 0.5;
   float u = fwidth(u1) <= fwidth(u2) + 1e-6 ? u1 : u2;
   return vec2(u, asin(clamp(p.y, -1.0, 1.0)) / 3.14159265 + 0.5);
+}
+// How the real ground slopes (LOLA / MOLA elevation, maps/README.md), as a tilt for the surface normal.
+// \`steepness\` = map height range / distance across two texels, times the vertical exaggeration.
+vec3 relief(vec3 p, float steepness) {
+  vec2 uv = mapUv(p);
+  vec2 e = vec2(1.0 / 512.0, 1.0 / 256.0);
+  float rise_e = texture2D(uHeight, uv + vec2(e.x, 0.0)).r - texture2D(uHeight, uv - vec2(e.x, 0.0)).r;
+  float rise_n = texture2D(uHeight, uv + vec2(0.0, e.y)).r - texture2D(uHeight, uv - vec2(0.0, e.y)).r;
+  float c = sqrt(max(1.0 - p.y * p.y, 0.0));
+  vec3 east = vec3(p.z, 0.0, -p.x) / max(c, 1e-4);
+  vec3 north = cross(p, east);
+  // A step east covers less ground near the poles; fade out at the pole itself, where the map is one stretched row.
+  return -steepness * smoothstep(0.03, 0.2, c) * (rise_e / max(c, 0.2) * east + rise_n * north);
 }
 vec3 hash3(vec3 p) {
   return fract(sin(vec3(dot(p, vec3(127.1, 311.7, 74.7)), dot(p, vec3(269.5, 183.3, 246.1)), dot(p, vec3(113.5, 271.9, 124.6)))) * 43758.5453);
@@ -186,6 +201,8 @@ void main() {
       // Big procedural craters would be in made-up places, so mostly the small ones stay.
       col = m * (1.0 - 0.06 * bowl2 + 0.08 * rim2);
       tilt = 0.25 * bigT + 0.8 * smallT;
+      // Real basins, crater walls and mountains from LOLA: 19.9 km of height over 42.6 km of ground, drawn 5x steeper so it reads from orbit.
+      if (uHasHeight > 0.5) tilt = 0.6 * smallT + relief(p, 0.47 * 5.0);
     } else {
       col *= 1.0 - 0.16 * (bowl + 0.6 * bowl2) + 0.22 * (rim + 0.6 * rim2);
       // Bright rays from the young craters Tycho and Copernicus.
@@ -204,6 +221,7 @@ void main() {
     // Southern highlands are old and heavily cratered; the northern lowlands are smooth.
     float bowl, rim;
     vec3 tilt = craters(p, 9.0, 0.6, bowl, rim) * (0.25 + 0.75 * smoothstep(0.25, -0.35, p.y));
+    vec3 craterTilt = tilt;
     col *= 1.0 - 0.12 * bowl + 0.08 * rim;
     // Tharsis: Olympus Mons, the tallest volcano in the solar system, and the three Tharsis Montes.
     float caldera = 0.0;
@@ -225,6 +243,12 @@ void main() {
       // Viking shows the real dark regions, Hellas and the caps; keep the relief and small craters.
       ice = smoothstep(0.4, 0.6, min(m.r, min(m.g, m.b)));
       col = m * (1.0 - 0.08 * bowl + 0.06 * rim) * (1.0 - 0.3 * canyon);
+      // The real Olympus Mons, Tharsis, Valles Marineris and Hellas from MOLA replace the drawn ones:
+      // 29.4 km of height over 83.2 km of ground, drawn 5x steeper so it reads from orbit.
+      if (uHasHeight > 0.5) {
+        tilt = 0.6 * craterTilt + relief(p, 0.35 * 5.0);
+        col = m * (1.0 - 0.08 * bowl + 0.06 * rim);
+      }
     }
     n = normalize(mat3(modelMatrix) * normalize(p + tilt * (1.0 - ice)));
   }
