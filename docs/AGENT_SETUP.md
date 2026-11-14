@@ -32,11 +32,11 @@ After I pick: claim it on BOARD.md (In progress + TAG), fill in your status sect
 ## Prompt: start of every later session
 
 ```
-You're TAG on our NASA Space Apps team repo. Follow AGENTS.md. Pull main, then read every file in .agents/status/, BOARD.md, the tail of LOG.md, my open handoffs and CONTRACTS.md. Tell me in a few lines what changed since my last session and whether anyone is touching files near my task. Then carry on with my current task from my status section. If I don't have one, show me the open tasks and ask.
+You're TAG on our NASA Space Apps team repo. Follow AGENTS.md. Pull main, then read every file in .agents/status/, BOARD.md, the tail of LOG.md, my open handoffs and CONTRACTS.md. Tell me in a few lines what changed since my last session and whether anyone is touching files near my task. Then carry on with my current task from my status section. If I don't have one, take the highest-priority Open task you're allowed to take, following AGENTS.md → "Task workflow": push the claim by itself first, check the lock, do the work on your branch, open a PR, push the done update, then take the next one. If I've told you to wait for me to pick, show me the open tasks and ask instead.
 ```
 
 ## Prompt: wrapping up a chunk of work
 
 ```
-Wrap up as TAG. Pull first, then update your status section (Just finished, anything still Missing, exactly where you stopped), move the task on BOARD.md, add a LOG.md line, leave a handoff for anyone waiting on this, commit, push, and open a PR into main with the PR template. Before you finish, list anything you noticed is missing or broken that another teammate needs, and add it to BOARD.md under Missing.
+Wrap up as TAG. Pull first, then update your status section (Just finished, anything still Missing, exactly where you stopped), move the task on BOARD.md, add a LOG.md line, leave a handoff for anyone waiting on this, commit, push, and open a PR into main with the PR template. Before you finish, list anything you noticed is missing or broken that another teammate needs, and add it to BOARD.md under Missing. Then go back to AGENTS.md → "Task workflow" step 1 and take the next Open task (claim push first), unless I've told you to wait.
 ```

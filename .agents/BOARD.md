@@ -1,12 +1,37 @@
 # Task board
 
-Claim a task by moving it to In progress with your tag, then commit + push that change alone before starting.
-Format: `- [ ] task — area/folder — [agent@human]`
+**How to take a task (full rules: AGENTS.md → "Task workflow"):** pull → pick the top Open task with no tag (P0 before P1 before P2; skip `owner:` tasks that aren't yours) → move it to In progress with your tag and **push that alone** (the lock) → pull again and check only your tag is on it → work on your branch → open a PR → move it to Done with the PR # and **push again** → take the next one.
+Format: `- [ ] (size) [priority] task — folder — needs: … — owner: … — [agent@human]`
+Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Open
 
 <!-- The six build tasks below are proposed by claude@ethan (one folder each so nobody collides). Rename or split them if your human disagrees. -->
 <!-- Ethan has the most agent usage, so claude@ethan takes the heavy ones (sim core + app loop are claimed below). If a task turns out bigger than your usage allows, hand the hard part to claude@ethan with a handoff instead of dropping it. -->
+
+### P0 — playable solo game on the live link
+- [ ] (medium) [P0] Align builder with sim + data: parts from `state.entities` by kind, claude@jamie's param keys (`solar`, `battery`, `comms`, `spacecraft-buses`), add bars for payload, data downlink, schedule, science goal — ui/builder/ — needs: #7, #8 — owner: claude@aiden
+- [ ] (medium) [P0] Start screen: game title, pick scenario, Solo / Host online / Join with code buttons — ui/start/ — needs: `useGame()` from app/ (build against props until then)
+- [ ] (light) [P0] Briefing screen: scenario objective, budget, science goal, "how to win", 4–6 key terms explained before building — ui/briefing/ — needs: #8 (scenario fields)
+- [ ] (light) [P0] Shared look: theme tokens + base styles (colors, type, buttons, panels, light/dark) so every screen looks like one game; then handoff to screen owners to adopt — ui/theme/
+- [ ] (light) [P0] Headless playthrough test: demo scenario, starting design runs to the end and loses, reference design wins, via real Commands — tests/ (new) — needs: #7, #8
+- [ ] (light) [P0] Live-site check after merges: play start → results on the Pages link on desktop + phone, add anything broken to Missing — no files — needs: Pages on + PRs merged
+
+### P1 — online co-op + teaching
+- [ ] (medium) [P1] Lobby screen: room code + copy button, player list, claim/release role buttons, host starts the mission — ui/lobby/ — needs: #9 (net), `useGame()` players/me
+- [ ] (medium) [P1] Role-aware builder: show which role owns each choice (`ROLE_PARAM_KEYS`), lock other roles' sections, show who changed what — ui/builder/ — needs: #9, #5 `shared/net.ts` — owner: claude@aiden
+- [ ] (light) [P1] Glossary + tooltips: `<Term id="delta-v">` component + `ui/learn/glossary.ts` (orbit, payload capacity, delta-v, eclipse, data rate, duty cycle, reliability…); hand off to screen owners to use it — ui/learn/
+- [ ] (medium) [P1] More scenarios: beginner CubeSat Earth imaging, Moon, Mars, each provably winnable — data/scenarios/ — needs: #8 — owner: claude@jamie
+- [ ] (light) [P1] Difficulty levels: easy/normal/hard variants (budget, event rate, deadline) — data/scenarios/ — needs: #8 — owner: claude@jamie
+- [ ] (light) [P1] Multiplayer rehearsal: 4 devices on venue wifi + a phone hotspot, write results + fallback call in docs/MULTIPLAYER_TEST.md — docs/MULTIPLAYER_TEST.md — needs: #9 + app wiring merged (human-heavy)
+
+### P2 — nice-to-haves from the brief
+- [ ] (medium) [P2] Spacecraft drawing: SVG of the chosen bus, panels, antenna and instruments from `state.params`; export one component for builder/mission owners to mount — ui/spacecraft/
+- [ ] (medium) [P2] Save / share / compare designs: design in the URL hash, saved designs in localStorage, side-by-side compare — ui/share/
+- [ ] (light) [P2] Local leaderboard: best score + design per scenario in localStorage, shown on results — ui/leaderboard/
+- [ ] (light) [P2] Accessibility pass: keyboard-only + screen reader run through every screen, report + handoffs to owners — docs/A11Y_REPORT.md (source read-only)
+- [ ] (light) [P2] Space Apps submission package: project summary, NASA resources used, AI-use note, demo video/slides plan (coordinate with codex@jamie's PITCH/DEMO) — docs/SUBMISSION.md
+- [ ] (light) [P2] README "How to play" + live link section — README.md (new section only; Team rows are each person's own)
 
 ## Missing / needed
 
@@ -25,7 +50,6 @@ Format: `- [ ] task — area/folder — [agent@human]`
 
 ## In progress
 
-- [ ] Game plan + full task list on BOARD Open + claim/done workflow rules — docs/GAME_PLAN.md (new), BOARD.md Open section (adding tasks only), AGENTS.md + docs/AGENT_SETUP.md (workflow section/prompts), peerjs in package.json on PR #4 — [claude@aiden]
 
 - [ ] (heavy) Multiplayer rooms + transport: PeerJS/WebRTC host-authoritative co-op for up to 4, room codes, role claim, LocalTransport fallback (decision 002) — net/ — [codex@jamie]
 
@@ -37,8 +61,8 @@ Format: `- [ ] task — area/folder — [agent@human]`
 
 ## Done
 
+- [x] Game plan + full task list on BOARD Open + claim/done workflow rules — docs/GAME_PLAN.md, BOARD.md Open, AGENTS.md "Task workflow", docs/AGENT_SETUP.md — [claude@aiden] — on main (coordination files); peerjs added to PR #4
 - [x] Integration audit across pending PR branches; report build/test failures to owners — docs/INTEGRATION_REPORT.md (source read-only) — [codex@jamie] — snapshot report in PR #9; 58 module tests pass, 2 real-data probes fail; follow-up after sim adapter
-
 - [x] (heavy) Mission run view + results screen: draws `SimState`, shows events and the end summary — ui/mission/ — [claude@sarah] — in PR #11 (merge after #4, #5, #7); app/ still has to mount `<MissionScreen>` (handoff to claude@ethan)
 - [x] (medium) Mission builder screen: pick parts, live budget bars, sends `set_param` — ui/builder/ — [claude@aiden] — in PR #10 (stacked on #4 + #5); app loop still has to mount it
 - [x] Parts catalogs + first scenario — data/ — [claude@jamie] — 6 catalogs + demo scenario + loader + 11 tests; in PR #8 (needs #4, #5 first)

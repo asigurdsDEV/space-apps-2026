@@ -1,7 +1,7 @@
 ---
 from: cursor@kaipo
 to: claude@aiden
-status: open
+status: done
 created: 2026-11-14 10:29
 ---
 
@@ -29,3 +29,5 @@ Ethan's six proposed build tasks were a good start; many are now **Done** or **I
 ## What "done" looks like
 
 `BOARD.md` has a non-empty **Open** section with clear tasks Kaipo (and Caleb, if he sets up) can claim without colliding with `ui/builder/`, `ui/mission/`, `net/`, `app/`, `sim/`, or `data/`. Optional: short bullet roadmap at top of BOARD or `docs/BUILD_PLAN.md`. Set this handoff to `done` when Open is populated and Kaipo has at least one matching option.
+
+<!-- 2026-11-14 10:35 done by claude@aiden: BOARD Open has 18 P0/P1/P2 tasks (several in unowned folders for Kaipo/Caleb), docs/GAME_PLAN.md has the roadmap + human merge checklist. The Blocked ui/mission line is codex@aiden's; claude@aiden does not edit it. -->

@@ -5,29 +5,28 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 10:32
+**Last updated:** 2026-11-14 10:35
 
 ## claude@aiden
 
-**Branch:** main (board/docs); aiden-claude/scaffold (PR #4, adding peerjs); aiden-claude/builder (PR #10); aiden-claude/stack (PR #3)
+**Branch:** aiden-claude/builder (PR #10); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-Game plan + full task list on BOARD Open + claim/done workflow rules (Aiden asked, answers cursor@kaipo's open-task-list handoff). Also adding `peerjs` to PR #4 for codex@jamie. Claimed 10:32.
+Nothing claimed. Next per the workflow: "[P0] Align builder with sim + data" (ui/builder/, owner claude@aiden), waiting on Aiden's go.
 
 ### Files / folders I'm touching (hands off)
-- `docs/GAME_PLAN.md` (new)
-- `.agents/BOARD.md` Open section: adding new task lines only, not editing anyone's claims
-- `AGENTS.md` (new "Task workflow" section + branch-name fix) and `docs/AGENT_SETUP.md` (session prompts)
-- `package.json`, `package-lock.json` on `aiden-claude/scaffold` (peerjs only)
+None outside my open PRs (#10: `ui/builder/`; #4: scaffold files; #3: decision 002). Released `docs/GAME_PLAN.md`, `AGENTS.md`, `docs/AGENT_SETUP.md`; anyone may add Open tasks.
 
 ### Just finished
-Mission builder screen (PR #10).
+- Full task list on BOARD Open (18 tasks, P0/P1/P2), `docs/GAME_PLAN.md` (screen flow, module map, owners, MVP, merge order), "Task workflow" in AGENTS.md (claim push → lock check → work → PR → done push → next), setup prompts updated, branch-name rule fixed.
+- `peerjs` added to PR #4 for codex@jamie (handoff done).
+- cursor@kaipo's open-task-list handoff done.
 
 ### Missing / I need from someone
-- Aiden: turn on GitHub Pages; merge PRs in order.
+- Aiden: turn on GitHub Pages; merge PRs in the order in docs/GAME_PLAN.md.
 
 ### Heads up for other agents
-Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden never edits it or its branches. New Open tasks land on the board in a few minutes; please don't rewrite AGENTS.md until this lands.
+Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden never edits it or its branches. My builder (PR #10) still uses its first-guess dataset ids/param keys; I'll align it with claude@jamie's data + claude@ethan's sim as the "[P0] Align builder" task.
 
 ## codex@aiden
 
