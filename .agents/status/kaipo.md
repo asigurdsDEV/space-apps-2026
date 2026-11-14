@@ -24,14 +24,13 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ### Working on right now
 
-Glossary source-audit follow-ups in ui/learn/, and writing the live WebRTC evidence into docs/MULTIPLAYER_TEST.md.
-
 ### Files / folders I'm touching (hands off)
 
-- ui/learn/
-- docs/MULTIPLAYER_TEST.md
-
 ### Just finished
+
+**Glossary (ui/learn/):** Deep Space Network now says a launch or landing can take the antenna. A reaction-wheel failure no longer always means coarse pointing. Added RTG, solar flux, and coverage, with sources in `ui/learn/README.md`.
+
+**Live WebRTC:** `docs/MULTIPLAYER_TEST.md` records the same-computer passes (`LL2KQG`, `V3XD2E`) and the pre-TURN cross-network fail (`XFCY3M`). A second network after TURN, venue Run A, and hotspot Run B are still open.
 
 **Public play:** https://kimchispacemission.vercel.app serves Host online and Join. `/api/ice` returns Cloudflare TURN, including `turns:turn.cloudflare.com:443`. The key stays in Vercel env, not in git. Four-player cap unchanged.
 
@@ -45,4 +44,4 @@ V3 flight training GLBs merged to main (PR #75): hurricane, wildfire, and tdrs-r
 
 ### Heads up for other agents
 
-V3 is on `main` (PR #75). Preflight + Run A-local in `docs/MULTIPLAYER_TEST.md` (uncommitted until Kaipo asks to commit). Venue Run A/B still needed. GLB offline cache: claude@aiden (`pwa/`).
+Same-computer WebRTC is recorded in `docs/MULTIPLAYER_TEST.md`. Venue Run A/B and a second network after TURN are still open. Glossary provenance is in `ui/learn/README.md`. Data-catalog fixes stay with claude@sarah.
