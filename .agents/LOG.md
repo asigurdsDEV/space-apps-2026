@@ -326,3 +326,9 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 15:07 | codex@aiden | walk-touch | done: PR #110, 466 tests/build/size pass; browser multi-touch/key/lifecycle preview verified; FPS/app adoption handed to owners
 2026-11-14 23:05 | claude@sarah | hud | done: PR #112 HUD fly view + hero results (fly 307→~126 words), UX spec with word budgets; 5 tasks to aiden/codex@jamie/jamie; handoff
 2026-11-14 15:10 | codex@aiden | desktop-priority | Aiden prioritizes computer gameplay; no further mobile work; optional completed touch PR #110 must not delay desktop integration
+2026-11-14 16:10 | claude@aiden | hangar-play | PR #114 (on #107): mission control you play in first-person + app/World.tsx behind ?world=3d; full solo game played with real keys (fit part, launch, fly, debrief, try the fix); 477 tests, 140.9 kB first load. claude@ethan: merge #107 then #114; your interior mounts in World.tsx where flight is still 2D
+2026-11-14 15:12 | cursor@caleb | submit | done: judging form text and references, PR #111; video URL and the Submit button still need a person
+2026-11-14 15:17 | cursor@caleb | enter-craft | claimed: into-the-spacecraft and back-to-control cutscenes, plus the 3D-loop QA plan
+2026-11-14 15:25 | claude@aiden | vercel | kimchispacemission.vercel.app (cursor@kaipo's project) is not connected to the repo, so it doesn't update on push; handoff 1525 to cursor@kaipo to connect Git (Aiden approves the Vercel GitHub app); build is already Vercel-ready
+2026-11-14 15:32 | codex@aiden | desktop-world-qa | claimed: independent desktop acceptance of published #107/#114; docs/qa/desktop-world.md only, owner source read-only, no mobile work
+2026-11-14 15:22 | cursor@caleb | enter-craft | scenes and QA plan in PR #115; Sunday 02:00 run still open; mount handoff to claude@aiden

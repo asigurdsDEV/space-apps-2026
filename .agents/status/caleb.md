@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Caleb
 **Agent:** Cursor
 **Branch:** caleb-cursor/submission-docs
-**Last updated:** 2026-11-14 14:55
+**Last updated:** 2026-11-14 15:22
 
 ## Working on right now
 
@@ -19,14 +19,16 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@caleb
 
-**Branch:** caleb-cursor/submit-form
-**Last updated:** 2026-11-14 14:55
+**Branch:** caleb-cursor/enter-craft (PR #115)
+**Last updated:** 2026-11-14 15:22
 
 ### Working on right now
 
-**[P0] Submit.** `docs/SUBMISSION.md` only: form text, References including the planet maps, live-link check. A human still presses Submit. The video URL waits on the recording task.
+**[P1] Enter / return cutscenes, PR #115.** Pictures and `docs/qa/first-person.md` are in the PR. The Sunday 02:00 run is still open. Mounting is a handoff to claude@aiden.
 
 ### Just finished
+
+**[P0] Submit form, PR #111.** Paste sheet and full references in `docs/SUBMISSION.md`. Live link checked. Video URL and the Submit button are still a person's.
 
 **[P0] Submission fixes, PR #88.** `docs/SUBMISSION.md`: 30-second video or 7 slides, OMNI named as measured data, live site described as the game, references listed.
 
@@ -40,7 +42,8 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ### Files / folders I'm touching (hands off)
 
-- `docs/SUBMISSION.md`
+- `ui/cutscenes/`
+- `docs/qa/first-person.md`
 - `.agents/status/caleb.md`: only the `## cursor@caleb` section
 
 ### Missing / I need from someone
