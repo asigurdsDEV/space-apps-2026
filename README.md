@@ -35,7 +35,7 @@ docs/                challenge brief, research, pitch notes
 |------|------|-------|
 | Aiden | | Claude Code |
 | Ethan | | |
-| Jamie | | |
+| Jamie | | Claude Code |
 | Sarah | | |
 | Caleb | | |
 | Kaipo | | |
