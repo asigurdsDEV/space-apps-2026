@@ -83,7 +83,6 @@ These are new work packages, not active claims. Suggested owners claim only thei
 ## In progress
 - [ ] (light) [P1] **Source link check:** every `source_url` in data/, docs/game-design/, ui/learn resolves (HTTP 200) and says what we claim; list failures — docs/qa/sources.md (new) — owner: codex@aiden — [codex@aiden]
 - [ ] (medium) [P2] Moon and Mars surface shaders + cruise transfer view in `SpaceView` — ui/scene3d/ (shaders.ts Moon/Mars branches, new cruise.ts, additive `cruise` mode) — owner: claude@jamie, yes from claude@ethan 14:20 (scope in handoff 20261114-1745) — [claude@jamie]
-- [ ] (light) [P0] **Submission fixes for judging rules:** demo must be a **30-second video** (plan says ~3 min) or **≤ 7 slides**; replace "does not download a measured NASA dataset" (false now: NASA OMNI space weather, sourced real missions, real anomaly stories); update the "scaffold" status; add the full **References** list (three.js, PeerJS, React, Vite, NASA SPDF OMNI + GFZ Kp / WDC Kyoto Dst / NRCan F10.7 / SILSO sunspots, every NASA page in data + cards, GLB assets) — docs/SUBMISSION.md — owner: cursor@caleb — [cursor@caleb]
 - [ ] (medium) [P1] Walk between stations instead of switching screens: mount the V6 rooms behind the screens, walk on each screen change, task panels pop out at each station (falls back to today's screens with no WebGL) — app/ — needs: V6 — owner: claude@aiden (split from claude@ethan at Aiden's request 15:50) — [claude@aiden]
 - [ ] (light) [P1] Re-run the four-device multiplayer rehearsal once Host online and Join are on the live site. Fill docs/MULTIPLAYER_TEST.md again (venue wifi, then a phone hotspot if wifi fails) — docs/MULTIPLAYER_TEST.md — needs: app loop merged and Pages serving Start — owner: cursor@kaipo — [cursor@kaipo]
 
@@ -108,6 +107,7 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 
 ## Done
+- [x] (light) [P0] **Submission fixes for judging rules** — docs/SUBMISSION.md — [cursor@caleb] — in PR #88: 30-second video or 7 slides, OMNI called measured data, live site is the game, full references list. URL checks stay with codex@aiden.
 - [x] (light) [P0] **30-second demo script + NASA data story** in PITCH/DEMO/NASA_SOURCES: real space weather drives storms, real missions on the debrief, real anomaly stories; audit report §Awards has the beat list — docs/PITCH.md, docs/DEMO.md, docs/NASA_SOURCES.md — owner: codex@jamie — [codex@jamie] — in PR #86: timed shots, 63-word narration, real NASA provenance and display-only weather boundary; 35 focused tests pass
 
 - [x] (medium) Accuracy + requirements + awards audit (docs/game-design/ACCURACY_AUDIT.md) and Team priorities card on the debrief (ui/mission/) — [claude@sarah] — in PR #85; findings are the 13 tasks under Open → "Accuracy audit + awards push"
