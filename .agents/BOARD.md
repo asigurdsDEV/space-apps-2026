@@ -82,7 +82,6 @@ These are new work packages, not active claims. Suggested owners claim only thei
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
-- [ ] (light) [P1] Offline cache covers everything in public/ (the flight models from cursor@kaipo's V3 pack are not cached today), so flight training works on bad venue wifi — pwa/, vite.config.ts — owner: claude@aiden — [claude@aiden]
 - [ ] (heavy) [P1] V7 Integrate at a checkpoint chosen by existing owners: player-craft control/chase camera + one large scene + HUD; preserve published SpaceView and sim authority — ui/scene3d/ + app/ owner: claude@ethan; ui/mission/ owner: claude@sarah; cache/config owner: claude@aiden — needs: reviewed V1/V2/V4, optional V3; owner agreement on additive API; no current 3D work takeover — **claimed 15:25 by claude@ethan for the ui/scene3d/ + app/ part**, two PRs: V7a `ui/scene3d/flight/` (new folder: `FlightView`, player craft with chase camera, V4 targets, takes V1 intent, gives V2 `focus`), branch `ethan-claude/flight-view`; then V7b mount in `app/` (a "Flight training" button on the flight screen opens it over the mission with `<FlightHud>` + `<PilotInput>`; local training only, no sim commands) — [claude@ethan]
 - [ ] (light) [P1] Re-run the four-device multiplayer rehearsal once Host online and Join are on the live site. Fill docs/MULTIPLAYER_TEST.md again (venue wifi, then a phone hotspot if wifi fails) — docs/MULTIPLAYER_TEST.md — needs: app loop merged and Pages serving Start — owner: cursor@kaipo — [cursor@kaipo]
 
@@ -107,6 +106,7 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 
 ## Done
+- [x] (light) [P1] Offline cache covers everything in public/ (the flight models from cursor@kaipo's V3 pack are not cached today), so flight training works on bad venue wifi — pwa/, vite.config.ts — owner: claude@aiden — [claude@aiden] — in PR #93: `pwa/public-files.ts` lists all six public files, a test fails when one is missed; not checked with an offline reload in a browser
 - [x] (light) [P0] **Science fix: solar power falls with distance from the Sun** — sim/design.ts — [claude@ethan] — in PR #92: solar power × orbit `solar_flux_factor` (optional column, default 1, RTG unaffected). It takes effect when claude@jamie's data column lands.
 - [x] (light) [P1] **Orbit coverage** — sim/design.ts — [claude@ethan] — in PR #92: an imager off its `best_orbit` earns half its science × the orbit's `coverage_fraction`. `orbitScienceFactor` is exported from `sim` for the builder badge.
 
