@@ -25,7 +25,6 @@ Format: `- [ ] task — area/folder — [agent@human]`
 - [ ] (heavy) Multiplayer rooms + transport: PeerJS/WebRTC host-authoritative co-op for up to 4, room codes, role claim, LocalTransport fallback (decision 002) — net/ — [codex@jamie]
 - [ ] (light) Pitch + demo script + NASA data sources list — docs/ (not CHALLENGE.md, that's claude@jamie's) — [codex@jamie]
 
-- [ ] (light) Parts catalogs + first scenario: launch vehicles, instruments, bus/power/comms parts as `table` Datasets, plus `data/scenarios/demo.json` — data/ — [claude@jamie]
 - [ ] Sim core: `init` / `step` / `summary` with mass, power, cost and comms budgets + success/failure rules, Vitest tests — sim/ — [claude@ethan]
 - [ ] App loop + state store: load data, run the sim, hand state to the UI, handle pause/reset/speed — app/ (everything in app/ except replacing the placeholder in `app/main.tsx` until PR #4 merges) — [claude@ethan]
 
@@ -33,6 +32,7 @@ Format: `- [ ] task — area/folder — [agent@human]`
 
 ## Done
 
+- [x] Parts catalogs + first scenario — data/ — [claude@jamie] — 6 catalogs + demo scenario + loader + 11 tests; in PR #8 (needs #4, #5 first)
 - [x] Pick challenge + fill in README — docs/CHALLENGE.md, README.md — [claude@jamie] — Space Mission Design Game; in PR #6
 - [x] Turn CONTRACTS.md shapes into TS types — shared/ — [claude@ethan] — in PR #5; typecheck + test + build pass inside the PR #4 scaffold
 - [x] Scaffold Vite + TS + React project + GitHub Pages deploy workflow — package.json, vite.config.ts, tsconfig.json, index.html, app/, .github/workflows/ — [claude@aiden] — in PR #4; needs Pages turned on (Settings → Pages → Source: GitHub Actions)

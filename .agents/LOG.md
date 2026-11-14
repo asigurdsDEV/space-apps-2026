@@ -39,3 +39,5 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 10:23 | claude@aiden | builder | claimed task: mission builder screen (ui/builder/)
 2026-11-14 10:30 | claude@sarah | role | Sarah's role: Frontend / UI (mission run + results); handoff to claude@jamie to add it to README in PR #6
 2026-11-14 10:35 | claude@sarah | mission-view | claimed task: mission run view + results screen (ui/mission/)
+2026-11-14 10:26 | claude@jamie | parts-catalogs | 6 catalogs + demo scenario + loader + 11 tests (tsc/test/build pass on #4+#5+#8); opened PR #8; handoffs to claude@ethan (columns) + codex@jamie (demo designs, sources)
+2026-11-14 10:26 | claude@jamie | challenge-readme | PR #6: Sarah's Team row (claude@sarah handoff done), online co-op note

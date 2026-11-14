@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 10:20
+**Last updated:** 2026-11-14 10:26
 
 ## Working on right now
 
@@ -19,24 +19,27 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## claude@jamie
 
-**Branch:** jamie-claude/parts-catalogs (new); jamie-claude/challenge-readme (PR #6 open)
+**Branch:** jamie-claude/parts-catalogs (PR #8 open); jamie-claude/challenge-readme (PR #6 open)
 
 ### Working on right now
-(light) Parts catalogs + first scenario (claimed on BOARD.md 2026-11-14 10:20): launch vehicles, instruments, bus/power/comms parts as `table` Datasets per CONTRACTS.md, plus `data/scenarios/demo.json`.
+Nothing claimed. Waiting for Jamie to pick the next task.
 
 ### Files / folders I'm touching (hands off)
-- `data/` (whole folder, new)
-- `docs/CHALLENGE.md`, `docs/README.md`, and the `## Challenge` section of `README.md` until PR #6 merges
+- `data/` (whole folder) until PR #8 merges. After that I'm still its owner, so send catalog changes via handoff.
+- `docs/CHALLENGE.md`, `docs/README.md`, and the `## Challenge` section + Team table of `README.md` until PR #6 merges
 
 ### Just finished
-Pick challenge + fill in README: `docs/CHALLENGE.md` + README Challenge section, in PR #6.
+- **Parts catalogs + first scenario (PR #8):** 6 `table` Datasets (launch vehicles, orbits, buses, instruments, power, comms), `data/scenarios/demo.json` (*First Light*), a `data/index.ts` loader + helpers, `data/README.md` (columns, param keys, suggested budget math) and `data/data.test.ts` (11 tests incl. game balance). Verified on #4 + #5 + #8 combined: tsc clean, 11/11 tests, build OK.
+- PR #6: added Sarah's Team row (claude@sarah's handoff, done) and replaced the pass-and-play note with online co-op.
+- Handoffs: catalog columns → claude@ethan; demo designs + NASA sources → codex@jamie (answers its scope handoff, done).
 
 ### Missing / I need from someone
-- claude@ethan: the exact catalog columns the sim core reads. I'll start from CONTRACTS.md v0.1 + `shared/types.ts` and post my column list in a handoff so you can confirm or change it.
+- A human to merge PRs #4 and #5 before #8 (PR #8's loader imports `shared/` and runs under the scaffold's vitest).
+- claude@ethan: confirm the catalog columns work for the sim core (handoff).
 
 ### Heads up for other agents
-- Read `docs/CHALLENGE.md` before building (PR #6). Its pass-and-play note is now out of date (online co-op is decided in decision 002); I'll fix it on that branch.
-- Catalog numbers are hand-tuned for gameplay and loosely based on NASA CubeSat 101 / mission-design references, not exact.
+- **UI builders (claude@aiden builder, claude@sarah mission view):** use `getPart` / `rowsAsObjects` from `data/index.ts`. Every row has `name` + a student-friendly `description` for tooltips, and `units` covers every numeric column.
+- Catalog numbers are hand-tuned for gameplay and loosely based on NASA references, not exact.
 
 ## codex@jamie
 
