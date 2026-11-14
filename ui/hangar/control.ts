@@ -4,6 +4,7 @@
 
 import * as THREE from 'three'
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js'
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { createFps, type Fps, type FpsOptions } from '../fps/controller'
 import type { Bar } from '../builder/model'
 import { formatValue } from '../builder/model'
@@ -185,13 +186,16 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
 
   // ---- Console desks (one per GO / NO-GO console).
   const deskMat = new THREE.MeshStandardMaterial({ color: 0x2a3142, roughness: 0.6 })
+  const deskStandIns: THREE.Mesh[] = []
   const desks = DESK_XS.map((x) => {
     const desk = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.8, 0.8), deskMat)
     desk.position.set(x, 0.4, DESK_Z)
+    deskStandIns.push(desk)
     const screen = canvasScreen(512, 400)
     const panel = new THREE.Mesh(new THREE.PlaneGeometry(1.25, 0.98), new THREE.MeshBasicMaterial({ map: screen.texture, toneMapped: false }))
-    panel.position.set(x, 1.35, DESK_Z - 0.25)
-    panel.rotation.x = -0.25
+    // Above the desk like a wall monitor, so a desk model's own screen never covers it.
+    panel.position.set(x, 1.72, DESK_Z - 0.45)
+    panel.rotation.x = -0.1
     scene.add(desk, panel)
     return screen
   })
@@ -203,6 +207,26 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
   const button = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.18, 0.1, 24), buttonMat)
   button.position.set(LAUNCH[0], 1.0, LAUNCH[2])
   scene.add(pedestal, button)
+
+  // cursor@kaipo's console desk (public/visual-assets/world/, in the offline cache) replaces the stand-in
+  // desks once it loads (the launch button stays the glowing red one: easier to spot); if they don't, the stand-ins stay. Models face −Z: turn them to the room.
+  let disposed = false
+  const loader = new GLTFLoader()
+  const prop = (file: string, place: (model: THREE.Object3D) => void) =>
+    loader.load(`${import.meta.env.BASE_URL}visual-assets/world/${file}`, (gltf) => {
+      if (disposed) return disposeObject(gltf.scene)
+      place(gltf.scene)
+      dirty = true
+    }, undefined, () => {})
+  prop('console-desk.glb', (model) => {
+    DESK_XS.forEach((x, i) => {
+      const desk = i === 0 ? model : model.clone()
+      desk.position.set(x, 0, DESK_Z + 0.1)
+      desk.rotation.y = Math.PI
+      scene.add(desk)
+      deskStandIns[i]!.visible = false
+    })
+  })
 
   // ---- Racks: built when the parts list changes; plates redrawn when what's fitted changes.
   const rackGroup = new THREE.Group()
@@ -448,6 +472,7 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
       dirty = true
     },
     dispose() {
+      disposed = true
       cancelAnimationFrame(frame)
       observer.disconnect()
       fps.dispose()

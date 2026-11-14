@@ -20,7 +20,8 @@ export const START: { pos: Vec3; yaw: number } = { pos: [0, 0, 4.5], yaw: 0 }
 /** Off the centre line, so the spacecraft never hides the call wall. */
 export const STAND: Vec3 = [-4.2, 0, -2.5]
 export const LAUNCH: Vec3 = [0, 1.05, -6.5]
-export const CALL_WALL = { x: 0, y: 2.7, w: 6.4, h: 3.2 }
+/** High on the back wall, so the console screens in front of it never cover its numbers. */
+export const CALL_WALL = { x: 0, y: 3.3, w: 6, h: 3 }
 export const GAUGES = { x: 6.6, y: 2.4, w: 5.2, h: 2.9 }
 export const DESK_Z = -8.5
 export const DESK_XS = [-2.4, -0.8, 0.8, 2.4] as const
