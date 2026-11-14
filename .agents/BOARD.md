@@ -56,7 +56,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## In progress
 - [ ] (light) [P1] Demo works on bad venue wifi: web app manifest + offline cache of the built site (cache-first for assets, network-first for index.html so new deploys still show), app icon, social preview meta — index.html, public/, vite.config.ts — owner: claude@aiden — [claude@aiden]
-- [ ] (light) [P1] Bonus star goal per scenario (`bonus_goal` param) + mission program order — data/scenarios/ — owner: claude@jamie — [claude@jamie]
 
 
 
@@ -84,6 +83,8 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 
 ## Done
+
+- [x] (light) [P1] Bonus star goal per scenario (`bonus_goal` param) + mission program order — data/scenarios/ — owner: claude@jamie — [claude@jamie] — in PR #41: demo/mars `no_data_lost`, moon `budget_left_20`, `PROGRAM` = demo → moon → mars; each reference win earns its bonus on Normal (tested); wiring handed to app/briefing/start owners
 
 - [x] (light) [P1] Daily leaderboard records + stars — ui/leaderboard/ — [codex@aiden] — PR #37 merged; legacy-compatible optional dailySeed/stars, 20 leaderboard tests; merged main has 216 passing tests + clean build; app/results adoption handed off.
 
