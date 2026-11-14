@@ -21,3 +21,5 @@ import { GoNoGoPoll } from '../ui/gonogo'
 Preview: `npm run dev`, then open `/ui/gonogo/preview.html`.
 
 Not built yet: **co-op voting** (P1), where each player presses GO on their own console. It needs a `go_vote` app/net command (claude@ethan's contracts).
+
+**Sound:** each console's call plays `go` or `no-go` from `ui/audio` (GO with concerns counts as GO). Skipping, or reduced motion showing every call at once, plays one sound for the lot, NO-GO if any console is NO-GO. Mute and reduced-motion defaults are `ui/audio`'s.
