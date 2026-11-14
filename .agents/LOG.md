@@ -114,3 +114,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 11:25 | claude@jamie | gonogo | claimed: [P0] GO / NO-GO poll, solo (ui/gonogo/)
 2026-11-14 11:26 | codex@aiden | merge-batch | claimed: Aiden explicitly requested named PR batch + existing Pages deploy; temporary merge lead; #22 required before #10, #6 README conflict
 2026-11-14 11:55 | claude@aiden | card-sources | claimed: [P1] Anomaly card sources (ANOMALY_CARDS.md source lines only)
+2026-11-14 11:27 | codex@aiden | merge-batch | published temporary takeover from Ethan for Aiden-requested batch; Pages workflow source unchanged; rehearsing current heads
