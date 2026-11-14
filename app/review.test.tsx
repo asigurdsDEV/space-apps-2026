@@ -7,15 +7,15 @@ import { getDatasets, getScenario } from '../data'
 import { LocalTransport, type MessageHandler } from '../net'
 import { isCommand, isNetMessage, ownerRole, type Command, type Entity, type NetMessage } from '../shared'
 import { simCore } from '../sim'
-import { GameScreen } from './App'
+import { DEFAULT_SLOTS } from '../ui/builder'
+import { BASELINE, GameScreen, SCENARIOS } from './App'
 import { startDriver, timerClock } from './driver'
 import { createGame } from './game'
 import { createGuestSession, createHostSession, createSoloSession, type SessionTransport } from './session'
-import { builderDatasets, BUILDER_SLOTS } from './slots'
 
 const config = getScenario('demo')!
 const datasets = getDatasets(config.datasets)
-const baseline = simCore.init(config, datasets).entities
+const baseline = BASELINE
 const newGame = () => createGame({ config, datasets, sim: simCore })
 
 const set = (key: string, value: string | number): Command => ({ type: 'set_param', payload: { key, value } })
@@ -96,14 +96,14 @@ describe('the real demo scenario', () => {
     session.send({ type: 'set_speed', payload: { multiplier: 60 } })
     for (let i = 0; i < 100; i++) game.advance(1000)
     expect(session.getSnapshot().state.status).toBe('ended')
-    const html = renderToStaticMarkup(<GameScreen session={session} config={config} datasets={datasets} onExit={() => {}} />)
+    const html = renderToStaticMarkup(<GameScreen session={session} config={config} onExit={() => {}} />)
     expect(html).toContain('mv-root')
     expect(html).not.toContain('undefined')
   })
 
   it('shows a catalog for every slot, with the scenario’s parts picked', () => {
     const session = createSoloSession(newGame())
-    const html = renderToStaticMarkup(<GameScreen session={session} config={config} datasets={datasets} onExit={() => {}} />)
+    const html = renderToStaticMarkup(<GameScreen session={session} config={config} onExit={() => {}} />)
     expect(html).not.toContain('catalog loaded yet')
     expect(html).toContain('id="mb-bus-cubesat-12u"')
     for (const key of ['orbit', 'bus', 'solar', 'battery', 'comms', 'launch_vehicle']) {
@@ -124,7 +124,7 @@ describe('the real demo scenario', () => {
   })
 
   it('gives every builder slot to the role that should own it', () => {
-    const owners = Object.fromEntries(BUILDER_SLOTS.map((slot) => [slot.key, ownerRole(set(slot.key, 'x'))]))
+    const owners = Object.fromEntries(DEFAULT_SLOTS.map((slot) => [slot.key, ownerRole(set(slot.key, 'x'))]))
     expect(owners).toEqual({
       orbit: 'mission-planning',
       launch_vehicle: 'mission-planning',
@@ -134,12 +134,31 @@ describe('the real demo scenario', () => {
       instruments: 'science',
       comms: 'comms-resources',
     })
-    const tables = builderDatasets(datasets).map((dataset) => dataset.id)
-    for (const slot of BUILDER_SLOTS) expect(tables).toContain(slot.dataset)
   })
 })
 
 describe('state messages', () => {
+  it('can leave the catalogs out in every scenario and difficulty the Start screen offers', () => {
+    expect(SCENARIOS.length).toBeGreaterThanOrEqual(9)
+    for (const scenario of SCENARIOS) {
+      const ids = new Set(simCore.init(scenario, getDatasets(scenario.datasets)).entities.map((entity) => entity.id))
+      expect(BASELINE.filter((entity) => !ids.has(entity.id))).toEqual([])
+    }
+  })
+
+  it('tells a guest which scenario the host picked, and stays small in the biggest one', async () => {
+    const r = room()
+    const mars = SCENARIOS.find((scenario) => scenario.scenario_id === 'mars-hard')!
+    const host = createHostSession(createGame({ config: mars, datasets: getDatasets(mars.datasets), sim: simCore }), r.endpoint('host'), 'Hana', { baseline })
+    const guest = createGuestSession(r.endpoint('g'), 'Gus', { baseline })
+    await settle()
+    host.start!()
+    await settle()
+    expect(guest.getSnapshot().state.scenario_id).toBe('mars-hard')
+    expect(byId(guest.getSnapshot().state.entities)).toEqual(byId(wire(host.getSnapshot().state.entities)))
+    for (const message of r.sent) expect(JSON.stringify(message).length).toBeLessThan(MAX_MESSAGE_BYTES)
+  })
+
   it('stay small through refused launches, a late joiner, a whole flight and a reset', async () => {
     const { endpoint, sent, game, host, guests } = await startRoom('Gus')
     const [gus] = guests

@@ -1,10 +1,9 @@
-// Co-op pieces of the shell: the room code, the crew list with the role picker, the lobby
-// and the notice banner. Like the game screens, they only know about `Session`.
+// The app's own chrome inside a game: the notice banner, and for online rooms the room code
+// and the crew list with a role picker (the top bar's crew menu). The lobby itself is ui/lobby.
 
 import { useState } from 'react'
 import { ROLES } from '../shared'
 import { ROLE_LABELS, type Session, type SessionSnapshot } from './session'
-import { useSession } from './useSession'
 
 /** The session's notice, with a button to dismiss it. */
 export function Notice({ session, notice }: { session: Session; notice: string | null }) {
@@ -32,7 +31,7 @@ export function RoomCode({ code }: { code: string }) {
     <p className="app-room">
       <span>Room code</span>
       <strong className="app-code">{code}</strong>
-      <button type="button" className="app-button app-button-small" onClick={copy}>
+      <button type="button" className="game-button app-small" onClick={copy}>
         {copied ? 'Copied' : 'Copy code'}
       </button>
     </p>
@@ -64,7 +63,7 @@ export function Crew({ session, snapshot }: { session: Session; snapshot: Sessio
             <button
               key={role}
               type="button"
-              className="app-button app-role"
+              className="game-button app-role"
               aria-pressed={mine}
               disabled={holder !== undefined && !mine}
               onClick={() => session.claimRole?.(mine ? null : role)}
@@ -75,41 +74,7 @@ export function Crew({ session, snapshot }: { session: Session; snapshot: Sessio
           )
         })}
       </div>
-      <p className="app-start-note">A role nobody takes can be played by anyone.</p>
+      <p className="game-muted">A role nobody takes can be played by anyone.</p>
     </div>
-  )
-}
-
-export interface LobbyProps {
-  session: Session
-  roomCode: string | null
-  /** Leave the room and go back to the start screen. */
-  onExit: () => void
-}
-
-/** Shown while the snapshot's stage is `lobby`. */
-export function Lobby({ session, roomCode, onExit }: LobbyProps) {
-  const snapshot = useSession(session)
-  const host = snapshot.players.find((player) => player.is_host)
-  return (
-    <main className="app-start">
-      <p className="app-kicker">Co-op lobby</p>
-      <h1 className="app-start-title">Gather your crew</h1>
-      {roomCode && <RoomCode code={roomCode} />}
-      <Notice session={session} notice={snapshot.notice} />
-      {snapshot.players.length === 0 ? <p>Joining the room…</p> : <Crew session={session} snapshot={snapshot} />}
-      <div className="app-start-actions">
-        {snapshot.me.is_host ? (
-          <button type="button" className="app-button app-button-primary" onClick={() => session.start?.()}>
-            Start mission
-          </button>
-        ) : (
-          <p className="app-waiting">Waiting for {host?.name ?? 'the host'} to start the mission.</p>
-        )}
-        <button type="button" className="app-button" onClick={onExit}>
-          Leave
-        </button>
-      </div>
-    </main>
   )
 }

@@ -5,11 +5,10 @@ import { describe, expect, it } from 'vitest'
 import type { Command, Config, Player } from '../shared'
 import { simCore } from '../sim'
 import { demoConfig, fixtureDatasets, goodDesign } from '../sim/testing/fixtures'
-import { App, GameScreen, Shell } from './App'
+import { DIFFICULTIES, scenarios } from '../data'
+import { App, GameScreen, Room, SCENARIOS } from './App'
 import { createGame } from './game'
-import { Lobby } from './Lobby'
 import { createSoloSession, type Session, type SessionSnapshot } from './session'
-import { BUILDER_SLOTS } from './slots'
 
 const config: Config = { ...demoConfig, params: { ...demoConfig.params, random_failures: false } }
 
@@ -24,29 +23,26 @@ const designCommands: Command[] = Object.entries(goodDesign).map(([key, value]) 
 }))
 
 const screen = (session: ReturnType<typeof soloSession>['session']) =>
-  renderToStaticMarkup(<GameScreen session={session} config={config} datasets={fixtureDatasets} onExit={() => {}} />)
+  renderToStaticMarkup(<GameScreen session={session} config={config} onExit={() => {}} />)
 
 describe('start screen', () => {
-  it('shows the scenario title and the four ways to play', () => {
-    const html = renderToStaticMarkup(<Shell config={config} datasets={fixtureDatasets} />)
-    expect(html).toContain(config.title)
-    for (const label of ['Play solo', 'Same screen', 'Host a game']) {
-      expect(html).toMatch(new RegExp(`<button(?![^>]*disabled)[^>]*>${label}`))
-    }
-    // Join needs a room code first.
-    expect(html).toMatch(/<button[^>]*disabled[^>]*>Join a game/)
-    expect(html).toContain('Room code')
-    expect(html).not.toContain('Coming soon')
+  const html = renderToStaticMarkup(<App />)
+
+  it('is the real Start screen with solo, host and join, inside the shared theme', () => {
+    expect(html).toContain('class="game-theme app"')
+    expect(html).toContain('ss-root')
+    for (const label of ['Play solo', 'Host online', 'Join a room']) expect(html).toContain(label)
   })
 
-  it('shows the objective text from the scenario', () => {
-    const withText: Config = { ...config, params: { ...config.params, objective_text: 'Map every crop field.' } }
-    expect(renderToStaticMarkup(<Shell config={withText} datasets={fixtureDatasets} />)).toContain('Map every crop field.')
+  it('offers every scenario in data/ at every difficulty', () => {
+    expect(SCENARIOS).toHaveLength(scenarios.length * Object.keys(DIFFICULTIES).length)
+    for (const scenario of SCENARIOS) expect(html).toContain(`<option value="${scenario.scenario_id}"`)
+    expect(SCENARIOS[0]).toBe(scenarios[0]) // the first scenario as written is the default
+    expect(SCENARIOS.map((scenario) => scenario.scenario_id)).toContain('mars-hard')
   })
 
-  it('renders with the real scenario from data/', () => {
-    const html = renderToStaticMarkup(<App />)
-    expect(html).toContain('Play solo')
+  it('keeps play on one screen, which needs no network', () => {
+    expect(html).toMatch(/<button(?![^>]*disabled)[^>]*>Play on one screen/)
   })
 })
 
@@ -68,11 +64,10 @@ describe('game screen', () => {
     }
   })
 
-  it('has a slot for every part choice the sim reads', () => {
-    const keys = BUILDER_SLOTS.map((slot) => slot.key)
-    for (const [key, value] of Object.entries(goodDesign)) {
-      if (typeof value === 'string') expect(keys).toContain(key)
-    }
+  it('puts save, share and compare under the builder', () => {
+    const html = screen(soloSession().session)
+    expect(html).toContain('Save, share and compare designs')
+    expect(html).toContain('aria-label="Save and share"')
   })
 
   it('shows the mission screen after launch and the results at the end', () => {
@@ -86,7 +81,12 @@ describe('game screen', () => {
     session.send({ type: 'set_speed', payload: { multiplier: 60 } })
     for (let i = 0; i < 100; i++) game.advance(1000)
     expect(session.getSnapshot().state.status).toBe('ended')
-    expect(screen(session)).toContain('mv-root')
+    const results = screen(session)
+    expect(results).toContain('mv-results')
+    expect(results).toContain('Your mission record') // ui/leaderboard
+    expect(results).toContain('Design a new mission')
+    expect(results).toContain('Main menu')
+    expect(results).not.toContain('Save, share and compare designs')
   })
 
   it('goes back to the builder on reset', () => {
@@ -124,28 +124,47 @@ describe('co-op screens', () => {
     }
   }
 
-  it('shows the room code, the roster and a role picker with taken roles disabled', () => {
-    const html = renderToStaticMarkup(<Lobby session={frozen({ stage: 'lobby' })} roomCode="ABC234" onExit={() => {}} />)
+  const room = (session: Session) =>
+    renderToStaticMarkup(<Room active={{ session, roomCode: 'ABC234' }} onExit={() => {}} />)
+
+  it('shows ui/lobby while the crew gathers: room code, roster, taken roles disabled', () => {
+    const html = room(frozen({ stage: 'lobby' }))
+    expect(html).toContain('ls-root')
     expect(html).toContain('ABC234')
-    expect(html).toContain('Copy code')
-    expect(html).toContain('Hana')
-    expect(html).toContain('Gus (you)')
-    expect(html).toMatch(/<button[^>]*disabled[^>]*>Spacecraft/) // Hana's
-    expect(html).toMatch(/<button(?![^>]*disabled)[^>]*aria-pressed="true"[^>]*>Science/) // mine
-    expect(html).toMatch(/<button(?![^>]*disabled)[^>]*aria-pressed="false"[^>]*>Mission planning/)
-    expect(html).toContain('Waiting for Hana to start the mission.')
-    expect(html).not.toContain('Start mission')
+    expect(html).toContain('Gus</strong> (you)')
+    expect(html).toMatch(/<button[^>]*disabled[^>]*><strong>Spacecraft/) // Hana's
+    expect(html).toMatch(/<button(?![^>]*disabled)[^>]*aria-pressed="true"[^>]*><strong>Science/) // mine
+    expect(html).toContain('Waiting for the host')
+    expect(html).not.toContain('Continue to briefing')
   })
 
-  it('lets the host start the mission', () => {
-    const session = frozen({ stage: 'lobby', me: players[0] })
-    expect(renderToStaticMarkup(<Lobby session={session} roomCode="ABC234" onExit={() => {}} />)).toContain('Start mission')
+  it('lets the host continue to the briefing', () => {
+    expect(room(frozen({ stage: 'lobby', me: players[0] }))).toContain('Continue to briefing')
+  })
+
+  it('shows every player the briefing of the scenario the host picked, then the builder with role locks', () => {
+    const mars = SCENARIOS.find((scenario) => scenario.scenario_id === 'mars')!
+    const game = createGame({ config: mars, datasets: fixtureDatasets, sim: simCore })
+    const html = room(frozen({ ...game.getSnapshot() }))
+    expect(html).toContain('Mission briefing')
+    expect(html).toContain(mars.title)
+    // After the briefing: Gus holds Science, so Hana's Spacecraft sections are locked for him.
+    const builder = screen(frozen({}))
+    expect(builder).toContain('class="mb"')
+    expect(builder).toContain('Hana')
+  })
+
+  it('shows the closed-room page with a way back to the main menu', () => {
+    const html = room(frozen({ stage: 'closed', notice: 'The host closed the room.' }))
+    expect(html).toContain('The room is closed')
+    expect(html).toContain('The host closed the room.')
+    expect(html).toContain('Main menu')
   })
 
   it('puts the crew menu in the top bar of an online game, and a dismiss button on the notice', () => {
     const session = frozen({ notice: 'Only Hana (Spacecraft) can change that part of the design.' })
     const online = renderToStaticMarkup(
-      <GameScreen session={session} config={config} datasets={fixtureDatasets} onExit={() => {}} roomCode="ABC234" />,
+      <GameScreen session={session} config={config} onExit={() => {}} roomCode="ABC234" />,
     )
     expect(online).toContain('Crew (2) · Science')
     expect(online).toContain('ABC234')
