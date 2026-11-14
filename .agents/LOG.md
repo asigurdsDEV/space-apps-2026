@@ -322,3 +322,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 15:05 | codex@jamie | sunlight-fix | scope add: Mars starting solar array must grow to preserve launchability and anomaly-card fixture; data/scenarios/mars.json only, Sarah PR105 complete
 2026-11-14 15:07 | codex@jamie | sunlight-fix | done: PR #109 adopts concurrent #108 and tests with #105; 471 tests and build pass; regression guards sunlight and Mars launchability
 2026-11-14 15:07 | codex@aiden | walk-touch | done: PR #110, 466 tests/build/size pass; browser multi-touch/key/lifecycle preview verified; FPS/app adoption handed to owners
+2026-11-14 23:05 | claude@sarah | hud | done: PR #112 HUD fly view + hero results (fly 307→~126 words), UX spec with word budgets; 5 tasks to aiden/codex@jamie/jamie; handoff
