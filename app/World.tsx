@@ -1,14 +1,18 @@
 // The 3D game loop (decision 007), behind `?world=3d` until it plays start → debrief, then the default.
-// Design phase: mission control you walk around in (ui/hangar). After launch: today's launch view and
-// flight screen (2D) until claude@ethan's walk-in spacecraft lands. Mission over: back to mission
-// control for the debrief. Same Session and Commands as the 2D screens, so co-op works unchanged.
+// Design phase: mission control you walk around in (ui/hangar). After launch: the launch sequence
+// (ui/scene3d), then you fly the mission from inside the walk-in spacecraft (ui/interior). Mission
+// over: back to mission control for the debrief. Same Session and Commands as the 2D screens, so
+// co-op works unchanged.
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type ComponentType } from 'react'
 import { getDatasets } from '../data'
-import type { Config, SimEvent, Summary } from '../shared'
-import { choicesOf, whatIf } from '../sim'
-import { SoundToggle } from '../ui/audio'
+import type { Config, SimEvent, SimState, Summary } from '../shared'
+import { canSend, ROLES } from '../shared'
+import { choicesOf, pendingDecision, whatIf } from '../sim'
+import { playSound, SoundToggle } from '../ui/audio'
 import { MissionControl, type Debrief } from '../ui/hangar'
+import { SpacecraftRoom } from '../ui/interior'
+import { LaunchView as SceneLaunchView } from '../ui/scene3d'
 import { outcomeLabel } from '../ui/mission/format'
 import { GameScreen, withCards, type Active } from './App'
 import { StoryLayer } from './StoryLayer'
@@ -32,9 +36,11 @@ export interface WorldProps {
   onExit: () => void
 }
 
+const LaunchView = SceneLaunchView as ComponentType<{ state: SimState; onDone: () => void }>
+
 export function World({ active, config, onExit }: WorldProps) {
   const { session, roomCode, daily } = active
-  const { state, events, players, me } = useSession(session)
+  const { state, events, players, me, paused, speed } = useSession(session)
   const [classic, setClassic] = useState(false)
   const [cutscene, setCutscene] = useState(false)
   /** The arrival cutscene has played: CAPCOM moves on from the mission call to the design. */
@@ -73,15 +79,86 @@ export function World({ active, config, onExit }: WorldProps) {
   }, [ended, fixes])
 
   const flying = !ended && phase !== 'design'
-  if (classic || flying) {
-    // Flight stays 2D until the walk-in spacecraft (ui/scene3d/interior) lands.
-    return <GameScreen session={session} config={config} onExit={onExit} roomCode={roomCode} daily={daily} />
+
+  // Cutscenes and the launch hold the mission clock in solo, so nothing happens unseen (as the 2D flight does).
+  // Online the clock is shared by the whole crew, so it keeps running there.
+  const heldClock = useRef(false)
+  const holdClock = (hold: boolean) => {
+    if (roomCode !== null) return
+    if (hold && !session.getSnapshot().paused) {
+      heldClock.current = true
+      session.send({ type: 'pause', payload: {} })
+    } else if (!hold && heldClock.current) {
+      heldClock.current = false
+      session.send({ type: 'resume', payload: {} })
+    }
   }
+  /** The launch sequence has played for this flight. A late joiner or a reload mid-mission skips it. */
+  const [launched, setLaunched] = useState(() => session.getSnapshot().state.t_s > 86400)
+  useEffect(() => {
+    if (!flying) return setLaunched(session.getSnapshot().state.t_s > 86400)
+    if (!launched) {
+      playSound('launch')
+      holdClock(true)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [flying])
+
+  if (classic) return <GameScreen session={session} config={config} onExit={onExit} roomCode={roomCode} daily={daily} />
 
   const onCutscene = (playing: boolean) => {
     setCutscene(playing)
+    if (flying) holdClock(playing)
     if (!playing) setArrived(true)
   }
+  const bar = (
+    <div className="app-world-bar">
+      <SoundToggle />
+      <button type="button" className="game-button app-small" onClick={() => setClassic(true)}>
+        Classic view
+      </button>
+      <button type="button" className="game-button app-small" onClick={onExit}>
+        Main menu
+      </button>
+    </div>
+  )
+
+  if (flying && !launched) {
+    return (
+      <LaunchView
+        state={state}
+        onDone={() => {
+          holdClock(false)
+          setLaunched(true)
+        }}
+      />
+    )
+  }
+
+  if (flying) {
+    const decision = pendingDecision(state)
+    const console = ROLES.find((role) => role === decision?.console) ?? null
+    const may = canSend(me.role, { type: 'resolve_decision', payload: { decision_id: '', option_id: '' } }, players.map((p) => p.role), console)
+    const holder = players.find((p) => p.role === console)
+    return (
+      <div className="app-world game-theme" data-theme="dark">
+        <SpacecraftRoom
+          className="app-world-view"
+          state={state}
+          send={session.send}
+          paused={paused}
+          speed={speed}
+          decision={decision}
+          decisionBlocked={may ? undefined : `${holder?.name ?? 'Another player'}'s call`}
+          enabled={!cutscene}
+          onFailed={() => setClassic(true)}
+        />
+        {bar}
+        <StoryLayer screen="flight" events={events} scenarioId={state.scenario_id} onCutscene={onCutscene} shown={['launch']} />
+      </div>
+    )
+  }
+
   return (
     <div className="app-world game-theme" data-theme="dark">
       <MissionControl
@@ -95,15 +172,7 @@ export function World({ active, config, onExit }: WorldProps) {
         enabled={!cutscene}
         onFailed={() => setClassic(true)}
       />
-      <div className="app-world-bar">
-        <SoundToggle />
-        <button type="button" className="game-button app-small" onClick={() => setClassic(true)}>
-          Classic view
-        </button>
-        <button type="button" className="game-button app-small" onClick={onExit}>
-          Main menu
-        </button>
-      </div>
+      {bar}
       <StoryLayer
         screen={ended ? 'flight' : arrived ? 'design' : 'briefing'}
         events={ended ? events : undefined}

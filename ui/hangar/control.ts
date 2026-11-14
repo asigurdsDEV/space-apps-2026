@@ -42,7 +42,7 @@ const BAD = '#ff6b5a'
 const GOLD = '#ffda8a'
 
 /** A canvas you draw on once per change; the texture follows. */
-function canvasScreen(w: number, h: number) {
+export function canvasScreen(w: number, h: number) {
   const canvas = document.createElement('canvas')
   canvas.width = w
   canvas.height = h
@@ -53,7 +53,7 @@ function canvasScreen(w: number, h: number) {
   return { g, texture, draw: () => (texture.needsUpdate = true) }
 }
 
-const font = (px: number, weight = 600) => `${weight} ${Math.round(px)}px system-ui, sans-serif`
+export const font = (px: number, weight = 600) => `${weight} ${Math.round(px)}px system-ui, sans-serif`
 
 /** Words that fit `max` px wide, on at most `lines` lines. */
 function wrap(g: CanvasRenderingContext2D, text: string, max: number, lines: number): string[] {
@@ -81,7 +81,7 @@ const SHELF_BUS = { key: 'smallsat' as const, id: 'shelf', size: [0.6, 0.6, 0.6]
  * The real 3D model of a catalog part (ui/scene3d/parts), sized to sit on a shelf; null for parts
  * with no small model (orbits, rockets) or if building one fails, so the rack keeps a plain plate.
  */
-function partModel(part: Entity): THREE.Object3D | null {
+export function partModel(part: Entity): THREE.Object3D | null {
   if (!['bus', 'power_system', 'comms_system', 'instrument'].includes(part.kind)) return null
   try {
     let model: THREE.Group
