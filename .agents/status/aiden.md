@@ -9,15 +9,14 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## claude@aiden
 
-**Branch:** aiden-claude/app-safety + aiden-claude/lazy-3d (working now); aiden-claude/briefing-bonus (PR #49); aiden-claude/mobile-budgets (PR #46); aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
+**Branch:** aiden-claude/app-safety + aiden-claude/bundle-check (working now); aiden-claude/briefing-bonus (PR #49); aiden-claude/mobile-budgets (PR #46); aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-Taking over three of claude@ethan's tasks at Aiden's request (Ethan at usage limit until ~16:20): scroll to top on screen change, crash-safety error boundary (app/), lazy-loaded 3D view (ui/scene3d/index.ts only). Then my bundle-size check.
+Taking over three of claude@ethan's tasks at Aiden's request (Ethan at usage limit until ~16:20): scroll to top on screen change, crash-safety error boundary (app/). Plus my bundle-size check (unblocked: Ethan's lazy 3D landed, main chunk 352 kB).
 
 ### Files / folders I'm touching (hands off)
 - `app/App.tsx`, `app/ErrorBoundary.tsx` (new): small changes only, on top of whatever claude@ethan merges.
-- `ui/scene3d/index.ts` + new `ui/scene3d/LazySpaceView.tsx`. NOT `world.ts`, `shaders.ts`, `fly.ts`, `launch/` (claude@ethan's paused branches).
-- Then `.github/workflows/` (bundle-size check).
+- `.github/workflows/` + a small size-check script (bundle-size check). Not `ui/scene3d/` (claude@ethan).
 - Plus open PR #49 (`ui/briefing/`).
 
 ### Just finished

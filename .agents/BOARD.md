@@ -14,7 +14,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] (light) [P1] Hidden glossary tooltips push past the right edge and add a horizontal scrollbar (builder budgets at 1024 px) — ui/learn/ — owner: cursor@kaipo
 
 ### Improvements (added by claude@aiden 12:55, ideas from playing the builder + the game design)
-- [ ] (light) [P1] Bundle-size check in the deploy workflow: fail the build if the first-load JS grows past a set limit — .github/workflows/ — needs: lazy 3D split — owner: claude@aiden
 
 <!-- The six build tasks below are proposed by claude@ethan (one folder each so nobody collides). Rename or split them if your human disagrees. -->
 <!-- Ethan has the most agent usage, so claude@ethan takes the heavy ones (sim core + app loop are claimed below). If a task turns out bigger than your usage allows, hand the hard part to claude@ethan with a handoff instead of dropping it. -->
@@ -58,9 +57,9 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
+- [ ] (light) [P1] Bundle-size check in the deploy workflow: fail the build if the first-load JS grows past a set limit — .github/workflows/ — needs: lazy 3D split — owner: claude@aiden — [claude@aiden]
 - [ ] (light) [P0] Scroll to top on every screen change (briefing and builder open ~350 px down) — app/ — owner: claude@ethan — taken over by claude@aiden at Aiden's request (claude@ethan at usage limit until ~16:20; handoff offer-app-tasks); does not touch his paused ui/scene3d branches — [claude@aiden]
 - [ ] (light) [P1] Crash safety for judging: an error boundary around each screen with "Something went wrong, back to the builder" instead of a white page — app/ — owner: claude@ethan — taken over by claude@aiden at Aiden's request (claude@ethan at usage limit until ~16:20; handoff offer-app-tasks); does not touch his paused ui/scene3d branches — [claude@aiden]
-- [ ] (light) [P1] Fast first load on phones: export a lazy-loading `SpaceView` from ui/scene3d (same props, `React.lazy` + Suspense) so three.js isn't in the first download for any screen — ui/scene3d/ — owner: claude@ethan (moved by claude@aiden at Aiden's request: 3D work is Ethan's; handoff lazy-3d) — taken over by claude@aiden at Aiden's request (claude@ethan at usage limit until ~16:20; handoff offer-app-tasks); does not touch his paused ui/scene3d branches — [claude@aiden]
 - [ ] (light) [P2] Results: hide the bonus star when the scenario has no known `bonus_goal` (playtest) — ui/mission/ — [claude@sarah]
 - [ ] (light) [P1] Debrief "Your mission is most like …" real NASA mission match (GAME_DESIGN §4.4, claude@jamie's PR #50 data) — ui/mission/ — [claude@sarah]
 - [ ] (light) [P1] 3D `SpaceView mode="orbit"` on the fly screen (claude@aiden handoff 1115), 2D diagram kept as the fallback — ui/mission/ — [claude@sarah]
@@ -92,6 +91,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Done
 
+- [x] (light) [P1] Fast first load on phones: export a lazy-loading `SpaceView` from ui/scene3d (same props, `React.lazy` + Suspense) so three.js isn't in the first download for any screen — ui/scene3d/ — owner: claude@ethan (moved by claude@aiden at Aiden's request: 3D work is Ethan's; handoff lazy-3d) — [claude@ethan] — done in 10ae68e (main chunk 959 kB → 352 kB); claude@aiden's 15:00 takeover of this line withdrawn, Ethan had just finished it
 - [x] (light) [P0] Put the GO / NO-GO poll (#33) between the builder's Launch and the mission — app/ — owner: claude@ethan — [claude@ethan] — done in 24247ed (Launch opens GoNoGoPoll); moved to Done by claude@aiden
 - [x] (light) [P0] Daily mission app integration: use dailyMissionForDate + apply descriptor seed before init, refresh at UTC midnight/resume — app/ — owner: claude@ethan — needs: #30 #31 (Start portion complete) — [claude@ethan] — done in 24247ed (dailyMissionForDate, UTC midnight refresh); moved to Done by claude@aiden
 - [x] (medium) [P1] Real missions table: ~10–15 real missions with sourced numbers for the debrief match — data/real-missions.json — owner: claude@jamie — [claude@jamie] — in PR #50: 12 missions (Earth 3, Moon 5, Mars 4), launch mass + year each from a cited NASA/NOAA page, tested no-URL-no-row; match helper handed to claude@sarah
