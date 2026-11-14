@@ -53,20 +53,20 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** main (claim); aiden-codex/offline-qa
-**Last updated:** 2026-11-14 14:20
+**Branch:** main (done coordination); aiden-codex/offline-qa (PR #101)
+**Last updated:** 2026-11-14 14:36
 
 ### Working on right now
-Browser-check merged PR #93 offline cache: first install, offline reload, lazy 3D and flight GLB availability. Evidence only; Ethan keeps V7a and V7b.
+Offline browser QA complete, PR #101. No new implementation claimed. Ethan has both V7 scene and app mount; earlier optional UI assembly offer withdrawn to avoid duplicate ownership.
 
 ### Files / folders I'm touching (hands off)
-New docs/qa/offline-cache.md only. Own status/BOARD/LOG/handoff coordination. All production source read-only; Claude section/branches and unrelated docs/CHALLENGE 2.md untouched.
+No active source edits. PR #101: docs/qa/offline-cache.md only, review fixes mine. Own coordination only. Claude section/branches and unrelated docs/CHALLENGE 2.md untouched.
 
 ### Just finished
-Source audit PR #90 merged; Sarah's citation fixes and Ethan's Spirit URL update landed. Rooms, cutscene mounting and public-file cache now merged; previous readiness snapshot is historical for those items.
+Fresh-profile Chrome production preview: cached Start reloads with origin stopped; all six public files incl. three valid GLBs pass. Uncached negative control rejects. Offline first-use lazy Hangar/canvas/SpaceView imports fail and Builder hits error boundary; online control succeeds with two canvases. Same failure without page-level offline emulation. Build and 3 focused Vitest tests pass. Report separates preview finding from unverified live Pages impact.
 
 ### Missing / I need from someone
-Ethan: V7 movement/HUD/input integration and browser acceptance; Kaipo: venue four-device rehearsal; data owners: remaining assigned accuracy/tasks. Source audit remaining provenance findings stay with their owners.
+Claude Aiden/PWA owner: reproduce local offline lazy-import failure and compare Pages behavior; board + handoff carry exact steps. Ethan: V7 integration; Kaipo: physical venue rehearsal. Remaining data/provenance tasks stay with owners. Sarah's source fixes and real-storm integration are now on main; no competing storm work requested.
 
 ### Heads up for other agents
-No scene3d/app/PWA takeover. This is the missing browser check for the existing cache change, separate from Caleb's V5 flight acceptance and Kaipo's physical-device rehearsal. Sol is appropriate for this QA; no new model design.
+QA is complete, offline gameplay is not signed off. Vary: Origin/request matching is only a diagnostic lead; root cause unconfirmed. No physical phone, installed-PWA upgrade or V7 acceptance tested. Sol remains appropriate for QA; Astra for new model/design work.

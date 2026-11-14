@@ -8,6 +8,8 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Open
 
+- [ ] (light) [P1] Investigate first-use offline lazy scene import failure in local production preview (Start/GLBs cached, Builder error boundary); compare Pages headers before asserting live impact — pwa/ + config owner: claude@aiden — needs: reproduction in docs/qa/offline-cache.md PR #101; no source claim transferred
+
 - [ ] (medium) [P2] Fly scene tied to sim time (craft position from `t_s`, ground stations, downlink beam, part highlight) — ui/scene3d/ — released by claude@ethan 13:55 so it does not block anyone; unfinished work is on branch `ethan-claude/scene3d-fly`. Ask claude@ethan before taking it (the folder is his)
 
 ### Interactive 3D overhaul (Aiden: both modes, spacecraft flight first; plan PR #69)
@@ -45,10 +47,12 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 ## Missing / needed
 
+- Offline QA PR #101: local preview fresh-cache offline Builder fails on lazy Hangar/canvas/SpaceView imports; online control succeeds. All six public files pass offline. Root cause and Pages impact unconfirmed; PWA owner claude@aiden follow-up — [found by codex@aiden]
+
 
 - Source audit PR #90: catalog references are background for exact game values; add Spirit completed-repair/SOHO longevity citations, reconcile conflicting GRAIL launch masses, add GOES launch-year evidence and glossary provenance. LRO 1,846 kg is supported by cited NSSDCA source. Owners: data claude@jamie, story claude@sarah, glossary cursor@kaipo; report/source-audit handoff contains evidence — [found by codex@aiden]
 
-- Current-main integration check (8c0f3cb): V1/V2/V3/V4, rooms, cutscenes and launch are merged; app still does not mount PilotInput/FlightHud or Hangar, StoryLayer supplies no non-launch 3D children, public GLBs are absent from explicit PWA precache. Claude owns active room mounting; Caleb's 1340 handoff covers cutscene mounting. Ethan: Codex offers new ui/flight-training/ screen assembly to reduce V7b work, pending your exact scope/public FlightView API approval (handoff readiness-next). No claim or app/scene3d takeover — [found by codex@aiden]
+- Updated after 8c0f3cb snapshot: rooms, non-launch cutscene mounting and all public-file precache landed (#87/#91/#93). Ethan has claimed both V7a scene + V7b app mount; earlier optional Codex assembly offer is withdrawn to avoid duplicate ownership. V7/device acceptance remains with owners; separate offline preview finding in PR #101 — [found by codex@aiden]
 
 
 - V1 input kit PR #78, V2 HUD #76, V3 assets #75 and V4 route #73 are available; V7 still must connect real craft movement/aiming, held target scans and scene feedback. V5 #77 is a test plan, not executed flight QA. V6 rooms now belong to Claude Aiden per 1555 split. Scored maneuvers still require agreed sim/CONTRACTS work — [found by codex@aiden]
@@ -81,7 +85,6 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 ## In progress
 - [ ] (medium) [P1] Rockets fully rendered (Ethan's request): surface detail on every launch vehicle (panel seams, weld lines, markings, engine detail), shadows, exhaust and pad effects — ui/scene3d/launch/ — branch `ethan-claude/rocket-render` — [claude@ethan]
-- [ ] (light) [P1] Browser verification of merged offline public-asset cache: fresh install, offline reload, lazy scenes and all flight GLBs; evidence only — docs/qa/offline-cache.md (new), source read-only — [codex@aiden]
 - [ ] (medium) [P0] Make the real NASA data drive play: storm card fires on real OMNI storm days (G3+) with the real date; app passes `weather_start` + `real_storms` — sim/cards.ts + sim/sim.ts (storm card only), app/App.tsx (`withCards` only), data/space-weather/ (new storms.json) — [claude@sarah] — **Sarah approved doing this in claude@ethan's sim/app** (Ethan at capacity); handoff to claude@ethan
 - [ ] (heavy) [P1] V7 Integrate at a checkpoint chosen by existing owners: player-craft control/chase camera + one large scene + HUD; preserve published SpaceView and sim authority — ui/scene3d/ + app/ owner: claude@ethan; ui/mission/ owner: claude@sarah; cache/config owner: claude@aiden — needs: reviewed V1/V2/V4, optional V3; owner agreement on additive API; no current 3D work takeover — **claimed 15:25 by claude@ethan for the ui/scene3d/ + app/ part**, two PRs: V7a `ui/scene3d/flight/` (new folder: `FlightView`, player craft with chase camera, V4 targets, takes V1 intent, gives V2 `focus`), branch `ethan-claude/flight-view`; then V7b mount in `app/` (a "Flight training" button on the flight screen opens it over the mission with `<FlightHud>` + `<PilotInput>`; local training only, no sim commands) — [claude@ethan]
 - [ ] (light) [P1] Re-run the four-device multiplayer rehearsal once Host online and Join are on the live site. Fill docs/MULTIPLAYER_TEST.md again (venue wifi, then a phone hotspot if wifi fails) — docs/MULTIPLAYER_TEST.md — needs: app loop merged and Pages serving Start — owner: cursor@kaipo — [cursor@kaipo]
@@ -105,6 +108,7 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 
 ## Done
+- [x] (light) [P1] Browser verification of merged offline public-asset cache: fresh install, offline reload, lazy scenes and all flight GLBs; evidence only — docs/qa/offline-cache.md (new), source read-only — [codex@aiden] — in PR #101: Start reload + all six public files pass with origin stopped; local preview first-use offline lazy imports fail, online control passes; Pages not reproduced
 - [x] (medium) [P1] Realistic rockets (Ethan's request) — ui/scene3d/launch/ — [claude@ethan] — in PR #98: Falcon 9, rideshare Falcon 9, Electron, Pegasus XL, Vulcan Centaur, SLS Block 1 modelled on the real rockets at real size; Atlas V 401, Delta IV Heavy and Falcon Heavy are modelled too and wait for catalog rows (`atlas-v`, `delta-iv-heavy`, `falcon-heavy`, handoff 20261114-1415 to claude@jamie). Sources: `ui/scene3d/launch/REFERENCES.md`.
 - [x] (medium) [P1] Realistic spacecraft parts (Ethan's request) — ui/scene3d/parts/ — [claude@ethan] — in PR #97: every bus, power, radio and instrument model patterned on named NASA hardware (MarCO, CAPSTONE, GRAIL, MAVEN, MRO, MMRTG, LRO, NISAR, ...). Sources and which numbers are estimates: `ui/scene3d/parts/REFERENCES.md`.
 - [x] (light) [P2] No rocket nozzle on buses with `propulsion_delta_v_ms: 0` (3U, 6U) — ui/scene3d/parts/ — [claude@ethan] — in PR #97, with a test.
