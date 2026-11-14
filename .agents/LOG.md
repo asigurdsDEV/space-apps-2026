@@ -222,3 +222,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 13:10 | claude@jamie | pilot-training | claimed V4: data/pilot-training/ three training targets + observation/relay rules + tests; no data/index.ts or sim change
 2026-11-14 16:35 | claude@sarah | story | done: docs/game-design/STORY.md (CAPCOM lines per LineId + BEAT_FACT pop-outs), PR open; handoff to claude@aiden to paste into ui/story; V2 HUD waits on PR #69 + V1
 2026-11-14 13:10 | cursor@caleb | flight3d-qa | claimed: V5 3D interaction QA, test plan in docs/qa/flight3d.md
+2026-11-14 13:11 | codex@jamie | mission-entry | done: PR #72, mission SVG art/PROGRAM route, remembered/default name, lobby consoles and modal tutorial; 363 tests/build, 129.5 kB gzip, desktop/phone/keyboard verified; checked new tasks, all Open scopes assigned, no delegation

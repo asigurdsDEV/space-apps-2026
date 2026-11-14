@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 14:15
+**Last updated:** 2026-11-14 13:11
 
 
 ## claude@jamie
@@ -54,28 +54,27 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## codex@jamie
 
-**Branch:** jamie-codex/mission-entry
-**Last updated:** 2026-11-14 12:48
+**Branch:** main (coordination); jamie-codex/mission-entry (PR #72)
+**Last updated:** 2026-11-14 13:11
 
 ### Working on right now
 
-Jamie requested substantial independent work + better graphics. Claimed mission-entry polish: remembered/default names, SVG mission artwork and PROGRAM route, lobby console visuals, accessible first-visit tutorial. Full implementation/testing/PR stays with Codex; no delegated coding.
+Mission-entry chunk complete in PR #72, awaiting merge coordinator. Checked new tasks: all Open work has designated owners; Claude Jamie has now claimed V4 training route. No replacement implementation claimed and no work delegated.
 
 ### Files / folders I'm touching (hands off)
 
-- `ui/start/` (StartScreen, styles, model/name persistence, SVG artwork, tests, preview, README).
-- `ui/lobby/` (LobbyScreen, styles, role artwork, preview/README).
-- `ui/tutorial/` (BuilderTutorial, styles, preview, README/tests).
-- Own BOARD/status/LOG/handoffs. No app/, data/, sim/, shared/, theme/, scene3d/ or another agent’s source.
+No active production edits. PR #72 contains `ui/start/`, `ui/lobby/`, `ui/tutorial/`; review/fixes remain mine until merge. Own BOARD/status/LOG/handoffs only on main. No app/data/sim/shared/theme/scene3d edits.
 
 ### Just finished
+
+PR #72: default/remembered name; PROGRAM-ordered mission route; local SVG Earth/Moon/Mars and spacecraft art; illustrated lobby consoles; modal builder tour with focus entry/return, Tab containment, Escape/Skip, replay and remembered dismissal. 363 tests, TypeScript/build and size check pass (129.5 kB gzip / 150 kB). Browser checked desktop/390px layouts, light/dark visuals, name persistence, lobby claim/release and guest controls, tour keyboard/phone behavior. No overflow in checked phone views.
 
 PR #48 merged: transport disconnect/rejoin reliability; 316 tests/build at completion. Prior Start/Lobby/daily/tutorial PRs merged and mounted.
 
 ### Missing / I need from someone
 
-No app integration needed for this chunk: existing exported components retain props. One-screen strip remains app-owned. Real-device four-person venue rehearsal stays Kaipo’s. Start join-stall observation remains unconfirmed; not treating new visuals as a networking fix.
+Ethan: review/merge PR #72. No app wiring required; exported props unchanged. Four-device venue rehearsal remains Kaipo's; no physical-device or screen-reader run in this chunk. Interactive 3D/story integration remains with assigned owners.
 
 ### Heads up for other agents
 
-Claude Jamie: PROGRAM is used as static metadata; no data edits. Caleb: handling tutorial keyboard note in owned ui/tutorial/. Ethan/Aiden: leave these folders to me; app/ and 3D stay yours. Graphics use local SVG/CSS, no new dependency or remote image downloads.
+Claude Jamie: PROGRAM handoff completed, all three missions remain accessible; no data edits or assignment to you. Caleb: dialog keyboard handoff completed and browser verified. Latest all-handoff has evidence and remaining boundaries. SVG/CSS assets add no dependencies or remote downloads.

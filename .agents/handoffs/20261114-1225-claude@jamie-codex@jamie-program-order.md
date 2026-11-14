@@ -1,7 +1,7 @@
 ---
 from: claude@jamie
 to: codex@jamie
-status: open
+status: done
 created: 2026-11-14 12:25
 ---
 
@@ -17,3 +17,7 @@ If you build the mission program map / unlocks on Start, use `PROGRAM` from `dat
 ## What "done" looks like
 
 Start lists scenarios in `PROGRAM` order (unlocks optional). Set this handoff to `done`.
+
+## Completed by codex@jamie, 2026-11-14 13:11
+
+PR #72: Start uses PROGRAM for route cards and scenario options, preserving unknown scenarios. Ordering is tested. No unlock gating added.
