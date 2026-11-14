@@ -13,28 +13,30 @@ Start ─► (online: Lobby) ─► Briefing ─► Builder ─► GO / NO-GO �
 | Step | Screen | What the app gives it |
 |---|---|---|
 | Start | `ui/start` `StartScreen` | Every scenario in `data/`, `scenarioPreview={getScenario}` so its difficulty picker shows the real budget and goal, and today's `dailyMission`. `onStart` plays solo, hosts a room or joins one with `getScenario(scenarioId, difficulty)`. `busy` and `error` come from opening the room. |
-| Start | `SameScreen` (app) | A strip under the Start screen: play on one screen with no network. `ui/start` has no mode for it. |
+| Start | `SameScreen` (app) | A panel under the Start screen: play on one screen with no network, with its own mission and difficulty pickers. `ui/start` has no mode for it. |
 | Lobby | `ui/lobby` `LobbyScreen` | Online rooms only, while the session's stage is `lobby`. `onClaimRole` → `session.claimRole`, `onContinue` → `session.start()`, `onLeave` → main menu, `error` is the session's notice. |
 | Briefing | `ui/briefing` `Briefing` | The scenario's `Config`. Each player reads it on their own screen and presses Start designing. Back goes to the main menu. |
 | Builder | `ui/builder` `MissionBuilder` | `state`, `send`, and `players` and `me` from the session, so role badges and locks work. It mounts the 3D `SpaceView` itself. |
 | Builder | `ui/share` `SharePanel` | Under the builder: copy link, save, load and compare designs. |
 | Poll | `ui/gonogo` `GoNoGoPoll` | The builder's Launch button opens it (the app catches the builder's `launch` command). Its own Launch button sends `launch`; Back to design returns to the builder. Only the player who pressed Launch sees it. |
 | Launch | `LaunchView` seam | See below. Today it is empty and the game goes straight on. |
-| Mission, Results | `ui/mission` `MissionScreen` | `state`, `events`, `onCommand`, `paused`, `speed`, `title`, the final `summary` once the sim has ended, `bonusGoal` (the scenario's `bonus_goal`, when it has one), `share` (the daily date) and `spaceWeather`. |
+| Mission, Results | `ui/mission` `MissionScreen` | `state`, `events`, `onCommand`, `paused`, `speed`, `title`, the final `summary` once the sim has ended, `bonusGoal` (the scenario's `bonus_goal`, when it has one), `share` (the daily date) and `spaceWeather`. Anomaly cards: `decision` (`pendingDecision(state)` from `sim/`), `onDecide`, `canDecide`. Results: `fixes` (`whatIf` from `sim/`, run once when the mission ends), `onTryFix` (sends `reset`, then the fix's design) and `realMissions`. |
 | Results | `ui/leaderboard` `LocalLeaderboard` | Under the results: the personal best for this scenario and difficulty, with the stars from `ui/mission`'s `stars()`. A daily mission passes `dailySeed`, so its record is kept apart. |
 
 - **Which screen shows** is decided in `Room` (`App.tsx`) from the session snapshot: `stage`, then `state.metrics.phase`.
 - **Guests learn the scenario from the host.** The first `state` message carries `scenario_id` (for example `mars-hard`), and the guest looks it up in `SCENARIOS` (every scenario at every difficulty). That same message moves every guest from the lobby to the briefing.
 - **Daily mission** (solo): the scenario `ui/start/daily.ts` picks for today's UTC date, as written (Normal), with `seed` set to the date as YYYYMMDD. The date is checked every minute and when the page gets focus.
-- **Space weather:** the fly view shows real NASA space weather for each mission day (`data/space-weather`, loaded only once a mission flies). Mission day *n* shows `weatherStart(config, seed)` + *n* days: the scenario's `weather_start` param, or else a day picked by the seed between 1996 and 2021. It is display only; the sim does not read it yet.
+- **Space weather:** the fly view shows real NASA space weather for each mission day (`data/space-weather`, a separate chunk asked for when the builder opens, so the flight has it from its first frame). Mission day *n* shows `weatherStart(config, seed)` + *n* days: the scenario's `weather_start` param, or else a day picked by the seed between 1996 and 2021. It is display only; the sim does not read it yet.
 - **Play again** is the results screen's "Design a new mission". It sends `reset`, which goes back to the builder with the scenario's starting design. **Main menu** is in the top bar on every game screen and closes the session.
 - **Shared links** (`designFromHash` from `ui/share`): a design in the address bar when the page loads is applied to the first game this player starts or hosts. A link pasted while the builder is open is applied at once.
 - **Launch seam:** `LaunchView` in `App.tsx` is `null`. Set it to `ui/scene3d`'s `<LaunchView state onDone />` and it is shown after every successful launch until it calls `onDone`. Nothing else has to change.
 - **Theme:** `App.tsx` imports `ui/theme/theme.css` and `ui/learn/learn.css` once and wraps the game in `game-theme`. The app's own chrome (top bar, notice, crew menu, the one-screen strip, the closed-room page) uses only `--game-*` tokens, so it follows light and dark.
 - `ui/mission` only has a dark palette so far, so the app pins the theme to dark around the flight and the results (`DARK_ONLY` in `App.tsx`). Remove the pin when it uses the tokens.
 - `.app` has `overflow-x: clip`: a hidden `ui/learn` tooltip near the right edge otherwise makes the whole page scroll sideways.
-- The tab title and the icon are set in `main.tsx`, because `index.html` belongs to the scaffold.
-- **Not wired yet:** anomaly cards (`decision`, `onDecide`) and what-if fixes (`fixes`, `onTryFix`) on `MissionScreen`. Both need sim work first (`decision_required` events, `sim/analysis.ts`).
+- The tab icon is set in `main.tsx`, because `index.html` belongs to the scaffold.
+- **Every screen change** goes through `useScreen` in `App.tsx`: the page scrolls to the top, the tab title names the screen ("Builder · <mission> · Space Mission Design Game"), and focus moves to the new screen's heading (the first `h1` inside `<main>`, else the first `h2`). Loading the page does not move focus. The builder, the poll, the flight and the results are each inside a `<main>`; in the flight and the results the top bar's title is the page's `h1`.
+- **Closing the tab** in an online room closes the session on `pagehide`: a guest sends `leave`, a host sends `ended`. `net/` does not notice a connection that just dies (a sleeping phone, lost Wi-Fi), so that player still stays listed until the host opens a new room.
+- **Join errors** are worded in `roomError`: a code no room has, and a room that does not answer (which is what a full room looks like, because `net/` drops a fifth connection without a message).
 
 ## Files
 
@@ -101,6 +103,8 @@ The tests use `LocalTransport` only. A real WebRTC connection needs two browsers
 3. In browser B choose **Join a room**, type a name and the code (any case) and press **Join room**. Expect both lobbies to list both players, host first.
 4. In A pick **Spacecraft**, in B pick **Science**. Expect each role to show as taken for the other player. Press **Continue to briefing** in A; both should show the briefing of the mission A picked, then the builder.
 5. In B pick an instrument: the budgets should change in both browsers. In B the bus section should be locked and show the host's name. Finish a valid design and launch from either browser (mission planning is unclaimed; the GO / NO-GO poll shows only for the player who pressed Launch); both should show the flight and stay in step, including pause and speed, and both should reach the same results.
-6. Press **Design a new mission** in either browser: both go back to the builder. Press **Main menu** in A: B should show "The room is closed". Also try a wrong room code (expect "Could not join that room" on the Start screen) and a fifth player.
+6. Press **Design a new mission** in either browser: both go back to the builder. Press **Main menu** in A: B should show "The room is closed". Also try a wrong room code (expect "Could not join that room: no open room has that code" on the Start screen), a fifth player (after 15 seconds: "it did not answer. It may be full"), and closing B's tab (A's crew count drops at once).
+
+`e2e/coop.mjs` runs all of this in real browsers.
 
 If step 2 or 3 fails on the venue network, **Play on one screen** and **Play solo** still work with no network.

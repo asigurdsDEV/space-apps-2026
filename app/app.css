@@ -53,6 +53,10 @@ body {
   .app-bar-title {
     flex-basis: 100%;
   }
+  /* The player's role is in the open menu too; without it the three buttons fit one row. */
+  .app-crew-mine {
+    display: none;
+  }
 }
 h1.app-bar-title {
   margin: 0;

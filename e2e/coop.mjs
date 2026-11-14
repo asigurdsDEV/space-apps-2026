@@ -364,8 +364,9 @@ await check('room: a fifth player is told the room is full', async () => {
   })
   must((await fifth.locator('.bf, .ls-root').count()) === 0, 'the fifth player got into the room')
   const message = await text(fifth, '.ss-error, .app-closed, .ls-error')
-  must(/full/i.test(message), `after ${Math.round((Date.now() - asked) / 1000)} s the message does not say the room is full: "${message}"`)
-  return message
+  const waited = `${Math.round((Date.now() - asked) / 1000)} s`
+  must(/full/i.test(message), `after ${waited} the message does not say the room is full: "${message}"`)
+  return `after ${waited}: ${message}`
 })
 
 await check('join: a wrong room code shows a clear error', async () => {

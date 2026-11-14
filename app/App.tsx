@@ -341,7 +341,7 @@ export function GameScreen({ session, config, onExit, roomCode, daily }: GameScr
         {roomCode && (
           <details className="app-crew-menu">
             <summary className="game-button app-small">
-              Crew ({players.length}) · {me.role ? ROLE_LABELS[me.role] : 'No role'}
+              Crew ({players.length})<span className="app-crew-mine"> · {me.role ? ROLE_LABELS[me.role] : 'No role'}</span>
             </summary>
             <div className="app-crew-panel">
               <RoomCode code={roomCode} />

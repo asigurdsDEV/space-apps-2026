@@ -220,7 +220,7 @@ describe('co-op screens', () => {
     const online = renderToStaticMarkup(
       <GameScreen session={session} config={config} onExit={() => {}} roomCode="ABC234" />,
     )
-    expect(online).toContain('Crew (2) · Science')
+    expect(online).toContain('Crew (2)<span class="app-crew-mine"> · Science</span>')
     expect(online).toContain('ABC234')
     expect(online).toContain('Only Hana (Spacecraft)')
     expect(online).toContain('aria-label="Dismiss message"')

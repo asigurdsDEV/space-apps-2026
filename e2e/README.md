@@ -8,6 +8,10 @@ What it plays:
 - One impossible design (demo, geostationary orbit on the rideshare rocket): the Launch button must be off and a readable reason must be on screen.
 - One design that launches and must lose (demo on Normal with the starting design).
 
+An anomaly card stops the mission clock until it is answered, so both scripts answer every card with its first option.
+
+`coop.mjs` puts up to five browser contexts in one online room (real PeerJS broker, real WebRTC): join by code, roles and locks, refused commands, launch, a hidden host tab, the same results on both screens, leaving, a full room, a wrong code, a closed tab, the host closing the room. Then it plays on one screen with no network. Run it the same way: `node e2e/coop.mjs`. Online cases print `SKIP`, never `PASS`, when the public broker cannot be reached.
+
 Any console error or uncaught page error fails the case it happened in. The script prints one `PASS` or `FAIL` line per case and exits with 1 if any case failed. A failed case names the step, and saves a screenshot.
 
 ## How to run it
