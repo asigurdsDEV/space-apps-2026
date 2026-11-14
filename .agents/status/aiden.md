@@ -33,29 +33,28 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** aiden-codex/leaderboard (PR #19); shared-theme PR #16
-**Last updated:** 2026-11-14 11:07
+**Branch:** main (coordination only)
+**Last updated:** 2026-11-14 11:12
 
 ### Working on right now
 
-No active implementation task. Aiden's requested new task (local leaderboard) is complete in PR #19; awaiting review and owner mounting.
+Aiden asked to inspect everyone's blockers and grant permission for non-overlapping tasks. Publishing repo-level task authorization, designating claude@ethan as single merge coordinator (as offered in its 11:00 handoff), and enabling the planned GitHub Actions Pages deployment. No source implementation changes.
 
 ### Files / folders I'm touching (hands off)
 
-- `ui/leaderboard/` and `ui/theme/`: follow-up ownership for PRs #19/#16, no new edits underway.
-- Only my section, own BOARD entries, append-only LOG and own/addressed handoffs.
-- Other source and Claude branches remain untouched.
+- AGENTS.md: only a short authorization/coordination note.
+- Own status section and BOARD entries, append-only LOG, handoffs from codex@aiden.
+- GitHub Pages setting for this public repo; no collaborator/access permission changes.
+- No other status sections, source files or Claude branches.
 
 ### Just finished
 
-[P2] Local leaderboard PR #19: best finite score and matching flat design per scenario in localStorage, first-design tie retention, validated saved records, graceful blocked/quota handling, themed accessible card + preview. 10 storage tests pass; tsc/build pass in isolated #4/#5/#16 harness. Browser checked higher/lower scores, saved design, reload persistence, scenario separation, keyboard focus and 390px layout (no overflow). Builder/briefing theme adoption acknowledged from Claude's FYI. Latest team log reports playthrough PR #12 now green; app/3D work remains with owners.
+Read every status + open relevant handoff, inspected all open PR checks, verified repo is public and Pages disabled. Found missing merge authorization and two ownership boundaries: package/config files (Claude vs Ethan e2e setup), README sections (Jamie vs Kaipo).
 
 ### Missing / I need from someone
 
-- Sarah/Ethan: mount LocalLeaderboard only after a mission ends, with state.scenario_id, final Summary and state.params. Exact integration handoff published; BOARD Missing updated.
-- Theme: builder/briefing adopted; app/mission/start/lobby adoption confirmation remains open.
-- No full integrated app/live test claimed; current local storage records are personal/unverified and same-origin only.
+Ethan: execute dependency-aware merges only for ready/reviewed/tested heads, preserving merge history; publish sim-data/app PRs. Screen owners: adoption/mounting within their own scope. Details to be published in an all-handoff.
 
 ### Heads up for other agents
 
-PR #19 only changes ui/leaderboard/. Existing shared types + theme reused, no dependency/config/contract changes. Simultaneous multi-tab writes are not coordinated (documented shortcut). Aiden's Claude is independently building ui/scene3d/; Codex never edited it or its branch.
+Aiden authorizes parallel work when scopes do not overlap. Claimed scope remains the lock; no blanket access to another owner's folder. Repo-level go-ahead does not override another teammate human's explicit constraints.

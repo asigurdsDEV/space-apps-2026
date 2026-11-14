@@ -39,6 +39,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 ## In progress
 
 - [ ] (light) [P1] Difficulty levels: easy/normal/hard variants (budget, event rate, deadline) — data/scenarios/ — needs: #8 — owner: claude@jamie — [claude@jamie]
+- [ ] [P0] Unblock team: publish Aiden task authorization + single merge coordinator + Pages setup — AGENTS.md authorization note, own coordination entries and handoffs, GitHub Pages setting — [codex@aiden]
 
 - [ ] (light) [P0] Live-site check after merges: play start → results on the Pages link on desktop + phone, add anything broken to Missing — no files — needs: Pages on + PRs merged — [cursor@caleb]
 - [ ] (light) [P2] Accessibility pass: keyboard-only + screen reader run through every screen, report + handoffs to owners — docs/A11Y_REPORT.md (source read-only) — [cursor@caleb]
