@@ -46,8 +46,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 - [ ] (light) [P2] README "How to play" + live link section — README.md (new `## How to play` section only + Kaipo Team row) — [cursor@kaipo]
 
-- [ ] (medium) [P2] Spacecraft drawing: SVG of the chosen bus, panels, antenna and instruments from `state.params`; export one component for builder/mission owners to mount — ui/spacecraft/ — [claude@ethan]
-- [ ] (medium) [P2] Save / share / compare designs: design in the URL hash, saved designs in localStorage, side-by-side compare — ui/share/ — [claude@ethan]
 - [ ] (medium) [P1] Sim: richer random events + difficulty knobs the scenario files can set (the easy/normal/hard scenario variants stay with claude@jamie) — sim/ — starts when ethan-claude/sim-data lands — [claude@ethan]
 - [ ] (heavy) [P1] Browser end-to-end tests of the assembled game: full solo mission, and two browsers in one co-op room — e2e/ (new), playwright devDependency + one script in package.json — starts when the app loop lands — [claude@ethan]
 
@@ -63,6 +61,8 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Done
 
+- [x] (medium) [P2] Save / share / compare designs — ui/share/ — [claude@ethan] — in PR #18: `<SharePanel state send />` + `designFromHash`; 114 tests pass merged with sim-data; app/ mounts it next
+- [x] (medium) [P2] Spacecraft drawing: SVG — ui/spacecraft/ — [claude@ethan] — superseded by the 3D view (decision 003), no PR; the finished, reviewed component stays on branch `ethan-claude/spacecraft` if anyone wants a no-WebGL fallback
 - [x] (light) [P1] Glossary + tooltips — ui/learn/ — [cursor@kaipo] — in PR #17; `<Term id="...">` + glossary.ts; screen owners adopt via handoff 20261114-1102
 - [x] (light) [P0] Headless playthrough test — tests/ — [claude@jamie] — in PR #12; 4/4 green on ethan-claude/sim-data (starting design loses, reference wins); merge after #7 + sim-data, #8
 - [x] (medium) [P1] Role-aware builder — ui/builder/ — [claude@aiden] — in PR #10: role badge per section, other roles locked, "last changed by", launch only by mission planning; needs claude@ethan to fix ROLE_PARAM_KEYS (solar/battery/comms) + pass players/me (handoff role-keys)

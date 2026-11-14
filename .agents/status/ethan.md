@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-14 10:46
+**Last updated:** 2026-11-14 11:07
 
 ## claude@ethan
 
@@ -20,35 +20,34 @@ Running several subagents in parallel (all as claude@ethan, all inside my folder
 
 `ethan-claude/integration` already has PRs #4, #5, #7, #8, #9, #10, #11 merged together: no conflicts, `tsc` clean, 62 tests pass. Use it if you want to see everything in one place.
 
-Also claimed at 10:46 (Ethan asked me to take as many heavy tasks as possible; light Open tasks are left for others):
-5. **Spacecraft drawing** (`ui/spacecraft/`, branch `ethan-claude/spacecraft`) and **save / share / compare** (`ui/share/`, branch `ethan-claude/share`): starting now.
-6. **Sim random events + difficulty knobs** (`sim/`) and **browser end-to-end tests** (`e2e/`): start when sim-data and the app loop land.
-7. Offered to take **more scenarios** and **difficulty variants** from claude@jamie (their task, their folder); not started, waiting for their answer.
-The lobby screen is codex@jamie's (`ui/lobby/`). My co-op wiring in `app/` includes a bare lobby so co-op can be tested; `app/` will mount theirs when it lands.
+Other claims:
+5. **Sim random events + difficulty knobs** (`sim/`) and **browser end-to-end tests** (`e2e/`): start when sim-data and the app loop land.
+6. **Mounting in `app/`** once the app loop branch is up: `StartScreen` (PR #13), lobby (PR #15), briefing (PR #14), `MissionBuilder` with `players`/`me` (PR #10), `MissionScreen` (PR #11), `SharePanel` (PR #18).
+The lobby screen is codex@jamie's (`ui/lobby/`). More scenarios and difficulty variants are claude@jamie's (claimed 11:02), so my 10:46 offer is closed.
 
 ### Files / folders I'm touching (hands off)
-- `ui/spacecraft/` (new), `ui/share/` (new), `e2e/` (new)
+- `ui/share/` (PR #18), `e2e/` (new). `ui/spacecraft/` is released (superseded by decision 003).
 - `app/` (whole folder), including `app/main.tsx` on my branch (it is stacked on the scaffold, PR #4)
 - `sim/` (PR #7). Want a rule or number changed? Send me a handoff.
 - `shared/` (PR #5) and `.agents/CONTRACTS.md` + `.agents/decisions/001-module-contracts.md` (PR #2)
 - Plus my usual shared-file edits: this section, my BOARD.md lines, append-only LOG.md lines, my own handoffs
 
 ### Just finished
-- **Sim core** (PR #7): design checks with plain-language issues, launch, cruise, operations with data storage and downlink, seeded failures and random events, scoring with a "why" explanation. 19 tests pass; `tsc` and `npm run build` are clean.
-- **Multiplayer shapes** for decision 002: `shared/net.ts` (PR #5) and the Multiplayer section of CONTRACTS.md (PR #2): `Player`, `Role`, `NetMessage`, role permissions with `canSend()`.
-- Contract additions (PR #2 + #5): `launch` command, `phase_changed` event, `SimState.issues`.
-- Handoff to all with how to build against the sim and net shapes: `20261114-1027-claude@ethan-all-sim-and-net-shapes.md`. Set the two handoffs addressed to me to done.
+- **Save / share / compare** (PR #18, `ui/share/`): `<SharePanel state send />`, share link in the URL hash, saved designs, compare table. 114 tests pass merged with sim-data, shared-types, the builder and the playthrough test.
+- **Role keys fixed** (claude@aiden's handoff): `ROLE_PARAM_KEYS` now lists `bus`, `solar`, `battery` for spacecraft and `comms`, `ground_stations` for comms-resources. Pushed to PR #5 (`shared/net.ts`) and PR #2 (CONTRACTS.md). Re-merge `origin/ethan-claude/shared-types` to get it.
+- **SVG spacecraft drawing**: built and reviewed, then superseded by the 3D view (decision 003). No PR; branch `ethan-claude/spacecraft` is kept as a possible no-WebGL fallback.
+- Rehearsed merging all open PRs and asked claude@aiden who merges (handoff 20261114-1100).
+- Earlier: sim core (PR #7), multiplayer shapes (PR #5), contracts (PR #2).
 
 ### Missing / I need from someone
-- A human to review and merge, in order: #3, #2, #4, #5, #7.
-- codex@jamie: the `Room` API I asked for in the 10:27 handoff (or your own shape), so the app loop can plug into `net/`.
-- claude@jamie: real catalogs + `data/scenarios/demo.json`. Until then the app uses `sim/testing/fixtures.ts`.
+- Aiden: who merges the open PRs, and when (handoff 20261114-1100). Order is in that handoff; #18 goes after #11.
 - Aiden: turn on GitHub Pages (Settings → Pages → Source: GitHub Actions).
+- claude@sarah: keep `num` and `formatMetric` exported from `ui/mission/format.ts` (`ui/share` imports them).
 - Ethan's Role for the README Team table.
 
 ### Heads up for other agents
 - **Ethan takes the heavy tasks.** If your task is too big for your usage, write a handoff to claude@ethan with the hard part and I'll take it. Open tasks on the board are tagged (light) / (medium) / (heavy).
-- To build against the sim now: `git merge origin/ethan-claude/sim-core`, then read `sim/README.md`. The catalog columns for `data/` are in the 10:27 handoff.
+- To build against the sim that reads the real catalogs: `git merge origin/ethan-claude/sim-data`, then read `sim/README.md`. It is still under review, so numbers may move.
 - **Roster: "kimchi" on the official team page = Caleb** (confirmed by Ethan). See handoff `20261114-1009-claude@ethan-all-roster.md`.
 - Building data, sim or ui? Code against `.agents/CONTRACTS.md` v0.1 (PR #2). The sim core must stay pure: no I/O, no global random, and it never mutates its input state. The UI only sends Commands.
 - Adding new optional fields or event types is fine; just add the row. Renames and removals need a decision record.
