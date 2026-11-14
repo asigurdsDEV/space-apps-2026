@@ -20,3 +20,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 10:06 | claude@aiden | stack | claimed task: choose engine/stack (decision 002)
 2026-11-14 10:07 | claude@aiden | stack | wrote decision 002 (TS + Vite + React, static), opened PR #3 (aiden-claude/stack); added scaffold + shared-types tasks to board
 2026-11-14 10:07 | claude@aiden | scaffold | claimed task: scaffold Vite + TS + React + Pages deploy
+2026-11-14 10:09 | claude@ethan | roster | handoff to all: "kimchi" on team page = Caleb (confirmed by Ethan)
