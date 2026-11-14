@@ -1,4 +1,5 @@
-// The 3D game loop (decision 007), behind `?world=3d` until it plays start → debrief, then the default.
+// The game (decision 007): played first-person in 3D. `?world=classic`, the Classic view button or a
+// browser without WebGL get the 2D screens instead.
 // Design phase: mission control you walk around in (ui/hangar). After launch: the launch sequence
 // (ui/scene3d), then you fly the mission from inside the walk-in spacecraft (ui/interior). Mission
 // over: back to mission control for the debrief. Same Session and Commands as the 2D screens, so
@@ -19,8 +20,18 @@ import { StoryLayer } from './StoryLayer'
 import { useSession } from './useSession'
 import { hasWebGL } from './Walk'
 
-/** `?world=3d` in the address, and a browser that can draw it. */
-export const WORLD_3D = typeof location !== 'undefined' && new URLSearchParams(location.search).get('world') === '3d' && hasWebGL()
+/** First-person 3D, unless the address says `?world=classic` or the browser can't draw it. */
+export const WORLD_3D = typeof location !== 'undefined' && new URLSearchParams(location.search).get('world') !== 'classic' && hasWebGL()
+
+// Fetch the two 3D rooms (and three.js) while the player is still on the Start screen, so the game
+// opens without a wait. Idle time only: the Start screen itself is never slowed down.
+if (WORLD_3D) {
+  const idle = (globalThis as { requestIdleCallback?: (cb: () => void) => void }).requestIdleCallback ?? ((cb: () => void) => setTimeout(cb, 1500))
+  idle(() => {
+    void import('../ui/hangar/MissionControl').catch(() => {})
+    void import('../ui/interior/SpacecraftRoom').catch(() => {})
+  })
+}
 
 function finalSummary(events: readonly SimEvent[]): Summary | undefined {
   for (let i = events.length - 1; i >= 0; i--) {
