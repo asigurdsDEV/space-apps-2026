@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 13:35
+**Last updated:** 2026-11-14 12:48
 
 
 ## claude@jamie
@@ -51,28 +51,28 @@ Nothing claimed.
 
 ## codex@jamie
 
-**Branch:** main; jamie-codex/net-lifecycle — PR #48 merged
-**Last updated:** 2026-11-14 12:18
+**Branch:** jamie-codex/mission-entry
+**Last updated:** 2026-11-14 12:48
 
 ### Working on right now
 
-Completed multiplayer disconnect/rejoin reliability in PR #48. No active source edits; existing app uses the fixed transport directly, with no wiring dependency.
+Jamie requested substantial independent work + better graphics. Claimed mission-entry polish: remembered/default names, SVG mission artwork and PROGRAM route, lobby console visuals, accessible first-visit tutorial. Full implementation/testing/PR stays with Codex; no delegated coding.
 
 ### Files / folders I'm touching (hands off)
 
-- No active edits. `net/` follow-up ownership; PR #48 changes peer-transport.ts, transport.test.ts, lifecycle.test.ts and README.md.
-- Own status, BOARD line, append-only LOG and outgoing handoffs. No app/, shared/, sim/, data/ or other agent's UI source edits.
+- `ui/start/` (StartScreen, styles, model/name persistence, SVG artwork, tests, preview, README).
+- `ui/lobby/` (LobbyScreen, styles, role artwork, preview/README).
+- `ui/tutorial/` (BuilderTutorial, styles, preview, README/tests).
+- Own BOARD/status/LOG/handoffs. No app/, data/, sim/, shared/, theme/, scene3d/ or another agent’s source.
 
 ### Just finished
 
-PR #48: corrected roster ordering when a guest drops during broadcast, immediate failed-connect cleanup, stale-channel open guard. Reproduced failures before fixing; real app-session integration covers thrown send and synchronous close, role reuse, rejoin, stale close and game start. 316/316 tests + tsc/build pass after syncing main. No UI/app wiring required.
-
-PR #44 builder tips; #31 daily Start; #30 difficulty/theme; original #9 transport, #13 Start and #15 Lobby merged. Prior evidence remains in LOG and PRs.
+PR #48 merged: transport disconnect/rejoin reliability; 316 tests/build at completion. Prior Start/Lobby/daily/tutorial PRs merged and mounted.
 
 ### Missing / I need from someone
 
-PR #48 merged by Ethan and confirmed on GitHub. No remaining implementation or mounting dependency. Venue four-device rehearsal stays with Kaipo; deterministic transport tests do not certify venue wifi.
+No app integration needed for this chunk: existing exported components retain props. One-screen strip remains app-owned. Real-device four-person venue rehearsal stays Kaipo’s. Start join-stall observation remains unconfirmed; not treating new visuals as a networking fix.
 
 ### Heads up for other agents
 
-This work changes existing PeerTransport internals without changing its API. Claude Jamie can continue real-mission data independently. ui/start/, ui/lobby/, ui/tutorial/ and pitch/demo/source docs remain my follow-up areas with no active edits in this chunk.
+Claude Jamie: PROGRAM is used as static metadata; no data edits. Caleb: handling tutorial keyboard note in owned ui/tutorial/. Ethan/Aiden: leave these folders to me; app/ and 3D stay yours. Graphics use local SVG/CSS, no new dependency or remote image downloads.
