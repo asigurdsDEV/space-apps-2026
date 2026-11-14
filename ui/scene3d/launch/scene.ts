@@ -85,6 +85,7 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
   model.payload.add(buildCraft(options.craft))
   scene.add(model.root)
   const payloadHome = model.payload.position.y
+  const upperHome = model.upper.position.y
   const fairingHome = model.fairing[0].position.y
   const escapeHome = model.escape?.position.y ?? 0
   const othersHome = model.others.map((o) => o.position.clone())
@@ -265,13 +266,20 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
       model.escape.visible = !over('fairing')
       model.escape.position.y = escapeHome + spec.fairing.length * (0.3 * up + 1.2 * up * up)
     }
+    // Separation starts at the deploy event, not at the start of the shot. The upper stage
+    // drifts back and the spacecraft coasts forward, so the gap reads against the Earth.
     const sD = Math.max(since('deploy'), 0)
-    model.payload.position.y = payloadHome + sD * model.payloadRadius * 0.9
-    model.payload.rotation.y = sD * 0.25
+    const kick = 1 - Math.exp(-sD * 1.35)
+    model.upper.position.y = upperHome - kick * model.payloadRadius * 1.6
+    model.payload.position.y = payloadHome + kick * model.payloadRadius * 7
+    model.payload.rotation.y = kick * 0.55
     model.others.forEach((o, i) => {
-      // Rideshare: a few of the other satellites leave too.
-      const k = i % 4 === 1 ? Math.max(sD - 0.3 - (i % 3) * 0.4, 0) : 0
-      o.position.copy(othersHome[i]!).addScaledVector(tmp.set(othersHome[i]!.x, 0, othersHome[i]!.z).normalize(), k * spec.fairing.radius * 0.5)
+      const delay = 0.35 + (i % 3) * 0.28
+      const leave = 1 - Math.exp(-Math.max(sD - delay, 0) * 1.2)
+      outAxis.set(othersHome[i]!.x, 0.35, othersHome[i]!.z)
+      if (outAxis.lengthSq() < 1e-4) outAxis.set(i % 2 === 0 ? 1 : -1, 0.2, 0.4)
+      outAxis.normalize()
+      o.position.copy(othersHome[i]!).addScaledVector(outAxis, leave * spec.fairing.radius * 1.15)
     })
 
     // ---- Engines.
@@ -400,18 +408,29 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
         break
       }
       case 'burn':
-        onAxis(1 - (0.5 * upperLen) / H, target)
-        eye.copy(target).add(tmp.set(-1.5 * upperLen, 0.8 * upperLen, lerp(2.4, 2.9, p) * upperLen))
-        target.addScaledVector(axis, upperLen * 0.5)
-        widen = 1.7
+        // Wide enough to show the upper stage against the Earth as it finishes the push to orbit.
+        onAxis(0.78, target)
+        eye.copy(target).add(tmp.set(lerp(-2.2, -3.1, p) * upperLen, lerp(1.5, 2.3, p) * upperLen, lerp(3.4, 4.6, p) * upperLen))
+        target.addScaledVector(axis, upperLen * 0.4)
+        fov = 34
+        widen = 1.4
         break
       case 'deploy': {
         const S = model.payloadRadius
         model.root.updateMatrixWorld(true)
-        model.payload.getWorldPosition(target)
-        eye.copy(target).add(tmp.set(-2.2 * S, 1.5 * S, lerp(5.4, 4.4, p) * S))
-        target.addScaledVector(axis, -S * lerp(0.9, 0.2, p))
-        widen = 1.5
+        model.payload.getWorldPosition(p3)
+        model.upper.getWorldPosition(eye)
+        eye.addScaledVector(axis, spec.s2.length)
+        const gap = Math.max(eye.distanceTo(p3), S * 3)
+        target.copy(eye).lerp(p3, 0.58)
+        // Stay above the stack in world space so the Earth limb stays behind the release.
+        tmp.set(-axis.z, 0, axis.x)
+        if (tmp.lengthSq() < 1e-4) tmp.set(1, 0, 0)
+        tmp.normalize()
+        eye.copy(target).addScaledVector(tmp, gap * 1.65)
+        eye.y += gap * 0.95
+        fov = 36
+        widen = 1.2
         break
       }
     }
