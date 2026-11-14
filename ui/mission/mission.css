@@ -1,0 +1,347 @@
+/* Mission run view + results screen. Every class starts with .mv so nothing leaks into other screens. */
+
+.mv-root {
+  --mv-bg: #0b1020;
+  --mv-card: #141b33;
+  --mv-line: #26304f;
+  --mv-text: #e8ecf8;
+  --mv-muted: #9aa5c4;
+  --mv-info: #5b8cff;
+  --mv-good: #34c38f;
+  --mv-warn: #f5a524;
+  --mv-bad: #f0506e;
+  --mv-earth: #3b7dd8;
+  --mv-moon: #b9bccb;
+  --mv-mars: #c8643b;
+
+  background: var(--mv-bg);
+  color: var(--mv-text);
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  line-height: 1.45;
+  padding: 16px;
+  min-height: 100%;
+  box-sizing: border-box;
+}
+.mv-root *,
+.mv-root *::before,
+.mv-root *::after {
+  box-sizing: inherit;
+}
+
+.mv {
+  max-width: 1040px;
+  margin: 0 auto;
+  display: grid;
+  gap: 16px;
+}
+.mv h2,
+.mv h3,
+.mv p {
+  margin: 0;
+}
+.mv h3 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--mv-muted);
+  margin-bottom: 10px;
+}
+.mv-title {
+  font-size: 1.4rem;
+}
+.mv-muted {
+  color: var(--mv-muted);
+}
+.mv-small {
+  font-size: 0.8rem;
+  margin-top: 8px;
+}
+
+.mv-card {
+  background: var(--mv-card);
+  border: 1px solid var(--mv-line);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+/* ---------- header + phase stepper */
+.mv-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+.mv-phases {
+  display: flex;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex-wrap: wrap;
+}
+.mv-phase {
+  font-size: 0.8rem;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--mv-line);
+  color: var(--mv-muted);
+}
+.mv-phase--done {
+  color: var(--mv-text);
+  border-color: transparent;
+  background: var(--mv-line);
+}
+.mv-phase--current {
+  color: #fff;
+  background: var(--mv-info);
+  border-color: var(--mv-info);
+  font-weight: 600;
+}
+
+/* ---------- controls */
+.mv-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.mv-speeds {
+  display: inline-flex;
+  border: 1px solid var(--mv-line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.mv button {
+  font: inherit;
+  color: var(--mv-text);
+  background: var(--mv-card);
+  border: 1px solid var(--mv-line);
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  min-height: 36px;
+}
+.mv button:hover:not(:disabled) {
+  border-color: var(--mv-info);
+}
+.mv button:focus-visible {
+  outline: 2px solid var(--mv-info);
+  outline-offset: 2px;
+}
+.mv button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.mv-speeds button {
+  border: 0;
+  border-radius: 0;
+  border-right: 1px solid var(--mv-line);
+}
+.mv-speeds button:last-child {
+  border-right: 0;
+}
+.mv-speeds button.is-active {
+  background: var(--mv-info);
+  color: #fff;
+}
+.mv-reset {
+  margin-left: auto;
+}
+.mv button.mv-primary {
+  background: var(--mv-info);
+  border-color: var(--mv-info);
+  color: #fff;
+  font-weight: 600;
+  padding: 10px 18px;
+}
+
+/* ---------- body: orbit + panels */
+.mv-body {
+  display: grid;
+  grid-template-columns: minmax(240px, 340px) 1fr;
+  gap: 16px;
+  align-items: start;
+}
+@media (max-width: 720px) {
+  .mv-body {
+    grid-template-columns: 1fr;
+  }
+  .mv-reset {
+    margin-left: 0;
+  }
+}
+.mv-panels {
+  display: grid;
+  gap: 16px;
+}
+
+.mv-orbit {
+  margin: 0;
+  background: radial-gradient(circle at center, #121a36 0%, #070b18 75%);
+  border: 1px solid var(--mv-line);
+  border-radius: 12px;
+  padding: 8px;
+  text-align: center;
+}
+.mv-orbit svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.mv-orbit figcaption,
+.mv-orbit p {
+  font-size: 0.85rem;
+  padding: 4px 0 6px;
+  color: var(--mv-muted);
+}
+.mv-orbit figcaption strong {
+  color: var(--mv-text);
+}
+.mv-orbit__ring {
+  fill: none;
+  stroke: var(--mv-muted);
+  stroke-dasharray: 4 5;
+  opacity: 0.6;
+}
+.mv-orbit__ghost {
+  fill: none;
+  stroke: var(--mv-line);
+  stroke-width: 2;
+  stroke-dasharray: 6 6;
+}
+.mv-orbit__radius {
+  stroke: var(--mv-info);
+  stroke-width: 1;
+  opacity: 0.35;
+}
+.mv-orbit__craft {
+  fill: #fff;
+  stroke: var(--mv-info);
+  stroke-width: 3;
+}
+
+/* ---------- bars */
+.mv-bar + .mv-bar {
+  margin-top: 12px;
+}
+.mv-bar__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+.mv-bar__detail {
+  color: var(--mv-muted);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.mv-bar__track {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--mv-line);
+  overflow: hidden;
+}
+.mv-bar__fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--mv-tone, var(--mv-info));
+  transition: width 0.25s ease;
+}
+
+/* ---------- tones (bars, log lines, stats, results) */
+.mv-tone-info {
+  --mv-tone: var(--mv-info);
+}
+.mv-tone-good {
+  --mv-tone: var(--mv-good);
+}
+.mv-tone-warn {
+  --mv-tone: var(--mv-warn);
+}
+.mv-tone-bad {
+  --mv-tone: var(--mv-bad);
+}
+
+/* ---------- data stats */
+.mv-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 12px 0 0;
+}
+.mv-stats div {
+  background: var(--mv-bg);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+.mv-stats dt {
+  font-size: 0.75rem;
+  color: var(--mv-muted);
+}
+.mv-stats dd {
+  margin: 0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.mv-stats .mv-tone-warn dd {
+  color: var(--mv-warn);
+}
+
+/* ---------- log */
+.mv-log ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 240px;
+  overflow-y: auto;
+  display: grid;
+  gap: 4px;
+}
+.mv-log li {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 8px;
+  padding: 6px 8px 6px 10px;
+  border-left: 3px solid var(--mv-tone, var(--mv-line));
+  background: var(--mv-bg);
+  border-radius: 0 6px 6px 0;
+  font-size: 0.9rem;
+}
+.mv-log__when {
+  color: var(--mv-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- results */
+.mv-results__head {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+.mv-grade {
+  flex: none;
+  width: 88px;
+  height: 88px;
+  border-radius: 20px;
+  display: grid;
+  place-items: center;
+  font-size: 3rem;
+  font-weight: 800;
+  color: #fff;
+  background: var(--mv-tone, var(--mv-info));
+}
+.mv-score {
+  margin-top: 4px;
+  font-size: 1.05rem;
+}
+.mv-score strong {
+  font-size: 1.4rem;
+}
+.mv-why {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+}
