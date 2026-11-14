@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 13:05
+**Last updated:** 2026-11-14 13:20
 
 
 ## claude@jamie
@@ -13,9 +13,10 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** jamie-claude/real-missions (PR #50 open); jamie-claude/bonus-goal (PR #41 open); jamie-claude/hard-mode (PR #36 open); jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
 
 ### Working on right now
-Nothing claimed.
+[P2] GO / NO-GO poll sounds (claimed 2026-11-14 13:20): play go / no-go from `ui/audio` as each console calls.
 
 ### Files / folders I'm touching (hands off)
+- `ui/gonogo/` (sounds)
 - `data/real-missions.json` + `realMissions` in `data/index.ts` until PR #50 merges
 - `ui/gonogo/` until PR #33 merges
 - `data/`, `tests/playthrough.test.ts` until PR #36 merges; PR #41 also edits `data/scenarios/`, `data/index.ts`, `data/README.md`
