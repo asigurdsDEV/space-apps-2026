@@ -136,8 +136,193 @@ body {
 }
 .app-notice {
   margin: 0;
-  padding: 10px 16px;
+  padding: 6px 8px 6px 16px;
   background: var(--app-card);
   border-bottom: 1px solid var(--app-line);
   border-left: 4px solid var(--app-warn);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.app-start .app-notice {
+  border: 1px solid var(--app-line);
+  border-left: 4px solid var(--app-warn);
+  border-radius: 10px;
+}
+.app-notice-close {
+  font: inherit;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--app-text);
+  background: none;
+  border: 0;
+  border-radius: 6px;
+  min-width: 36px;
+  min-height: 36px;
+  cursor: pointer;
+}
+.app-notice-close:focus-visible,
+.app-field input:focus-visible {
+  outline: 2px solid var(--app-accent);
+  outline-offset: 2px;
+}
+
+/* ---------- co-op: start-screen section, lobby, crew menu */
+.app-coop {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: var(--app-card);
+  border: 1px solid var(--app-line);
+  border-radius: 12px;
+}
+.app-coop-title {
+  margin: 0;
+  font-size: 1rem;
+}
+.app-coop .app-start-actions {
+  align-items: flex-end;
+  margin-top: 0;
+}
+.app-coop .app-button {
+  background: var(--app-bg);
+}
+.app-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: var(--app-muted);
+}
+.app-field input {
+  font: inherit;
+  font-size: 1rem;
+  color: var(--app-text);
+  background: var(--app-bg);
+  border: 1px solid var(--app-line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  min-height: 44px;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 280px;
+}
+.app-join {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 8px;
+}
+.app-join input {
+  width: 9em;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.app-error {
+  color: var(--app-warn);
+}
+.app-room {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.app-code {
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 1.5rem;
+  letter-spacing: 0.18em;
+  user-select: all;
+}
+.app-crew {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.app-crew-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--app-line);
+  border-radius: 10px;
+}
+.app-crew-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+}
+.app-crew-list li + li {
+  border-top: 1px solid var(--app-line);
+}
+.app-crew-role {
+  color: var(--app-muted);
+  text-align: right;
+}
+.app-tag {
+  margin-left: 8px;
+  padding: 1px 8px;
+  border: 1px solid var(--app-line);
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.app-roles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+}
+.app-role {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  text-align: left;
+}
+.app-role[aria-pressed='true'] {
+  border-color: var(--app-accent);
+  box-shadow: inset 0 0 0 1px var(--app-accent);
+}
+.app-role-holder {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--app-muted);
+}
+.app-waiting {
+  align-self: center;
+  color: var(--app-muted);
+}
+.app-crew-menu {
+  position: relative;
+  margin-left: auto;
+}
+.app-crew-menu summary {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  white-space: nowrap;
+}
+.app-crew-menu summary::-webkit-details-marker {
+  display: none;
+}
+.app-crew-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 10;
+  width: min(360px, calc(100vw - 32px));
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: var(--app-card);
+  border: 1px solid var(--app-line);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.5);
+}
+.app-crew-panel p {
+  margin: 0;
 }

@@ -334,6 +334,15 @@ export function createHostSession(
     rosterChanged()
   })
 
+  // net/ treats a lost broker connection as final: every guest is cut off. The host's game goes on.
+  const stopStatus = transport.onStatus?.((status, error) => {
+    if (closed || (status !== 'error' && status !== 'closed')) return
+    for (const player of players) if (!player.is_host) room.leave(player.player_id)
+    players = room.players
+    notice = `The online room was lost (${error?.message ?? 'connection closed'}). You can keep playing on this device.`
+    refresh()
+  })
+
   const stopDriving = options.drive?.(game)
 
   return {
@@ -379,6 +388,7 @@ export function createHostSession(
       stopListening()
       stopMessages()
       stopPlayers?.()
+      stopStatus?.()
       listeners.clear()
       // After the current task, so a LocalTransport still delivers `ended`.
       queueMicrotask(() => transport.close())

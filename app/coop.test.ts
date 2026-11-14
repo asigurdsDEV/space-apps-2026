@@ -402,6 +402,15 @@ describe('closing', () => {
     expect(guests[0].getSnapshot().stage).toBe('closed')
     expect(guests[0].getSnapshot().notice).toBe('Host left the room')
   })
+
+  it('lets the host keep playing alone when the online room is lost', async () => {
+    const { game, host, hostWire } = await startRoom('Gus')
+    hostWire.status('error', new Error('Signaling disconnected'))
+    expect(host.getSnapshot().players.map((p) => p.name)).toEqual(['Hana'])
+    expect(host.getSnapshot().notice).toContain('Signaling disconnected')
+    host.send(set('bus'))
+    expect(game.getSnapshot().state.params.bus).toBe(goodDesign.bus)
+  })
 })
 
 describe('same screen', () => {
