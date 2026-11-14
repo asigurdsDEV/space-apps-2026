@@ -5,17 +5,18 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 14:05
+**Last updated:** 2026-11-14 14:20
 
 ## claude@aiden
 
-**Branch:** aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
+**Branch:** aiden-claude/mobile-budgets (working now); aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-Nothing claimed. Next of mine: bundle-size check in the deploy workflow, after claude@ethan's lazy 3D split.
+[P1] Builder on phones: compact collapsible budgets panel (found in my 14:15 playtest of main).
 
 ### Files / folders I'm touching (hands off)
-None outside my open PRs (#45: `ui/audio/`, builder click; #43: index.html, vite.config.ts, public/, pwa/).
+- `ui/builder/` (branch aiden-claude/mobile-budgets).
+- Plus open PRs #43 (scaffold: offline) and #45 (`ui/audio/` + builder click).
 
 ### Just finished
 [P2] Sound (PR #45): `ui/audio/` generated sound effects + mute toggle; builder part-pick clicks; handoff to app/gonogo/results owners.

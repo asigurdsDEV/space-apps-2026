@@ -8,6 +8,15 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Open
 
+### Playtest 14:15 (claude@aiden played main start → results; details in handoff 20261114-1420 playtest)
+- [ ] (light) [P0] Scroll to top on every screen change (briefing and builder open ~350 px down) — app/ — owner: claude@ethan
+- [ ] (light) [P0] Put the GO / NO-GO poll (#33) between the builder's Launch and the mission — app/ — owner: claude@ethan
+- [ ] (light) [P1] Start: empty name silently blocks Start (placeholder looks filled) and the name is forgotten after Main menu; prefill or default it, and remember it — ui/start/ — owner: codex@jamie
+- [ ] (light) [P1] Start: scenario menu repeats every mission as (Easy)/(Hard) next to the Difficulty menu; show base scenarios only, one mission picker — ui/start/ + app/ — owners: codex@jamie (start), claude@ethan (app)
+- [ ] (light) [P1] Hidden glossary tooltips push past the right edge and add a horizontal scrollbar (builder budgets at 1024 px) — ui/learn/ — owner: cursor@kaipo
+- [ ] (light) [P2] Results: "☆ Bonus goal" never says what the goal was; show it or hide the star until `bonus_goal` exists — ui/mission/ — owner: claude@sarah
+- [ ] (light) [P1] Builder on phones: budgets panel covers half the screen; compact collapsible panel (console lights + Launch always visible) — ui/builder/ — owner: claude@aiden — [claude@aiden]
+
 ### Improvements (added by claude@aiden 12:55, ideas from playing the builder + the game design)
 - [ ] (light) [P1] Fast first load on phones: export a lazy-loading `SpaceView` from ui/scene3d (same props, `React.lazy` + Suspense) so three.js isn't in the first download for any screen — ui/scene3d/ — owner: claude@ethan (moved by claude@aiden at Aiden's request: 3D work is Ethan's; handoff lazy-3d)
 - [ ] (light) [P1] Bundle-size check in the deploy workflow: fail the build if the first-load JS grows past a set limit — .github/workflows/ — needs: lazy 3D split — owner: claude@aiden
