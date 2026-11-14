@@ -150,3 +150,88 @@ function findButton(node: any, text: string): any {
   if (node.type === 'button' && JSON.stringify(children).includes(text)) return node
   return findButton(children, text)
 }
+
+// ------------------------------------------------- decision 004: game layer
+
+import { DecisionCard, DecisionCardBody } from './DecisionCard'
+import { bestFixes, shareText, stars, type Decision } from './game'
+
+const card: Decision = {
+  decision_id: 'd1',
+  card_id: 'reaction-wheel',
+  title: 'Reaction wheel failure',
+  body: 'A wheel stopped.',
+  console: 'spacecraft',
+  options: [
+    { id: 'a', label: 'Coarse pointing', effect_text: 'Science −40%.' },
+    { id: 'b', label: 'Restart it', effect_text: 'Gamble.' },
+  ],
+  story: { mission: 'Kepler', year: 2013, text: 'It really happened.', source_url: 'https://example.org/kepler' },
+}
+
+describe('stars', () => {
+  const base = { outcome: 'success', score: 90, data_generated_gb: 100, data_lost_gb: 0, budget_usd: 100, cost_usd: 70, mass_kg: 95, mass_limit_kg: 100 }
+
+  it('awards success, the scenario bonus goal and excellent', () => {
+    expect(stars(base, 'no_data_lost').map((s) => s.earned)).toEqual([true, true, true])
+    expect(stars(base, 'budget_left_20')[1].earned).toBe(true)
+    expect(stars(base, 'mass_margin_10')[1].earned).toBe(false) // 5% margin
+  })
+
+  it('gives no bonus star on a failed mission or an unknown goal', () => {
+    expect(stars({ ...base, outcome: 'science_shortfall', score: 60 }, 'no_data_lost').map((s) => s.earned)).toEqual([false, false, false])
+    expect(stars(base, 'made_up')[1].earned).toBe(false)
+  })
+})
+
+describe('what-if + share card', () => {
+  it('keeps only fixes that beat the current score, best first, max 3', () => {
+    const fixes = [50, 88, 70, 95, 61, 40].map((score) => ({ change: `c${score}`, score }))
+    expect(bestFixes(fixes, 60).map((f) => f.score)).toEqual([95, 88, 70])
+  })
+
+  it('builds a share text with stars, score, grade and outcome', () => {
+    const text = shareText({ outcome: 'success', score: 84, grade: 'B' }, { title: 'First Light', daily: '2026-11-14', anomalies: 2 })
+    expect(text).toBe('GO / NO-GO · Daily 2026-11-14 · First Light\n★☆☆  84 pts (B)\nMission success · ⚠ 2 anomalies survived')
+  })
+})
+
+describe('anomaly card', () => {
+  it('renders the card over the run view and locks the run controls', () => {
+    const { state, events } = fly({ toEnd: false, sandbox: true })
+    const html = renderToStaticMarkup(<MissionView state={state} events={events} onCommand={noop} decision={card} onDecide={noop} />)
+    expect(html).toContain('role="alertdialog"')
+    expect(html).toContain('SPACECRAFT console')
+    expect(html).toContain('Based on a real event: Kepler (2013)')
+    expect(html).toMatch(/<button[^>]*disabled=""[^>]*>❚❚ Pause/)
+  })
+
+  it('sends the decision and option ids', () => {
+    const picked: string[] = []
+    const element = DecisionCardBody({ decision: card, onDecide: (d, o) => picked.push(`${d}:${o}`) })
+    findButton(element, 'Restart it').props.onClick()
+    expect(picked).toEqual(['d1:b'])
+  })
+
+  it('disables the options when another console owns the card', () => {
+    const html = renderToStaticMarkup(<DecisionCard decision={card} onDecide={noop} canAnswer={false} />)
+    expect(html).toContain('Waiting for the SPACECRAFT console to decide.')
+  })
+})
+
+describe('debrief', () => {
+  it('shows stars, the best fixes with Try it, and the share card', () => {
+    const { state } = fly({ toEnd: true, sandbox: true })
+    const report = summary(state)
+    const tried: string[] = []
+    const fixes = [{ change: '3 ground stations instead of 1', score: 99, grade: 'A' }]
+    const element = ResultsScreen({ summary: report, onCommand: noop, bonusGoal: 'no_data_lost', fixes, onTryFix: (f) => tried.push(f.change) })
+    const html = renderToStaticMarkup(element)
+    expect(html).toContain('3 stars')
+    expect(html).toContain('Even better')
+    expect(html).toContain('<strong>3 ground stations instead of 1</strong>')
+    expect(renderToStaticMarkup(<MissionScreen state={state} events={[]} summary={report} onCommand={noop} />)).toContain('Share your result')
+    findButton(element, 'Try it').props.onClick()
+    expect(tried).toEqual(['3 ground stations instead of 1'])
+  })
+})
