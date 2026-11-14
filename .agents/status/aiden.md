@@ -40,25 +40,25 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** main; aiden-codex/daily-records (PR #37, merged)
-**Last updated:** 2026-11-14 11:56
+**Branch:** main (coordination only); aiden-codex/daily-records (PR #37, merged)
+**Last updated:** 2026-11-14 12:07
 
 ### Working on right now
 
-Daily leaderboard follow-up complete and merged. No active source edits. App assembly remains with Ethan; the production entry still needs his wiring.
+Completion assessment finished. No implementation claimed. Main now contains the real game (PR #42), replacing the scaffold. Read-only live solo check reached Results; findings handed to existing owners.
 
 ### Files / folders I'm touching (hands off)
 
-ui/leaderboard/ and ui/theme/: follow-up ownership only, no active edits. Own status/BOARD/log/handoffs. No other source folders or Claude sections/branches changed. Unrelated untracked local docs/CHALLENGE 2.md was left untouched.
+Own status section, own BOARD Missing lines, append-only LOG, own completion handoff only. No active source edits; ui/leaderboard/ and ui/theme/ follow-up ownership. Claude's sections, branches, offline/config/workflow work and Ethan's app/sim/3D work untouched. Unrelated local docs/CHALLENGE 2.md left untouched.
 
 ### Just finished
 
-PR #37 merged by Ethan: optional dailySeed isolates each scenario/day from regular records; optional supplied stars stay with the saved score/design. Lower/tied scores keep all original metadata; legacy records retain their keys and are not assigned another run's stars. Validated seed/stars, blocked storage fallback preserved. 20 leaderboard tests pass; actual merged main at 94387e3 has 216/216 tests + clean build. Browser checked separate days, zero stars, lower-score matching metadata, reload persistence and 390px no-overflow layout.
+Checked main 8c7a293 (latest coordination caa0791): 294/294 tests, typecheck and production build pass. Live solo First Light Normal: Start → Briefing → Builder → Launch → Mission at 60× → Results. Starting design correctly misses science goal: 26 points, 365 days, 1.7/30 science, local best displayed. PRs #41 (bonus goals/program), #43 (offline), #44 (tips) are open with green build checks. Main entry JS is 959.41 kB / 263.53 kB gzip, so Ethan's lazy 3D split remains relevant.
 
 ### Missing / I need from someone
 
-Ethan/Sarah: mount the leaderboard only on ended missions and pass daily descriptor seed only when Daily was selected; use count of earned items from existing stars(summary, bonusGoal) helper. Exact handoff published. This does not calculate star rules or program unlocks. App wiring/live full mission remains unverified by Codex because app/ is actively being assembled by its owner.
+Ethan: Start currently ignores request.difficulty and shows variant IDs twice; daily callback/seed/UTC refresh, GO/NO-GO poll mounting, bonusGoal/stars/leaderboard metadata and spaceWeather still need app wiring. Sarah's anomaly/what-if UI requires Ethan's sim events/analysis. Kaipo and Caleb: live page now unblocks your network, phone and accessibility rehearsals. Jamie/Caleb: finalize demo run sheet and update submission/source descriptions that still describe a scaffold or no measured data. Detailed evidence in completion-check handoff.
 
 ### Heads up for other agents
 
-No app/shared/sim/data/start/mission source changes in PR #37. Regular calls still work unchanged. Record stars are for the matching best-score design, not an independent maximum-star progression store. Existing local-only/unverified score and multi-tab limits remain. Ethan is merge coordinator; I did not run a competing merge batch.
+No blanket claim of multiplayer, phone, offline or winning live-run verification: this check was one desktop solo losing run. Ethan remains sole merge coordinator for ready PRs. Claude Aiden owns offline/PWA, bundle-size workflow and newly claimed sound; Ethan owns all 3D; Jamie Codex already completed tips in PR #44. Daily/stars storage helper is ready, but stars accompany the best-score design rather than an independent progression store.

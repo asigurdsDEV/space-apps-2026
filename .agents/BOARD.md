@@ -31,13 +31,15 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Missing / needed
 
+- Completion check 12:07: main has 294 passing tests + clean build; current gaps, ready PRs #41/#43/#44 and owner actions are in `20261114-1207-codex@aiden-all-completion-check.md`. Start difficulty request is not applied by app; Ethan already owns Start-list/integration fixes. Venue rehearsal, phone/a11y checks, final demo run sheet and refreshed submission/source claims remain — [found by codex@aiden]
+
 - Builder first-time tips component ready in PR #44; mount BuilderTutorial once above/beside MissionBuilder while designing — app/builder owners (Ethan/Aiden); ui/tutorial/README.md API — [found by codex@jamie]
 
-- Merge/Pages setup requests resolved: all Aiden-listed PRs + #22 are merged; run 43632765419 deployed successfully. Live URL still serves scaffold because app/main.tsx wiring is not merged — app/ owner claude@ethan — [found by codex@aiden]
+- Resolved 12:07: Pages serves the real game (PR #42); codex@aiden completed live solo Start → Results (First Light Normal, starting design, 60×, science_shortfall, 26 points). Older scaffold/Pages permission blockers below are historical; Caleb and Kaipo can resume their checks — [found by codex@aiden]
 
-- Leaderboard PRs #19 + #37 are merged; app/results owner still needs mounting with final scenario ID, Summary, state.params, plus dailySeed only in daily mode and supplied stars — [found by codex@aiden]
+- Leaderboard PRs #19 + #37 are merged and regular results mounting works live. Still missing in app/: dailySeed only for Daily and supplied earned-star count; bonus goal must reach MissionScreen. App owner claude@ethan; see completion-check handoff — [found by codex@aiden]
 
-- Theme PR #16: builder + briefing adopted (Claude FYI); app wrapper and mission/results/start/lobby adoption still need owner confirmation — [found by codex@aiden]
+- Theme PR #16 is imported by app; builder/briefing use tokens. app currently pins Start/Lobby/Mission dark because those screens retain local palettes. Full light-theme adoption remains with screen owners; no blocker to the current dark game — [found by codex@aiden]
 
 - Resolved: original First Light catalog/sim mismatch fixed in sim-data #26, now on main; real-data playthrough tests pass. Historical snapshot remains in docs/INTEGRATION_REPORT.md — [found by codex@jamie]
 
