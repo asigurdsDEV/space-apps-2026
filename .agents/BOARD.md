@@ -23,7 +23,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] (heavy) [P0] Anomaly cards in the sim: `decision_required` event + `resolve_decision` command, seeded draws, effects vocabulary, encode the deck from docs/game-design/ANOMALY_CARDS.md — sim/, shared/, CONTRACTS.md — owner: claude@ethan
 - [ ] (medium) [P0] What-if + risk meter helper: `whatIf()` and `successRate()` reruns of the pure sim — sim/analysis.ts — owner: claude@ethan
 - [ ] (light) [P0] Daily mission: date picks scenario + seed (YYYYMMDD) — ui/start/ + app/ — owners: codex@jamie (start), claude@ethan (app)
-- [ ] (light) [P1] Anomaly card sources: fill every `source_url: TODO` in ANOMALY_CARDS.md with a NASA/agency page, check each story — docs/game-design/ANOMALY_CARDS.md (source lines only; hand off to claude@sarah)
 - [ ] (medium) [P1] Real missions table: ~10–15 real missions with sourced numbers for the debrief match — data/real-missions.json — owner: claude@jamie
 - [ ] (light) [P1] Bonus star goal per scenario (`bonus_goal` param) + mission program order — data/scenarios/ — owner: claude@jamie
 
@@ -49,8 +48,8 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## In progress
 
+- [ ] (light) [P1] Anomaly card sources: fill every `source_url: TODO` in ANOMALY_CARDS.md with a NASA/agency page, check each story — docs/game-design/ANOMALY_CARDS.md (source lines only; hand off to claude@sarah) — [claude@aiden]
 - [ ] (medium) [P0] GO / NO-GO poll, solo: 4 consoles vote from `state.issues`, Launch unlocks on all GO — ui/gonogo/ (new) — needs: builder — [claude@jamie]
-- [ ] (medium) [P0] Anomaly card UI on the fly screen + what-if / stars / share card on the debrief — ui/mission/ — [claude@sarah]
 - [ ] [P0] Aiden-requested merge batch: #3 #2 #4 #5 #6 #7 #8 #9 #16 #10 #11 #13 #14 #15, plus required #22 before #10; verify existing Pages deploy — main merge commits + coordination; README conflicts preserve all team edits — [codex@aiden]
 
 - [ ] (light) [P1] Multiplayer rehearsal: 4 devices on venue wifi + a phone hotspot, write results + fallback call in docs/MULTIPLAYER_TEST.md — docs/MULTIPLAYER_TEST.md — needs: #9 + app wiring merged (human-heavy) — [cursor@kaipo] — script + fallback in PR #24; live four-device results still empty
@@ -77,6 +76,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Done
 
+- [x] (medium) [P0] Anomaly card UI on the fly screen + what-if / stars / share card on the debrief — ui/mission/ — [claude@sarah] — in PR #25 (after #11); lights up when sim emits `decision_required` + `whatIf()` lands (claude@ethan)
 - [x] (medium) Game design doc "GO / NO-GO": docs/game-design/ + decision 004 (proposed) — [claude@sarah] — in PR #23
 - [x] (heavy) [P2] 3D space view (decision 003) — ui/scene3d/ + ui/builder/ — [claude@aiden] — in PR #22 (`<SpaceView state mode="spacecraft"|"orbit">`: planet, clouds, atmosphere, stars, Sun, orbit, craft from the picked parts) + builder close-up in PR #10; mission view uses it if claude@sarah agrees (handoff)
 - [x] Team go-ahead + merge delegation + Pages setup — [codex@aiden] — on main: AGENTS.md authorization, all-agent nudge, merge-owner handoff; Pages workflow enabled, deployment pending.
