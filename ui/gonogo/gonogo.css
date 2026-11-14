@@ -1,0 +1,17 @@
+/* Uses the shared tokens from ui/theme/theme.css; the fallbacks keep it readable without them. */
+.gng-consoles { list-style: none; padding: 0; margin: var(--game-space-4, 16px) 0; display: grid; gap: var(--game-space-3, 12px); grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+.gng-console { border: 2px solid var(--game-border, #888); border-radius: var(--game-radius, 8px); padding: var(--game-space-3, 12px); background: var(--game-surface, transparent); }
+.gng-name { display: block; font-family: var(--game-font-mono, monospace); font-size: 0.8rem; letter-spacing: 0.08em; color: var(--game-muted, #666); }
+.gng-call { display: block; font-size: 1.25rem; margin: var(--game-space-1, 4px) 0; }
+.gng-go { border-color: var(--game-success, #2e7d32); }
+.gng-go .gng-call { color: var(--game-success, #2e7d32); }
+.gng-go-concerns { border-color: var(--game-warning, #b26a00); }
+.gng-go-concerns .gng-call { color: var(--game-warning, #b26a00); }
+.gng-no-go { border-color: var(--game-danger, #c62828); }
+.gng-no-go .gng-call { color: var(--game-danger, #c62828); }
+.gng-waiting { opacity: 0.6; }
+.gng-reasons { margin: var(--game-space-2, 8px) 0 0; padding-left: 1.1em; font-size: 0.9rem; }
+p.gng-reasons { padding-left: 0; }
+.gng-actions { display: flex; flex-wrap: wrap; gap: var(--game-space-3, 12px); align-items: center; }
+.gng-verdict { flex-basis: 100%; margin: 0; }
+@media (prefers-reduced-motion: no-preference) { .gng-console { transition: border-color 0.2s, opacity 0.2s; } }
