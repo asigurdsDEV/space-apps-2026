@@ -3,7 +3,7 @@
 // The screens only get props. Everything about who runs the game is behind `Session` (app/session.ts),
 // so solo, same-screen, host and guest play all use the same screens.
 
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ComponentType, type FormEvent } from 'react'
+import { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState, type ComponentType, type FormEvent } from 'react'
 import { realStorms } from '../data/space-weather/storms'
 import { DIFFICULTIES, PROGRAM, getDatasets, getScenario, realMissions, rowsAsObjects, scenarios, withDifficulty, type Difficulty } from '../data'
 import { LocalTransport } from '../net'
@@ -487,6 +487,8 @@ function Design({ session, config }: { session: Session; config: Config }) {
 const LaunchView = SceneLaunchView as ComponentType<{ state: SimState; onDone: () => void }> | null
 /** The story layer's plain launch cutscene is not played on top of the real one. */
 const SHOWN_BY_APP = ['launch']
+/** Flight training (decision 006): the 3D flight with its HUD, controls and route. Loaded only when the player opens it. */
+const Training = lazy(() => import('./Training'))
 
 /** The summary the sim sent with `scenario_ended`. */
 function finalSummary(events: readonly SimEvent[]): Summary | undefined {
@@ -539,6 +541,26 @@ function Flight({ session, config, daily, online }: { session: Session; config: 
       session.send({ type: 'resume', payload: {} })
     }
   }
+  // Flight training takes the mission screen's place while it is open. Solo, the clock waits for it like for a cutscene.
+  const [training, setTraining] = useState(false)
+  /** Set on the way out, so the keyboard focus goes back to the button that opened it. */
+  const leftTraining = useRef(false)
+  const showTraining = (open: boolean) => {
+    setTraining(open)
+    holdClock(open)
+    leftTraining.current = !open
+  }
+  const focusAfterTraining = (button: HTMLButtonElement | null) => {
+    if (!button || !leftTraining.current) return
+    leftTraining.current = false
+    button.focus()
+  }
+  // Online the mission runs on under the training: an anomaly card or the end of the mission brings the player back.
+  const canTrain = !ended && !pendingDecision(state)
+  useEffect(() => {
+    if (training && !canTrain) showTraining(false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [training, canTrain])
   // "What would have fixed it": the flown mission rerun with every single change, once, when it ends,
   // answering each anomaly card the way the player did.
   const fixes = useMemo(
@@ -571,9 +593,31 @@ function Flight({ session, config, daily, online }: { session: Session; config: 
     for (const [key, value] of Object.entries(fix.params ?? {})) session.send({ type: 'set_param', payload: { key, value } })
   }
   const decide = (decision_id: string, option_id: string) => session.send({ type: 'resolve_decision', payload: { decision_id, option_id } })
+  if (training && canTrain) {
+    return (
+      <>
+        <WalkTo screen="flight" />
+        <Suspense fallback={<p className="app-training-loading" aria-busy="true">Loading flight training…</p>}>
+          <Training state={state} onClose={() => showTraining(false)} />
+        </Suspense>
+        {/* The same key as below keeps it mounted, so the story does not start over when the player comes back. */}
+        <StoryLayer key="story" screen="flight" events={events} scenarioId={state.scenario_id} onCutscene={holdClock} shown={SHOWN_BY_APP} />
+      </>
+    )
+  }
   return (
     <>
       <WalkTo screen={ended ? 'results' : 'flight'} />
+      {canTrain && (
+        <aside className="app-training-entry" aria-label="Flight training">
+          <button type="button" className="game-button" ref={focusAfterTraining} onClick={() => showTraining(true)}>
+            Flight training
+          </button>
+          <span className="game-muted">
+            Practice flying your spacecraft. No score, and the mission {online ? 'keeps running' : 'waits for you'}.
+          </span>
+        </aside>
+      )}
       <MissionScreen
         state={state}
         events={events}
@@ -603,7 +647,7 @@ function Flight({ session, config, daily, online }: { session: Session; config: 
           />
         </div>
       )}
-      <StoryLayer screen="flight" events={events} scenarioId={state.scenario_id} onCutscene={holdClock} shown={SHOWN_BY_APP} />
+      <StoryLayer key="story" screen="flight" events={events} scenarioId={state.scenario_id} onCutscene={holdClock} shown={SHOWN_BY_APP} />
     </>
   )
 }
