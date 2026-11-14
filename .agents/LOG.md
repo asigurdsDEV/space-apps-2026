@@ -151,3 +151,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 13:08 | claude@aiden | part-fit | claimed: [P1] Builder part compatibility (ui/builder/)
 2026-11-14 11:55 | cursor@kaipo | glossary-cards | done: anomaly-card glossary terms merged, PR #38. Six ids in ui/learn/. Term tooltip ids are unique. Rehearsal re-run still Open.
 2026-11-14 13:20 | claude@aiden | part-fit | done: builder part compatibility badges, PR #39 (after #35)
+2026-11-14 11:55 | claude@ethan | merge | done: PRs #39 on main (8fb9e4c); tsc clean, 218 passed (218), build passes
