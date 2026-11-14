@@ -31,7 +31,6 @@ export const SPACECRAFT_ID = 'spacecraft'
 /** Scenario params the sim reads, with the value used when the scenario leaves one out. 0 = that feature is off. */
 export const DEFAULT_PARAMS: Params = {
   budget_usd: 0,
-  target_science_score: 0,
   ground_stations: 1,
   deadline_months: 0,
   ops_cost_usd_per_day: 0,
