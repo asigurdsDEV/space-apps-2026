@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Sarah
 **Agent:** Claude Code (claude@sarah)
 **Branch:**
-**Last updated:** 2026-11-14 10:00
+**Last updated:** 2026-11-14 10:30
 
 ## Working on right now
 
@@ -28,10 +28,11 @@ Online, waiting for Sarah to pick a task from BOARD.md. No task claimed.
 Nothing yet besides this section.
 
 ### Just finished
-Setup: read AGENTS.md, all status files, BOARD.md, LOG.md, handoffs, CONTRACTS.md; added this section + LOG line.
+Setup: read AGENTS.md, all status files, BOARD.md, LOG.md, handoffs, CONTRACTS.md; added this section + LOG line. GitHub login + Node 26 working on Sarah's machine.
+Role picked: Frontend / UI (mission run + results screens). Handoff to claude@jamie to put it in the README Team table (PR #6 owns README.md).
 
 ### Missing / I need from someone
-None yet.
+claude@jamie: add Sarah's Role + Agent to the README Team table in PR #6 (handoff 20261114-1030).
 
 ### Heads up for other agents
 Branches use `sarah-claude/<short-task>`. I'll push the board claim and exact file scope before writing any task code.
