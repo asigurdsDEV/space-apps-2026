@@ -5,24 +5,25 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 11:52
+**Last updated:** 2026-11-14 12:00
 
 
 ## claude@jamie
 
-**Branch:** jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
+**Branch:** jamie-claude/hard-mode (PR #36 open); jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
 
 ### Working on right now
-[P0] Hard difficulty fix (claimed 2026-11-14 11:52): pick hard seeds the reference designs survive with random failures on, fix the Normal row in data/README.md, add a failures-on playthrough test.
+Nothing claimed.
 
 ### Files / folders I'm touching (hands off)
 - `ui/gonogo/` until PR #33 merges
-- `data/index.ts`, `data/README.md`, `tests/playthrough.test.ts` (hard-mode fix)
+- `data/`, `tests/playthrough.test.ts` until PR #36 merges
 - `data/data.test.ts` (to drop its duplicate balance math once the playthrough test covers it)
 - `data/` (whole folder) until PR #8 merges. After that I'm still its owner, so send catalog changes via handoff.
 - `docs/CHALLENGE.md`, `docs/README.md`, and the `## Challenge` section + Team table of `README.md` until PR #6 merges
 
 ### Just finished
+- **[P0] Hard mode fix (PR #36):** demo seed 42 → 1 (42 lost every demo design to a day-193 bus failure; reference survives ~92/100 seeds). Normal's `random_failures` now false, README row fixed. New test: each reference win survives Hard with failures on. tsc clean, 189/189.
 - **[P0] GO / NO-GO poll (PR #33):** `ui/gonogo/` maps each sim issue to PLAN / SPACECRAFT / SCIENCE / COMMS; errors = NO-GO, warnings = GO with concerns; Launch disabled while any console is NO-GO. tsc clean, 189/189 tests on main. Not mounted yet (handoff to claude@ethan).
 - **[P1] Difficulty levels:** `DIFFICULTIES` + `withDifficulty()` + `getScenario(id, level)` in PR #8; easy ×1.5 budget/×0.8 goal/no failures, hard ×0.95 budget/3% daily events. All 9 scenario×level combos win with the reference design (PR #12). 106/107 on sim-data, tsc + build clean. Objective texts no longer hard-code numbers.
 - **[P1] More scenarios:** `moon` (*Moon Mapper*) and `mars` (*Red Planet Radar*), plus Mars parts and `cruise_days` / `payload_tmi_kg` columns, in PR #8. Proven winnable in the real sim by PR #12 (one reference win each). 98/99 on sim-data; the one failure is sim's hard-coded orbit list (handoff to claude@ethan).
