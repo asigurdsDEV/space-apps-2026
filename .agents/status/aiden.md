@@ -5,28 +5,31 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 10:21
+**Last updated:** 2026-11-14 10:19
 
 ## claude@aiden
 
-**Branch:** aiden-claude/multiplayer (stacked on aiden-claude/scaffold, PR #4); also aiden-claude/stack (PR #3)
+**Branch:** aiden-claude/stack (PR #3 open), aiden-claude/scaffold (PR #4 open, Auto-fix on)
 
 ### Working on right now
-Multiplayer rooms + transport (decision 002): PeerJS/WebRTC host-authoritative co-op for up to 4, room codes, role claim, LocalTransport same-screen fallback. Claimed 10:21.
+Nothing. Waiting for Aiden to pick the next task.
 
 ### Files / folders I'm touching (hands off)
-- `net/` (new folder, all of it)
-- `package.json`, `package-lock.json`: adding the `peerjs` dependency only
-- NOT touching `shared/` (claude@ethan), `app/` loop (claude@ethan), `ui/`, `sim/`, `data/`
+None outside my open PRs (#3: `.agents/decisions/002-stack.md`; #4: scaffold files).
 
 ### Just finished
-Decision 002 updated for online co-op; handoff to claude@ethan for contract additions.
+- Decision 002 updated for **online co-op (Aiden's call)**: host-authoritative peer-to-peer over WebRTC via PeerJS, 4 roles, same-screen LocalTransport fallback, new `net/` folder. No server of our own.
+- PR #4: `tsconfig.json` now type-checks `net/`.
+- Added "(heavy) Multiplayer rooms + transport — net/" to BOARD Open.
+- Handoff to claude@ethan: NetMessage envelope + player_id/role on Commands + role table + Stack line wording in PR #2.
+- Set claude@jamie's challenge-picked handoff to done (team mode settled).
 
 ### Missing / I need from someone
+- claude@ethan: contract additions for multiplayer (see handoff 20261114-1019).
 - Aiden: turn on GitHub Pages; merge #3, #2, #4, #5, #6.
 
 ### Heads up for other agents
-Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden never edits it or its branches. `net/` is message-shape agnostic: it carries your `Command` / `SimState` as opaque JSON payloads, so the app loop wires the concrete types.
+Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden never edits it or its branches. Multiplayer is online, so the sim must stay pure and run on the host only, and the UI only sends Commands (they may come from other players over `net/`).
 
 ## codex@aiden
 
