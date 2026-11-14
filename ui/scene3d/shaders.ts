@@ -43,21 +43,38 @@ void main() {
 }
 `
 
-/** uBody: 0 Earth, 1 Moon, 2 Mars. uSun: world-space direction to the Sun. */
+/**
+ * uBody: 0 Earth, 1 Moon, 2 Mars. uSun: world-space direction to the Sun.
+ * Optional real NASA maps (maps/index.ts): uMap + uHasMap, and for Earth uNight + uHasNight.
+ * Without them (uHasMap 0) the body is drawn procedurally.
+ */
 export const planetShader = {
   vertexShader: VERTEX,
   fragmentShader: /* glsl */ `
 uniform vec3 uSun;
 uniform float uBody;
+uniform sampler2D uMap;
+uniform float uHasMap;
+uniform sampler2D uNight;
+uniform float uHasNight;
 varying vec3 vObj;
 varying vec3 vWorldN;
 varying vec3 vWorldPos;
 ${NOISE}
 uniform mat4 modelMatrix;
-// Moon/Mars helpers. Directions use the body's own lat/lon (degrees), +x at lon 0.
+// Directions use the body's own lat/lon (degrees): +x at lon 0, +y north, east towards -z
+// (the planet spins about +y, so the surface moves east).
 vec3 latLon(float lat, float lon) {
   float a = radians(lat), b = radians(lon);
-  return vec3(cos(a) * cos(b), sin(a), cos(a) * sin(b));
+  return vec3(cos(a) * cos(b), sin(a), -cos(a) * sin(b));
+}
+// Equirectangular map coordinates. Picks whichever of two u's has no jump here, so mipmapping
+// leaves no seam at lon 180 (Tarini's trick).
+vec2 mapUv(vec3 p) {
+  float u1 = atan(-p.z, p.x) / 6.2831853 + 0.5;
+  float u2 = fract(u1 + 0.5) - 0.5;
+  float u = fwidth(u1) <= fwidth(u2) + 1e-6 ? u1 : u2;
+  return vec2(u, asin(clamp(p.y, -1.0, 1.0)) / 3.14159265 + 0.5);
 }
 vec3 hash3(vec3 p) {
   return fract(sin(vec3(dot(p, vec3(127.1, 311.7, 74.7)), dot(p, vec3(269.5, 183.3, 246.1)), dot(p, vec3(113.5, 271.9, 124.6)))) * 43758.5453);
@@ -120,6 +137,10 @@ void main() {
   vec3 col;
   float water = 0.0;
   float land = 0.0;
+  bool mapped = uHasMap > 0.5;
+  // Real albedo from the NASA map (linear: the texture is sRGB), when there is one.
+  vec3 m = mapped ? texture2D(uMap, mapUv(p)).rgb : vec3(0.0);
+  float fine = fbm(p * 48.0);
 
   if (uBody < 0.5) {
     land = smoothstep(0.532, 0.546, h);
@@ -134,6 +155,13 @@ void main() {
     col = mix(col, lin(vec3(0.90, 0.94, 1.0)), ice);
     water = (1.0 - land) * (1.0 - ice);
     land *= 1.0 - ice;
+    if (mapped) {
+      // Blue Marble: oceans are the only places much bluer than red or green; ice is bright everywhere.
+      ice = smoothstep(0.35, 0.6, min(m.r, min(m.g, m.b)));
+      water = smoothstep(0.01, 0.03, m.b - max(m.r, m.g)) * (1.0 - ice);
+      land = (1.0 - water) * (1.0 - ice);
+      col = m;
+    }
   } else if (uBody < 1.5) {
     // The Moon: dark maria where they really are (the near side faces +x), bright cratered highlands.
     float maria = 0.0;
@@ -146,14 +174,24 @@ void main() {
     maria = max(maria, blob(p, latLon(-8.0, 51.0), 0.17 + edge));  // Fecunditatis
     maria = max(maria, blob(p, latLon(-21.0, -17.0), 0.20 + edge)); // Nubium
     maria *= 0.75 + 0.25 * fbm(p * 6.0 + 9.0);
+    if (mapped) maria = 1.0 - smoothstep(0.08, 0.2, dot(m, vec3(0.3, 0.59, 0.11)));
     col = mix(lin(vec3(0.66, 0.65, 0.62)), mix(lin(vec3(0.24, 0.24, 0.26)), lin(vec3(0.34, 0.32, 0.30)), detail), maria);
     // Maria are younger lava, so they have far fewer craters than the highlands.
     float bowl, rim, bowl2, rim2;
-    vec3 tilt = craters(p, 7.0, 0.55, bowl, rim) * (1.0 - 0.7 * maria) + craters(p, 19.0, 0.8, bowl2, rim2) * (1.0 - 0.4 * maria);
-    col *= 1.0 - 0.16 * (bowl + 0.6 * bowl2) + 0.22 * (rim + 0.6 * rim2);
-    // Bright rays from the young craters Tycho and Copernicus.
-    col += lin(vec3(0.75)) * (rays(p, latLon(-43.0, -11.0), 0.9) + 0.6 * rays(p, latLon(10.0, -20.0), 0.45));
-    col *= 0.86 + 0.28 * detail;
+    vec3 bigT = craters(p, 7.0, 0.55, bowl, rim) * (1.0 - 0.7 * maria);
+    vec3 smallT = craters(p, 19.0, 0.8, bowl2, rim2) * (1.0 - 0.4 * maria);
+    vec3 tilt = bigT + smallT;
+    if (mapped) {
+      // LRO already shows the real maria, big craters and rays; the procedural craters add relief only.
+      // Big procedural craters would be in made-up places, so mostly the small ones stay.
+      col = m * (1.0 - 0.06 * bowl2 + 0.08 * rim2);
+      tilt = 0.25 * bigT + 0.8 * smallT;
+    } else {
+      col *= 1.0 - 0.16 * (bowl + 0.6 * bowl2) + 0.22 * (rim + 0.6 * rim2);
+      // Bright rays from the young craters Tycho and Copernicus.
+      col += lin(vec3(0.75)) * (rays(p, latLon(-43.0, -11.0), 0.9) + 0.6 * rays(p, latLon(10.0, -20.0), 0.45));
+      col *= 0.86 + 0.28 * detail;
+    }
     n = normalize(mat3(modelMatrix) * normalize(p + tilt));
   } else {
     // Mars: ochre dust and dark basalt, with its biggest landmarks in their real places.
@@ -175,7 +213,7 @@ void main() {
     tilt += volcano(p, latLon(11.8, -104.0), 0.06, caldera);
     col = mix(col, lin(vec3(0.80, 0.50, 0.30)), 0.25 * caldera) * (1.0 - 0.35 * smoothstep(0.7, 1.0, caldera));
     // Valles Marineris: a canyon 4,000 km long just south of the equator.
-    float lon = degrees(atan(p.z, p.x));
+    float lon = degrees(atan(-p.z, p.x));
     float off = abs(degrees(asin(clamp(p.y, -1.0, 1.0))) + 8.0 + 2.0 * sin(radians(lon) * 9.0) + 3.0 * (fbm(p * 14.0) - 0.5));
     float canyon = (1.0 - smoothstep(0.6, 2.2, off)) * smoothstep(-112.0, -100.0, lon) * (1.0 - smoothstep(-40.0, -28.0, lon));
     col *= 1.0 - 0.55 * canyon;
@@ -183,24 +221,36 @@ void main() {
     // Polar caps of water and CO2 ice; the northern one is bigger.
     float ice = max(smoothstep(0.935, 0.95, p.y + 0.03 * (detail - 0.5)), smoothstep(0.962, 0.975, -p.y + 0.03 * (detail - 0.5)));
     col = mix(col, lin(vec3(0.95, 0.93, 0.90)), ice);
+    if (mapped) {
+      // Viking shows the real dark regions, Hellas and the caps; keep the relief and small craters.
+      ice = smoothstep(0.4, 0.6, min(m.r, min(m.g, m.b)));
+      col = m * (1.0 - 0.08 * bowl + 0.06 * rim) * (1.0 - 0.3 * canyon);
+    }
     n = normalize(mat3(modelMatrix) * normalize(p + tilt * (1.0 - ice)));
   }
 
-  // Fine detail so close-ups aren't smooth.
-  col *= 0.86 + 0.28 * fbm(p * 48.0);
+  // Fine detail so close-ups aren't smooth (softer over a real map, none on open water).
+  col *= mix(mapped ? 0.93 + 0.14 * fine : 0.86 + 0.28 * fine, 1.0, water);
 
   float d = dot(n, uSun);
   vec3 lit = col * (0.012 + 1.25 * max(d, 0.0));
 
   // Sun glint on the oceans.
   vec3 hv = normalize(uSun + v);
-  lit += water * pow(max(dot(n, hv), 0.0), 160.0) * vec3(1.0, 0.85, 0.6) * 0.9 * step(0.0, d);
+  // Real oceans cover far more of the disc than the old noise did, so the glint is tighter and dimmer.
+  lit += water * pow(max(dot(n, hv), 0.0), mapped ? 600.0 : 160.0) * vec3(1.0, 0.85, 0.6) * (mapped ? 0.45 : 0.9) * step(0.0, d);
 
   // City lights on the night side.
   if (uBody < 0.5) {
     float night = 1.0 - smoothstep(-0.12, 0.08, d);
-    float city = smoothstep(0.70, 0.80, noise(p * 140.0)) * smoothstep(0.45, 0.70, noise(p * 18.0 + 5.0));
-    lit += night * city * land * vec3(1.0, 0.62, 0.28) * 1.4;
+    float city = smoothstep(0.70, 0.80, noise(p * 140.0)) * smoothstep(0.45, 0.70, noise(p * 18.0 + 5.0)) * land;
+    if (uHasNight > 0.5) {
+      // Black Marble: lights are warm (red well above blue); the dim land behind them is blue.
+      vec3 nm = texture2D(uNight, mapUv(p)).rgb;
+      // The map is coarse, so break each glow into separate towns.
+      city = smoothstep(0.02, 0.35, nm.r - 0.6 * nm.b) * (0.25 + 1.3 * smoothstep(0.5, 0.8, noise(p * 220.0)));
+    }
+    lit += night * city * vec3(1.0, 0.62, 0.28) * (uHasNight > 0.5 ? 0.9 : 1.4);
   }
 
   // Thin blue rim on the day side.
@@ -230,7 +280,10 @@ void main() {
   float c = fbm(q + 0.6 * vec3(fbm(q + 1.7), fbm(q + 9.2), 0.0));
   // Break big patches into puffs and streaks so close-ups show cloud, not fog.
   c += 0.35 * (fbm(p * 28.0 + c * 2.0) - 0.5);
-  c = smoothstep(0.56, 0.82, c) * (1.0 - 0.6 * smoothstep(0.85, 0.95, abs(p.y)));
+  // Real cloud belts: the stormy equator (ITCZ) and mid-latitudes, clearer subtropics where deserts sit.
+  float lat = abs(p.y);
+  float belt = 0.07 * exp(-pow(p.y / 0.12, 2.0)) - 0.08 * exp(-pow((lat - 0.42) / 0.13, 2.0)) + 0.06 * exp(-pow((lat - 0.78) / 0.12, 2.0));
+  c = smoothstep(0.55 - belt, 0.82 - belt, c) * (1.0 - 0.6 * smoothstep(0.85, 0.95, lat));
   float d = dot(normalize(vWorldN), uSun);
   float light = 0.01 + 1.1 * smoothstep(-0.08, 0.35, d);
   gl_FragColor = vec4(vec3(light), c * 0.8);
@@ -254,8 +307,12 @@ void main() {
   // Back faces: 0 at the outer edge of the shell, about uThickness where it meets the planet's limb.
   float depth = clamp(-dot(n, v) / uThickness, 0.0, 1.0);
   float glow = pow(depth, 2.2);
-  float day = 0.08 + 0.92 * smoothstep(-0.35, 0.45, dot(n, uSun));
-  gl_FragColor = vec4(uColor * glow * day * 1.8, 1.0);
+  float sun = dot(n, uSun);
+  float day = 0.08 + 0.92 * smoothstep(-0.35, 0.45, sun);
+  // At the day/night line light crosses the most air: orange sunsets on Earth, blue ones on Mars,
+  // which is just the air's colour reversed (uColor.bgr).
+  vec3 tint = mix(uColor, uColor.bgr, 0.6 * exp(-pow((sun + 0.05) / 0.18, 2.0)));
+  gl_FragColor = vec4(tint * glow * day * 1.8, 1.0);
 }
 `,
 }
