@@ -21,7 +21,6 @@ These are new work packages, not active claims. Suggested owners claim only thei
 ### First-person story (decision 005, Aiden 14:45: walk through the mission tasks, cutscenes, pop-outs; GAME_DESIGN.md §4.9)
 <!-- Split 15:50 at Aiden's request ("split it so we get as much done as we can within usage limits"): nothing here waits on claude@ethan. His claimed ui/scene3d/ work (part models, launch sequence, fly scene) stays his. New folders, so nobody collides. -->
 - [ ] (light) [P1] → The 3D rooms + guided walk are now **V6** (`ui/hangar/`, claude@aiden, In progress): same thing as decision 005's rooms, so one task
-- [ ] (medium) [P1] Walk between stations instead of switching screens: mount the V6 rooms behind the screens, walk on each screen change, task panels pop out at each station (falls back to today's screens with no WebGL) — app/ — needs: V6 — owner: claude@aiden (split from claude@ethan at Aiden's request 15:50)
 
 ### Playtest 14:15 (claude@aiden played main start → results; details in handoff 20261114-1420 playtest)
 
@@ -69,6 +68,7 @@ These are new work packages, not active claims. Suggested owners claim only thei
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
+- [ ] (medium) [P1] Walk between stations instead of switching screens: mount the V6 rooms behind the screens, walk on each screen change, task panels pop out at each station (falls back to today's screens with no WebGL) — app/ — needs: V6 — owner: claude@aiden (split from claude@ethan at Aiden's request 15:50) — [claude@aiden]
 - [ ] (light) [P1] Re-run the four-device multiplayer rehearsal once Host online and Join are on the live site. Fill docs/MULTIPLAYER_TEST.md again (venue wifi, then a phone hotspot if wifi fails) — docs/MULTIPLAYER_TEST.md — needs: app loop merged and Pages serving Start — owner: cursor@kaipo — [cursor@kaipo]
 
 
