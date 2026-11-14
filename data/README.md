@@ -28,7 +28,7 @@ const falcon = getPart(CATALOG_IDS.launchVehicles, 'falcon-9') // { id, name, pa
 
 All are `kind: "table"` with `id` as the first column. Each row also has a `name` and a one-sentence, student-friendly `description` for the UI.
 
-**Units** are short display units, because the builder renders them directly: `kg`, `W`, `Wh`, `m`, `m/s`, `s`, `s/day`, `rad`, `pts`, `USD` (shown as `$8M`) and `bps` (shown as `2 Mbps`). Every numeric column has an entry; `""` means a unitless ratio or count (`reliability`, `duty_cycle`, `eclipse_fraction`, `coverage_fraction`, `radiation_factor` relative to LEO = 1, `degradation_per_year`, `max_instruments`). String columns (`best_orbit`, `min_bus_class`, `launch_capacity_column`, …) have no unit. Instrument `power_w` / `data_rate_bps` are while operating; comms `data_rate_bps` is at or below `reference_range_m`.
+**Units** are short display units, because the builder renders them directly: `kg`, `W`, `Wh`, `m`, `m/s`, `s`, `s/day`, `rad`, `pts`, `USD` (shown as `$8M`) and `bps` (shown as `2 Mbps`). Every numeric column has an entry; `""` means a unitless ratio or count (`reliability`, `duty_cycle`, `eclipse_fraction`, `coverage_fraction`, `solar_flux_factor`, `radiation_factor` relative to LEO = 1, `degradation_per_year`, `max_instruments`). String columns (`best_orbit`, `min_bus_class`, `launch_capacity_column`, …) have no unit. Instrument `power_w` / `data_rate_bps` are while operating; comms `data_rate_bps` is at or below `reference_range_m`.
 
 ## Design params (`Config.params` / `set_param` keys)
 
@@ -107,6 +107,7 @@ The reference win earns the bonus on Normal (tested). `mass_margin_10` isn't use
 **Columns added for Moon/Mars**, appended last so rows built by position elsewhere stay valid:
 - `launch-vehicles.payload_tmi_kg`: mass to a Mars transfer.
 - `orbits.cruise_days`: trip time, which the sim spends before operations start.
+- `orbits.solar_flux_factor`: sunlight relative to Earth (1 / distance², Mars 0.43). The sim multiplies solar power by it; an RTG is unaffected.
 
 ## Adding to the catalogs
 

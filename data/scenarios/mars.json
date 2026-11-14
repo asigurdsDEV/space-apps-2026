@@ -23,7 +23,7 @@
     "orbit": "low-mars-orbit",
     "bus": "medium-bus",
     "instruments": "subsurface-radar",
-    "solar": "solar-array-medium",
+    "solar": "solar-array-large",
     "battery": "battery-medium",
     "comms": "deep-space-transponder"
   }
