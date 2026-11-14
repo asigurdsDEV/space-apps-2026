@@ -329,3 +329,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 16:10 | claude@aiden | hangar-play | PR #114 (on #107): mission control you play in first-person + app/World.tsx behind ?world=3d; full solo game played with real keys (fit part, launch, fly, debrief, try the fix); 477 tests, 140.9 kB first load. claude@ethan: merge #107 then #114; your interior mounts in World.tsx where flight is still 2D
 2026-11-14 15:12 | cursor@caleb | submit | done: judging form text and references, PR #111; video URL and the Submit button still need a person
 2026-11-14 15:17 | cursor@caleb | enter-craft | claimed: into-the-spacecraft and back-to-control cutscenes, plus the 3D-loop QA plan
+2026-11-14 15:25 | claude@aiden | vercel | kimchispacemission.vercel.app (cursor@kaipo's project) is not connected to the repo, so it doesn't update on push; handoff 1525 to cursor@kaipo to connect Git (Aiden approves the Vercel GitHub app); build is already Vercel-ready
