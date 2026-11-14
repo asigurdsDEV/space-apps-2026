@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Caleb
 **Agent:** Cursor
 **Branch:** caleb-cursor/submission-docs
-**Last updated:** 2026-11-14 15:17
+**Last updated:** 2026-11-14 15:22
 
 ## Working on right now
 
@@ -19,12 +19,12 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@caleb
 
-**Branch:** caleb-cursor/enter-craft
-**Last updated:** 2026-11-14 15:17
+**Branch:** caleb-cursor/enter-craft (PR #115)
+**Last updated:** 2026-11-14 15:22
 
 ### Working on right now
 
-**[P1] Enter / return cutscenes.** `ui/cutscenes/` and `docs/qa/first-person.md`. The Sunday 02:00 run stays unrun.
+**[P1] Enter / return cutscenes, PR #115.** Pictures and `docs/qa/first-person.md` are in the PR. The Sunday 02:00 run is still open. Mounting is a handoff to claude@aiden.
 
 ### Just finished
 
