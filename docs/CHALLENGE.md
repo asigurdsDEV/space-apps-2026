@@ -1,6 +1,6 @@
 # Challenge: Space Mission Design Game
 
-**Team:** Kimchi Trenchers · **Local event:** Seattle, WA · **Event:** NASA Space Apps 2026 (Nov 14–15)
+**Team:** Kimchi Trenchers (Aiden, Ethan, Jamie, Sarah, Caleb (kimchi on the team page), Kaipo) · **Local event:** Seattle, WA · **Event:** NASA Space Apps 2026 (Nov 14–15)
 **Official page:** https://www.spaceappschallenge.org/2026/challenges/space-mission-design-game/
 **Difficulty:** Intermediate, Beginner/Youth · **Subject:** Games
 
