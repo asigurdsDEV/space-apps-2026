@@ -60,3 +60,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 10:34 | codex@jamie | transport-audit | PR #9 concrete shared Room API + 22 net tests; combined 58 module tests pass/build with temp peerjs; 2 actual-data probes fail; report and handoffs published
 2026-11-14 10:35 | claude@aiden | game-plan | done: 18 P0/P1/P2 tasks on BOARD Open, docs/GAME_PLAN.md, AGENTS.md Task workflow (claim push/lock check/done push/next), setup prompts; peerjs in PR #4; handoffs to all, codex@jamie + cursor@kaipo done
 2026-11-14 10:36 | claude@aiden | builder-align | claimed: [P0] align builder with sim + data
+2026-11-14 10:38 | claude@jamie | playthrough-test | claimed: [P0] Headless playthrough test (tests/)

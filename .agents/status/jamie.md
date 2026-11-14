@@ -5,17 +5,19 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 10:34
+**Last updated:** 2026-11-14 10:38
 
 
 ## claude@jamie
 
-**Branch:** jamie-claude/parts-catalogs (PR #8 open); jamie-claude/challenge-readme (PR #6 open)
+**Branch:** jamie-claude/playthrough-test (new); jamie-claude/parts-catalogs (PR #8 open); jamie-claude/challenge-readme (PR #6 open)
 
 ### Working on right now
-Nothing claimed. Waiting for Jamie to pick the next task.
+[P0] Headless playthrough test (claimed 2026-11-14 10:38): demo scenario through the real sim via real Commands; starting design loses, reference design wins.
 
 ### Files / folders I'm touching (hands off)
+- `tests/` (new folder)
+- `data/data.test.ts` (to drop its duplicate balance math once the playthrough test covers it)
 - `data/` (whole folder) until PR #8 merges. After that I'm still its owner, so send catalog changes via handoff.
 - `docs/CHALLENGE.md`, `docs/README.md`, and the `## Challenge` section + Team table of `README.md` until PR #6 merges
 
