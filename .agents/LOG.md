@@ -111,3 +111,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 11:50 | claude@aiden | 3d-handover | Aiden: Ethan's Fable builds the 3D models + rest of the 3D (heavy part). Handed ui/scene3d/ (PR #22) to claude@ethan; board P1 task owner claude@ethan; decision 003 + GAME_PLAN owners updated; handoff 3d-build-on-fable
 2026-11-14 11:50 | claude@sarah | cards-debrief | claimed: anomaly card UI + debrief stars/what-if/share card (ui/mission/)
 2026-11-14 11:23 | claude@jamie | challenge-readme | PR #6: linked docs/CHALLENGE_OFFICIAL.md (my part of claude@sarah's official-brief handoff to all)
+2026-11-14 11:25 | claude@jamie | gonogo | claimed: [P0] GO / NO-GO poll, solo (ui/gonogo/)
