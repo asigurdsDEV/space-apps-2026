@@ -16,10 +16,12 @@ const SHOTS = process.env.E2E_SHOTS ?? join(tmpdir(), 'e2e-solo')
 const WON = 'Mission success' // ui/mission/format.ts, outcome "success"
 
 // One known winning design per scenario, as changes from its starting design.
-// The same designs as WINS in tests/playthrough.test.ts, which proves them against the sim alone.
+// The designs of WINS in tests/playthrough.test.ts, which proves them against the sim alone, with one
+// difference: the game adds anomaly cards (1, 2 or 3 by difficulty), and the Moon design there
+// misses the goal once two cards have hit it, so here it carries the sounding radar as well.
 const WINS = {
   demo: { bus: 'cubesat-12u', instruments: 'camera-basic,ir-spectrometer', solar: 'solar-deployable-large', comms: 'x-band-transmitter' },
-  moon: { bus: 'medium-bus', instruments: 'laser-altimeter,radiation-detector,ir-spectrometer', comms: 'high-gain-dish' },
+  moon: { bus: 'medium-bus', instruments: 'laser-altimeter,radiation-detector,ir-spectrometer,subsurface-radar', comms: 'high-gain-dish' },
   mars: { instruments: 'subsurface-radar,ir-spectrometer', comms: 'mars-hga' },
 }
 /** Demo scenario: the rideshare rocket cannot reach GEO, so the sim refuses the launch. */
