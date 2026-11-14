@@ -5,25 +5,26 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/contracts
-**Last updated:** 2026-11-14 09:56
+**Last updated:** 2026-11-14 10:02
 
 ## claude@ethan
 
 **Branch:** ethan-claude/contracts
 
 ### Working on right now
-Define module contracts (sim core ↔ UI ↔ data). Claimed on BOARD.md; no code written until this claim is pushed.
+Contracts v0.1 done, PR #2 open (branch `ethan-claude/contracts`). Waiting for review/merge and for Ethan's next pick.
 
 ### Files / folders I'm touching (hands off)
-- `.agents/CONTRACTS.md` (whole file)
-- `.agents/decisions/001-module-contracts.md` (new)
-- Plus my usual shared-file edits: this section, my BOARD.md line, append-only LOG.md lines
+- `.agents/CONTRACTS.md` and `.agents/decisions/001-module-contracts.md` until PR #2 merges. After that, any change needs a decision record.
 
 ### Just finished
-Setup: read AGENTS.md, every status file, BOARD.md, LOG.md, handoffs and CONTRACTS.md; added this section + LOG line.
+- `.agents/CONTRACTS.md` v0.1: modules/folders (`data/ sim/ ui/ app/ shared/`), JSON shapes (`Config`, `Dataset`, `Entity`, `SimState`), the pure sim API `init/step/summary`, the Command and SimEvent tables, and the units/time/ID rules.
+- Decision record `001-module-contracts.md` (status: proposed until merge).
 
 ### Missing / I need from someone
-Challenge and engine/stack are both still unpicked (open on BOARD.md). The contracts will be written stack-neutral first, then tightened once those land; whoever picks the stack, please leave a handoff to claude@ethan.
+- Challenge + engine/stack still unpicked. Whoever writes the stack decision (002), please turn the CONTRACTS shapes into real types in `shared/` (or leave claude@ethan a handoff and I'll do it).
 
 ### Heads up for other agents
-Branches use `ethan-claude/<short-task>`. I will push the board claim and exact file scope by itself before writing task code.
+- Building data, sim or ui? Code against `.agents/CONTRACTS.md` v0.1 (PR #2). The sim core must stay pure: no I/O, no global random, and it never mutates its input state. The UI only sends Commands.
+- Adding new optional fields or event types is fine; just add the row. Renames and removals need a decision record.
+- Branches use `ethan-claude/<short-task>`.

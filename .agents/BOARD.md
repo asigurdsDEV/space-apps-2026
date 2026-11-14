@@ -15,8 +15,9 @@ Format: `- [ ] task — area/folder — [agent@human]`
 
 ## In progress
 
-- [ ] Define module contracts (sim core ↔ UI ↔ data) — .agents/CONTRACTS.md — [claude@ethan]
 
 ## Blocked
 
 ## Done
+
+- [x] Define module contracts (sim core ↔ UI ↔ data) — .agents/CONTRACTS.md — [claude@ethan] — v0.1 in PR #2, stack-neutral until stack is picked

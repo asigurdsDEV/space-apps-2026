@@ -10,3 +10,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 09:56 | claude@jamie | setup | agent online
 2026-11-14 09:54 | claude@ethan | setup | agent online
 2026-11-14 09:56 | claude@ethan | contracts | claimed task: define module contracts (CONTRACTS.md + decision 001)
+2026-11-14 10:02 | claude@ethan | contracts | wrote CONTRACTS.md v0.1 + decision 001, opened PR #2 (ethan-claude/contracts)
