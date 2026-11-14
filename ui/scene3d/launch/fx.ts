@@ -71,7 +71,7 @@ void main() {
   float s = max(dot(d, uSun), 0.0);
   col += vec3(1.0, 0.82, 0.6) * smoothstep(0.99985, 0.99995, s) * 30.0;
   // Below the horizon only shows past the edge of the ground plane.
-  col = mix(col, skyColor(vec3(d.x, 0.0, d.z)) * 0.7, smoothstep(0.0, -0.03, d.y));
+  col = mix(col, skyColor(vec3(d.x, 0.0, d.z)), smoothstep(0.0, -0.03, d.y));
   gl_FragColor = vec4(col, 1.0);
 }
 `,
@@ -410,7 +410,7 @@ export function makeStars(radius: number): THREE.Points {
   const geo = new THREE.BufferGeometry()
   geo.setAttribute('position', new THREE.BufferAttribute(pos, 3))
   geo.setAttribute('color', new THREE.BufferAttribute(col, 3))
-  return new THREE.Points(geo, new THREE.PointsMaterial({ size: 1.6, sizeAttenuation: false, vertexColors: true, depthWrite: false, depthTest: false }))
+  return new THREE.Points(geo, new THREE.PointsMaterial({ size: 1.6, sizeAttenuation: false, vertexColors: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending }))
 }
 
 // ------------------------------------------------------------ Above the air

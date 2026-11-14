@@ -498,12 +498,12 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
     } else {
       // Thin gas puffs where a stage or the boosters let go; they spread fast and vanish in the vacuum.
       const burst = (s: number, f: number, n: number, radius: number) => {
-        if (s <= 0 || s > 1.6) return
+        if (s <= 0 || s > 1.1) return
         for (let i = 0; i < n; i++) {
           const a = (i / n) * Math.PI * 2
-          const r = radius * (1 + 5 * s)
+          const r = radius * (1 + 7 * s)
           onAxis(f, p3)
-          puffs.add(p3.x + Math.cos(a) * r * axis.y, p3.y - Math.cos(a) * r * axis.x, p3.z + Math.sin(a) * r, radius * (1.2 + 2.5 * s), 0.45 * (1 - s / 1.6), 0, hash(i + f))
+          puffs.add(p3.x + Math.cos(a) * r * axis.y, p3.y - Math.cos(a) * r * axis.x, p3.z + Math.sin(a) * r, radius * (1 + 2.5 * s), 0.22 * (1 - s / 1.1), 0, hash(i + f))
         }
       }
       burst(sS, (spec.s1.length + spec.interstage.length) / H, 12, spec.s1.radius)

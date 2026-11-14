@@ -53,7 +53,9 @@ function shots(spec: RocketSpec, failed: boolean): Shot[] {
         { id: 'liftoff', seconds: 3, met: [0, 8], title: 'Lift-off', caption: 'Thrust beats gravity: the rocket rises straight up past the tower.', detail: 'The engines now push up harder than gravity pulls down, so the rocket rises. It climbs straight up to clear the tower.' },
       ]
   const climb: Shot[] = [
-    { id: 'pitch', seconds: 2.2, met: [14, 22], title: 'Pitch-over', caption: 'It tips over on purpose: orbit is about going sideways, fast.', detail: 'The rocket tips over on purpose. Getting to orbit is mostly about going sideways very fast, not just going up.' },
+    spec.airLaunch
+      ? { id: 'pitch', seconds: 2.2, met: [14, 22], title: 'Pull-up', caption: 'The wing lifts the nose, and the rocket climbs out of the thick air.', detail: 'The wing lifts the nose, so the rocket climbs steeply out of the thick air. Later it levels off: getting to orbit is mostly about going sideways very fast.' }
+      : { id: 'pitch', seconds: 2.2, met: [14, 22], title: 'Pitch-over', caption: 'It tips over on purpose: orbit is about going sideways, fast.', detail: 'The rocket tips over on purpose. Getting to orbit is mostly about going sideways very fast, not just going up.' },
     { id: 'maxq', seconds: 2.5, met: around(ev.maxq, EVENT_AT.maxq, 8), title: 'Max-Q', caption: 'Max-Q: the moment the air pushes hardest on the rocket.', detail: 'Max-Q is when the air pushes hardest on the rocket: it is already fast and the air is still thick. After this the air thins and the ride gets easier.' },
   ]
   if (failed) {
