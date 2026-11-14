@@ -17,6 +17,7 @@ import {
   unitOf,
   type Slot,
 } from './model'
+import { SpaceView } from '../scene3d'
 import '../theme/theme.css'
 import './builder.css'
 
@@ -68,6 +69,7 @@ export function MissionBuilder({ state, send, slots = DEFAULT_SLOTS, players = N
       <div className="mb-parts">
         <h1 className="mb-title">Design your mission</h1>
         {typeof objective === 'string' && <p className="mb-objective">{objective}</p>}
+        <SpaceView state={state} mode="spacecraft" className="mb-hero" />
         {slots.map((slot) => {
           const parts = slotParts(state.entities, slot)
           const columns = slotColumns(slot, state).filter((c) => parts.some((p) => p.props[c] != null))

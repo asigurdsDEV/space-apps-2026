@@ -106,3 +106,7 @@
 .mb-slot.is-locked .mb-table-wrap { opacity: 0.6; }
 .mb-lock { margin: 4px 0 8px; color: var(--mb-warn); font-size: 0.9em; }
 .mb-changed { margin: 0 0 8px; font-size: 0.85em; }
+
+/* 3D close-up of the craft (ui/scene3d) at the top of the parts list. */
+.mb-hero { height: 300px; margin-bottom: 16px; }
+@media (max-width: 800px) { .mb-hero { height: 220px; } }
