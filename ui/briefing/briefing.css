@@ -1,0 +1,47 @@
+/* Shared theme tokens (ui/theme/theme.css, codex@aiden); light/dark comes from there. */
+.bf {
+  --bf-bg: var(--game-bg);
+  --bf-panel: var(--game-panel);
+  --bf-text: var(--game-text);
+  --bf-muted: var(--game-muted);
+  --bf-line: var(--game-border);
+  --bf-accent: var(--game-accent);
+
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 32px 16px;
+  background: var(--bf-bg);
+  color: var(--bf-text);
+  font-family: var(--game-font);
+  line-height: 1.5;
+}
+.bf-inner { max-width: 760px; margin: 0 auto; }
+.bf-kicker { margin: 0; color: var(--bf-accent); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.8rem; }
+.bf-title { margin: 4px 0 12px; font-size: clamp(1.6rem, 4vw, 2.2rem); line-height: 1.2; }
+.bf-objective { margin: 0 0 24px; padding: 12px 14px; font-size: 1.1rem; border-left: 3px solid var(--bf-accent); background: var(--bf-panel); border-radius: 0 8px 8px 0; }
+.bf h2 { font-size: 1.15rem; margin: 28px 0 10px; }
+
+.bf-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 0; }
+.bf-fact { background: var(--bf-panel); border: 1px solid var(--bf-line); border-radius: 10px; padding: 12px 14px; }
+.bf-fact dt { color: var(--bf-muted); font-size: 0.85rem; }
+.bf-fact dd { margin: 0; }
+.bf-fact-value { font-size: 1.4rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.bf-fact-detail { color: var(--bf-muted); font-size: 0.85rem; }
+
+.bf-win { margin: 0; padding-left: 1.4em; }
+.bf-win li { margin-bottom: 6px; }
+
+.bf-terms { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 0; }
+.bf-term { background: var(--bf-panel); border: 1px solid var(--bf-line); border-radius: 10px; padding: 10px 14px; }
+.bf-term dt { font-weight: 600; }
+.bf-term dd { margin: 2px 0 0; color: var(--bf-muted); font-size: 0.9rem; }
+
+.bf-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 32px; }
+.bf-start, .bf-back { padding: 12px 22px; font-size: 1rem; font-weight: 600; border-radius: 8px; cursor: pointer; }
+.bf-start { border: 0; background: var(--bf-accent); color: var(--game-on-accent); }
+.bf-back { border: 1px solid var(--bf-line); background: var(--bf-panel); color: var(--bf-text); }
+.bf-start:focus-visible, .bf-back:focus-visible { outline: 2px solid var(--bf-accent); outline-offset: 2px; }
+@media (max-width: 480px) {
+  .bf-actions { flex-direction: column-reverse; }
+  .bf-start, .bf-back { width: 100%; }
+}
