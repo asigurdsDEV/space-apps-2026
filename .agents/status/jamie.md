@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 12:40
+**Last updated:** 2026-11-14 12:13
 
 
 ## claude@jamie
@@ -47,36 +47,26 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## codex@jamie
 
-**Branch:** jamie-codex/builder-tips — PR #44; jamie-codex/daily-mission — PR #31 (after #30); jamie-codex/start-polish — PR #30. Original #9/#13/#15 merged.
-
-**Last updated:** 2026-11-14 12:05
+**Branch:** jamie-codex/net-lifecycle
+**Last updated:** 2026-11-14 12:13
 
 ### Working on right now
 
-First-time builder tips component complete in PR #44. No active source edits; app/builder mounting remains with its owner. New Claude program-order handoff read: PROGRAM is demo → moon → mars; not claiming that separate task in this chunk.
+[P1] Multiplayer disconnect/rejoin reliability, independently selected from transport defects. Own the fixes, regression tests and PR; existing app already uses PeerTransport, so no mounting task is required.
 
 ### Files / folders I'm touching (hands off)
 
-- `ui/tutorial/`: follow-up ownership; no active edits. Four tips, persistence, preview, styles/tests/README.
-- Prior follow-up ownership remains ui/start/, ui/lobby/, net/ and pitch/demo/source/audit docs; no active edits here.
-- Own status/board/log/handoffs only. No ui/builder/, app/, shared/, data/, sim/ changes.
+- `net/peer-transport.ts`, `net/transport.test.ts`, `net/lifecycle.test.ts` (if integration coverage needs it), `net/README.md`.
+- Own status, BOARD line, append-only LOG and outgoing handoffs. No app/, shared/, sim/, data/ or other agent's UI source edits.
 
 ### Just finished
 
-PR #44: four builder coach marks (orbit, bars, blocking issues, launch), Back/Next/Got it/Skip, local dismissal memory, storage failure containment, optional owner-supplied Show me callback. Full suite 299/299 + tsc/build pass; browser checked all steps, focus targeting, completion and Skip across reload, 390px controls. Mounting handoff published to builder/app owners.
-
-- PR #31: pure dailyMissionForDate helper + optional Solo daily button/separate callback. UTC day, YYYYMMDD seed, sorted/deduplicated base IDs, fixed Normal. Ethan accepted this in 11:41 handoff. 191 full-suite tests, tsc/build pass. Browser: missing-name validation, trim, seed/date/scenario payload, Normal despite Hard ordinary picker, no daily controls on Join.
-- PR #30: Easy/Normal/Hard + callback-supplied actual budget/goal, shared light/dark token adoption and Term tooltips in Start/Lobby. 179 tests + tsc/build/theme contrast passed at that snapshot; browser both themes/difficulty payload/numbers/390px tooltip containment.
-- Original transport, Start and Lobby are merged. Actual-data playthrough now passes after sim-data #26; the old integration report is explicitly a historical snapshot.
-- Responded to Ethan’s net questions: HostRoom.claimRole(from,null) and nullable authorize policy already work on main; avoid rebuilding lobby to release roles. Short room-code mapping belongs to app wrapper; raw PeerTransport still uses full peer IDs.
-- Caleb has pitch/demo/provenance guidance via polish-ready handoff; his submission file stays his.
+PR #44 builder tips; #31 daily Start; #30 difficulty/theme; original #9 transport, #13 Start and #15 Lobby merged. Prior evidence remains in LOG and PRs.
 
 ### Missing / I need from someone
 
-- Ethan: merge/review #30 then #31, mount Start/Lobby, pass scenarioPreview=getScenario, honor request.difficulty, apply DailyMission.seed before init and refresh UTC day at midnight/resume. Full app/live WebRTC remains unverified here.
-- Program map/unlocks need scenario-order + star-progress data from their owners; not fabricated in Start.
-- Team: real device/venue rehearsal, then finalize demo/submission claims to the behavior actually shipped. Pages is enabled and the scaffold deploy is live; app-loop is still a separate owner’s integration task.
+No dependency for this task. Ethan remains merge coordinator. Venue four-device rehearsal stays with Kaipo; deterministic transport tests do not certify venue wifi.
 
 ### Heads up for other agents
 
-Original PR heads were not rewritten during merge batch. Daily adds a separate callback, no new Command/NetMessage/StartRequest variant. UI never duplicates difficulty scaling or creates sessions. Latest APIs in ui/start/README.md. Keep claude@jamie’s section and ui/gonogo/data/tests scopes untouched.
+This work changes existing PeerTransport internals without changing its API. Claude Jamie can continue real-mission data independently. ui/start/, ui/lobby/, ui/tutorial/ and pitch/demo/source docs remain my follow-up areas with no active edits in this chunk.
