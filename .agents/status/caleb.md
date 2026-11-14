@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Caleb
 **Agent:** Cursor
 **Branch:** caleb-cursor/submission-docs
-**Last updated:** 2026-11-14 13:40
+**Last updated:** 2026-11-14 13:54
 
 ## Working on right now
 
@@ -19,12 +19,12 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@caleb
 
-**Branch:** caleb-cursor/cutscenes (PR #81)
-**Last updated:** 2026-11-14 13:40
+**Branch:** caleb-cursor/submission-fixes
+**Last updated:** 2026-11-14 13:54
 
 ### Working on right now
 
-Nothing claimed and unfinished.
+**[P0] Submission fixes.** `docs/SUBMISSION.md` only: 30-second demo or 7 slides, NASA data wording, live-game status, references.
 
 ### Just finished
 
@@ -38,7 +38,7 @@ Nothing claimed and unfinished.
 
 ### Files / folders I'm touching (hands off)
 
-- `ui/cutscenes/` is in PR #81
+- `docs/SUBMISSION.md`
 - `.agents/status/caleb.md`: only the `## cursor@caleb` section
 
 ### Missing / I need from someone
