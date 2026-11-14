@@ -131,7 +131,7 @@ void main() {
   water += vec3(1.0, 0.6, 0.3) * pow(max(dot(refl, uSun), 0.0), 220.0) * 6.0;
   col = mix(col, water, sea);
   // Haze toward the horizon; thinner when looking down from high up.
-  float haze = 1.0 - exp(-dist * mix(0.00006, 0.000012, smoothstep(2000.0, 20000.0, cameraPosition.y)));
+  float haze = 1.0 - exp(-dist * mix(0.00006, 0.00002, smoothstep(2000.0, 20000.0, cameraPosition.y)));
   col = mix(col, skyColor(vec3(-v.x, 0.0, -v.z)), haze);
   gl_FragColor = vec4(col, 1.0);
 }
@@ -168,7 +168,7 @@ void main() {
   float haze = 1.0 - exp(-dist * 0.000025);
   col = mix(col, skyColor(vec3(-v.x, 0.0, -v.z)), haze);
   // Fade out where the camera flies through the deck, and far away where it would alias.
-  a *= smoothstep(0.0, 300.0, abs(toCam.y)) * (1.0 - smoothstep(60000.0, 150000.0, dist));
+  a *= smoothstep(0.0, 300.0, abs(toCam.y)) * (1.0 - smoothstep(20000.0, 140000.0, dist));
   gl_FragColor = vec4(col, a * 0.9);
 }
 `,

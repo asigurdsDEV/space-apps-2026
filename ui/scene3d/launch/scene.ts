@@ -321,8 +321,8 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
         fov = 34
         break
       case 'ignition':
-        onAxis(0.16, target)
-        eye.set(0.55 * H + W, standoff * 0.5 + 0.03 * H, 0.8 * H + W)
+        onAxis(0.12, target)
+        eye.set(0.3 * H + 2 * W, standoff * 0.6 + 0.02 * H, 0.42 * H + 3 * W)
         fov = 44
         shake = smooth(0.1, 0.6, p)
         break

@@ -108,7 +108,7 @@ export function buildPad(height: number, footprint: number, bellDrop: number): P
   const mastH = towerH * 1.3
   const mast = new THREE.CylinderGeometry(height * 0.004, height * 0.014, mastH, 6)
   const ring = Math.max(mount * 3.2, height * 0.55)
-  for (const a of [0.9, 2.6, 4.4]) add(mast, steel, Math.cos(a) * ring, mastH / 2, Math.sin(a) * ring)
+  for (const a of [2.0, 3.9, 5.6]) add(mast, steel, Math.cos(a) * ring, mastH / 2, Math.sin(a) * ring)
 
   // Propellant tanks and a hangar, for scale.
   const tankR = Math.max(height * 0.07, 2)
