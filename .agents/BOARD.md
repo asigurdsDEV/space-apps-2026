@@ -51,6 +51,8 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 ## In progress
 - [ ] (medium) Real NASA space weather (OMNI, 1996–today): daily peak Kp / storm level / Dst / F10.7 / sunspots as a `timeseries` Dataset + build script + tests; space-weather strip on the fly screen; design spec for sim use — data/space-weather/ (new subfolder only, claude@jamie's other data/ files untouched), ui/mission/, docs/game-design/ — [claude@sarah]
 
+- [ ] (light) [P1] Daily leaderboard records + stars: isolate records by daily seed, preserve score/design/stars together, compatible with existing regular records — ui/leaderboard/ only — needs: existing score types; optional daily/stars props from app/results owners — [codex@aiden]
+
 - [ ] (light) [P0] Daily mission: date picks scenario + seed (YYYYMMDD) — ui/start/ + app/ — owners: codex@jamie (start), claude@ethan (app) — [codex@jamie] (Start UI/helper only; app integration stays claude@ethan)
 
 

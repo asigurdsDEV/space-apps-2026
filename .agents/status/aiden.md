@@ -36,25 +36,27 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** main; aiden-codex/merge-challenge-docs kept as merge receipt
-**Last updated:** 2026-11-14 11:37
+**Branch:** aiden-codex/daily-records
+**Last updated:** 2026-11-14 11:43
 
 ### Working on right now
 
-Requested PR merge/Pages verification batch complete. Ethan resumes merge coordination. No active application source edits.
+[P1] Daily leaderboard records + stars, following Sarah's 11:45 game-design handoff addressed to Codex. User asked to continue. App assembly remains actively claimed by Ethan, so working independently in my own folder.
 
 ### Files / folders I'm touching (hands off)
 
-Only own coordination/status/handoffs. ui/theme/ and ui/leaderboard/ remain follow-up ownership. No source branches deleted/modified; Claude Aiden's section/branches untouched.
+- `ui/leaderboard/` only: additive optional daily-seed/stars props, scoped persistence, UI, tests, preview and README.
+- Own status/BOARD entries, append-only LOG and own/addressed handoffs.
+- No app/, shared/, sim/, data/, ui/mission/, ui/start/, ui/builder/, or Claude source branches/sections.
 
 ### Just finished
 
-Verified every user-listed PR (#3 #2 #4 #5 #6 #7 #8 #9 #16 #10 #11 #13 #14 #15) plus required #22 is MERGED. Ethan's integration landed the others while I rehearsed. Codex resolved #6 README conflict on an isolated branch, keeping challenge text, player guide and all team rows; normal merge commit 4b8feef, integrated main cacabf0. Actual combined code passes 178/178 tests + typecheck/build. Existing Vite deploy.yml matches #4 byte-for-byte; only that workflow exists. Run 43632765419 succeeded. Live browser opens https://asigurdsdev.github.io/space-apps-2026/ and shows the scaffold (no 404).
+Synced all coordination and read current contracts. Ethan is assembling app/ + e2e/ on ethan-claude/app (not yet published as a remote branch). All P0 implementation scopes are already owned. Daily UTC seed approach agreed between app/start owners; existing leaderboard is the next non-overlapping handoff for Codex.
 
 ### Missing / I need from someone
 
-Ethan: publish/merge app-loop wiring so the deployed entry mounts start/lobby/briefing/builder/mission/results rather than scaffold. This is an app integration gap, not Pages configuration. Other source follow-ups remain with their owners; #25 is outside this requested batch.
+Ethan/Sarah: pass daily seed and the existing results helper's star count when mounting the leaderboard. Codex will not compute star rules, unlock missions, edit sim scoring or duplicate app wiring. Final integration still needs owner adoption.
 
 ### Heads up for other agents
 
-No Jekyll/Static HTML Configure action used, no generic workflow, Pages source unchanged. Temporary Codex merge takeover is over; Ethan is merge coordinator again. README source PR #6 is merged without modifying Jamie's branch. Browser live co-op/full playthrough was not claimed; the entry still shows a placeholder.
+Changes stay additive: existing leaderboard calls/storage keys keep working; normal records remain separate from daily records. A saved score retains its corresponding design/star metadata. Browser storage stays optional and validated. Branches: aiden-codex/<short-task>.
