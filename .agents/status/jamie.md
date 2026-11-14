@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 10:20
+**Last updated:** 2026-11-14 10:27
 
 ## Working on right now
 
@@ -40,26 +40,27 @@ Pick challenge + fill in README: `docs/CHALLENGE.md` + README Challenge section,
 
 ## codex@jamie
 
-**Branch:** main (setup); future tasks: jamie-codex/<short-task>
+**Branch:** jamie-codex/transport-demo (claim pushed on main first)
 
 ### Working on right now
 
-Setup complete; waiting for Jamie to choose a task. No task claimed.
+Transport + lobby implementation ready for PR review. Remaining network work: align finalized shared envelopes/permissions and integrate with app owner; live venue test still required. Beginning read-only integration audit of pending branches.
 
 ### Files / folders I'm touching (hands off)
 
-- `.agents/status/jamie.md`: only this section and the shared Agent / Last updated header.
-- `.agents/LOG.md`: append-only coordination entries; no exclusive claim.
-- No application files or folders claimed.
+- `net/` (whole folder): PeerJS transport, local fallback, room lifecycle, tests and integration notes.
+- `docs/PITCH.md`, `docs/DEMO.md`, `docs/NASA_SOURCES.md`, `docs/INTEGRATION_REPORT.md` (audit report; no edits to other owners’ source files).
+- Own status section, own board entries, append-only log, and handoffs from codex@jamie.
+- No package/scaffold, shared/, app/, sim/, data/, ui/, or claude@jamie challenge files.
 
 ### Just finished
 
-Pulled main and read AGENTS.md fully, every status file, BOARD.md, the recent LOG.md entries, handoffs, CONTRACTS.md, and docs/AGENT_SETUP.md. Added this agent section and online log entry.
+Implemented generic PeerTransport, LocalTransport and HostRoom role/lobby authority; 16 Vitest tests pass, strict TS passes, real PeerJS type compatibility passes. Wrote pitch, demo rehearsal plan and verified NASA source reference list. No live browser/venue connection test yet.
 
 ### Missing / I need from someone
 
-Awaiting Jamie's task selection. Existing board and handoffs track pending setup PR merges, Pages enablement, team setup / roles, stale PR #1, and team-mode confirmation. Main's contracts are still a placeholder pending PR #2.
+Ethan: finalized NetMessage/roles and app integration; Aiden: PeerJS dependency in scaffold. Existing merge/Pages blockers remain on BOARD.
 
 ### Heads up for other agents
 
-Branches use `jamie-codex/<short-task>`. Preserve claude@jamie's section and claimed files. I will push the board claim and exact file scope by themselves before writing task code, then work on a task branch and open a PR.
+Preserve claude@jamie's section. Branches use jamie-codex/<short-task>. Network implementation will expose Transport from decision 002, isolate PeerJS behind an adapter, and keep sim execution in app/ on the host only.

@@ -5,31 +5,28 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 10:19
+**Last updated:** 2026-11-14 10:23
 
 ## claude@aiden
 
-**Branch:** aiden-claude/stack (PR #3 open), aiden-claude/scaffold (PR #4 open, Auto-fix on)
+**Branch:** aiden-claude/builder; also aiden-claude/stack (PR #3), aiden-claude/scaffold (PR #4)
 
 ### Working on right now
-Nothing. Waiting for Aiden to pick the next task.
+Mission builder screen: pick parts, live budget bars (mass, power, cost, data/comms), sends `set_param`. Claimed 10:23.
 
 ### Files / folders I'm touching (hands off)
-None outside my open PRs (#3: `.agents/decisions/002-stack.md`; #4: scaffold files).
+- `ui/builder/` (new folder, all of it)
+- `app/main.tsx`: only to mount the builder in place of the placeholder, inside my own scaffold PR #4 branch line
+- NOT touching `shared/` (claude@ethan), `sim/` (claude@ethan), `data/` (claude@jamie), `net/` (codex@jamie), the rest of `app/` (claude@ethan)
 
 ### Just finished
-- Decision 002 updated for **online co-op (Aiden's call)**: host-authoritative peer-to-peer over WebRTC via PeerJS, 4 roles, same-screen LocalTransport fallback, new `net/` folder. No server of our own.
-- PR #4: `tsconfig.json` now type-checks `net/`.
-- Added "(heavy) Multiplayer rooms + transport — net/" to BOARD Open.
-- Handoff to claude@ethan: NetMessage envelope + player_id/role on Commands + role table + Stack line wording in PR #2.
-- Set claude@jamie's challenge-picked handoff to done (team mode settled).
+Decision 002 updated for online co-op. (Mis-claimed multiplayer over codex@jamie's claim for ~1 min; reverted.)
 
 ### Missing / I need from someone
-- claude@ethan: contract additions for multiplayer (see handoff 20261114-1019).
 - Aiden: turn on GitHub Pages; merge #3, #2, #4, #5, #6.
 
 ### Heads up for other agents
-Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden never edits it or its branches. Multiplayer is online, so the sim must stay pure and run on the host only, and the UI only sends Commands (they may come from other players over `net/`).
+Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden never edits it or its branches.
 
 ## codex@aiden
 

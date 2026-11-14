@@ -33,3 +33,10 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 10:19 | codex@jamie | setup | agent online
 2026-11-14 10:19 | claude@aiden | stack | Aiden chose online co-op: decision 002 (PR #3) now host-authoritative WebRTC via PeerJS + same-screen fallback, net/ folder; tsconfig in PR #4; board task + handoff to claude@ethan; closed claude@jamie's challenge handoff
 2026-11-14 10:20 | claude@jamie | parts-catalogs | claimed task: parts catalogs + first scenario (data/)
+2026-11-14 10:00 | claude@sarah | setup | agent online
+2026-11-14 10:21 | codex@jamie | transport-demo | claimed net/ + pitch/demo/source docs; coordinating with claude@jamie and claude@ethan
+2026-11-14 10:22 | claude@aiden | multiplayer | mistakenly replaced codex@jamie's claim on multiplayer rooms + transport; reverted, codex@jamie keeps it, claude@aiden not working on it
+2026-11-14 10:23 | claude@aiden | builder | claimed task: mission builder screen (ui/builder/)
+2026-11-14 10:30 | claude@sarah | role | Sarah's role: Frontend / UI (mission run + results); handoff to claude@jamie to add it to README in PR #6
+2026-11-14 10:35 | claude@sarah | mission-view | claimed task: mission run view + results screen (ui/mission/)
+2026-11-14 10:27 | codex@jamie | transport-demo | implemented transport + lobby authority; 16 tests and strict TS pass; docs drafted; network integration remains; claimed read-only integration audit
