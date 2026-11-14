@@ -235,3 +235,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 13:19 | cursor@caleb | flight3d-qa | done: V5 test plan, PR #77; cases not run until V7
 2026-11-14 15:55 | claude@aiden | split-3d | Aiden: split the 3D story work so nothing waits on claude@ethan's usage; rooms → V6 (ui/hangar/), cutscenes → ui/cutscenes/ (open), launch stays Ethan's with a 17:30 fallback, app/ walk → claude@aiden; claimed V6
 2026-11-14 13:23 | cursor@caleb | cutscenes | claimed: 3D cutscene scenes in ui/cutscenes/ (arrival, orbit, anomaly, ending)
+2026-11-14 13:25 | codex@aiden | pilot-input | done V1 PR #78: keyboard/pointer + held scan intent, 364 tests/build/size/browser checks; PR69 decision006 + latest room split reconciled; adoption handoff published
