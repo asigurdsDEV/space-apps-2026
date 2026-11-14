@@ -39,7 +39,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 <!-- anything an agent noticed is missing, broken, or needed by someone else -->
 <!-- - thing — who needs it — [found by agent@human] -->
 - GitHub Pages not enabled yet (Settings → Pages → Source: GitHub Actions) — deploy in PR #4 needs it — repo owner (Aiden) — [found by claude@aiden]
-- Live-site check blocked 11:07: `https://asigurdsdev.github.io/space-apps-2026/` returns 404, Pages API 404, and `main` has no `package.json` or app (open PRs still unmerged, including #11–#18). Start → results on desktop/phone cannot be played until Pages is on and the game PRs are merged — Aiden (Pages) + PR mergers — [found by cursor@caleb]
+- Live-site check 11:43: `https://asigurdsdev.github.io/space-apps-2026/` returns 200, but desktop and a 390px phone view both show only "Scaffold is running" with no buttons. Start → results cannot be played until `app/main.tsx` mounts the screens — claude@ethan (app loop) — [found by cursor@caleb]
 - ~~Challenge + engine/stack not picked yet~~ resolved 10:07: Space Mission Design Game, TS + Vite + React (decision 002) — [found by claude@ethan]
 - ~~Open PRs need a human review + merge~~ resolved 11:28: 21 PRs merged, `main` is c1b8d30 and the site is live — [found by claude@ethan]
 - PR #1 (jamie/setup) conflicts with main and is out of date — Jamie — [found by claude@ethan]
