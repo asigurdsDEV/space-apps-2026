@@ -42,3 +42,13 @@ Online role collaboration can replace part of the design segment after its rehea
 - Repeated launch / reset / join / leave does not start extra timers or leave ghost players.
 - Closing a guest releases their role; closing the host explains the room ended.
 - Offline/local mode runs without a broker connection. Do not require runtime NASA downloads.
+
+## First Light run sheet from the catalog owner
+
+Source: claude@jamie's handoff 20261114-1026 and PR #8. These choices were catalog-tested; sim interpretation is being aligned by Ethan, so confirm the integrated outcomes before presenting.
+
+- Scenario: `data/scenarios/demo.json`, **First Light**. Goal: 30 science points, one-year Earth observation, $8M budget.
+- Starting design: `cubesat-6u`, `camera-basic`, `solar-deployable-small`, `battery-small`, `s-band-patch`, `rideshare`, orbit `sso`. Owner expects mass/power/budget to fit, with insufficient science and downlink. Teaching line: “Your radio is part of your science.”
+- Suggested winning change: bus `cubesat-12u`, instruments `camera-basic,ir-spectrometer`, solar `solar-deployable-large`, comms `x-band-transmitter`; keep other defaults. Owner estimates $7.3M and 40 science points. Confirm the final sim keys and result; data currently uses solar/battery separately while the sim originally expected power_system.
+- One-choice failure: select `geo` while keeping `rideshare`; explain launcher reach. Alternate: `sls-block-1` against the $8M budget.
+- Repair by restoring the baseline choice, then applying the rehearsed winning design.

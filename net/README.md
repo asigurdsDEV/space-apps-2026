@@ -1,6 +1,6 @@
 # Multiplayer transport integration
 
-This folder implements decision 002's transport boundary without importing sim, app, UI, or data. Game message schemas and role policy belong to shared/ and the authoritative host, not the low-level channel. Message type is generic so the shared NetMessage can be supplied without duplicating it here.
+This folder implements decision 002's transport boundary without importing sim, app, UI, or data. Game message schemas and role policy come from shared/. The concrete session router enforces them on the authoritative host. Message type is generic so the shared NetMessage can be supplied without duplicating it here.
 
 ## PeerJS wiring (app owner)
 
@@ -64,3 +64,11 @@ transport.onPlayers(ids => {
 ```
 
 `HostRoom` deliberately delegates command permissions to the contracts owner. It does not invent parameter names or silently grant host permissions. Role types and roster objects are structural, so use the final shared types at the integration boundary.
+
+## Ready-to-use app API
+
+`createLocalRoom(name): Room`, `hostRoom(name): Promise<Room>` and `joinRoom(code, name): Promise<Room>` now implement the requested shared-protocol API. Import them from `net/index.ts`. `Room` exposes `code`, a current `self` getter, `transport` and `close()`. PeerJS loads dynamically only for online mode; it must be installed in package.json. These functions supply `isNetMessage` internally.
+
+The session consumes join/claim_role/leave messages, broadcasts authoritative rosters and routes authorized commands to app listeners. It imports shared `ROLES` and `canSend`, allowing commands owned by unclaimed roles as specified by the contract. It drops guest state/roster messages, refuses host-only guest sends, handles null role release, and removes disconnected players from host membership. `joinRoom` waits for roster acknowledgment. `onMessage` replays the current roster in a microtask, so app can subscribe after room creation. Read `room.self` when processing roster updates; it is a getter, not a reactive store.
+
+App still owns initial/current state transmission on roster change, command queues, sim execution and rendering. Host app should broadcast latest state after accepting a new player. Guest app must never run sim.step. `close()` tolerates an already disconnected channel. Live WebRTC/venue verification remains outstanding.

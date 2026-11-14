@@ -22,3 +22,11 @@ If a value is extracted later, record its document edition, page/table, original
 “NASA CubeSat and small-spacecraft references informed the mission-design concepts. The prototype uses team-authored educational catalogs to make resource trade-offs playable.”
 
 Only add “uses NASA data” with the exact dataset, imported file and transformation documented. Confirm this wording with the catalog owner before submission. No live NASA service or API key is required for the proposed static catalogs.
+
+## Additional references confirmed with the catalog owner
+
+- [Design and Develop Science Missions, March 26, 2025](https://www.nasa.gov/wp-content/uploads/2025/04/250323-design-and-develop-science-mission.pdf): NASA systems-engineering webinar; page 8 identifies launch, space, ground and user segments. Supports the game's mission-system framing.
+- [Goddard Mission Design Lab](https://etd.gsfc.nasa.gov/capabilities/integrated-design-center/mission-design-lab/): collaborative mission concepts and subsystem trade studies, including mass, power and data-rate estimates. Supports role cooperation as an educational design choice.
+- [General Mission Analysis Tool catalog entry](https://software.nasa.gov/software/GSC-19468-1): NASA's orbit/mission-analysis software reference. The game does not run GMAT or claim GMAT-validated trajectories.
+
+Catalog owner confirmed these as conceptual references in PR #8; the values remain educational approximations. The owner supplied a legacy CubeSat 101 URL; the PDF link above is the verified NASA-hosted equivalent.

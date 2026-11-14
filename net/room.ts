@@ -15,7 +15,7 @@ export class HostRoom<Role extends string, Command> {
     readonly hostId: string,
     hostName: string,
     private roles: readonly Role[],
-    private allowed: (role: Role, command: Command, isHost: boolean) => boolean,
+    private allowed: (role: Role | null, command: Command, isHost: boolean) => boolean,
   ) {
     this.members.set(hostId, { player_id: hostId, name: this.name(hostName), role: null, is_host: true })
   }
@@ -29,12 +29,12 @@ export class HostRoom<Role extends string, Command> {
     this.members.set(from, { player_id: from, name: this.name(name), role: null, is_host: false })
     return { ok: true }
   }
-  claimRole(from: string, role: Role): RoomResult {
+  claimRole(from: string, role: Role | null): RoomResult {
     if (this.ended) return { ok: false, reason: 'Room has ended' }
     const player = this.members.get(from)
     if (!player) return { ok: false, reason: 'Join before choosing a role' }
-    if (!this.roles.includes(role)) return { ok: false, reason: 'Unknown role' }
-    if ([...this.members.values()].some(member => member.player_id !== from && member.role === role)) {
+    if (role !== null && !this.roles.includes(role)) return { ok: false, reason: 'Unknown role' }
+    if (role !== null && [...this.members.values()].some(member => member.player_id !== from && member.role === role)) {
       return { ok: false, reason: 'Role is already taken' }
     }
     player.role = role
@@ -43,7 +43,7 @@ export class HostRoom<Role extends string, Command> {
   authorize(from: string, command: Command): RoomResult {
     if (this.ended) return { ok: false, reason: 'Room has ended' }
     const player = this.members.get(from)
-    if (!player || !player.role) return { ok: false, reason: 'Choose a role before sending commands' }
+    if (!player) return { ok: false, reason: 'Join before sending commands' }
     return this.allowed(player.role, command, player.is_host)
       ? { ok: true } : { ok: false, reason: 'Your role cannot send that command' }
   }
