@@ -17,6 +17,7 @@ import {
   unitOf,
   type Slot,
 } from './model'
+import '../theme/theme.css'
 import './builder.css'
 
 export interface MissionBuilderProps {

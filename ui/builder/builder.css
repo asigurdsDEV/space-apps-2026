@@ -1,14 +1,15 @@
 .mb {
-  --mb-bg: #f7f8fb;
-  --mb-panel: #ffffff;
-  --mb-text: #14181f;
-  --mb-muted: #5b6472;
-  --mb-line: #dde1e8;
-  --mb-accent: #2557d6;
-  --mb-pick: #e8eefc;
-  --mb-ok: #2e7d4f;
-  --mb-bad: #c62828;
-  --mb-warn: #9a6200;
+  /* Shared theme tokens (ui/theme/theme.css, codex@aiden); light/dark comes from there. */
+  --mb-bg: var(--game-bg);
+  --mb-panel: var(--game-panel);
+  --mb-text: var(--game-text);
+  --mb-muted: var(--game-muted);
+  --mb-line: var(--game-border);
+  --mb-accent: var(--game-accent);
+  --mb-pick: var(--game-selected);
+  --mb-ok: var(--game-success);
+  --mb-bad: var(--game-danger);
+  --mb-warn: var(--game-warning);
 
   display: grid;
   grid-template-columns: minmax(0, 1fr) 320px;
@@ -16,23 +17,9 @@
   padding: 24px;
   background: var(--mb-bg);
   color: var(--mb-text);
-  font-family: system-ui, sans-serif;
+  font-family: var(--game-font);
   min-height: 100vh;
   box-sizing: border-box;
-}
-@media (prefers-color-scheme: dark) {
-  .mb {
-    --mb-bg: #0f1218;
-    --mb-panel: #171b23;
-    --mb-text: #e7eaf0;
-    --mb-muted: #9aa3b2;
-    --mb-line: #2a303b;
-    --mb-accent: #7aa2ff;
-    --mb-pick: #1d2740;
-    --mb-ok: #5cc98a;
-    --mb-bad: #ff6b6b;
-    --mb-warn: #f0b44c;
-  }
 }
 @media (max-width: 800px) {
   .mb { grid-template-columns: minmax(0, 1fr); padding: 16px; }
@@ -97,7 +84,7 @@
   border: 0;
   border-radius: 8px;
   background: var(--mb-accent);
-  color: #fff;
+  color: var(--game-on-accent);
   cursor: pointer;
 }
 .mb-launch:disabled { opacity: 0.45; cursor: not-allowed; }
