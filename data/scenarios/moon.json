@@ -1,0 +1,28 @@
+{
+  "contract_version": "0.1",
+  "scenario_id": "moon",
+  "title": "Moon Mapper: chart the lunar surface from orbit",
+  "seed": 7,
+  "dt_s": 86400,
+  "duration_s": 63072000,
+  "start_utc": "2027-06-01T00:00:00Z",
+  "datasets": ["launch-vehicles", "orbits", "spacecraft-buses", "instruments", "power-systems", "comms-systems"],
+  "entities": [
+    { "id": "moon", "kind": "body", "name": "Moon", "props": { "radius_m": 1737400 } },
+    { "id": "spacecraft", "kind": "spacecraft", "name": "Your spacecraft", "props": {} }
+  ],
+  "params": {
+    "objective": "lunar-mapping",
+    "objective_text": "Put a spacecraft in low lunar orbit and send home enough data to reach the science goal over two years, within budget. Hint: getting captured by the Moon needs a real engine.",
+    "budget_usd": 300000000,
+    "target_science_score": 75,
+    "mission_duration_s": 63072000,
+    "launch_vehicle": "falcon-9",
+    "orbit": "lunar",
+    "bus": "smallsat",
+    "instruments": "laser-altimeter",
+    "solar": "solar-array-medium",
+    "battery": "battery-medium",
+    "comms": "deep-space-transponder"
+  }
+}

@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-14 11:07
+**Last updated:** 2026-11-14 11:33
 
 ## claude@ethan
 
@@ -20,12 +20,15 @@ Running several subagents in parallel (all as claude@ethan, all inside my folder
 
 `ethan-claude/integration` already has PRs #4, #5, #7, #8, #9, #10, #11 merged together: no conflicts, `tsc` clean, 62 tests pass. Use it if you want to see everything in one place.
 
+**3D build** (`ui/scene3d/`, branch `ethan-claude/scene3d`), handed over by claude@aiden at Aiden's request, claimed 11:33: a model for every catalog part, a launch sequence, the fly scene tied to sim time, Moon/Mars scenes, phone performance. `SpaceView`'s existing props stay as they are; I only add new ones.
+
 Other claims:
 5. **Sim random events + difficulty knobs** (`sim/`) and **browser end-to-end tests** (`e2e/`): start when sim-data and the app loop land.
 6. **Mounting in `app/`** once the app loop branch is up: `StartScreen` (PR #13), lobby (PR #15), briefing (PR #14), `MissionBuilder` with `players`/`me` (PR #10), `MissionScreen` (PR #11), `SharePanel` (PR #18).
 The lobby screen is codex@jamie's (`ui/lobby/`). More scenarios and difficulty variants are claude@jamie's (claimed 11:02), so my 10:46 offer is closed.
 
 ### Files / folders I'm touching (hands off)
+- `ui/scene3d/` (whole folder, taken over from claude@aiden)
 - `ui/share/` (PR #18), `e2e/` (new). `ui/spacecraft/` is released (superseded by decision 003).
 - `app/` (whole folder), including `app/main.tsx` on my branch (it is stacked on the scaffold, PR #4)
 - `sim/` (PR #7). Want a rule or number changed? Send me a handoff.
@@ -33,6 +36,8 @@ The lobby screen is codex@jamie's (`ui/lobby/`). More scenarios and difficulty v
 - Plus my usual shared-file edits: this section, my BOARD.md lines, append-only LOG.md lines, my own handoffs
 
 ### Just finished
+- **Merged 21 PRs into `main`** (c1b8d30, tested: 178/178 tests, build and Pages deploy pass). Held #6 and #25. See handoff `20261114-1129-claude@ethan-all-main-is-live.md`. I am the merge coordinator: tell me when a PR is ready.
+- **Sim reads the real catalogs** (PR #26, merged).
 - **Save / share / compare** (PR #18, `ui/share/`): `<SharePanel state send />`, share link in the URL hash, saved designs, compare table. 114 tests pass merged with sim-data, shared-types, the builder and the playthrough test.
 - **Role keys fixed** (claude@aiden's handoff): `ROLE_PARAM_KEYS` now lists `bus`, `solar`, `battery` for spacecraft and `comms`, `ground_stations` for comms-resources. Pushed to PR #5 (`shared/net.ts`) and PR #2 (CONTRACTS.md). Re-merge `origin/ethan-claude/shared-types` to get it.
 - **SVG spacecraft drawing**: built and reviewed, then superseded by the 3D view (decision 003). No PR; branch `ethan-claude/spacecraft` is kept as a possible no-WebGL fallback.
@@ -40,8 +45,7 @@ The lobby screen is codex@jamie's (`ui/lobby/`). More scenarios and difficulty v
 - Earlier: sim core (PR #7), multiplayer shapes (PR #5), contracts (PR #2).
 
 ### Missing / I need from someone
-- Aiden: who merges the open PRs, and when (handoff 20261114-1100). Order is in that handoff; #18 goes after #11.
-- Aiden: turn on GitHub Pages (Settings → Pages → Source: GitHub Actions).
+- claude@jamie: fix the README conflict on #6. claude@sarah: tell me when #25 is ready.
 - claude@sarah: keep `num` and `formatMetric` exported from `ui/mission/format.ts` (`ui/share` imports them).
 - Ethan's Role for the README Team table.
 
