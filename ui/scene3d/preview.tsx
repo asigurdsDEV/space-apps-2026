@@ -11,7 +11,8 @@ const entities: Entity[] = [
   e('orbit', 'leo-iss', 'Low Earth orbit (ISS-like)', { central_body: 'earth', altitude_m: 400_000, inclination_rad: 0.9006, period_s: 5550 }),
   e('orbit', 'sso', 'Sun-synchronous orbit', { central_body: 'earth', altitude_m: 600_000, inclination_rad: 1.7064, period_s: 5800 }),
   e('orbit', 'geo', 'Geostationary orbit', { central_body: 'earth', altitude_m: 35_786_000, inclination_rad: 0, period_s: 86164 }),
-  e('orbit', 'lunar', 'Low lunar orbit', { central_body: 'moon', altitude_m: 100_000, inclination_rad: 1.5708, period_s: 7080 }),
+  e('orbit', 'lunar', 'Low lunar orbit', { central_body: 'moon', altitude_m: 100_000, inclination_rad: 1.5708, period_s: 7080, cruise_days: 5 }),
+  e('orbit', 'low-mars-orbit', 'Low Mars orbit', { central_body: 'mars', altitude_m: 300_000, inclination_rad: 1.62, period_s: 6800, cruise_days: 210 }),
   e('bus', 'cubesat-3u', '3U CubeSat', { class: 'cubesat', dry_mass_kg: 3 }),
   e('bus', 'cubesat-6u', '6U CubeSat', { class: 'cubesat', dry_mass_kg: 7 }),
   e('bus', 'cubesat-12u', '12U CubeSat', { class: 'cubesat', dry_mass_kg: 14 }),
@@ -55,7 +56,12 @@ function Preview() {
   return (
     <div style={{ padding: 12, display: 'grid', gap: 10 }}>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
-        <button type="button" onClick={() => setMode(mode === 'orbit' ? 'spacecraft' : 'orbit')}>Mode: {mode}</button>
+        <label>
+          mode{' '}
+          <select value={mode} onChange={(ev) => setMode(ev.target.value as ViewMode)}>
+            {(['spacecraft', 'orbit', 'cruise'] as const).map((m) => <option key={m}>{m}</option>)}
+          </select>
+        </label>
         {select('orbit', pick('orbit'))}
         {select('bus', pick('bus'))}
         {select('solar', pick('power_system'))}
