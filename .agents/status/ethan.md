@@ -5,29 +5,22 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-14 13:00
+**Last updated:** 2026-11-14 13:55
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-1. **Anomaly cards are live** (PR #60) and the debrief has what-if fixes and the real mission match (PR #63). Notes for each owner: handoff `20261114-1300-claude@ethan-all-anomaly-cards-live.md`.
-2. Subagents are running the **3D build** (`ui/scene3d/`, see below) and **browser end-to-end tests + a review of the app** (`e2e/`, fixes on branch `ethan-claude/app-fixes`).
-3. I merge every PR that passes `tsc`, tests and build.
+Small tasks, one PR each, in this order (handoff `20261114-1355-claude@ethan-all-small-tasks.md`):
+1. **3D part models** (`ui/scene3d/parts/`, `craft.ts`, `model.ts`): finished on `ethan-claude/scene3d-parts`, landing now.
+2. **Browser end-to-end tests + app review fixes** (`e2e/`, `app/`), branch `ethan-claude/app-fixes`.
+3. **V7a flight view** (`ui/scene3d/flight/`), then **V7b mounting it** (`app/`).
+4. **Space weather in the sim** (storm card on real storm days).
 
-Next: claude@sarah's space-weather requests in the sim (storm card on real storm days, drag from solar flux), then the sim random events + difficulty knobs task.
+Between tasks I merge every PR that passes `tsc`, tests and build.
 
-**3D build** (`ui/scene3d/`, branch `ethan-claude/scene3d`), see below.
-
-Next, not started: the sim side of decision 004 (anomaly cards: `decision_required` / `resolve_decision`, what-if analysis) together with my sim random events + difficulty knobs task.
-
-**3D build** (`ui/scene3d/`, branch `ethan-claude/scene3d`), handed over by claude@aiden at Aiden's request, claimed 11:33. **Restarted at 12:40** (it was paused 11:52 to 12:40 so the app could land first); it may be cut off by my usage limit and then continues after about 16:20. The builders push work in progress often. Partial work is on `ethan-claude/scene3d-launch` and `ethan-claude/scene3d-fly` (unfinished, untested). Scope: a model for every catalog part, a launch sequence, the fly scene tied to sim time, Moon/Mars scenes, phone performance. `SpaceView`'s existing props stay as they are; I only add new ones.
-
-Other claims:
-5. **Sim random events + difficulty knobs** (`sim/`) and **browser end-to-end tests** (`e2e/`): start when sim-data and the app loop land.
-6. **Mounting in `app/`** once the app loop branch is up: `StartScreen` (PR #13), lobby (PR #15), briefing (PR #14), `MissionBuilder` with `players`/`me` (PR #10), `MissionScreen` (PR #11), `SharePanel` (PR #18).
-The lobby screen is codex@jamie's (`ui/lobby/`). More scenarios and difficulty variants are claude@jamie's (claimed 11:02), so my 10:46 offer is closed.
+Released to Open (ask me first, the folder is mine): fly scene tied to sim time (unfinished on `ethan-claude/scene3d-fly`), Moon/Mars shaders + cruise view.
 
 ### Files / folders I'm touching (hands off)
 - `ui/scene3d/` (whole folder, taken over from claude@aiden)
@@ -38,6 +31,7 @@ The lobby screen is codex@jamie's (`ui/lobby/`). More scenarios and difficulty v
 - Plus my usual shared-file edits: this section, my BOARD.md lines, append-only LOG.md lines, my own handoffs
 
 ### Just finished
+- **Launch cutscene** on `main` (PR #83), played after every launch; checked in a browser. Merged 17 PRs (#65 to #83); `main` passes 419 tests.
 - **Lazy 3D** (PR #51): first-load script 959 kB → 352 kB. Answers to every handoff addressed to me: `20261114-1235-claude@ethan-all-answers.md`. PR #50 is held (conflict in `data/`, claude@jamie).
 - **Merged 21 PRs into `main`** (c1b8d30, tested: 178/178 tests, build and Pages deploy pass). Held #6 and #25. See handoff `20261114-1129-claude@ethan-all-main-is-live.md`. I am the merge coordinator: tell me when a PR is ready.
 - **Sim reads the real catalogs** (PR #26, merged).

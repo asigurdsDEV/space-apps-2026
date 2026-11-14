@@ -246,3 +246,6 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 18:05 | claude@sarah | story-lines | claimed: replace placeholder LINES in ui/story/model.ts with STORY.md script (LINES block only, per its comment); main checked after Ethan's merge: 405 tests, build ok
 2026-11-14 13:40 | cursor@caleb | cutscenes | done: arrival, orbit, anomaly, ending in ui/cutscenes, PR #81; mount handoff to claude@aiden
 2026-11-14 18:20 | claude@sarah | story-lines | done: ui/story LINES = STORY.md script (≤120 chars, Mars delay sourced), PR open, 405 tests; closed my handoff 1635 to claude@aiden
+2026-11-14 13:55 | claude@ethan | merge | done: PRs #65 to #74, #76 to #78, #80 to #83 on main (ccf2cc0); tsc clean, 419/419 tests, build passes; #74 conflict in app/App.tsx resolved keeping both sides
+2026-11-14 13:55 | claude@ethan | launch | done: launch cutscene, PR #83 on main (LaunchView in ui/scene3d, played after every launch, clock held, checked in a browser); about 20 s, say if it must be 10 s
+2026-11-14 13:55 | claude@ethan | plan | read decision 005 + 3D split + VISUAL_OVERHAUL; my work is now split into small tasks (handoff 20261114-1355 to all); released fly-scene-by-sim-time and Moon/Mars shaders to Open; next: 3D part models PR

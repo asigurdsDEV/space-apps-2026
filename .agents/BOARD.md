@@ -8,6 +8,9 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Open
 
+- [ ] (medium) [P2] Fly scene tied to sim time (craft position from `t_s`, ground stations, downlink beam, part highlight) — ui/scene3d/ — released by claude@ethan 13:55 so it does not block anyone; unfinished work is on branch `ethan-claude/scene3d-fly`. Ask claude@ethan before taking it (the folder is his)
+- [ ] (medium) [P2] Moon and Mars surface shaders + cruise transfer view in `SpaceView` — ui/scene3d/ — released by claude@ethan 13:55, not started. Ask claude@ethan before taking it
+
 ### Interactive 3D overhaul (Aiden: both modes, spacecraft flight first; plan PR #69)
 These are new work packages, not active claims. Suggested owners claim only their isolated scope with the normal lock push. Ethan keeps ui/scene3d/, part models, launch/fly branches, app/sim/shared/e2e. No immediate change or response is needed from him; V7 is a later integration checkpoint. Existing Start/Lobby/Tutorial graphics remain codex@jamie's current task.
 
@@ -18,7 +21,6 @@ These are new work packages, not active claims. Suggested owners claim only thei
 ### First-person story (decision 005, Aiden 14:45: walk through the mission tasks, cutscenes, pop-outs; GAME_DESIGN.md §4.9)
 <!-- Split 15:50 at Aiden's request ("split it so we get as much done as we can within usage limits"): nothing here waits on claude@ethan. His claimed ui/scene3d/ work (part models, launch sequence, fly scene) stays his. New folders, so nobody collides. -->
 - [ ] (light) [P1] → The 3D rooms + guided walk are now **V6** (`ui/hangar/`, claude@aiden, In progress): same thing as decision 005's rooms, so one task
-- [ ] (medium) [P1] Launch cutscene (pad → lift-off → fairing → orbit) — ui/scene3d/ — owner: claude@ethan (partial work on `ethan-claude/scene3d-launch`). If it isn't on main by 17:30, the ui/cutscenes/ owner builds a simple one there instead
 - [ ] (medium) [P1] Walk between stations instead of switching screens: mount the V6 rooms behind the screens, walk on each screen change, task panels pop out at each station (falls back to today's screens with no WebGL) — app/ — needs: V6 — owner: claude@aiden (split from claude@ethan at Aiden's request 15:50)
 
 ### Playtest 14:15 (claude@aiden played main start → results; details in handoff 20261114-1420 playtest)
@@ -76,21 +78,22 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 
 
-- [ ] (medium) [P1] Sim: richer random events + difficulty knobs the scenario files can set (the easy/normal/hard scenario variants stay with claude@jamie) — sim/ — starts when ethan-claude/sim-data lands — [claude@ethan]
-- [ ] (heavy) [P1] Browser end-to-end tests of the assembled game: full solo mission, and two browsers in one co-op room — e2e/ (new); uses playwright-core installed outside the repo, so no package.json change — paused until about 16:20 (usage limit); first scripts written, not in the repo yet — [claude@ethan]
+- [ ] (light) [P1] 3D part models: a recognizable model for every catalog part (finished on branch `ethan-claude/scene3d-parts`; now merging onto main, checking the builder and cutscenes, PR) — ui/scene3d/parts/, craft.ts, model.ts — [claude@ethan]
+- [ ] (heavy) [P1] Browser end-to-end tests of the assembled game: full solo mission, and two browsers in one co-op room — e2e/ (new); uses playwright-core installed outside the repo, so no package.json change — solo and co-op scripts written on branch `ethan-claude/app-fixes`, review fixes being verified — [claude@ethan]
 
 
 
 
 - [ ] (heavy) Multiplayer rooms + transport: PeerJS/WebRTC host-authoritative co-op for up to 4, room codes, role claim, LocalTransport fallback (decision 002) — net/ — [codex@jamie]
 
-- [ ] (heavy) [P1] 3D models + launch + 3D fly scene: a real model for every catalog part, a launch sequence, the fly screen in 3D tied to sim time, Moon/Mars scenes, phone performance — ui/scene3d/ (whole folder), branch ethan-claude/scene3d — [claude@ethan]
 
 ## Blocked
 
 
 ## Done
 
+- [x] (medium) [P1] Launch cutscene — ui/scene3d/launch/, app/ — [claude@ethan] — PR #83 on `main`: `<LaunchView state onDone />` (pad, lift-off, staging, fairing, burn to orbit; a model per launch vehicle; captions, Pause, Skip, reduced motion), played after every launch with the mission clock held; checked in a browser. About 20 s, longer than decision 005's 10 s: say if it should be cut
+- [x] (medium) [P1] Sim: random events + difficulty knobs — sim/ — [claude@ethan] — covered by the anomaly cards (PR #60) and `anomaly_cards` per difficulty (claude@jamie, PR #67); closed
 - [x] (light) Story script in the game: ui/story `LINES` = STORY.md (≤120 chars), Mars delay sourced — ui/story/model.ts (LINES only), docs/game-design/STORY.md — [claude@sarah] — PR (see log), ready to merge: 405 tests, build ok
 - [x] (heavy) [P1] Cutscene scenes in 3D: arrival, Moon/Mars orbit, anomaly alarm, ending — ui/cutscenes/ — [cursor@caleb] — in PR #81. Launch stays with claude@ethan. Scenes are not mounted yet: handoff to claude@aiden for `<Cutscene>` children in app/StoryLayer.tsx.
 - [x] (heavy) [P1] V6 Walkable mission control = decision 005's rooms — ui/hangar/ (new) — [claude@aiden] (split from claude@ethan at Aiden's request) — in PR #80: six stations in one hall (wall, bay with your spacecraft, consoles, pad window, ops, debrief), guided walk, tap/buttons/keys, WASD look, lazy, render on demand; walked in the preview desktop + phone. Next: app/ walk task
