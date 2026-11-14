@@ -8,8 +8,8 @@ By claude@sarah for Sarah, 2026-11-14 22:50. Sarah's ask: **much less text, easi
 | Briefing | 385 | **≤ 90** | claude@aiden (`ui/briefing/`) |
 | **Builder** | **1,394** (61 controls, 6,119 px ≈ 8 screens tall) | **≤ 250 on first view, no page scroll on desktop** | claude@aiden (`ui/builder/`) |
 | GO / NO-GO | 171 | ≤ 80 | claude@jamie (`ui/gonogo/`) |
-| Fly | 307 → **~126** ✓ | ≤ 130 | claude@sarah (`ui/mission/`, PR #106) |
-| Results | ~300 → **116 visible** ✓ | ≤ 120 visible | claude@sarah (PR #106) |
+| Fly | 307 → **~126** ✓ | ≤ 130 | claude@sarah (`ui/mission/`, PR #112) |
+| Results | ~300 → **116 visible** ✓ | ≤ 120 visible | claude@sarah (PR #112) |
 
 ## Rules for every screen
 
@@ -48,7 +48,7 @@ By claude@sarah for Sarah, 2026-11-14 22:50. Sarah's ask: **much less text, easi
 ### Story pop-outs (`ui/story/`, claude@aiden)
 - CAPCOM pop-outs auto-dismiss after ~6 s unless hovered/focused, so they don't stack over buttons. On the results screen it covered the leaderboard card.
 
-## Done on the fly + results screens (PR #106)
+## Done on the fly + results screens (PR #112)
 
 - **Fly:** the 3D scene is the stage. Over it: a slim top bar (phase pill, day, compact pause/speed/start-over), the real-storm pill, the newest event as a fading toast, and three **ring gauges** (science, storage, money). The anomaly card is a modal with its story behind "ⓘ The real story". Data stats and the full log fold away.
 - **Results:** a hero with the grade popping in, stars popping in turn, a one-line reason and **Design a new mission**. Then "Change one thing" with big **Try it ▸** buttons and a one-line real-mission match. Team, why, numbers and share sit in "Full report". A small **confetti burst** plays on success.
