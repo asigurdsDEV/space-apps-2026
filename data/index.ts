@@ -63,6 +63,9 @@ export const catalogs: TableDataset[] = [
 
 export const scenarios: Config[] = [demo, moon, mars] as Config[]
 
+/** Mission program order (GAME_DESIGN.md §4.5): finish one to unlock the next. */
+export const PROGRAM: readonly Id[] = ['demo', 'moon', 'mars']
+
 /** All Datasets, for handing to `sim.init(config, datasets)`. */
 export function getDatasets(ids?: Id[]): Dataset[] {
   return ids ? catalogs.filter((d) => ids.includes(d.id)) : catalogs
