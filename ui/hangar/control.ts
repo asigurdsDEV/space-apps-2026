@@ -9,7 +9,9 @@ import type { Bar } from '../builder/model'
 import { formatValue } from '../builder/model'
 import type { ConsoleCall } from '../gonogo'
 import { buildCraft, disposeObject } from '../scene3d/craft'
-import type { CraftSpec } from '../scene3d/model'
+import { busSize, type CraftSpec } from '../scene3d/model'
+import { buildBus, buildPart, busKey, modelKey, SLOT, type Mount } from '../scene3d/parts'
+import type { Entity } from '../../shared'
 import { CALL_WALL, DESK_XS, DESK_Z, GAUGES, LAUNCH, ROOM, START, STAND, shortLabel, type Debrief, type Rack } from './layout'
 import { gridTexture } from './world'
 
@@ -66,6 +68,42 @@ function wrap(g: CanvasRenderingContext2D, text: string, max: number, lines: num
   }
   if (out.length < lines && line) out.push(line)
   return out
+}
+
+/** The box a part model fits on its shelf, metres: wide and shallow, so long solar wings still read. */
+const SHELF_W = 0.62
+const SHELF_H = 0.36
+/** A shelf-sized bus every part is built against (claude@ethan's models scale with the bus). */
+const SHELF_BUS = { key: 'smallsat' as const, id: 'shelf', size: [0.6, 0.6, 0.6] as [number, number, number] }
+
+/**
+ * The real 3D model of a catalog part (ui/scene3d/parts), sized to sit on a shelf; null for parts
+ * with no small model (orbits, rockets) or if building one fails, so the rack keeps a plain plate.
+ */
+function partModel(part: Entity): THREE.Object3D | null {
+  if (!['bus', 'power_system', 'comms_system', 'instrument'].includes(part.kind)) return null
+  try {
+    let model: THREE.Group
+    if (part.kind === 'bus') model = buildBus({ key: busKey(part), id: part.id, size: busSize(part).size, entity: part })
+    else {
+      const key = modelKey(part) as Mount['key']
+      const kind = part.kind === 'power_system' ? 'power' : part.kind === 'comms_system' ? 'comms' : 'instrument'
+      model = buildPart({ part: kind, id: part.id, key, slot: SLOT[key], entity: part }, SHELF_BUS)
+      model.position.set(0, 0, 0)
+      model.rotation.set(0, 0, 0)
+    }
+    // Centre it and fit it in the shelf box, inside a holder so the rack can place it.
+    const box = new THREE.Box3().setFromObject(model)
+    const size = box.getSize(new THREE.Vector3())
+    const centre = box.getCenter(new THREE.Vector3())
+    model.position.sub(centre)
+    const holder = new THREE.Group()
+    holder.add(model)
+    holder.scale.setScalar(Math.min(SHELF_W / Math.max(size.x, size.z, 1e-6), SHELF_H / Math.max(size.y, 1e-6)))
+    return holder
+  } catch {
+    return null
+  }
 }
 
 const callColour = (c: ConsoleCall) => (c.call === 'go' ? GOOD : c.call === 'no-go' ? BAD : WARN)
@@ -200,6 +238,7 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
       signMesh.rotation.y = rot
       rackGroup.add(cab, signMesh)
       for (const item of rack.items) {
+        const model = partModel(item.part)
         const tex = canvasScreen(384, 240)
         const { g } = tex
         g.fillStyle = '#121a2e'
@@ -220,6 +259,36 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
         frame.position.set(item.at[0] - item.face[0] * 0.005, item.at[1], item.at[2] - item.face[1] * 0.005)
         frame.rotation.y = rot
         frame.visible = item.picked
+        if (model) {
+          // The part itself on a little shelf; its name and price on a strip along the shelf's front edge.
+          const strip = canvasScreen(512, 112)
+          strip.g.fillStyle = '#121a2e'
+          strip.g.fillRect(0, 0, 512, 112)
+          strip.g.textAlign = 'center'
+          strip.g.textBaseline = 'middle'
+          strip.g.fillStyle = TEXT
+          strip.g.font = font(44, 700)
+          strip.g.fillText(shortLabel(item.part), 256, 40, 490)
+          strip.g.fillStyle = MUTED
+          strip.g.font = font(32, 500)
+          if (typeof cost === 'number') strip.g.fillText(formatValue(cost, 'USD'), 256, 88, 490)
+          strip.draw()
+          tex.texture.dispose()
+          ;(part.material as THREE.MeshBasicMaterial).map = strip.texture
+          const edge = (dy: number, out: number, m: THREE.Mesh, h: number) => {
+            m.geometry.dispose()
+            m.geometry = new THREE.PlaneGeometry(m === frame ? 0.74 : 0.68, h)
+            m.position.set(item.at[0] + item.face[0] * out, item.at[1] + dy, item.at[2] + item.face[1] * out)
+          }
+          edge(-0.2, 0.43, part, 0.15)
+          edge(-0.2, 0.425, frame, 0.21)
+          model.position.set(item.at[0] + item.face[0] * 0.24, item.at[1] + 0.08, item.at[2] + item.face[1] * 0.24)
+          model.rotation.y = rot + 0.35
+          const shelf = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.03, 0.44), cabinetMat)
+          shelf.position.set(item.at[0] + item.face[0] * 0.2, item.at[1] - 0.1, item.at[2] + item.face[1] * 0.2)
+          shelf.rotation.y = rot
+          rackGroup.add(model, shelf)
+        }
         rackGroup.add(frame, part)
         plates.set(`${rack.key}:${item.part.id}`, { frame, part })
       }
