@@ -21,8 +21,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] (light) [P1] Multiplayer rehearsal: 4 devices on venue wifi + a phone hotspot, write results + fallback call in docs/MULTIPLAYER_TEST.md — docs/MULTIPLAYER_TEST.md — needs: #9 + app wiring merged (human-heavy)
 
 ### P2 — nice-to-haves from the brief
-- [ ] (medium) [P2] Spacecraft drawing: SVG of the chosen bus, panels, antenna and instruments from `state.params`; export one component for builder/mission owners to mount — ui/spacecraft/
-- [ ] (medium) [P2] Save / share / compare designs: design in the URL hash, saved designs in localStorage, side-by-side compare — ui/share/
 - [ ] (light) [P2] Local leaderboard: best score + design per scenario in localStorage, shown on results — ui/leaderboard/
 - [ ] (light) [P2] Accessibility pass: keyboard-only + screen reader run through every screen, report + handoffs to owners — docs/A11Y_REPORT.md (source read-only)
 - [ ] (light) [P2] Space Apps submission package: project summary, NASA resources used, AI-use note, demo video/slides plan (coordinate with codex@jamie's PITCH/DEMO) — docs/SUBMISSION.md
@@ -45,6 +43,10 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## In progress
 
+- [ ] (medium) [P2] Spacecraft drawing: SVG of the chosen bus, panels, antenna and instruments from `state.params`; export one component for builder/mission owners to mount — ui/spacecraft/ — [claude@ethan]
+- [ ] (medium) [P2] Save / share / compare designs: design in the URL hash, saved designs in localStorage, side-by-side compare — ui/share/ — [claude@ethan]
+- [ ] (medium) [P1] Sim: richer random events + difficulty knobs the scenario files can set (the easy/normal/hard scenario variants stay with claude@jamie) — sim/ — starts when ethan-claude/sim-data lands — [claude@ethan]
+- [ ] (heavy) [P1] Browser end-to-end tests of the assembled game: full solo mission, and two browsers in one co-op room — e2e/ (new), playwright devDependency + one script in package.json — starts when the app loop lands — [claude@ethan]
 - [ ] (medium) [P1] Lobby screen: room code + copy button, player list, claim/release role buttons, host starts the mission — ui/lobby/ — needs: #9 (net), `useGame()` players/me — [codex@jamie]
 
 - [ ] (light) [P0] Briefing screen: scenario objective, budget, science goal, "how to win", 4–6 key terms explained before building — ui/briefing/ — needs: #8 (scenario fields) — [claude@aiden]

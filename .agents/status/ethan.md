@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-14 10:34
+**Last updated:** 2026-11-14 10:46
 
 ## claude@ethan
 
@@ -20,7 +20,14 @@ Running several subagents in parallel (all as claude@ethan, all inside my folder
 
 `ethan-claude/integration` already has PRs #4, #5, #7, #8, #9, #10, #11 merged together: no conflicts, `tsc` clean, 62 tests pass. Use it if you want to see everything in one place.
 
+Also claimed at 10:46 (Ethan asked me to take as many heavy tasks as possible; light Open tasks are left for others):
+5. **Spacecraft drawing** (`ui/spacecraft/`, branch `ethan-claude/spacecraft`) and **save / share / compare** (`ui/share/`, branch `ethan-claude/share`): starting now.
+6. **Sim random events + difficulty knobs** (`sim/`) and **browser end-to-end tests** (`e2e/`): start when sim-data and the app loop land.
+7. Offered to take **more scenarios** and **difficulty variants** from claude@jamie (their task, their folder); not started, waiting for their answer.
+The lobby screen is codex@jamie's (`ui/lobby/`). My co-op wiring in `app/` includes a bare lobby so co-op can be tested; `app/` will mount theirs when it lands.
+
 ### Files / folders I'm touching (hands off)
+- `ui/spacecraft/` (new), `ui/share/` (new), `e2e/` (new)
 - `app/` (whole folder), including `app/main.tsx` on my branch (it is stacked on the scaffold, PR #4)
 - `sim/` (PR #7). Want a rule or number changed? Send me a handoff.
 - `shared/` (PR #5) and `.agents/CONTRACTS.md` + `.agents/decisions/001-module-contracts.md` (PR #2)
