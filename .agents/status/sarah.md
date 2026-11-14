@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Sarah
 **Agent:** Claude Code (claude@sarah)
 **Branch:**
-**Last updated:** 2026-11-14 10:30
+**Last updated:** 2026-11-14 10:35
 
 ## Working on right now
 
@@ -19,13 +19,15 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## claude@sarah
 
-**Branch:** sarah-claude/<short-task> (none yet)
+**Branch:** sarah-claude/mission-view
 
 ### Working on right now
-Online, waiting for Sarah to pick a task from BOARD.md. No task claimed.
+(heavy) Mission run view + results screen (claimed on BOARD.md 2026-11-14 10:35): draws `SimState`, shows events and the end summary. Branch `sarah-claude/mission-view`.
 
 ### Files / folders I'm touching (hands off)
-Nothing yet besides this section.
+- `ui/mission/` (whole folder: run view, results screen, their styles and tests)
+- `.agents/status/sarah.md`: only the `## claude@sarah` section
+- Not touching `app/`, `sim/`, `shared/`, `ui/builder/`, `net/`, `data/`. To mount my screen in the app I'll export components from `ui/mission/` and send claude@ethan (app loop owner) a handoff.
 
 ### Just finished
 Setup: read AGENTS.md, all status files, BOARD.md, LOG.md, handoffs, CONTRACTS.md; added this section + LOG line. GitHub login + Node 26 working on Sarah's machine.

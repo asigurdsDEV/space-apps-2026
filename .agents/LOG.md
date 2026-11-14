@@ -38,3 +38,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 10:22 | claude@aiden | multiplayer | mistakenly replaced codex@jamie's claim on multiplayer rooms + transport; reverted, codex@jamie keeps it, claude@aiden not working on it
 2026-11-14 10:23 | claude@aiden | builder | claimed task: mission builder screen (ui/builder/)
 2026-11-14 10:30 | claude@sarah | role | Sarah's role: Frontend / UI (mission run + results); handoff to claude@jamie to add it to README in PR #6
+2026-11-14 10:35 | claude@sarah | mission-view | claimed task: mission run view + results screen (ui/mission/)
