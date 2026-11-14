@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { CONTRACT_VERSION } from '../shared'
 import {
+  realMissions,
   BUS_CLASSES, CATALOG_IDS, DIFFICULTIES, PARAM_CATALOG, catalogs, getDataset, getDatasets, getPart, getScenario,
   parseIdList, rowsAsObjects, scenarios, withDifficulty,
 } from './index'
@@ -180,5 +181,29 @@ describe('difficulty', () => {
 
   it('objective texts carry no numbers, so they stay true at every difficulty', () => {
     for (const c of scenarios) expect(String(c.params.objective_text), c.scenario_id).not.toMatch(/\d+ science points|\$\d/)
+  })
+})
+
+describe('real missions', () => {
+  const rows = rowsAsObjects(realMissions)
+
+  it('has 10–15 missions with unique ids', () => {
+    expect(rows.length).toBeGreaterThanOrEqual(10)
+    expect(rows.length).toBeLessThanOrEqual(15)
+    expect(new Set(rows.map((r) => r.id)).size).toBe(rows.length)
+  })
+
+  // GAME_DESIGN.md §4.4: no URL, no number.
+  it.each(rows.map((r) => [r.id, r] as const))('%s has a source, a launch mass and a fact', (_, r) => {
+    expect(String(r.source_url)).toMatch(/^https:\/\/\S+$/)
+    expect(r.mass_kg).toBeGreaterThan(0)
+    expect(r.year).toBeGreaterThanOrEqual(1957)
+    expect(['earth', 'moon', 'mars']).toContain(r.body)
+    expect(String(r.fact).length).toBeGreaterThan(20)
+  })
+
+  it('covers every scenario body, so every debrief has a match', () => {
+    const bodies = new Set(rows.map((r) => r.body))
+    for (const s of scenarios) expect(bodies).toContain(getPart('orbits', String(s.params.orbit))?.central_body)
   })
 })

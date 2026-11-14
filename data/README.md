@@ -79,6 +79,19 @@ Each one is proven winnable in the real sim by `tests/playthrough.test.ts` (PR #
 
 Easy and hard get their own `scenario_id` (`moon-hard`), a title suffix (`… (Hard)`) and `params.difficulty`. Every reference win in the table above still wins at all three levels (tested). With random failures on, each reference win also survives Hard at its scenario's seed (tested). The demo uses seed 1 because seed 42 loses every demo design to a bus failure on day 193. There's no deadline knob yet, because the sim's schedule rule needs `build_months` columns. `objective_text` never states numbers; show `budget_usd` / `target_science_score` from params.
 
+**Real missions:** `realMissions` (`real-missions.json`) is a `table` of 12 real spacecraft for the debrief's "your mission is most like…" match (GAME_DESIGN.md §4.4). It is not a sim Dataset, so never pass it to `init`.
+
+| Column | Meaning |
+|---|---|
+| `body` | `earth`, `moon` or `mars`, the same values as `orbits.central_body` |
+| `orbit_class` | An `orbits` id when the real orbit is like the game's (`leo-iss`, `sso`, `geo`, `lunar`, `low-mars-orbit`); otherwise `lunar-halo`, `mars-elliptical` or `flyby` |
+| `mass_kg` | Launch (fueled) mass. For twins (GRAIL, MarCO) it's per spacecraft |
+| `objective` | Scenario objective ids where they fit (`earth-observation`, `lunar-mapping`, `mars-ice`), else `lunar-atmosphere`, `mars-atmosphere`, `technology-demo`, `relay` |
+| `fact` | One student-friendly sentence, paraphrased. No numbers, so it never needs its own source |
+| `source_url` | The NASA/NOAA page that states that row's launch mass and year. Tested: no URL, no row |
+
+Sources are mostly NASA's NSSDCA catalog, whose "Mass" field is often the dry mass, so `mass_kg` uses the launch mass from the page text. Terra's 5,190 kg comes from terra.nasa.gov, not the 4,864 kg in NSSDCA's field. Landsat 9 and GPM were left out: no readable source page gave their launch mass.
+
 **Ids:** a scenario entity's id must never equal a part id (`data.test.ts` checks it). The sim turns every part into an entity, so a clash replaces the part. That's why the Mars orbit is `low-mars-orbit`, not `mars`.
 
 **Columns added for Moon/Mars**, appended last so rows built by position elsewhere stay valid:

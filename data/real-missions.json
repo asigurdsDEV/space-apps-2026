@@ -1,0 +1,29 @@
+{
+  "id": "real-missions",
+  "source": "Hand-written from NASA/NOAA pages; each row's source_url is the page its launch mass and year come from. mass_kg is launch (fueled) mass.",
+  "source_url": "https://nssdc.gsfc.nasa.gov/",
+  "license": "team-authored (CC0); facts paraphrased",
+  "retrieved_utc": "2026-11-14T12:55:00Z",
+  "kind": "table",
+  "units": {
+    "year": "",
+    "mass_kg": "kg"
+  },
+  "data": {
+    "columns": ["id", "name", "agency", "year", "body", "orbit_class", "mass_kg", "objective", "fact", "source_url"],
+    "rows": [
+      ["icecube", "IceCube", "NASA", 2017, "earth", "leo-iss", 4.5, "earth-observation", "A shoebox-sized 3U CubeSat, released from the space station, that flew the first 883 GHz radiometer in orbit and made the first global map of cloud ice at that frequency.", "https://ntrs.nasa.gov/api/citations/20180005634/downloads/20180005634.pdf"],
+      ["terra", "Terra", "NASA", 1999, "earth", "sso", 5190, "earth-observation", "The flagship of NASA's Earth Observing System: five instruments look at the same spot at the same time, measuring land, ocean, air and clouds together.", "https://terra.nasa.gov/about"],
+      ["goes-16", "GOES-16", "NOAA / NASA", 2016, "earth", "geo", 5192, "earth-observation", "A weather satellite that hovers over one spot above the equator, so forecasters see storms over the Americas build minute by minute.", "https://www.nesdis.noaa.gov/GOES-R-Spacecraft"],
+      ["lunar-prospector", "Lunar Prospector", "NASA", 1998, "moon", "lunar", 296.4, "lunar-mapping", "A small, spin-stabilised drum with its instruments on booms. From a low polar orbit it mapped what the Moon's surface is made of and found hints of water ice at the poles.", "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1998-001A"],
+      ["lro", "Lunar Reconnaissance Orbiter", "NASA", 2009, "moon", "lunar", 1846, "lunar-mapping", "Has mapped the Moon in fine detail since 2009, so future landers can pick safe spots. Its camera has even photographed the Apollo landing sites.", "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2009-031A"],
+      ["ladee", "LADEE", "NASA", 2013, "moon", "lunar", 383, "lunar-atmosphere", "Studied the Moon's extremely thin atmosphere and the dust floating above the surface, then ended its mission by crashing into the far side on purpose.", "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2013-047A"],
+      ["grail", "GRAIL (Ebb and Flow)", "NASA", 2011, "moon", "lunar", 202.4, "lunar-mapping", "Twin spacecraft flying one behind the other. Tiny changes in the distance between them mapped the Moon's gravity, and so what lies under its surface. Mass is for each twin.", "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2011-046A"],
+      ["capstone", "CAPSTONE", "NASA", 2022, "moon", "lunar-halo", 25, "technology-demo", "A 12U CubeSat that tested the long, looping halo orbit planned for the Gateway lunar station before any big spacecraft used it.", "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2022-070A"],
+      ["maven", "MAVEN", "NASA", 2013, "mars", "mars-elliptical", 2454, "mars-atmosphere", "Swoops through the top of Mars's atmosphere to learn how the planet lost most of its air, and with it its water, to space.", "https://science.nasa.gov/mission/maven/"],
+      ["mro", "Mars Reconnaissance Orbiter", "NASA", 2005, "mars", "low-mars-orbit", 2180, "mars-ice", "Carries a radar that looks for ice under the ground and a huge dish antenna, so it sends home far more data than earlier Mars orbiters. It also relays data from rovers.", "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2005-029A"],
+      ["mars-odyssey", "2001 Mars Odyssey", "NASA", 2001, "mars", "low-mars-orbit", 725.0, "mars-ice", "Found signs of large amounts of water ice just under the surface near the poles, and has been working at Mars for more than two decades.", "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2001-013A"],
+      ["marco", "MarCO (A and B)", "NASA", 2018, "mars", "flyby", 13.5, "relay", "The first CubeSats in deep space. The twins flew past Mars and relayed news of the InSight lander's touchdown back to Earth. Mass is for each twin.", "https://science.nasa.gov/mission/marco/"]
+    ]
+  }
+}

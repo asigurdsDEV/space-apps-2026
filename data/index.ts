@@ -12,6 +12,7 @@ import commsSystems from './catalogs/comms-systems.json'
 import demo from './scenarios/demo.json'
 import moon from './scenarios/moon.json'
 import mars from './scenarios/mars.json'
+import realMissionsJson from './real-missions.json'
 
 /** Ids of the catalog Datasets, so callers don't hard-code strings. */
 export const CATALOG_IDS = {
@@ -62,6 +63,9 @@ export const catalogs: TableDataset[] = [
 ].map(asTable)
 
 export const scenarios: Config[] = [demo, moon, mars] as Config[]
+
+/** Real missions for the debrief's "your mission is most like…" match. Not a sim Dataset: never pass it to `init`. */
+export const realMissions: TableDataset = asTable(realMissionsJson)
 
 /** All Datasets, for handing to `sim.init(config, datasets)`. */
 export function getDatasets(ids?: Id[]): Dataset[] {
