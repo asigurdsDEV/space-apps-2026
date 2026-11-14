@@ -1,5 +1,7 @@
 # Contracts
 
+**Stack:** TypeScript + Vite + React, static browser app, no backend. See `.agents/decisions/002-stack.md`.
+
 The interfaces between parts of the simulator. Agents must not break these without a decision record.
 Fill this in on day 1 once the stack is picked.
 
