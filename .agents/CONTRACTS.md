@@ -1,6 +1,6 @@
 # Contracts
 
-**Stack:** TypeScript + Vite + React, static browser app, no backend. See `.agents/decisions/002-stack.md`.
+**Stack:** TypeScript + Vite + React, static browser app on GitHub Pages. Online co-op (up to 4) is host-authoritative peer-to-peer over WebRTC (PeerJS), with no server of our own. See `.agents/decisions/002-stack.md`.
 
 The interfaces between parts of the simulator. Agents must not break these without a decision record.
 
@@ -21,10 +21,11 @@ The interfaces between parts of the simulator. Agents must not break these witho
 
 | Module | Folder | Owner | Talks to |
 |--------|--------|-------|----------|
-| data: load NASA datasets, normalize them to `Dataset` | `data/` | unclaimed | sim (hands over `Dataset`s), ui (only for static metadata/credits) |
-| sim: scenario state + step function | `sim/` | unclaimed | receives `Config` + `Dataset`s + `Command`s, emits `SimState` + `SimEvent`s |
+| data: parts catalogs + scenarios as `Dataset`s and `Config`s | `data/` | claude@jamie | sim (hands over `Dataset`s), ui (only for static metadata/credits) |
+| sim: scenario state + step function | `sim/` | claude@ethan | receives `Config` + `Dataset`s + `Command`s, emits `SimState` + `SimEvent`s |
 | ui: render state, take user input | `ui/` | unclaimed | reads `SimState`/`SimEvent`, sends `Command`s |
-| app: glue, main loop, wiring | `app/` | unclaimed | owns the loop that calls sim and hands results to ui |
+| app: glue, main loop, wiring | `app/` | claude@ethan | owns the loop that calls sim and hands results to ui |
+| net: rooms + transport for co-op (PeerJS and same-screen) | `net/` | codex@jamie | app (delivers `NetMessage`s); never imports sim or ui |
 | shared: types/constants from this file | `shared/` | contracts owner (claude@ethan for now) | imported by everyone, depends on nothing |
 
 Folder names are confirmed by decision 002: top-level `data/`, `sim/`, `ui/`, `app/`, `shared/`.
@@ -154,6 +155,44 @@ Scenario-specific commands are allowed. Add a row here when you add one.
 | `phase_changed` | `{ "from": string, "to": string }` | sim | ui (phases: `design`, `cruise`, `operations`, `ended`) |
 | `scenario_ended` | `{ "reason": string, "summary": object }` | sim | ui (results screen) |
 | `warning` | `{ "message": string }` | any | ui (log/toast) |
+
+## Multiplayer (net/)
+
+Decision 002: online co-op for up to 4 players, host-authoritative. The types are in `shared/net.ts`.
+
+- **Only the host's browser runs the sim.** Guests send `Command`s and draw the `SimState` the host sends back. Guests never call `step`.
+- **Identity comes from the connection, not the message.** The transport tells the host which player a message came from, and the host looks up that player's role in its own roster. Nothing in a guest's payload is trusted for identity.
+- **Solo and same-screen play use the same messages** through a local transport, so there is one code path.
+
+`Player` is `{ "player_id": string, "name": string, "role": Role | null, "is_host": boolean }`.
+
+`Role` is one of `mission-planning`, `spacecraft`, `science`, `comms-resources`.
+
+`NetMessage` is `{ "type": "<name>", "payload": { ... } }`:
+
+| type | payload | direction | meaning |
+|------|---------|-----------|---------|
+| `join` | `{ "name": string }` | guest → host | ask to enter the room (refused when 4 players are in) |
+| `claim_role` | `{ "role": Role \| null }` | guest → host | take a free role, or `null` to give yours up |
+| `command` | `{ "command": Command }` | guest → host | a sim Command; the host checks the sender's role first |
+| `leave` | `{}` | guest → host | leaving; the role becomes free |
+| `roster` | `{ "players": Player[] }` | host → all | sent whenever anyone joins, leaves or changes role |
+| `state` | `{ "state": SimState, "events": SimEvent[] }` | host → all | sent after every step |
+| `rejected` | `{ "player_id": string, "reason": string, "command"?: Command }` | host → all | a join, role claim or command was refused; only that player shows it |
+| `ended` | `{}` | host → all | the host closed the room |
+
+### Who may send which Command
+
+Each command has one owning role. A player may send it if they hold that role, **or if nobody in the room holds it**, so 1 to 3 players can still fly a whole mission. The host enforces this with `canSend()` from `shared/net.ts`.
+
+| Role | `set_param` keys it owns | Other commands it owns |
+|------|--------------------------|------------------------|
+| `mission-planning` | `orbit`, `launch_vehicle`, `spacecraft_name`, and any key not listed below | `launch`, `pause`, `resume`, `set_speed`, `reset` |
+| `spacecraft` | `bus`, `power_system` | |
+| `science` | `instruments` | |
+| `comms-resources` | `comms_system`, `ground_stations` | |
+
+`select_entity` is local to each player and is never sent to the host.
 
 ## Mission design mapping (Space Mission Design Game)
 
