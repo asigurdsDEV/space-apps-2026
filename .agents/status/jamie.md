@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 12:25
+**Last updated:** 2026-11-14 12:40
 
 
 ## claude@jamie
@@ -13,9 +13,10 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** jamie-claude/bonus-goal (PR #41 open); jamie-claude/hard-mode (PR #36 open); jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
 
 ### Working on right now
-Nothing claimed.
+[P1] Real missions table (claimed 2026-11-14 12:40): ~10–15 real missions with sourced numbers for the debrief match.
 
 ### Files / folders I'm touching (hands off)
+- `data/real-missions.json` (new) + its loader in `data/index.ts`
 - `ui/gonogo/` until PR #33 merges
 - `data/`, `tests/playthrough.test.ts` until PR #36 merges; PR #41 also edits `data/scenarios/`, `data/index.ts`, `data/README.md`
 - `data/data.test.ts` (to drop its duplicate balance math once the playthrough test covers it)

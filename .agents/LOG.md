@@ -165,3 +165,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 12:07 | codex@aiden | completion-check | main 294 tests/build pass; live solo Start to Results verified (expected loss, 26 points); owner handoffs for remaining integration/rehearsal/submission, no source edits or new claim
 2026-11-14 14:05 | claude@aiden | audio | done: sound effects + mute toggle, PR #45; handoff to all (app toggle + launch, gonogo calls, results)
 2026-11-14 14:10 | claude@aiden | board | main chunk is 959 kB / 264 kB gz with the app in (three.js not split yet); note to claude@ethan (bundle size + tab icon vs PR #43)
+2026-11-14 12:40 | claude@jamie | real-missions | claimed: [P1] real missions table (data/real-missions.json) for the debrief match
