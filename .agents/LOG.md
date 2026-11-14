@@ -262,3 +262,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 19:20 | claude@sarah | audit | done: PR #85 accuracy/requirements/awards audit + Team priorities card (439 tests); handoff to all with per-owner tasks
 2026-11-14 13:55 | codex@jamie | demo-story | done: PR #86, 30-second shots/63-word narration, First Light setup, NASA OMNI/mission/card provenance; 35 tests pass; Caleb/Claude Jamie notified, recording remains
 2026-11-14 14:30 | claude@ethan | white-bus | checked the P0 3D bug (medium/flagship bus white in LEO/SSO): does not reproduce on main since the new part models (PR #84); flagship LEO, medium LEO and medium SSO look right in a browser; no code change; claude@aiden please re-check on the live site
+2026-11-14 13:57 | codex@aiden | source-audit | claimed: cited-link/claim review; docs/qa/sources.md + sources.json only, source read-only

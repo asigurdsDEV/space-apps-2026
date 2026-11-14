@@ -50,27 +50,20 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** main (done coordination); aiden-codex/pilot-input (PR #78); aiden-codex/visual-overhaul-plan (PR #69)
-**Last updated:** 2026-11-14 13:52
+**Branch:** aiden-codex/source-audit
+**Last updated:** 2026-11-14 13:57
 
 ### Working on right now
-
-Read-only GitHub/current-main readiness check completed: PRs #69/#73–#78/#80–#84 merged, zero open PRs at inspection, latest main deploy 43644876990 succeeded (8c0f3cb). Claude's app-walk stays exclusively its own. No implementation claimed. Newest board assigns codex@aiden a P1 source-link/claim audit in docs/qa/sources.md; this is the next independent task, not yet claimed. Optional later V7 UI assembly remains only an offer pending Ethan scope/API agreement.
+Source-link and claim audit assigned by Sarah: inventory every source_url and cited URL in data/, docs/game-design/, ui/learn; HTTP checks plus supporting-claim review, report failures and uncertainties.
 
 ### Files / folders I'm touching (hands off)
-
-No active production edits. PR #78 and #69 are merged; ui/pilot-input remains my module for follow-ups. No production file scope claimed by this assessment. Own coordination only on main. Ethan's source/branches, Claude's section/branches, app/story/HUD/data/sim/shared/config untouched. Unrelated docs/CHALLENGE 2.md untouched.
+New docs/qa/sources.md and docs/qa/sources.json (URL/status/location evidence). Own coordination only; all data/UI/app/sim source read-only. Never edit Claude's section/branches. Unrelated docs/CHALLENGE 2.md untouched.
 
 ### Just finished
-
-PR #78: plain craft-relative movement/brake/held-interaction intent, one-shot interaction callback, keyboard/native buttons/independent pointer sources, Escape/focus/blur/hidden/disabled/unmount release. Published labels and scan timing semantics to match Sarah's PR #76. Standalone themed preview; 364 tests, typecheck/build, size 125.1 kB gzip /150 pass before latest asset-only main merge; final merged head also covered by CI when green.
-
-Browser: keyboard press/release/repeat, Enter/Space buttons, outside text typing, pointer hold/drag-off, Escape/Tab, pause/unmount, dark/light and 390px no overflow. Clean final scan preview has no console errors. PR #69 decision renumbered 006, linked 005, latest room assignment reconciled.
+V1 PR #78 and plan #69 merged. Current audit claim is independent of Claude's app-walk and Ethan/Jamie's 3D work.
 
 ### Missing / I need from someone
-
-V7 owners must mount controls with scene movement/aiming and V2/V4 route feedback; use held intent for scan duration, not the press callback. Real multi-touch, held-input window-hidden transitions, screen reader and integrated 3D flight remain unverified. Kaipo's GLBs are now on main; PWA cache adoption remains Claude's task.
+Source owners will fix links/claims from report; HTTP 200 alone does not validate scientific numbers. No source changes included in this report task.
 
 ### Heads up for other agents
-
-Use PILOT_CONTROLS for final hints; intent.interact OR HUD scan hold drives local timing with pause/exit clearing both. No scored or network commands invented. Ethan remains merge coordinator. V6/rooms now one Claude Aiden task (1555 handoff); Caleb owns cutscenes. Source-link audit is now explicitly owned by codex@aiden and can be claimed separately. Jamie has Ethan’s approval for Moon/Mars shaders. My optional V7 shell offer remains pending; do not infer ownership transfer.
+Sol handles this audit. No new model/design work; Astra can be used later for that workflow. Claim push precedes report work.
