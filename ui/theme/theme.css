@@ -1,0 +1,143 @@
+/* Import once in app/. Screen owners can reuse tokens without adopting classes. */
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+  --game-bg: #0b1020;
+  --game-panel: #141b33;
+  --game-surface: #1e2945;
+  --game-text: #edf1fa;
+  --game-muted: #b5c2df;
+  --game-border: #607397;
+  --game-accent: #b1caff;
+  --game-on-accent: #101b32;
+  --game-selected: #233354;
+  --game-success: #63dbad;
+  --game-warning: #ffda8a;
+  --game-danger: #ffabbc;
+  --game-focus: #ffda8a;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --game-bg: #f4f6fb;
+    --game-panel: #ffffff;
+    --game-surface: #e9eef8;
+    --game-text: #17243c;
+    --game-muted: #4b5c78;
+    --game-border: #75839a;
+    --game-accent: #2557c7;
+    --game-on-accent: #ffffff;
+    --game-selected: #e1eaff;
+    --game-success: #146644;
+    --game-warning: #805200;
+    --game-danger: #b32341;
+    --game-focus: #2557c7;
+  }
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --game-bg: #f4f6fb;
+  --game-panel: #ffffff;
+  --game-surface: #e9eef8;
+  --game-text: #17243c;
+  --game-muted: #4b5c78;
+  --game-border: #75839a;
+  --game-accent: #2557c7;
+  --game-on-accent: #ffffff;
+  --game-selected: #e1eaff;
+  --game-success: #146644;
+  --game-warning: #805200;
+  --game-danger: #b32341;
+  --game-focus: #2557c7;
+}
+
+:root {
+  --game-font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --game-font-mono: ui-monospace, SFMono-Regular, Consolas, monospace;
+  --game-space-1: 0.25rem;
+  --game-space-2: 0.5rem;
+  --game-space-3: 0.75rem;
+  --game-space-4: 1rem;
+  --game-space-6: 1.5rem;
+  --game-space-8: 2rem;
+  --game-radius: 0.75rem;
+  --game-radius-control: 0.5rem;
+}
+
+.game-theme {
+  background: var(--game-bg);
+  color: var(--game-text);
+  font: 1rem/1.5 var(--game-font);
+  overflow-wrap: anywhere;
+}
+
+.game-theme,
+.game-theme *,
+.game-theme *::before,
+.game-theme *::after { box-sizing: border-box; }
+
+.game-theme :where(h1, h2, h3) { line-height: 1.2; text-wrap: balance; }
+.game-theme :where(a) { color: var(--game-accent); text-underline-offset: 0.2em; }
+.game-theme :where(button, input, select, textarea) { font: inherit; accent-color: var(--game-accent); }
+.game-theme :where(:focus-visible) { outline: 3px solid var(--game-focus); outline-offset: 3px; }
+
+.game-panel {
+  min-width: 0;
+  padding: var(--game-space-6);
+  border: 1px solid var(--game-border);
+  border-radius: var(--game-radius);
+  background: var(--game-panel);
+}
+
+.game-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--game-space-2);
+  min-height: 44px;
+  padding: var(--game-space-2) var(--game-space-4);
+  border: 1px solid var(--game-border);
+  border-radius: var(--game-radius-control);
+  background: var(--game-panel);
+  color: var(--game-text);
+  font: inherit;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+}
+.game-button--primary { background: var(--game-accent); color: var(--game-on-accent); border-color: var(--game-accent); }
+.game-button:not(:disabled):hover { outline: 1px solid var(--game-accent); outline-offset: 1px; }
+.game-button[aria-pressed="true"] { background: var(--game-selected); color: var(--game-text); border-color: var(--game-accent); }
+.game-button:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.game-field {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  margin-top: var(--game-space-2);
+  padding: var(--game-space-2) var(--game-space-3);
+  border: 1px solid var(--game-border);
+  border-radius: var(--game-radius-control);
+  background: var(--game-bg);
+  color: var(--game-text);
+  font: inherit;
+}
+.game-field::placeholder { color: var(--game-muted); opacity: 1; }
+.game-field[aria-invalid="true"] { border-color: var(--game-danger); }
+.game-field:disabled { opacity: 0.55; cursor: not-allowed; }
+.game-muted { color: var(--game-muted); }
+.game-eyebrow { color: var(--game-accent); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.game-stat { font-variant-numeric: tabular-nums; }
+.game-success { color: var(--game-success); }
+.game-warning { color: var(--game-warning); }
+.game-danger { color: var(--game-danger); }
+
+@media (prefers-reduced-motion: reduce) {
+  .game-theme *, .game-theme *::before, .game-theme *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
