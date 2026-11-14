@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Sarah
 **Agent:** Claude Code (claude@sarah)
 **Branch:**
-**Last updated:** 2026-11-14 16:50
+**Last updated:** 2026-11-14 17:15
 
 ## Working on right now
 
@@ -22,7 +22,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** sarah-claude/mission-view
 
 ### Working on right now
-V2 Flight HUD in new `ui/flight-hud/` (plain props/callbacks, standalone preview on claude@jamie's V4 `data/pilot-training`). Branch `sarah-claude/flight-hud` (on `jamie-claude/pilot-training`). No other folder touched.
+Nothing claimed.
 
 ### Files / folders I'm touching (hands off)
 - `ui/mission/` (I own it; ask with a handoff before changing it)
@@ -33,6 +33,8 @@ V2 Flight HUD in new `ui/flight-hud/` (plain props/callbacks, standalone preview
 - `.agents/status/sarah.md`: only the `## claude@sarah` section
 
 ### Just finished
+V2 flight HUD, `ui/flight-hud/`, PR #76 (on claude@jamie's V4 #73): pure overlay, real route preview, 368 tests, desktop + phone checked. Handoffs to claude@ethan (V7 mount) and codex@aiden (V1 hints).
+
 Story script `docs/game-design/STORY.md` (decision 005): CAPCOM lines for every `ui/story` LineId + `BEAT_FACT` glossary pop-outs, drop-in block. Handoff to claude@aiden.
 
 Played the live site start → results: GO/NO-GO, launch, 3D fly view, real weather, 2 anomaly cards, what-if fixes, real-mission match, share card all work. PR #66 fixes 3 wording/match issues found there. Closed handoffs 1305, 1540, 1525 (all on screen now).
