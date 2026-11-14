@@ -3,7 +3,7 @@
 // The screens only get props. Everything about who runs the game is behind `Session` (app/session.ts),
 // so solo, same-screen, host and guest play all use the same screens.
 
-import { useEffect, useRef, useState, type ComponentType, type FormEvent } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type ComponentType, type FormEvent } from 'react'
 import { DIFFICULTIES, getDatasets, getScenario, scenarios, withDifficulty, type Difficulty } from '../data'
 import { LocalTransport } from '../net'
 import type { Config, NetMessage, SimEvent, SimState, Summary } from '../shared'
@@ -21,6 +21,7 @@ import { BuilderTutorial } from '../ui/tutorial'
 import '../ui/theme/theme.css'
 import '../ui/learn/learn.css'
 import { Crew, Notice, RoomCode } from './Crew'
+import { ErrorBoundary } from './ErrorBoundary'
 import { startDriver, timerClock } from './driver'
 import { createGame, type Game } from './game'
 import { cleanRoomCode, openRoom } from './room'
@@ -148,11 +149,14 @@ export function App() {
     active?.session.close()
     setActive(null)
   }
+  useScrollToTop(active ? 'room' : 'start')
 
   return (
     <div className="game-theme app">
       {active ? (
-        <Room active={active} onExit={exit} />
+        <ErrorBoundary resetKey={active} actions={[{ label: 'Main menu', run: exit }]}>
+          <Room active={active} onExit={exit} />
+        </ErrorBoundary>
       ) : (
         <>
           <StartScreen
@@ -223,6 +227,7 @@ export function Room({ active, onExit }: { active: Active; onExit: () => void })
   const { stage, notice, state, players, me } = useSession(session)
   /** Each player reads the briefing on their own screen and goes on when they are ready. */
   const [briefed, setBriefed] = useState(false)
+  useScrollToTop(stage === 'lobby' || stage === 'closed' ? stage : !briefed && state.metrics.phase === 'design' ? 'briefing' : 'game')
 
   if (stage === 'lobby') {
     return (
@@ -275,6 +280,8 @@ export function GameScreen({ session, config, onExit, roomCode, daily }: GameScr
   const snapshot = useSession(session)
   const { state, notice, players, me } = snapshot
   const designing = state.metrics.phase === 'design'
+  useScrollToTop(designing ? 'design' : 'flight')
+  const backToBuilder = () => session.send({ type: 'reset', payload: {} })
 
   return (
     <div {...(designing ? { className: 'app-page' } : DARK_ONLY)}>
@@ -297,14 +304,29 @@ export function GameScreen({ session, config, onExit, roomCode, daily }: GameScr
         </button>
       </header>
       <Notice session={session} notice={notice} />
-      {designing ? (
-        <Design session={session} />
-      ) : (
-        // Unmounts on reset, so every launch starts it fresh.
-        <Flight session={session} config={config} daily={daily} />
-      )}
+      <ErrorBoundary
+        resetKey={designing}
+        actions={[
+          { label: 'Back to the builder', run: backToBuilder },
+          { label: 'Main menu', run: onExit },
+        ]}
+      >
+        {designing ? (
+          <Design session={session} />
+        ) : (
+          // Unmounts on reset, so every launch starts it fresh.
+          <Flight session={session} config={config} daily={daily} />
+        )}
+      </ErrorBoundary>
     </div>
   )
+}
+
+/** Every new screen starts at the top of the page; without this the old scroll position carried over. */
+function useScrollToTop(screen: string) {
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0)
+  }, [screen])
 }
 
 /** A ref that never changes, so React calls it once, when the element appears. */
@@ -315,6 +337,7 @@ function Design({ session }: { session: Session }) {
   const { state, players, me } = useSession(session)
   /** The builder's Launch button opens the poll; the poll's Launch button sends the command. */
   const [polling, setPolling] = useState(false)
+  useScrollToTop(polling ? 'poll' : 'builder')
 
   if (polling) {
     return (
