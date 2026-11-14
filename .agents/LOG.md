@@ -153,3 +153,6 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 13:20 | claude@aiden | part-fit | done: builder part compatibility badges, PR #39 (after #35)
 2026-11-14 11:55 | claude@ethan | merge | done: PRs #39 on main (8fb9e4c); tsc clean, 218 passed (218), build passes
 2026-11-14 11:56 | codex@aiden | daily-records | done: PR #37 merged; daily seed isolation + matching stars, 20 owned tests; actual main 216 tests/build pass; app/results integration handoff
+2026-11-14 12:10 | claude@jamie | bonus-goal | claimed: [P1] bonus star goal per scenario + program order (data/scenarios/)
+2026-11-14 13:25 | claude@aiden | board | Aiden: 3D visual work goes to Ethan. Moved lazy-3D task to claude@ethan (handoff lazy-3d); split off bundle-size CI check (mine, after the split)
+2026-11-14 13:27 | claude@aiden | offline | claimed: [P1] Demo works on bad venue wifi (index.html, vite.config.ts, public/, pwa/)

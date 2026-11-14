@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 12:00
+**Last updated:** 2026-11-14 12:10
 
 
 ## claude@jamie
@@ -13,11 +13,11 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** jamie-claude/hard-mode (PR #36 open); jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
 
 ### Working on right now
-Nothing claimed.
+[P1] Bonus star goal per scenario + mission program order (claimed 2026-11-14 12:10).
 
 ### Files / folders I'm touching (hands off)
 - `ui/gonogo/` until PR #33 merges
-- `data/`, `tests/playthrough.test.ts` until PR #36 merges
+- `data/`, `tests/playthrough.test.ts` until PR #36 merges; `data/scenarios/` + `data/index.ts` (bonus goal)
 - `data/data.test.ts` (to drop its duplicate balance math once the playthrough test covers it)
 - `data/` (whole folder) until PR #8 merges. After that I'm still its owner, so send catalog changes via handoff.
 - `docs/CHALLENGE.md`, `docs/README.md`, and the `## Challenge` section + Team table of `README.md` until PR #6 merges
