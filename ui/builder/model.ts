@@ -109,15 +109,23 @@ type BarSpec = { resource: string; label: string; used: (m: Metrics) => unknown;
 const num = (k: string) => (m: Metrics) => m[k]
 const BAR_SPECS: BarSpec[] = [
   { resource: 'mass', label: 'Launch mass', used: num('mass_kg'), limit: 'mass_limit_kg', unit: 'kg' },
-  { resource: 'mass', label: 'Bus capacity', used: num('payload_mass_kg'), limit: 'payload_limit_kg', unit: 'kg' },
+  { resource: 'mass', label: 'Bus capacity', used: num('added_mass_kg'), limit: 'added_mass_limit_kg', unit: 'kg' },
   { resource: 'power', label: 'Power', used: num('power_w'), limit: 'power_available_w', unit: 'W' },
+  // A goal: the battery has to hold at least one eclipse's worth of energy.
+  { resource: 'power', label: 'Battery vs. one eclipse', used: num('battery_wh'), limit: 'battery_needed_wh', unit: 'Wh', goal: true, skipZeroLimit: true },
   { resource: 'budget', label: 'Budget', used: num('cost_usd'), limit: 'budget_usd', unit: 'USD' },
   { resource: 'data', label: 'Data made vs. downlink', used: num('data_generated_gb_per_day'), limit: 'downlink_gb_per_day', unit: 'GB/day' },
   { resource: 'time', label: 'Schedule', used: num('schedule_months'), limit: 'deadline_months', unit: 'months', skipZeroLimit: true },
   {
     resource: 'science',
     label: 'Science (projected)',
-    used: (m) => (typeof m.science_per_day === 'number' && typeof m.mission_days === 'number' ? m.science_per_day * m.mission_days : undefined),
+    // The sim's forecast includes the radio bottleneck and fading power; the product is only a fallback.
+    used: (m) =>
+      typeof m.science_expected === 'number'
+        ? m.science_expected
+        : typeof m.science_per_day === 'number' && typeof m.mission_days === 'number'
+          ? m.science_per_day * m.mission_days
+          : undefined,
     limit: 'science_goal',
     unit: 'pts',
     goal: true,
@@ -226,6 +234,7 @@ const TERMS: Record<string, string> = {
   'Launch mass': 'payload-capacity',
   Power: 'power-budget',
   'Data made vs. downlink': 'downlink',
+  'Battery vs. one eclipse': 'eclipse',
 }
 
 /** Glossary id (ui/learn) for a column, slot key or budget label, if that word gets a tooltip. */
