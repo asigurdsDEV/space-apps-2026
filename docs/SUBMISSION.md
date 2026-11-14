@@ -24,11 +24,11 @@ The play path on the live site is Start, Briefing, Build, GO/NO-GO, launch, Fly,
 
 NASA CubeSat and small-spacecraft references informed the mission-design concepts. Part masses, prices, power, data rates, and science scores in the catalogs are team-authored educational approximations, not quotations from a NASA price list.
 
-The game does ship one measured NASA dataset. Daily space weather from 1996 through 2026 is built from NASA SPDF OMNI2 hourly files and bundled in `data/space-weather/`. Play does not call a NASA API. Kp, Dst, F10.7, and sunspot numbers inside that file come from GFZ Potsdam, WDC Kyoto, NRCan, and SILSO, as credited in `data/space-weather/build.mjs`.
+The game does ship one measured NASA dataset. Daily space weather from 1996 through 2026 is built from NASA SPDF OMNI2 hourly files and bundled in `data/space-weather/`. It drives play: each mission replays a real stretch of dates, and solar-storm anomalies hit on the days real strong storms (NOAA G3+) happened, naming the date. Play does not call a NASA API. Kp, Dst, F10.7, and sunspot numbers inside that file come from GFZ Potsdam, WDC Kyoto, NRCan, and SILSO, as credited in `data/space-weather/build.mjs`.
 
 Real-mission rows in `data/real-missions.json` and the anomaly-card stories in `sim/cards.ts` each cite a page for the fact they tell. The game does not run the General Mission Analysis Tool and does not claim GMAT-validated trajectories.
 
-**Form sentences:** "NASA CubeSat and small-spacecraft references informed the mission-design concepts. The prototype uses team-authored educational catalogs to make resource trade-offs playable. Space weather in the mission is measured NASA OMNI data, bundled with the game. Real-mission matches and anomaly stories cite the pages in References."
+**Form sentences:** "NASA CubeSat and small-spacecraft references informed the mission-design concepts. The prototype uses team-authored educational catalogs to make resource trade-offs playable. Space weather in the mission is measured NASA OMNI data, bundled with the game, and solar storms hit on the real days they happened. Real-mission matches and anomaly stories cite the pages in References."
 
 ## AI-use note
 
@@ -59,7 +59,7 @@ Record the live link. If `docs/PITCH.md` on `main` already has codex@jamie's 30-
 | 0:00–0:05 | Open the live site and start First Light. | "Students design a space mission and see the trade-off." |
 | 0:05–0:18 | The builder. Point at the downlink warning on the starting design. | "This camera makes more data than the radio can send home." |
 | 0:18–0:26 | Launch, then the results text. | "The result says why. Science counts only after the data gets home." |
-| 0:26–0:30 | Leave a real weather date or a real-mission match on screen if one is showing. | "Space weather is measured NASA data. The part catalog is ours." |
+| 0:26–0:30 | The storm card on a real storm day (First Light seed 1: G4, 7 Sep 2017), or a real-mission match. | "That storm really happened. Space weather is measured NASA data. The part catalog is ours." |
 
 If online co-op has not passed its four-device rehearsal, do not spend the 30 seconds on a room. Do not promise that a dropped host reconnects.
 
