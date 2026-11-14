@@ -3,7 +3,7 @@
 import { describe, it, expect } from 'vitest'
 import type { Command, Config, ParamValue, SimEvent, SimState } from '../shared'
 import { init, step } from '../sim'
-import { getDatasets, getScenario } from '../data'
+import { DIFFICULTIES, getDatasets, getScenario, type Difficulty } from '../data'
 
 const MAX_STEPS = 10_000 // far beyond any mission length; stops a stuck sim from hanging the test
 
@@ -24,8 +24,8 @@ function play(config: Config, design: Record<string, ParamValue> = {}) {
 }
 
 // Judge the design, not luck: no launch failure, bus failure or random events.
-const sandbox = (id: string): Config => {
-  const c = getScenario(id)!
+const sandbox = (id: string, level: Difficulty = 'normal'): Config => {
+  const c = getScenario(id, level)!
   return { ...c, params: { ...c.params, random_failures: false } }
 }
 
@@ -37,12 +37,17 @@ const WINS: Record<string, Record<string, ParamValue>> = {
 }
 
 describe('playthrough (real sim + real data)', () => {
-  it.each(Object.keys(WINS))('%s: the reference design wins', (id) => {
-    const r = play(sandbox(id), WINS[id])
-    expect(r.designIssues).toEqual([])
-    expect(r.launched).toBe(true)
-    expect(r.ended?.payload).toMatchObject({ reason: 'success' })
-  })
+  // Budget and science goal change with difficulty, so the same reference design must still win at every level.
+  const LEVELS = Object.keys(DIFFICULTIES) as Difficulty[]
+  it.each(Object.keys(WINS).flatMap((id) => LEVELS.map((level) => [id, level] as const)))(
+    '%s (%s): the reference design wins',
+    (id, level) => {
+      const r = play(sandbox(id, level), WINS[id])
+      expect(r.designIssues).toEqual([])
+      expect(r.launched).toBe(true)
+      expect(r.ended?.payload).toMatchObject({ reason: 'success' })
+    },
+  )
 
   it.each(Object.keys(WINS))('%s: the starting design does not win', (id) => {
     const r = play(sandbox(id))
