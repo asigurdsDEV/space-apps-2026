@@ -100,6 +100,11 @@ async function until(read, ok, what, ms = 8000) {
 
 const text = (page, selector) => page.locator(selector).first().innerText().then((t) => t.replace(/\s+/g, ' ').trim(), () => '')
 const picked = (page, id) => page.locator(`#mb-${id}:checked`).waitFor()
+/** Pick a part and wait until this player's screen shows it picked (a guest's pick goes to the host and back first). */
+const pick = async (page, id) => {
+  if (!(await page.locator(`#mb-${id}`).isChecked())) await page.locator(`#mb-${id}`).click()
+  await picked(page, id)
+}
 /** Every part picked in the builder, and every budget bar's numbers. */
 const design = async (page) =>
   [
@@ -108,7 +113,8 @@ const design = async (page) =>
   ]
     .join(' | ')
     .replace(/\s+/g, ' ')
-const slotOf = (page, key) => page.locator('fieldset.mb-slot', { has: page.locator(`input[name="${key}"]`) })
+/** Is the builder section that holds `key` locked (a disabled fieldset)? */
+const locked = async (page, key) => (await page.locator('fieldset.mb-slot:disabled', { has: page.locator(`input[name="${key}"]`) }).count()) === 1
 /** The id (after "mb-") of an option of `key` that is not picked now. */
 const another = (page, key) => page.locator(`input[name="${key}"]:not(:checked)`).first().getAttribute('id').then((id) => id.slice(3))
 
@@ -214,22 +220,22 @@ await check(
 // Hana holds Mission planning (orbit, launch vehicle, launch), Gus holds Science (instruments).
 // Nobody holds Spacecraft (bus, power, battery) or Comms (radio).
 await check('roles: the guest changes the part its role owns and the host sees it', async () => {
-  await guest.locator(`#mb-instruments-${WIN.instrument}`).check()
+  await pick(guest, `instruments-${WIN.instrument}`)
   await picked(host, `instruments-${WIN.instrument}`)
 })
 
 await check('roles: the host changes the part its role owns and the guest sees it', async () => {
   const before = await host.locator('input[name="orbit"]:checked').getAttribute('id')
   const other = await another(host, 'orbit')
-  await host.locator(`#mb-${other}`).check()
+  await pick(host, other)
   await picked(guest, other)
-  await host.locator(`#${before}`).check()
+  await pick(host, before.slice(3))
   await guest.locator(`#${before}:checked`).waitFor()
 })
 
 await check('roles: another player’s part is locked in the builder, with a readable reason', async () => {
   for (const [page, key, owner] of [[guest, 'orbit', 'Hana'], [guest, 'launch_vehicle', 'Hana'], [host, 'instruments', 'Gus']]) {
-    must(await slotOf(page, key).isDisabled(), `${key} is not locked for the player who does not own it`)
+    must(await locked(page, key), `${key} is not locked for the player who does not own it`)
     const reason = await text(page, `fieldset.mb-slot:has(input[name="${key}"]) .mb-lock`)
     must(new RegExp(`^Only ${owner} \\(.+\\) can change this`).test(reason), `${key}: the lock says "${reason}"`)
   }
@@ -257,14 +263,14 @@ await check('roles: the host is refused on the guest’s part too, with a readab
 
 await check('roles: a part whose role nobody claimed can be changed by anyone', async () => {
   for (const key of ['bus', 'solar', 'comms']) {
-    must(await slotOf(host, key).isEnabled(), `${key} is locked for the host`)
-    must(await slotOf(guest, key).isEnabled(), `${key} is locked for the guest`)
+    must(!(await locked(host, key)), `${key} is locked for the host`)
+    must(!(await locked(guest, key)), `${key} is locked for the guest`)
   }
-  await guest.locator(`#mb-bus-${WIN.bus}`).check()
+  await pick(guest, `bus-${WIN.bus}`)
   await picked(host, `bus-${WIN.bus}`)
-  await host.locator(`#mb-comms-${WIN.comms}`).check()
+  await pick(host, `comms-${WIN.comms}`)
   await picked(guest, `comms-${WIN.comms}`)
-  await guest.locator(`#mb-solar-${WIN.solar}`).check()
+  await pick(guest, `solar-${WIN.solar}`)
   await picked(host, `solar-${WIN.solar}`)
 })
 
@@ -320,7 +326,7 @@ await check('leave: the guest leaves and the host keeps playing', async () => {
   await host.getByRole('button', { name: /Design a new mission/ }).click()
   await host.waitForSelector('.mb')
   // Science is free again, so the host can pick instruments now.
-  await host.locator(`#mb-instruments-${WIN.instrument}`).check()
+  await pick(host, `instruments-${WIN.instrument}`)
   must((await text(host, '.app-notice')) === '', `the host got: "${await text(host, '.app-notice')}"`)
 })
 
@@ -337,6 +343,7 @@ await check('room: a third and a fourth player join', async () => {
 
 await check('room: a fifth player is told the room is full', async () => {
   const fifth = await open('fifth')
+  const asked = Date.now()
   await join(fifth, 'Kai', code)
   const shown = fifth.locator('.ss-error, .app-closed, .ls-error, .bf, .ls-root')
   await shown.first().waitFor({ timeout: 40_000 }).catch(() => {
@@ -344,7 +351,7 @@ await check('room: a fifth player is told the room is full', async () => {
   })
   must((await fifth.locator('.bf, .ls-root').count()) === 0, 'the fifth player got into the room')
   const message = await text(fifth, '.ss-error, .app-closed, .ls-error')
-  must(/full/i.test(message), `the message does not say the room is full: "${message}"`)
+  must(/full/i.test(message), `after ${Math.round((Date.now() - asked) / 1000)} s the message does not say the room is full: "${message}"`)
   return message
 })
 
@@ -373,7 +380,7 @@ await check(
     must((await local.locator('fieldset.mb-slot:disabled').count()) === 0, 'a section is locked')
     // One part from each role: planning, spacecraft (twice), science, comms.
     for (const id of [await another(local, 'launch_vehicle'), 'launch_vehicle-rideshare', `bus-${WIN.bus}`, `solar-${WIN.solar}`, `instruments-${WIN.instrument}`, `comms-${WIN.comms}`]) {
-      await local.locator(`#mb-${id}`).check()
+      await pick(local, id)
       must((await text(local, '.app-notice')) === '', `picking ${id} was answered with "${await text(local, '.app-notice')}"`)
     }
   },
