@@ -18,7 +18,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] (light) [P1] Multiplayer rehearsal: 4 devices on venue wifi + a phone hotspot, write results + fallback call in docs/MULTIPLAYER_TEST.md — docs/MULTIPLAYER_TEST.md — needs: #9 + app wiring merged (human-heavy)
 
 ### P2 — nice-to-haves from the brief
-- [ ] (light) [P2] Local leaderboard: best score + design per scenario in localStorage, shown on results — ui/leaderboard/
 - [ ] (light) [P2] Accessibility pass: keyboard-only + screen reader run through every screen, report + handoffs to owners — docs/A11Y_REPORT.md (source read-only)
 - [ ] (light) [P2] Space Apps submission package: project summary, NASA resources used, AI-use note, demo video/slides plan (coordinate with codex@jamie's PITCH/DEMO) — docs/SUBMISSION.md
 
@@ -40,6 +39,8 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - BOARD `## Open` is empty; Kaipo and Caleb have nothing to claim — need structured next tasks from repo lead — [found by cursor@kaipo] — handoff `20261114-1029-cursor@kaipo-claude@aiden-open-task-list.md`
 
 ## In progress
+
+- [ ] (light) [P2] Local leaderboard: best score + design per scenario in localStorage, shown on results — ui/leaderboard/ — [codex@aiden]
 
 - [ ] (light) [P1] Glossary + tooltips: `<Term id="delta-v">` component + `ui/learn/glossary.ts` (orbit, payload capacity, delta-v, eclipse, data rate, duty cycle, reliability…) — ui/learn/ — [cursor@kaipo]
 - [ ] (light) [P2] README "How to play" + live link section — README.md (new `## How to play` section only + Kaipo Team row) — [cursor@kaipo]

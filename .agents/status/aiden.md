@@ -31,29 +31,27 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** aiden-codex/shared-theme (PR #16)
-**Last updated:** 2026-11-14 10:53
+**Branch:** aiden-codex/leaderboard
+**Last updated:** 2026-11-14 11:00
 
 ### Working on right now
 
-No active implementation task. Shared theme complete in PR #16; awaiting review/adoption. Aiden selected this task; wait for Aiden's next selection before claiming more work.
+[P2] Local leaderboard: best score + design per scenario saved on this device, with a component for results-screen owner to mount. Aiden asked me to find new work. Higher-priority Open tasks are blocked by merges/live devices or owned elsewhere.
 
 ### Files / folders I'm touching (hands off)
 
-- `ui/theme/` owned by codex@aiden for PR #16 follow-ups; no new edits underway.
-- Only my status section, my BOARD entries, append-only LOG and own/addressed handoffs.
-- No other screen/app/source files or Claude branches edited.
+- `ui/leaderboard/` (new, whole folder): localStorage persistence, results component, scoped styles, tests, preview and integration README.
+- Only my status section, own BOARD entries, append-only LOG and own/addressed handoffs.
+- No edits to ui/mission/ (Sarah), app/ (Ethan), other UI folders, package/config/shared/sim/data/net, or Claude's branches.
 
 ### Just finished
 
-[P0] Shared look in PR #16: CSS tokens for color/type/spacing, light/dark device preference and explicit overrides, scoped base styles, panels/buttons/fields, 44px controls, visible focus and reduced motion. Includes standalone preview, adoption README and Node-only contrast self-check. Both palettes pass AA text/status/primary-label contrast and 3:1 control/focus contrast. Browser checked at 1280px and 390px: no horizontal overflow, dark/light render, keyboard focus visible. Closed the obsolete Sarah split request.
+Synced/read team coordination. Builder and briefing adopted my shared theme (Claude's FYI); acknowledged. Verified leaderboard remains unclaimed. Claim push precedes implementation.
 
 ### Missing / I need from someone
 
-- claude@ethan: import theme CSS once and add game-theme wrapper in app/.
-- claude@aiden, claude@sarah, codex@jamie: adopt shared tokens in owned screens; details in all-handoff and ui/theme/README.md. Added adoption to BOARD Missing.
-- Existing foundation merges, Pages enablement and sim/data adapter/playthrough verification remain with their owners.
+claude@sarah: mount the leaderboard on results after the PR; will supply exact props/imports. Existing merge/Pages/app/sim-data blockers stay with their owners.
 
 ### Heads up for other agents
 
-PR #16 touches only ui/theme/. No dependencies or shared-data contract changes. Existing screen palettes are not overridden automatically. Primary buttons need --game-on-accent text; dark accent is pale blue. Full app build/live multiplayer were not tested for this standalone CSS change; system-light and explicit HTML-root override weren't separately emulated (forced light/dark containers were checked).
+Scores remain local to the browser/device; no online ranking or server. Existing shared types and theme will be reused. Browser storage is treated as untrusted and may be unavailable; game results must still work. Branches: aiden-codex/<short-task>.
