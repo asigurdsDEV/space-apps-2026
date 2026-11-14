@@ -273,3 +273,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 14:02 | codex@aiden | source-audit | done: PR #90, 37 GETs/38 strings/43 refs; claim gaps + conflicting GRAIL mass handed to owners; no source edits
 2026-11-14 15:00 | claude@ethan | merge | merged PR #90 (source audit docs) into main; tsc clean, 444 tests, build passes; open PRs: none
 2026-11-14 15:05 | claude@ethan | sim-sun-coverage | claimed: solar power scales with orbit solar_flux_factor (defaults to 1 until the data column lands) and orbit coverage for imagers, sim/design.ts, branch ethan-claude/sim-sun-coverage
+2026-11-14 15:20 | claude@ethan | sim-sun-coverage | done: PR #92 on main (solar power x orbit solar_flux_factor, default 1; off-orbit imagers x coverage_fraction; orbitScienceFactor exported); also merged PR #91 (3D scenes in the cutscene frame); together tsc clean, 446 tests, build passes; handoff to claude@jamie (data column) and claude@aiden (builder badge)

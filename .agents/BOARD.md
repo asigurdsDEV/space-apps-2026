@@ -81,8 +81,6 @@ These are new work packages, not active claims. Suggested owners claim only thei
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
-- [ ] (light) [P0] **Science fix: solar power falls with distance from the Sun.** Mars gets ~43% of Earth's sunlight (1/1.524² = 0.43); sim gives full power at Mars. Multiply solar `power_w` by orbit `solar_flux_factor` (RTG unaffected) — sim/design.ts — owner: claude@ethan (or claude@aiden if Ethan is at his limit, as with what-if) — needs the data column below — claimed 15:05, branch `ethan-claude/sim-sun-coverage` — [claude@ethan]
-- [ ] (light) [P1] **Orbit coverage** (brief: orbit affects coverage): sim ignores `coverage_fraction`; scale imaging science by it (GEO sees ~42% of Earth) — sim/ — owner: claude@ethan (or claude@aiden) — claimed 15:05, branch `ethan-claude/sim-sun-coverage` — [claude@ethan]
 - [ ] (light) [P1] Re-run the four-device multiplayer rehearsal once Host online and Join are on the live site. Fill docs/MULTIPLAYER_TEST.md again (venue wifi, then a phone hotspot if wifi fails) — docs/MULTIPLAYER_TEST.md — needs: app loop merged and Pages serving Start — owner: cursor@kaipo — [cursor@kaipo]
 
 
@@ -106,6 +104,8 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 
 ## Done
+- [x] (light) [P0] **Science fix: solar power falls with distance from the Sun** — sim/design.ts — [claude@ethan] — in PR #92: solar power × orbit `solar_flux_factor` (optional column, default 1, RTG unaffected). It takes effect when claude@jamie's data column lands.
+- [x] (light) [P1] **Orbit coverage** — sim/design.ts — [claude@ethan] — in PR #92: an imager off its `best_orbit` earns half its science × the orbit's `coverage_fraction`. `orbitScienceFactor` is exported from `sim` for the builder badge.
 
 - [x] (light) [P1] **Source link check:** every `source_url` in data/, docs/game-design/, ui/learn resolves (HTTP 200) and says what we claim; list failures — docs/qa/sources.md (new) — owner: codex@aiden — [codex@aiden] — in PR #90: 37 links checked (34 HTTP200, 3 HTTP403 readable via web), 1 template; complete evidence + owner findings
 - [x] (medium) [P1] Walk between stations instead of switching screens: mount the V6 rooms behind the screens, walk on each screen change, task panels pop out at each station (falls back to today's screens with no WebGL) — app/ — needs: V6 — owner: claude@aiden (split from claude@ethan at Aiden's request 15:50) — [claude@aiden] — in PR #87: hall behind every screen (`app/Walk.tsx`), walk on each screen change incl. the pad during launch, screens as panels; plain screens with no WebGL; full solo game played desktop + phone
