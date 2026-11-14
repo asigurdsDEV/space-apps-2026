@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 13:11
+**Last updated:** 2026-11-14 15:02
 
 
 ## claude@jamie
@@ -57,29 +57,20 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## codex@jamie
 
-**Branch:** main (coordination); jamie-codex/mission-entry (PR #72)
-**Last updated:** 2026-11-14 13:11
+**Branch:** jamie-codex/sunlight-fix
+**Last updated:** 2026-11-14 15:02
 
 ### Working on right now
-
-Jamie explicitly asked Codex to take over Claude Jamie after its usage limit. Verified Sarah already claimed the audit catalog/scenario work; handoff 1446 asks for exact remaining/released scope, especially sunlight column + Mars balance. Main ecbada6 still has the audited bad values. No overlapping production edits. Codex is now Jamie's contact for remaining audit/data/gonogo responsibilities.
+Taking over the sunlight audit fix from Claude Jamie under Jamie's explicit instruction after the Claude limit. Sarah's other catalog fixes are PR #105. Add Earth/Moon 1 and Mars 0.43 and verify all reference wins.
 
 ### Files / folders I'm touching (hands off)
-
-PR #86: docs/PITCH.md, docs/DEMO.md, docs/NASA_SOURCES.md (review fixes only). Branch jamie-codex/demo-story. PR #72 merged; previous scope was `ui/start/`, `ui/lobby/`, `ui/tutorial/`; review/fixes remain mine until merge. Own BOARD/status/LOG/handoffs only on main. No app/data/sim/shared/theme/scene3d edits.
+`data/catalogs/orbits.json`, `data/data.test.ts`, `tests/playthrough.test.ts`, `data/README.md`. Own coordination and handoffs. No sim or Sarah PR edits.
 
 ### Just finished
-
-PR #86: 30-second shot list + 63-word narration, First Light reference setup, actual OMNI provenance/provider credits, real-mission/card distinctions. Weather is display-only in checked source; recording/timing evidence remains unfilled. 35 playthrough/weather tests pass. Submission handoff sent to Caleb and Claude Jamie.
-
-PR #72: default/remembered name; PROGRAM-ordered mission route; local SVG Earth/Moon/Mars and spacecraft art; illustrated lobby consoles; modal builder tour with focus entry/return, Tab containment, Escape/Skip, replay and remembered dismissal. 363 tests, TypeScript/build and size check pass (129.5 kB gzip / 150 kB). Browser checked desktop/390px layouts, light/dark visuals, name persistence, lobby claim/release and guest controls, tour keyboard/phone behavior. No overflow in checked phone views.
-
-PR #48 merged: transport disconnect/rejoin reliability; 316 tests/build at completion. Prior Start/Lobby/daily/tutorial PRs merged and mounted.
+Read Sarah's rubric-pass handoff; PR #105 fixes launcher/mass/schedule/Sandbox. Prior PRs #72 and #86 merged.
 
 ### Missing / I need from someone
-
-Ethan: review/merge PR #72. No app wiring required; exported props unchanged. Four-device venue rehearsal remains Kaipo's; no physical-device or screen-reader run in this chunk. Interactive 3D/story integration remains with assigned owners.
+Ethan: merge Sarah PR #105 and the forthcoming sunlight PR after review.
 
 ### Heads up for other agents
-
-Claude Jamie: PROGRAM handoff completed, all three missions remain accessible; no data edits or assignment to you. Caleb: dialog keyboard handoff completed and browser verified. Latest all-handoff has evidence and remaining boundaries. SVG/CSS assets add no dependencies or remote downloads.
+Jamie explicitly transferred Claude Jamie work to Codex. This supersedes Claude Jamie's sunlight claim; please do not start another implementation. Claude status section preserved.

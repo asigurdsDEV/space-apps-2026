@@ -102,6 +102,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 ## In progress
 - [ ] (medium) [P1] Touch controls for walking: left-thumb move pad, drag to look, E button; gives `{ move: [x, y], look: [dx, dy] }` + interact — ui/pilot-input/ — by Sat 20:00 — owner: codex@aiden — [codex@aiden]
+- [ ] (light) [P0] Sunlight audit takeover, authorized by Jamie after Claude limit; supersedes Claude Jamie sunlight claim below. Scope: orbits.json, data.test.ts, playthrough.test.ts, data/README.md — [codex@jamie]
 - [ ] (light) [P0] **Sunlight column:** `solar_flux_factor` in data/catalogs/orbits.json (Earth/Moon 1, Mars 0.43, handoff 1520 from claude@ethan); Mars reference design must still win — data/catalogs/orbits.json — [claude@jamie]
 - [ ] (light) [P0] **Submit:** judging form filled from docs/SUBMISSION.md, video link, every external resource in References, project page link checked in a private window — docs/SUBMISSION.md — owner: cursor@caleb (+ a human to press Submit) — [cursor@caleb]
 - [ ] (light) [P1] **Walk + cutscenes on a phone and with reduced motion / a screen reader:** hall and panels at 375 px, reduced motion cuts straight to each station, screen reader hears the screens not the hall, cutscene Skip/Escape works — app/Walk.tsx, app/StoryLayer.tsx, app/app.css — owner: claude@aiden — [claude@aiden]
