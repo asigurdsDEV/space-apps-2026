@@ -37,6 +37,8 @@ export class PeerTransport<Message> implements Transport<Message> {
   private channels = new Map<string, DataChannel>()
   private timers = new Set<ReturnType<typeof setTimeout>>()
   private ownId = ''
+  private sending = 0
+  private pendingMembers = false
   private currentStatus: ConnectionStatus = 'connecting'
   private lastError?: Error
   private resolveReady!: (id: string) => void
@@ -60,8 +62,12 @@ export class PeerTransport<Message> implements Transport<Message> {
         this.cancel(startupTimer)
         this.markReady()
       } else {
-        const connection = peer.connect(options.hostId!, { reliable: true, serialization: 'json' })
-        this.attach(connection, () => { this.cancel(startupTimer); this.markReady() })
+        try {
+          const connection = peer.connect(options.hostId!, { reliable: true, serialization: 'json' })
+          this.attach(connection, () => { this.cancel(startupTimer); this.markReady() })
+        } catch (error) {
+          this.fail(error instanceof Error ? error : new Error('Could not connect to host'))
+        }
       }
     })
     peer.on('connection', connection => {
@@ -102,7 +108,11 @@ export class PeerTransport<Message> implements Transport<Message> {
     this.lastError = error
     for (const handler of this.statusHandlers) handler(status, error)
   }
-  private membersChanged(): void { for (const handler of this.memberHandlers) handler(this.players) }
+  private membersChanged(): void {
+    // A roster sent by a disconnect listener must follow the current broadcast for every guest.
+    if (this.sending) { this.pendingMembers = true; return }
+    for (const handler of this.memberHandlers) handler(this.players)
+  }
   private attach(connection: DataChannel, opened?: () => void): void {
     this.channels.set(connection.peer, connection)
     const timer = this.deadline(() => {
@@ -113,7 +123,7 @@ export class PeerTransport<Message> implements Transport<Message> {
       }
     })
     connection.on('open', () => {
-      if (this.terminal) { connection.close(); return }
+      if (this.terminal || this.channels.get(connection.peer) !== connection) { connection.close(); return }
       this.cancel(timer)
       opened?.()
       this.membersChanged()
@@ -140,13 +150,22 @@ export class PeerTransport<Message> implements Transport<Message> {
     if (!this.options.validate(message)) throw new Error('Invalid outgoing message')
     // JSON serialization rejects cyclic objects and isolates subsequent mutation.
     const snapshot: Message = JSON.parse(JSON.stringify(message))
-    for (const connection of this.channels.values()) {
-      if (!connection.open) continue
-      try { connection.send(snapshot) } catch {
-        this.channels.delete(connection.peer)
-        connection.close()
-        if (!this.isHost) this.fail(new Error('Could not send to host'))
-        else this.membersChanged()
+    this.sending++
+    try {
+      for (const connection of this.channels.values()) {
+        if (!connection.open) continue
+        try { connection.send(snapshot) } catch {
+          this.channels.delete(connection.peer)
+          connection.close()
+          if (!this.isHost) this.fail(new Error('Could not send to host'))
+          else this.membersChanged()
+        }
+      }
+    } finally {
+      this.sending--
+      if (!this.sending && this.pendingMembers) {
+        this.pendingMembers = false
+        this.membersChanged()
       }
     }
   }
