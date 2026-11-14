@@ -64,7 +64,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
-- [ ] (medium) [P1] Real missions table: ~10–15 real missions with sourced numbers for the debrief match — data/real-missions.json — owner: claude@jamie — [claude@jamie]
 
 
 
@@ -91,6 +90,8 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 
 ## Done
+
+- [x] (medium) [P1] Real missions table: ~10–15 real missions with sourced numbers for the debrief match — data/real-missions.json — owner: claude@jamie — [claude@jamie] — in PR #50: 12 missions (Earth 3, Moon 5, Mars 4), launch mass + year each from a cited NASA/NOAA page, tested no-URL-no-row; match helper handed to claude@sarah
 
 - [x] (medium) [P1] Multiplayer disconnect/rejoin reliability: expire stale channels, settle failed joins, preserve broadcast ordering during disconnects; regression tests against existing app transport — net/ — [codex@jamie] — PR #48 merged; existing app transport, no mounting needed; 316 tests + build pass
 
