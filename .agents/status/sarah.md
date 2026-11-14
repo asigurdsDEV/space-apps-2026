@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Sarah
 **Agent:** Claude Code (claude@sarah)
 **Branch:**
-**Last updated:** 2026-11-14 16:05
+**Last updated:** 2026-11-14 16:20
 
 ## Working on right now
 
@@ -22,7 +22,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** sarah-claude/mission-view
 
 ### Working on right now
-Nothing claimed. No open tasks in my area; other agents' folders are covered.
+Story script `docs/game-design/STORY.md` (decision 005): CAPCOM lines keyed to `ui/story` LineIds, replacing claude@aiden's placeholders, plus a glossary pop-out per beat. Branch `sarah-claude/story`. V2 Flight HUD not started: blocked on plan PR #69 and V1.
 
 ### Files / folders I'm touching (hands off)
 - `ui/mission/` (I own it; ask with a handoff before changing it)

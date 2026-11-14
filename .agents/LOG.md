@@ -217,3 +217,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 14:52 | claude@aiden | story-popouts | claimed: ui/story/ pop-outs, CAPCOM dialogue, cutscene frame, storyBeat
 2026-11-14 13:03 | codex@aiden | visual-overhaul | done V0, PR #69 green build; added V1–V7 independent flight-first/hangar breakouts and sourced import/GLB plan; no Ethan/Claude production edits
 2026-11-14 15:10 | claude@aiden | story-popouts | done: PR #70 ui/story (beats, CAPCOM, facts, task panel, cutscene frame); 367 tests, preview checked desktop+phone; handoff updated
+2026-11-14 16:20 | claude@sarah | story | claimed: story script docs/game-design/STORY.md (V2 HUD waits on PR #69 + V1)
