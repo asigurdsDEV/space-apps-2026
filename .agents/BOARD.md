@@ -40,7 +40,6 @@ These are new work packages, not active claims. Suggested owners claim only thei
 - [ ] (light) [P1] **Sandbox mode** (brief lists it): a 4th scenario with no science goal, a huge budget and random failures off, labelled Sandbox on Start — data/scenarios/ (+ PROGRAM) — owner: claude@jamie
 - [ ] (light) [P1] **Development time** (brief: Time = development + lifetime): give parts `build_months` and scenarios `deadline_months` so `behind_schedule` is live — data/ — owner: claude@jamie
 - [ ] (light) [P1] **Onboard computer + attitude control** (brief's component list): say in each bus description what flight computer / pointing it includes; builder shows it — data/catalogs/spacecraft-buses.json — owner: claude@jamie
-- [ ] (light) [P2] Rocket nozzle drawn on buses with `propulsion_delta_v_ms: 0` (3U, 6U) — ui/scene3d/ — owner: claude@ethan
 - [ ] (light) [P2] Glossary: Deep Space Network priority "such as a launch or landing" (card source says launches); add terms rtg, solar-flux, coverage — ui/learn/ — owner: cursor@kaipo
 - [ ] (light) [P1] Show each console's **priority** on the GO / NO-GO poll so co-op players negotiate before launch (GAME_DESIGN §4.7) — ui/gonogo/ — owner: claude@jamie
 
@@ -83,7 +82,6 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 ## In progress
 - [ ] (medium) [P0] Make the real NASA data drive play: storm card fires on real OMNI storm days (G3+) with the real date; app passes `weather_start` + `real_storms` — sim/cards.ts + sim/sim.ts (storm card only), app/App.tsx (`withCards` only), data/space-weather/ (new storms.json) — [claude@sarah] — **Sarah approved doing this in claude@ethan's sim/app** (Ethan at capacity); handoff to claude@ethan
-- [ ] (medium) [P1] More of the real sky (Ethan's request): the Moon seen from Earth orbit, Earth seen from lunar orbit, Phobos and Deimos at Mars, real axial tilts, each from real NASA images and numbers — ui/scene3d/world.ts (not shaders.ts or maps/: those are claude@jamie's for the real NASA maps, handoff 20261114-1830 answered yes) — branch `ethan-claude/real-sky` — [claude@ethan]
 - [ ] (heavy) [P1] V7 Integrate at a checkpoint chosen by existing owners: player-craft control/chase camera + one large scene + HUD; preserve published SpaceView and sim authority — ui/scene3d/ + app/ owner: claude@ethan; ui/mission/ owner: claude@sarah; cache/config owner: claude@aiden — needs: reviewed V1/V2/V4, optional V3; owner agreement on additive API; no current 3D work takeover — **claimed 15:25 by claude@ethan for the ui/scene3d/ + app/ part**, two PRs: V7a `ui/scene3d/flight/` (new folder: `FlightView`, player craft with chase camera, V4 targets, takes V1 intent, gives V2 `focus`), branch `ethan-claude/flight-view`; then V7b mount in `app/` (a "Flight training" button on the flight screen opens it over the mission with `<FlightHud>` + `<PilotInput>`; local training only, no sim commands) — [claude@ethan]
 - [ ] (light) [P1] Re-run the four-device multiplayer rehearsal once Host online and Join are on the live site. Fill docs/MULTIPLAYER_TEST.md again (venue wifi, then a phone hotspot if wifi fails) — docs/MULTIPLAYER_TEST.md — needs: app loop merged and Pages serving Start — owner: cursor@kaipo — [cursor@kaipo]
 
@@ -94,8 +92,6 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 
 
-- [ ] (medium) [P1] Realistic rockets (Ethan's request): every launch vehicle modelled on the real rocket NASA has flown missions on (real dimensions, stages, engines, boosters, livery), with a source for each; models ready for more NASA-used rockets if data/ adds rows — ui/scene3d/launch/ (rocket.ts, vehicles.ts, new REFERENCES.md) — [claude@ethan]
-- [ ] (medium) [P1] Realistic spacecraft parts (Ethan's request): every bus, power, comms and instrument model patterned on real NASA hardware (named reference, real proportions and features), with a source for each — ui/scene3d/parts/ (+ new REFERENCES.md) — [claude@ethan]
 - [ ] (heavy) [P1] Browser end-to-end tests of the assembled game: full solo mission, and two browsers in one co-op room — e2e/ (new); uses playwright-core installed outside the repo, so no package.json change — solo and co-op scripts written on branch `ethan-claude/app-fixes`, review fixes being verified — [claude@ethan]
 
 
@@ -108,6 +104,10 @@ These are new work packages, not active claims. Suggested owners claim only thei
 
 
 ## Done
+- [x] (medium) [P1] Realistic rockets (Ethan's request) — ui/scene3d/launch/ — [claude@ethan] — in PR #98: Falcon 9, rideshare Falcon 9, Electron, Pegasus XL, Vulcan Centaur, SLS Block 1 modelled on the real rockets at real size; Atlas V 401, Delta IV Heavy and Falcon Heavy are modelled too and wait for catalog rows (`atlas-v`, `delta-iv-heavy`, `falcon-heavy`, handoff 20261114-1415 to claude@jamie). Sources: `ui/scene3d/launch/REFERENCES.md`.
+- [x] (medium) [P1] Realistic spacecraft parts (Ethan's request) — ui/scene3d/parts/ — [claude@ethan] — in PR #97: every bus, power, radio and instrument model patterned on named NASA hardware (MarCO, CAPSTONE, GRAIL, MAVEN, MRO, MMRTG, LRO, NISAR, ...). Sources and which numbers are estimates: `ui/scene3d/parts/REFERENCES.md`.
+- [x] (light) [P2] No rocket nozzle on buses with `propulsion_delta_v_ms: 0` (3U, 6U) — ui/scene3d/parts/ — [claude@ethan] — in PR #97, with a test.
+- [x] (medium) [P1] More of the real sky (Ethan's request) — ui/scene3d/world.ts, sky.ts — [claude@ethan] — in PR #96: the Moon from Earth orbit, Earth from lunar orbit (fixed over the near side), Phobos and Deimos at Mars, all at real size, distance and pace (NASA fact sheets). Axial tilt not changed: the scene's Sun already stands 20° north of the equator, close to Earth's and Mars's summer tilt.
 - [x] (light) [P1] Offline cache covers everything in public/ (the flight models from cursor@kaipo's V3 pack are not cached today), so flight training works on bad venue wifi — pwa/, vite.config.ts — owner: claude@aiden — [claude@aiden] — in PR #93: `pwa/public-files.ts` lists all six public files, a test fails when one is missed; not checked with an offline reload in a browser
 - [x] (light) [P0] **Science fix: solar power falls with distance from the Sun** — sim/design.ts — [claude@ethan] — in PR #92: solar power × orbit `solar_flux_factor` (optional column, default 1, RTG unaffected). It takes effect when claude@jamie's data column lands.
 - [x] (light) [P1] **Orbit coverage** — sim/design.ts — [claude@ethan] — in PR #92: an imager off its `best_orbit` earns half its science × the orbit's `coverage_fraction`. `orbitScienceFactor` is exported from `sim` for the builder badge.
