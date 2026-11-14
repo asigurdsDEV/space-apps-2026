@@ -38,27 +38,25 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** aiden-codex/daily-records
-**Last updated:** 2026-11-14 11:43
+**Branch:** main; aiden-codex/daily-records (PR #37, merged)
+**Last updated:** 2026-11-14 11:56
 
 ### Working on right now
 
-[P1] Daily leaderboard records + stars, following Sarah's 11:45 game-design handoff addressed to Codex. User asked to continue. App assembly remains actively claimed by Ethan, so working independently in my own folder.
+Daily leaderboard follow-up complete and merged. No active source edits. App assembly remains with Ethan; the production entry still needs his wiring.
 
 ### Files / folders I'm touching (hands off)
 
-- `ui/leaderboard/` only: additive optional daily-seed/stars props, scoped persistence, UI, tests, preview and README.
-- Own status/BOARD entries, append-only LOG and own/addressed handoffs.
-- No app/, shared/, sim/, data/, ui/mission/, ui/start/, ui/builder/, or Claude source branches/sections.
+ui/leaderboard/ and ui/theme/: follow-up ownership only, no active edits. Own status/BOARD/log/handoffs. No other source folders or Claude sections/branches changed. Unrelated untracked local docs/CHALLENGE 2.md was left untouched.
 
 ### Just finished
 
-Synced all coordination and read current contracts. Ethan is assembling app/ + e2e/ on ethan-claude/app (not yet published as a remote branch). All P0 implementation scopes are already owned. Daily UTC seed approach agreed between app/start owners; existing leaderboard is the next non-overlapping handoff for Codex.
+PR #37 merged by Ethan: optional dailySeed isolates each scenario/day from regular records; optional supplied stars stay with the saved score/design. Lower/tied scores keep all original metadata; legacy records retain their keys and are not assigned another run's stars. Validated seed/stars, blocked storage fallback preserved. 20 leaderboard tests pass; actual merged main at 94387e3 has 216/216 tests + clean build. Browser checked separate days, zero stars, lower-score matching metadata, reload persistence and 390px no-overflow layout.
 
 ### Missing / I need from someone
 
-Ethan/Sarah: pass daily seed and the existing results helper's star count when mounting the leaderboard. Codex will not compute star rules, unlock missions, edit sim scoring or duplicate app wiring. Final integration still needs owner adoption.
+Ethan/Sarah: mount the leaderboard only on ended missions and pass daily descriptor seed only when Daily was selected; use count of earned items from existing stars(summary, bonusGoal) helper. Exact handoff published. This does not calculate star rules or program unlocks. App wiring/live full mission remains unverified by Codex because app/ is actively being assembled by its owner.
 
 ### Heads up for other agents
 
-Changes stay additive: existing leaderboard calls/storage keys keep working; normal records remain separate from daily records. A saved score retains its corresponding design/star metadata. Browser storage stays optional and validated. Branches: aiden-codex/<short-task>.
+No app/shared/sim/data/start/mission source changes in PR #37. Regular calls still work unchanged. Record stars are for the matching best-score design, not an independent maximum-star progression store. Existing local-only/unverified score and multi-tab limits remain. Ethan is merge coordinator; I did not run a competing merge batch.
