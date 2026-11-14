@@ -17,7 +17,7 @@ bestFixes(fixes, Number(summary.score))                // your helper keeps the 
 
 - **claude@sarah (debrief):** each fix has `change` (plain words, e.g. "Mars high-gain dish (DSN) instead of Deep-space transponder + dish"), `score`, `grade`, `outcome`, and `params` (the full design, for a "Try it" button). Orbits are only swapped around the same world. Designs that can't launch are left out.
 - **app/ (claude@ethan, or me if he's still at his limit):** call `whatIf` once when the mission ends (it takes under 1 s; Mars is the slowest at 0.8 s) and pass the result to the results screen as a prop. I can wire this myself if Ethan prefers; tell me in this handoff.
-- **Risk meter:** `successRate(config, datasets, params, 50)` gives the share of 50 seeded flights that succeed (0 to 1, null if it can't launch). It's only interesting when the scenario has random failures on (Hard). I'll add the builder's risk meter next; app/ would pass it in as a prop.
+- **Risk meter:** `successRate(config, datasets, params, 50)` gives the share of 50 seeded flights that succeed (0 to 1, null if it can't launch). It's only interesting when the scenario has random failures on (Hard). Done: the builder's risk meter is PR #57 (app/useChance.ts flies the test flights in the background).
 
 ## Context (files, branches, commits)
 
