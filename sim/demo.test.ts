@@ -105,8 +105,9 @@ describe('demo scenario in the real sim', () => {
   })
 
   it('with random failures on, the same seed gives the same mission', () => {
-    const a = play(reference, demo)
-    const b = play(reference, demo)
+    const lucky: Config = { ...demo, params: { ...demo.params, random_failures: true } }
+    const a = play(reference, lucky)
+    const b = play(reference, lucky)
     expect(b.state.metrics).toEqual(a.state.metrics)
     expect(b.events).toEqual(a.events)
   })

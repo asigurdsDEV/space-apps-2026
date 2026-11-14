@@ -17,9 +17,9 @@ import type {
   Summary,
 } from '../shared'
 import { CONTRACT_VERSION } from '../shared'
-import { evaluateDesign, formatUsd, uptimeAt, YEAR_S } from './design'
+import { dayOfData, evaluateDesign, formatUsd, SCIENCE_TOLERANCE, uptimeAt, YEAR_S } from './design'
 import { bodyOf, circularState, transferState } from './orbit'
-import { applyParam, resolveAliases } from './params'
+import { applyParam, cleanParams, resolveAliases } from './params'
 import { catalogEntities, findPart, num, str } from './parts'
 import { nextRandom } from './rng'
 
@@ -38,8 +38,11 @@ export const DEFAULT_PARAMS: Params = {
   integration_months_per_instrument: 1,
   /** Chance per day of a random event (solar storm, ground station outage) during operations. */
   event_rate_per_day: 0,
-  /** false = sandbox: launches always work, the bus never fails, no random events. */
-  random_failures: true,
+  /**
+   * true = launches can fail, the bus can fail, random events happen. Off unless the scenario
+   * asks for it: the rolls depend only on the seed, so a scenario must test its seed first.
+   */
+  random_failures: false,
 }
 
 export type Outcome =
@@ -67,7 +70,7 @@ function batteryCheck(entities: Entity[]): (id: string) => boolean {
 export function init(config: Config, datasets: Dataset[]): SimState {
   const entities = [...catalogEntities(datasets), ...config.entities]
   const params: Params = resolveAliases(
-    { ...DEFAULT_PARAMS, ...config.params, start_utc: config.start_utc },
+    { ...DEFAULT_PARAMS, ...cleanParams(config.params), start_utc: config.start_utc },
     batteryCheck(entities),
   )
   if (typeof params.mission_duration_s !== 'number') params.mission_duration_s = config.duration_s
@@ -133,9 +136,14 @@ export function step(state: SimState, commands: Command[], dt_s: number): StepRe
   let launchRequested = false
   const isBattery = batteryCheck(entities)
   for (const command of commands) {
+    // Commands come from guests over net/: a malformed one is skipped, never thrown on.
+    if (!command || typeof command !== 'object') continue
     if (command.type === 'set_param') {
-      if (phase === 'design') applyParam(params, command.payload.key, command.payload.value, isBattery)
-      else warn(`The design is locked after launch, so "${command.payload.key}" was not changed.`)
+      const payload: { key?: unknown; value?: unknown } | undefined = command.payload
+      const key = payload?.key
+      if (typeof key !== 'string') continue
+      if (phase !== 'design' || launchRequested) warn(`The design is locked after launch, so "${key}" was not changed.`)
+      else if (!applyParam(params, key, payload?.value, isBattery)) warn(`"${key}" was not changed: the value sent is not text, a number or true/false.`)
     } else if (command.type === 'launch') {
       if (phase === 'design') launchRequested = true
       else warn('The mission has already launched.')
@@ -154,7 +162,7 @@ export function step(state: SimState, commands: Command[], dt_s: number): StepRe
   let stored = metric(state.metrics, 'data_stored_gb')
   let lost = metric(state.metrics, 'data_lost_gb')
   let spent = metric(state.metrics, 'cost_spent_usd')
-  const randomFailures = params.random_failures !== false
+  const randomFailures = params.random_failures === true
   const cruiseEnd = budgets.cruise_days * DAY_S
 
   if (phase === 'design') {
@@ -223,10 +231,11 @@ export function step(state: SimState, commands: Command[], dt_s: number): StepRe
     const finish = () => {
       if (flight.end_reason === 'bus_life') warn(`The spacecraft reached the end of its design life after ${Math.round(t / DAY_S)} days and shut down.`)
       if (flight.end_reason === 'orbit_life') warn(`The spacecraft could not stay in its orbit any longer. The mission ended after ${Math.round(t / DAY_S)} days.`)
-      outcome = budgets.science_goal > 0 && science < budgets.science_goal ? 'science_shortfall' : 'success'
+      outcome = budgets.science_goal > 0 && science < budgets.science_goal - SCIENCE_TOLERANCE ? 'science_shortfall' : 'success'
       changePhase('ended')
     }
-    let remaining = Math.max(0, dt_s)
+    // NaN or undefined would make every guard below false and the loop would never end.
+    let remaining = dt_s > 0 ? dt_s : 0
     while (phase !== 'ended') {
       if (phase === 'cruise') {
         if (t >= cruiseEnd - EPSILON_S) {
@@ -273,35 +282,29 @@ export function step(state: SimState, commands: Command[], dt_s: number): StepRe
         }
       }
 
-      const made = flight.data_gb_per_day_full * uptime * generatingDays
-      generated += made
-      if (flight.data_gb_per_day_full > 0) {
-        // Science rides on the data: it only counts when the data reaches the ground.
-        const sciencePerGb = flight.science_per_day_full / flight.data_gb_per_day_full
-        const sent = Math.min(stored + made, flight.downlink_gb_per_day * downlinkDays)
-        stored = stored + made - sent
-        downlinked += sent
-        science += sent * sciencePerGb
-        if (stored > flight.storage_gb + 1e-12) {
-          if (lost === 0) {
-            events.push({
-              type: 'threshold_crossed',
-              tick,
-              t_s: t + advance,
-              payload: { metric: 'data_stored_gb', value: stored, threshold: flight.storage_gb, direction: 'up' },
-            })
-          }
-          lost += stored - flight.storage_gb
-          stored = flight.storage_gb
+      // Science rides on the data: it only counts when the data reaches the ground.
+      const day = dayOfData(flight, stored, uptime, generatingDays, downlinkDays)
+      generated += day.made_gb
+      downlinked += day.sent_gb
+      science += day.science
+      stored = day.stored_gb
+      if (day.lost_gb > 0) {
+        if (lost === 0) {
+          events.push({
+            type: 'threshold_crossed',
+            tick,
+            t_s: t + advance,
+            payload: { metric: 'data_stored_gb', value: stored + day.lost_gb, threshold: flight.storage_gb, direction: 'up' },
+          })
         }
-      } else {
-        science += flight.science_per_day_full * uptime * generatingDays
+        lost += day.lost_gb
       }
       spent += budgets.ops_cost_usd_per_day * days
       t += advance
 
       const goal = budgets.science_goal
-      if (goal > 0 && scienceBefore < goal && science >= goal && !events.some((e) => e.type === 'threshold_crossed' && e.payload.metric === 'science_score')) {
+      const reached = goal > 0 && science >= goal - SCIENCE_TOLERANCE
+      if (reached && scienceBefore < goal - SCIENCE_TOLERANCE && !events.some((e) => e.type === 'threshold_crossed' && e.payload.metric === 'science_score')) {
         events.push({
           type: 'threshold_crossed',
           tick,
@@ -312,7 +315,9 @@ export function step(state: SimState, commands: Command[], dt_s: number): StepRe
 
       const failureChance = 1 - Math.pow(flight.survival_per_day, days)
       if (randomFailures && failureRoll.value < failureChance) {
-        outcome = 'spacecraft_failure'
+        // A spacecraft that dies after returning the science it was sent for did its job.
+        outcome = reached ? 'success' : 'spacecraft_failure'
+        warn(`The spacecraft failed on day ${Math.floor(t / DAY_S)}.`)
         changePhase('ended')
       } else if (t >= end - EPSILON_S) {
         finish()
@@ -377,11 +382,15 @@ function grade(score: number): string {
 
 /** Warnings that the first sentence of `why` already covers. */
 const NOT_IN_WHY = new Set(['science_short'])
+/** Outcomes that are a failed mission: their score stops at a C, however good the rest of the design was. */
+const FAILED = new Set<Outcome>(['science_shortfall', 'launch_failure', 'spacecraft_failure'])
+const FAILED_SCORE_CAP = 69
 
 /**
  * Score and plain-language explanation for the results screen.
  * Score (0 to 100): 70 for science against the goal, 10 for budget left over,
  * 10 for launch mass margin, 10 for the share of data that reached the ground.
+ * A failed mission scores at most 69 (grade C).
  */
 export function summary(state: SimState): Summary {
   const m = state.metrics
@@ -404,8 +413,11 @@ export function summary(state: SimState): Summary {
   const massShare = massLimit > 0 ? clamp01((massLimit - mass) / massLimit / 0.2) : 0
   const dataShare = generated > 0 ? clamp01(downlinked / generated) : outcome === 'success' ? 1 : 0
   // Nothing is scored until the mission launches.
-  const score =
+  const rawScore =
     outcome === 'in_design' ? 0 : Math.round(70 * scienceShare + 10 * budgetShare + 10 * massShare + 10 * dataShare)
+  const score = FAILED.has(outcome) ? Math.min(rawScore, FAILED_SCORE_CAP) : rawScore
+  // Only a bus failure ends a successful mission before its planned end.
+  const cutShort = outcome === 'success' && day < metric(m, 'lifetime_days') - 1e-6
 
   const launcher = findPart(state.entities, 'launch_vehicle', str(state.params, 'launch_vehicle'))
   const bus = findPart(state.entities, 'bus', str(state.params, 'bus'))
@@ -414,6 +426,7 @@ export function summary(state: SimState): Summary {
   const gb = (value: number) => (value < 1 ? `${Math.round(value * 1000)} MB` : `${value.toLocaleString('en-US', { maximumFractionDigits: 1 })} GB`)
   if (outcome === 'success') {
     why.push(goal > 0 ? `Mission success: you returned ${points(science)} science points and needed ${points(goal)}.` : `Mission complete: you returned ${points(science)} science points.`)
+    if (cutShort) why.push(`The spacecraft failed on day ${Math.floor(day)} of ${Math.round(planned)}, but it had already returned the science it needed.`)
   } else if (outcome === 'science_shortfall') {
     why.push(`The spacecraft flew for ${Math.round(day)} days but returned ${points(science)} of the ${points(goal)} science points needed.`)
   } else if (outcome === 'launch_failure') {
@@ -428,9 +441,17 @@ export function summary(state: SimState): Summary {
   if (lost > 0) {
     why.push(`${gb(lost)} of data never reached the ground: the radio could not send it home fast enough, so it was overwritten on board.`)
   }
-  for (const issue of state.issues) {
-    if (issue.severity === 'warning' && outcome !== 'in_design' && !NOT_IN_WHY.has(issue.code)) why.push(issue.message)
-  }
+  // The design warnings explain a flown mission. A launch failure has nothing to do with them,
+  // and a lost spacecraft only with the radiation risk.
+  const said = state.issues.filter(
+    (issue) =>
+      issue.severity === 'warning' &&
+      !NOT_IN_WHY.has(issue.code) &&
+      outcome !== 'in_design' &&
+      outcome !== 'launch_failure' &&
+      (outcome !== 'spacecraft_failure' || issue.code === 'radiation_risk'),
+  )
+  if (said.length > 0) why.push(`Before launch the design check said: ${said.map((issue) => issue.message).join(' ')}`)
   if (outcome === 'success' && budget > 0 && cost < budget) {
     why.push(`You finished ${formatUsd(budget - cost)} under budget.`)
   }

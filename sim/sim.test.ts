@@ -60,7 +60,7 @@ describe('init', () => {
     const state = init(demoConfig, fixtureDatasets)
     const ids = (kind: string) => state.entities.filter((e) => e.kind === kind).map((e) => e.id)
     expect(ids('launch_vehicle')).toEqual(['rideshare', 'electron', 'pegasus-xl', 'falcon-9', 'vulcan-centaur', 'sls-block-1'])
-    expect(ids('orbit')).toEqual(['leo-iss', 'sso', 'geo', 'lunar'])
+    expect(ids('orbit')).toEqual(expect.arrayContaining(['leo-iss', 'sso', 'geo', 'lunar'])) // data/ may add orbits
     expect(ids('bus')).toContain('cubesat-12u') // from the "spacecraft-buses" dataset
     expect(ids('power_system')).toHaveLength(9) // solar arrays, the RTG and batteries share one catalog
     expect(ids('comms_system')).toHaveLength(5)
@@ -84,8 +84,8 @@ describe('init', () => {
     expect(state.params.mission_duration_s).toBe(31_536_000)
     expect(state.metrics.science_goal).toBe(30) // the scenario's target_science_score
     expect(state.metrics.mission_days).toBe(365)
-    // It can launch (no errors), but: no thruster, a slow radio, and so not enough science.
-    expect(codes(state)).toEqual(['downlink_short', 'no_station_keeping', 'science_short'])
+    // It can launch (no errors), but: a slow radio, and so not enough science.
+    expect(codes(state)).toEqual(['downlink_short', 'science_short'])
     expect(state.issues.every((issue) => issue.severity === 'warning')).toBe(true)
   })
 
@@ -250,9 +250,10 @@ describe('step: design phase', () => {
     expect(codes(offOrbit)).toEqual(['off_best_orbit', 'science_short'])
     expect(offOrbit.metrics.science_expected).toBeCloseTo(14)
 
-    // A 6U CubeSat has no thruster and the orbit asks for 20 m/s: it flies, but drifts.
+    // A 6U CubeSat has no thruster and the orbit asks for 20 m/s: it drifts, but the halved
+    // orbit lifetime (12.5 years) is far longer than the mission, so there is nothing to warn about.
     const drifting = init(demoConfig, fixtureDatasets)
-    expect(codes(drifting)).toContain('no_station_keeping')
+    expect(codes(drifting)).not.toContain('orbit_life_short')
     expect(ready(drifting)).toBe(true)
   })
 
@@ -263,7 +264,8 @@ describe('step: design phase', () => {
     expect(shortBus.metrics.lifetime_days).toBeCloseTo(94_672_800 / DAY)
     // ISS-like orbit lasts 2 years, halved to 1 for a bus that cannot station-keep (50 m/s needed, 6U has none).
     const decays = init(configWith({ launch_vehicle: 'electron', orbit: 'leo-iss', mission_duration_s: 2 * YEAR }), fixtureDatasets)
-    expect(codes(decays)).toEqual(expect.arrayContaining(['no_station_keeping', 'orbit_life_short']))
+    expect(codes(decays)).toContain('orbit_life_short')
+    expect(decays.issues.find((issue) => issue.code === 'orbit_life_short')?.message).toMatch(/or a bus with a thruster/)
     expect(decays.metrics.lifetime_days).toBeCloseTo(365.25)
   })
 
@@ -400,8 +402,9 @@ describe('step: flying the mission', () => {
   it('loses science when the radio cannot keep up, and explains it', () => {
     const { state, events } = run(init(calm({ comms: 's-band-patch' }), fixtureDatasets), 400, DAY, [launch])
     expect(state.metrics.outcome).toBe('science_shortfall')
-    // 0.375 of 12.96 GB a day gets home, so the same share of the 40 points does.
-    expect(state.metrics.science_score).toBeCloseTo((40 * 0.375) / 12.96, 6)
+    // 0.375 of 12.96 GB a day gets home. The camera's data is worth more per GB (10 points in 2.16 GB a day
+    // against 30 in 10.8), so it goes first: 0.375 of the camera's 2.16 GB.
+    expect(state.metrics.science_score).toBeCloseTo((10 * 0.375) / 2.16, 6)
     expect(state.metrics.data_downlinked_gb).toBeCloseTo(0.375 * 365, 6)
     expect(state.metrics.data_stored_gb).toBeCloseTo(12.96) // the recorder is full
     expect(state.metrics.data_lost_gb).toBeCloseTo(12.96 * 365 - 0.375 * 365 - 12.96, 6)
@@ -452,7 +455,7 @@ describe('step: flying the mission', () => {
   })
 
   it('is deterministic for a seed and changes with the seed', () => {
-    const risky = (seed: number) => ({ ...configWith({ ...goodDesign, event_rate_per_day: 0.05 }), seed })
+    const risky = (seed: number) => ({ ...configWith({ ...goodDesign, random_failures: true, event_rate_per_day: 0.05 }), seed })
     const fly = (seed: number) => run(init(risky(seed), fixtureDatasets), 400, DAY, [launch])
     expect(JSON.stringify(fly(7))).toBe(JSON.stringify(fly(7)))
     const outcomes = new Set([1, 2, 3, 4, 5, 6, 7, 8].map((seed) => JSON.stringify(fly(seed).state.metrics)))
@@ -461,7 +464,7 @@ describe('step: flying the mission', () => {
 
   it('fails at launch on a launch vehicle that never works', () => {
     const datasets = withRows('launch-vehicles', [['dud', 'Dud', 'test', 9000, 9000, 9000, 9000, 1_000_000, 0, 0, 'Never works.']])
-    const { state, events } = step(init(configWith({ ...goodDesign, launch_vehicle: 'dud' }), datasets), [launch], DAY)
+    const { state, events } = step(init(configWith({ ...goodDesign, random_failures: true, launch_vehicle: 'dud' }), datasets), [launch], DAY)
     expect(state.status).toBe('ended')
     expect(state.metrics.outcome).toBe('launch_failure')
     expect(events.at(-1)?.type).toBe('scenario_ended')
@@ -473,7 +476,7 @@ describe('step: flying the mission', () => {
 
   it('loses the spacecraft on a bus that never survives', () => {
     const datasets = withRows('spacecraft-buses', [['lemon', 'Lemon', 'cubesat', 14, 9, 3, 8, 60, 2_500_000, 94_672_800, 0, 'Always breaks.']])
-    const config = { ...configWith({ ...goodDesign, bus: 'lemon', launch_vehicle: 'falcon-9', budget_usd: 0 }), seed: 3 }
+    const config = { ...configWith({ ...goodDesign, random_failures: true, bus: 'lemon', launch_vehicle: 'falcon-9', budget_usd: 0 }), seed: 3 }
     expect(codes(init(config, datasets))).toEqual(['radiation_risk']) // 0% chance of surviving
     expect(codes(init(configWith({ random_failures: false }, config), datasets))).toEqual([]) // sandbox: no risk to warn about
     const { state } = run(init(config, datasets), 10, DAY, [launch])
@@ -520,5 +523,169 @@ describe('summary', () => {
     expect(report.outcome).toBe('in_design')
     expect(report.score).toBe(0)
     expect(report.science_score).toBe(0)
+  })
+})
+
+describe('review findings', () => {
+  const irOnly = { ...goodDesign, instruments: 'ir-spectrometer' } // worth exactly the demo's 30 points
+  const flyTo = (config: Config, dt = DAY, steps = 400) => run(init(config, fixtureDatasets), steps, dt, [launch])
+
+  it('the shipped demo is winnable as it ships: random failures are off unless the scenario asks', () => {
+    expect(demoConfig.params.random_failures).toBeUndefined()
+    const { state } = flyTo(configWith(goodDesign))
+    expect(state.params.random_failures).toBe(false)
+    expect(state.metrics.outcome).toBe('success')
+    expect(state.t_s).toBe(365 * DAY)
+  })
+
+  it('a design worth exactly the goal succeeds at every dt, and the forecast agrees', () => {
+    // Reference design against a target of 40: the daily sum lands on 39.99999999999988.
+    const forty = flyTo(calm({ target_science_score: 40 }))
+    expect(init(calm({ target_science_score: 40 }), fixtureDatasets).issues).toEqual([])
+    expect(forty.state.metrics.outcome).toBe('success')
+    for (const dt of [DAY, DAY / 2, 3600]) {
+      const { state, events } = flyTo(calm(irOnly), dt, 10_000)
+      expect(state.metrics.outcome, `dt ${dt}`).toBe('success')
+      expect(state.metrics.science_score).toBeCloseTo(30, 6)
+      expect(events.filter((e) => e.type === 'threshold_crossed' && e.payload.metric === 'science_score'), `dt ${dt}`).toHaveLength(1)
+    }
+  })
+
+  it('step returns when dt is NaN or missing, without moving time', () => {
+    const flying = step(init(calm(), fixtureDatasets), [launch], DAY).state
+    for (const dt of [NaN, undefined as unknown as number, -5]) {
+      const { state } = step(flying, [], dt)
+      expect(state.t_s).toBe(flying.t_s)
+      expect(state.status).toBe('running')
+    }
+  })
+
+  it('a failed mission never gets better than a C', () => {
+    // Reference design without its battery: 26 of 30 points. It used to score 85, grade A.
+    const { state } = flyTo(calm({ battery: '' }))
+    const report = summary(state)
+    expect(report.science_score).toBeCloseTo(26, 6)
+    expect(report).toMatchObject({ outcome: 'science_shortfall', score: 69, grade: 'C' })
+  })
+
+  it('a spacecraft lost after the goal was reached is a success, and the report says both', () => {
+    const lucky = (seed: number) => flyTo({ ...configWith({ ...goodDesign, random_failures: true }), seed })
+    const firstSeed = (from: number, wanted: (r: ReturnType<typeof lucky>) => boolean) => {
+      for (let seed = from; seed < from + 200; seed++) if (wanted(lucky(seed))) return lucky(seed)
+      return undefined
+    }
+    // Seed 64: goal reached on day 274, bus fails on day 311.
+    const cutShort = firstSeed(64, ({ state }) => Number(state.metrics.mission_day) < 365 && Number(state.metrics.science_score) >= 30)
+    expect(cutShort).toBeDefined()
+    const report = summary(cutShort!.state)
+    expect(report).toMatchObject({ outcome: 'success', grade: 'A' })
+    expect(String(report.why)).toMatch(/Mission success.*The spacecraft failed on day \d+ of 365, but it had already returned the science it needed/)
+    expect(cutShort!.events.at(-1)).toMatchObject({ type: 'scenario_ended', payload: { reason: 'success' } })
+    // Lost before the goal: still a failure, capped at C.
+    const lost = firstSeed(0, ({ state }) => state.metrics.outcome === 'spacecraft_failure')
+    expect(Number(lost!.state.metrics.science_score)).toBeLessThan(30)
+    expect(Number(summary(lost!.state).score)).toBeLessThanOrEqual(69)
+  })
+
+  it('adding an instrument never lowers the science: the most valuable data goes home first', () => {
+    // The starting 6U + S-band design (0.375 GB a day), changing only the instruments.
+    const score = (instruments: string) => {
+      const config = configWith({ instruments })
+      const forecast = Number(init(config, fixtureDatasets).metrics.science_expected)
+      const flown = Number(flyTo(config).state.metrics.science_score)
+      expect(flown, instruments).toBeCloseTo(forecast, 6)
+      return flown
+    }
+    const magnetometer = score('magnetometer')
+    const camera = score('camera-basic')
+    const both = score('camera-basic,magnetometer')
+    expect(magnetometer).toBeCloseTo(5, 6) // 10.8 MB a day fits easily
+    expect(camera).toBeCloseTo((10 * 0.375) / 2.16, 6)
+    // All of the magnetometer's data, then the camera gets what is left of the link (it was 2.59 when pooled).
+    expect(both).toBeCloseTo(5 + (10 * (0.375 - 0.0108)) / 2.16, 6)
+    expect(score('magnetometer,radiation-detector')).toBeGreaterThanOrEqual(magnetometer - 1e-9)
+    expect(score('camera-basic,radiation-detector')).toBeGreaterThanOrEqual(camera - 1e-9)
+    expect(score('camera-basic,magnetometer,radiation-detector')).toBeGreaterThanOrEqual(both - 1e-9)
+  })
+
+  it('the forecast follows the fading power source, like the flight does', () => {
+    const datasets = withRows('power-systems', [['fading-wings', 'Fading wings', 'solar', 2, 400_000, 80, 0, 0.5, 'cubesat', 'Loses half its output a year.']])
+    const config = calm({ solar: 'fading-wings' })
+    const design = init(config, datasets)
+    const { state } = run(design, 400, DAY, [launch])
+    expect(Number(state.metrics.science_score)).toBeLessThan(39)
+    expect(Number(design.metrics.science_expected)).toBeCloseTo(Number(state.metrics.science_score), 6)
+  })
+
+  it('short power with no battery is limited by the smaller share, not both multiplied', () => {
+    // 12U, camera + IR, small wings: 19.5 W average, 16 W bus and radio, 8.5 W of instruments = 41% uptime.
+    const design = { bus: 'cubesat-12u', instruments: 'camera-basic,ir-spectrometer' }
+    const withBattery = init(configWith(design), fixtureDatasets)
+    const without = init(configWith({ ...design, battery: '' }), fixtureDatasets)
+    expect(withBattery.metrics.instrument_uptime).toBeCloseTo(3.5 / 8.5)
+    expect(without.metrics.instrument_uptime).toBeCloseTo(3.5 / 8.5) // not x 0.65 again
+    expect(without.issues.find((issue) => issue.code === 'power_short')?.message).toMatch(/run 41% of the time/)
+  })
+
+  it('ignores malformed commands instead of throwing', () => {
+    const state = init(calm(), fixtureDatasets)
+    const bad = [null, 7, { type: 'set_param' }, { type: 'set_param', payload: { key: 5, value: 1 } }, { type: 'nonsense' }] as unknown as Command[]
+    const result = step(state, bad, DAY)
+    expect(result.state.params).toEqual(state.params)
+    expect(result.state.metrics.phase).toBe('design')
+  })
+
+  it('refuses values that are not flat params, and reads numbers sent as text', () => {
+    const state = init(calm(), fixtureDatasets)
+    const send = (key: string, value: unknown) => step(state, [{ type: 'set_param', payload: { key, value } } as Command], DAY)
+    expect(send('budget_usd', '100').state.params.budget_usd).toBe(100)
+    expect(codes(send('budget_usd', '100').state)).toContain('over_budget')
+    expect(send('random_failures', 'false').state.params.random_failures).toBe(false)
+    for (const value of [NaN, Infinity, null, { a: 1 }, 'lots']) {
+      const refused = send('budget_usd', value)
+      expect(refused.state.params.budget_usd).toBe(8_000_000)
+      expect(refused.events.some((e) => e.type === 'warning')).toBe(true)
+    }
+    expect(send('bus', { a: 1 }).state.params.bus).toBe('cubesat-12u')
+    // The same check runs on Config.params.
+    const fromConfig = init(configWith({ budget_usd: '5000000', target_science_score: '12' }), fixtureDatasets)
+    expect(fromConfig.metrics.budget_usd).toBe(5_000_000)
+    expect(fromConfig.metrics.science_goal).toBe(12)
+  })
+
+  it('locks the design at `launch`: later set_params in the same step are refused', () => {
+    const { state, events } = step(init(calm(), fixtureDatasets), [launch, setParam('bus', 'cubesat-6u')], DAY)
+    expect(state.metrics.phase).toBe('cruise')
+    expect(state.params.bus).toBe('cubesat-12u')
+    expect(events.some((e) => e.type === 'warning' && /locked/.test(e.payload.message))).toBe(true)
+  })
+
+  it('extra ground stations do nothing unless the scenario puts a price on them', () => {
+    const free = init(configWith({ ground_stations: 6 }), fixtureDatasets).metrics
+    expect(free.ground_stations).toBe(1)
+    expect(free.downlink_gb_per_day).toBeCloseTo(0.375)
+    const paid = init(configWith({ ground_stations: 6, ground_station_cost_usd_per_day: 100 }), fixtureDatasets).metrics
+    expect(paid.downlink_gb_per_day).toBeCloseTo(2.25)
+  })
+
+  it('set_param on power_system keeps params.power in step', () => {
+    const { state } = step(init(demoConfig, fixtureDatasets), [setParam('power_system', 'solar-deployable-large')], DAY)
+    expect(state.params.solar).toBe('solar-deployable-large')
+    expect(state.params.power).toBe('solar-deployable-large')
+  })
+
+  it('the end report leaves out design warnings that had nothing to do with the loss', () => {
+    const dud = withRows('launch-vehicles', [['dud', 'Dud', 'test', 9000, 9000, 9000, 9000, 1_000_000, 0, 0, 'Never works.']])
+    const failed = step(init(configWith({ random_failures: true, launch_vehicle: 'dud' }), dud), [launch], DAY).state
+    expect(String(summary(failed).why)).not.toMatch(/radio|design check/)
+    const flown = flyTo(calm({ battery: '' })).state
+    expect(String(summary(flown).why)).toMatch(/Before launch the design check said: There is no battery/)
+  })
+
+  it('blocking messages name what would fix them', () => {
+    const message = (params: Record<string, ParamValue>, code: string) =>
+      init(calm(params), fixtureDatasets).issues.find((issue) => issue.code === code)?.message
+    expect(message({ orbit: 'leo-iss' }, 'orbit_unreachable')).toMatch(/Electron.* can go there/)
+    expect(message({ orbit: 'leo-iss', launch_vehicle: 'electron' }, 'over_budget')).toMatch(/The launch is the biggest cost/)
   })
 })

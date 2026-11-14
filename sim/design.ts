@@ -7,7 +7,7 @@
 import type { Entity, Issue, Params } from '../shared'
 import { orbitPeriodS } from './orbit'
 import { instrumentIds, resolveAliases, SLOTS, type Slot, type SlotKey } from './params'
-import { busClassRank, findPart, has, num, str } from './parts'
+import { busClassRank, findPart, has, num, partsOf, str } from './parts'
 
 /** An instrument flown outside its `best_orbit` earns this share of its science. */
 export const OFF_ORBIT_SCIENCE_FACTOR = 0.5
@@ -20,8 +20,13 @@ export const MASS_MARGIN_WARNING = 0.9
 export const CAPTURE_DELTA_V_MS = 100
 /** A spacecraft that cannot station-keep stays in its orbit for this share of the orbit's lifetime. */
 export const DRIFT_LIFETIME_FACTOR = 0.5
-/** Warn when the chance of the bus surviving the mission is below this. */
-export const SURVIVAL_WARNING = 0.7
+/** Warn when the chance of the bus surviving the mission is below this (only when random failures are on). */
+export const SURVIVAL_WARNING = 0.9
+/**
+ * Science is added up day by day, so a design worth exactly the goal lands a hair above or
+ * below it depending on the step size. Within this many points of the goal counts as reaching it.
+ */
+export const SCIENCE_TOLERANCE = 1e-6
 const MAX_GROUND_STATIONS = 6
 const DAY_S = 86400
 /** One year, as data/ counts it (365.25 days). */
@@ -68,7 +73,7 @@ export interface Budgets {
   storage_gb: number
   /** Science per day at launch if all the data gets home. */
   science_per_day: number
-  /** Science this design returns over the whole mission if nothing breaks. */
+  /** Science this design returns over the whole mission if nothing breaks: the flight, run ahead of time. */
   science_expected: number
   /** The scenario's `target_science_score`. */
   science_goal: number
@@ -103,6 +108,8 @@ export interface FlightModel {
   science_per_day_full: number
   /** With the instruments always available. */
   data_gb_per_day_full: number
+  /** One per instrument that makes data, most science per GB first: the order the radio sends them in. */
+  streams: { gb_per_day: number; science_per_gb: number }[]
   downlink_gb_per_day: number
   storage_gb: number
   /** Chance the bus gets through one more day in this orbit's radiation. */
@@ -132,7 +139,44 @@ export function uptimeAt(
   const spare = available - flight.base_load_w
   if (spare < 0) return 0
   const powerShare = flight.instrument_load_w > 0 ? Math.min(1, spare / flight.instrument_load_w) : 1
-  return powerShare * flight.shadow_uptime
+  // Not the product: `power_available_w` is already an orbit average, so eclipse is counted in it once.
+  return Math.min(powerShare, flight.shadow_uptime)
+}
+
+/**
+ * One day (or part of one) of making and sending data. The radio sends the most valuable
+ * data first, so adding an instrument never lowers the science returned. Used by the
+ * flight loop and by the design forecast, so the two cannot disagree.
+ * shortcut: data left over from earlier days is valued at the design's average science per GB
+ * (exact after a ground station outage, slightly generous after a solar storm on a
+ * downlink-limited design); track a backlog per instrument if that ever matters.
+ */
+export function dayOfData(
+  flight: Pick<FlightModel, 'science_per_day_full' | 'data_gb_per_day_full' | 'streams' | 'downlink_gb_per_day' | 'storage_gb'>,
+  stored_gb: number,
+  uptime: number,
+  generatingDays: number,
+  downlinkDays: number,
+): { made_gb: number; sent_gb: number; stored_gb: number; lost_gb: number; science: number } {
+  const full = flight.data_gb_per_day_full
+  const made_gb = full * uptime * generatingDays
+  const sent_gb = Math.min(stored_gb + made_gb, flight.downlink_gb_per_day * downlinkDays)
+  const fresh = full > 0 ? made_gb / full : 0
+  let left = Math.min(sent_gb, made_gb)
+  let dataScience = 0
+  let science = 0
+  for (const stream of flight.streams) {
+    const take = Math.min(left, stream.gb_per_day * fresh)
+    left -= take
+    science += take * stream.science_per_gb
+    dataScience += stream.gb_per_day * stream.science_per_gb
+  }
+  if (full > 0) science += Math.max(0, sent_gb - made_gb) * (dataScience / full)
+  // Instruments that make no data have nothing to send home: their science counts as it is made.
+  science += Math.max(0, flight.science_per_day_full - dataScience) * uptime * generatingDays
+  const waiting = stored_gb + made_gb - sent_gb
+  const lost_gb = waiting > flight.storage_gb + 1e-12 ? waiting - flight.storage_gb : 0
+  return { made_gb, sent_gb, stored_gb: waiting - lost_gb, lost_gb, science }
 }
 
 export function formatUsd(value: number): string {
@@ -237,7 +281,8 @@ export function evaluateDesign(rawParams: Params, entities: Entity[]): DesignRep
   const mass_limit_kg = launcher && capacityColumn !== '' ? num(launcher.props, capacityColumn) : 0
   if (launcher && orbit) {
     if (mass_limit_kg <= 0) {
-      error('orbit_unreachable', 'mass', `${launcher.name} cannot reach ${orbit.name}. Pick a launch vehicle that goes there, or a different orbit.`)
+      const able = partsOf(entities, 'launch_vehicle').filter((part) => num(part.props, capacityColumn) > 0).map((part) => part.name)
+      error('orbit_unreachable', 'mass', `${launcher.name} cannot reach ${orbit.name}. ${able.length > 0 ? `${list(able)} can go there` : 'No launch vehicle in the catalog goes there'}. Pick a launch vehicle that goes there, or a different orbit.`)
     } else if (mass_kg > mass_limit_kg) {
       error(
         'mass_over_limit',
@@ -288,10 +333,13 @@ export function evaluateDesign(rawParams: Params, entities: Entity[]): DesignRep
   let drifting = false
   if (bus && orbit && delta_v_ms < delta_v_required_ms) {
     if (delta_v_required_ms > CAPTURE_DELTA_V_MS) {
+      const cheapest = partsOf(entities, 'bus')
+        .filter((part) => num(part.props, 'propulsion_delta_v_ms') >= delta_v_required_ms)
+        .sort((a, b) => num(a.props, 'cost_usd') - num(b.props, 'cost_usd'))[0]
       error(
         'delta_v_short',
         'design',
-        `Getting into ${orbit.name} takes an engine burn of ${n1(delta_v_required_ms)} m/s, but ${bus.name} can only manage ${n1(delta_v_ms)} m/s. Pick a bus with a bigger engine or an orbit that is easier to reach.`,
+        `Getting into ${orbit.name} takes an engine burn of ${n1(delta_v_required_ms)} m/s, but ${bus.name} can only manage ${n1(delta_v_ms)} m/s. Pick a bus with a bigger engine${cheapest ? ` (the cheapest that can do it is ${cheapest.name})` : ''} or an orbit that is easier to reach.`,
       )
     } else {
       drifting = true
@@ -305,13 +353,7 @@ export function evaluateDesign(rawParams: Params, entities: Entity[]): DesignRep
   const lifetime_s = Math.min(mission_s, busLife_s, orbitLife_s)
   const end_reason: FlightModel['end_reason'] =
     lifetime_s >= mission_s ? 'mission' : busLife_s <= orbitLife_s ? 'bus_life' : 'orbit_life'
-  if (drifting && bus && orbit) {
-    warning(
-      'no_station_keeping',
-      'design',
-      `${orbit.name} takes ${n1(delta_v_required_ms)} m/s of thruster fuel to hold, and ${bus.name} has ${n1(delta_v_ms)} m/s. It can still fly, but it will drift and stay in this orbit only half as long${Number.isFinite(orbitLife_s) ? ` (${formatYears(orbitLife_s)})` : ''}. A bus with a thruster fixes this.`,
-    )
-  }
+  // Drifting only matters when it cuts the mission short, and `orbit_life_short` says so then.
   if (bus && busLife_s < mission_s) {
     warning(
       'bus_life_short',
@@ -372,7 +414,7 @@ export function evaluateDesign(rawParams: Params, entities: Entity[]): DesignRep
       warning(
         'power_short',
         'power',
-        `Everything on at once needs ${n1(power_w)} W, but ${solar.name} averages ${n1(power_available_w)} W over an orbit. The instruments will take turns and run ${pct(clamp01((power_available_w - base_load_w) / instrument_load_w))} of the time. Pick a bigger power source or fewer instruments.`,
+        `Everything on at once needs ${n1(power_w)} W, but ${solar.name} averages ${n1(power_available_w)} W over an orbit. The instruments will take turns and run ${pct(instrument_uptime)} of the time. Pick a bigger power source or fewer instruments.`,
       )
     } else if (power_w > endOfLife_w) {
       warning(
@@ -403,17 +445,30 @@ export function evaluateDesign(rawParams: Params, entities: Entity[]): DesignRep
     )
   }
   const science_per_day_full = mission_days > 0 ? scienceFull / mission_days : 0
+  const instrumentGbPerDay = (part: Entity) => (num(part.props, 'data_rate_bps') * clamp01(num(part.props, 'duty_cycle', 1)) * DAY_S) / BITS_PER_GB
+  const streams = instruments
+    .filter((part) => instrumentGbPerDay(part) > 0 && mission_days > 0)
+    .map((part) => {
+      const best = str(part.props, 'best_orbit', 'any')
+      const suited = !orbit || best === 'any' || best === '' || best === orbit.id
+      const gb_per_day = instrumentGbPerDay(part)
+      return { gb_per_day, science_per_gb: (num(part.props, 'science_value') * (suited ? 1 : OFF_ORBIT_SCIENCE_FACTOR)) / mission_days / gb_per_day }
+    })
+    .sort((a, b) => b.science_per_gb - a.science_per_gb)
 
   // ---- Data: science only counts once the data reaches the ground.
   const data_gb_per_day_full =
     instruments.reduce((bits, part) => bits + num(part.props, 'data_rate_bps') * clamp01(num(part.props, 'duty_cycle', 1)) * DAY_S, 0) / BITS_PER_GB
+  const science_per_day = science_per_day_full * instrument_uptime
   const data_generated_gb_per_day = data_gb_per_day_full * instrument_uptime
   const link_factor =
     has(comms, 'reference_range_m') && has(orbit, 'comm_range_m') && prop(orbit, 'comm_range_m') > 0
       ? Math.min(1, (prop(comms, 'reference_range_m') / prop(orbit, 'comm_range_m')) ** 2)
       : 1
   const data_rate_bps = prop(comms, 'data_rate_bps') * link_factor
-  const ground_stations = Math.min(MAX_GROUND_STATIONS, Math.max(1, Math.round(num(params, 'ground_stations', 1))))
+  // Extra ground stations are an optional feature: off (1 station) unless the scenario puts a price on them.
+  const ground_stations =
+    num(params, 'ground_station_cost_usd_per_day') > 0 ? Math.min(MAX_GROUND_STATIONS, Math.max(1, Math.round(num(params, 'ground_stations', 1)))) : 1
   const contact_s_per_day = Math.min(DAY_S, prop(orbit, 'contact_s_per_day') * ground_stations)
   const downlink_gb_per_day = (data_rate_bps * contact_s_per_day) / BITS_PER_GB
   // No storage column in the catalog: the recorder holds one day of observations.
@@ -425,16 +480,43 @@ export function evaluateDesign(rawParams: Params, entities: Entity[]): DesignRep
       `${comms.name} is built for links up to ${n1(prop(comms, 'reference_range_m') / 1000)} km, but in ${orbit.name} the ground is ${n1(prop(orbit, 'comm_range_m') / 1000)} km away. At that range it runs at ${link_factor < 0.005 ? 'less than 1%' : pct(link_factor)} of its speed (${formatBps(data_rate_bps)}). Pick a radio with a longer range.`,
     )
   }
+  const flight: FlightModel = {
+    ...flightPower,
+    science_per_day_full,
+    data_gb_per_day_full,
+    streams,
+    downlink_gb_per_day,
+    storage_gb,
+    survival_per_day: 1, // set in the risk section below
+    end_reason,
+  }
   const returnedShare = data_generated_gb_per_day > 0 ? Math.min(1, downlink_gb_per_day / data_generated_gb_per_day) : 1
   if (comms && orbit && returnedShare < 1 - 1e-9) {
+    // The radio sends the most valuable data first, so the science share can be well above the data share.
+    const scienceShare = science_per_day > 0 ? dayOfData(flight, 0, instrument_uptime, 1, 1).science / science_per_day : 0
     warning(
       'downlink_short',
       'comms',
-      `Your instruments make ${formatGb(data_generated_gb_per_day)} a day, but ${comms.name} can only send ${formatGb(downlink_gb_per_day)} a day home from ${orbit.name}. ${returnedShare < 0.005 ? 'Almost none' : `Only ${pct(returnedShare)}`} of the science arrives. Pick a faster radio, an orbit with more contact time, or instruments that make less data.`,
+      `Your instruments make ${formatGb(data_generated_gb_per_day)} a day, but ${comms.name} can only send ${formatGb(downlink_gb_per_day)} a day home from ${orbit.name}. The most valuable data goes first, so ${scienceShare < 0.005 ? 'almost none' : pct(scienceShare)} of the science arrives. Pick a faster radio, an orbit with more contact time, or instruments that make less data.`,
     )
   }
-  const science_per_day = science_per_day_full * instrument_uptime
-  const science_expected = science_per_day * returnedShare * Math.max(0, lifetime_days - cruise_days)
+  // The forecast is the flight run ahead of time with no bad luck: same days, same fading power, same radio.
+  const start_s = cruise_days * DAY_S
+  // shortcut: missions over ~10 years are forecast in 3660 equal chunks instead of days, so a huge mission_duration_s cannot stall the design screen.
+  const chunk_s = Math.max(DAY_S, (lifetime_s - start_s) / 3660)
+  let science_expected = 0
+  let instrumentTime_s = 0
+  for (let t = start_s, waiting = 0; t < lifetime_s - 1e-6; ) {
+    const dayIndex = Math.floor(t / DAY_S + 1e-9)
+    const advance = Math.min(chunk_s > DAY_S ? chunk_s : (dayIndex + 1) * DAY_S - t, lifetime_s - t)
+    const uptime = uptimeAt(flightPower, (dayIndex * DAY_S) / YEAR_S)
+    const day = dayOfData(flight, waiting, uptime, advance / DAY_S, advance / DAY_S)
+    science_expected += day.science
+    instrumentTime_s += uptime * advance
+    waiting = day.stored_gb
+    t += advance
+  }
+  const missionUptime = lifetime_s > start_s ? instrumentTime_s / (lifetime_s - start_s) : instrument_uptime
   const science_goal = Math.max(0, num(params, 'target_science_score'))
 
   // ---- Budget: parts + launch (some rockets also charge per kilogram) + running the mission.
@@ -449,7 +531,7 @@ export function evaluateDesign(rawParams: Params, entities: Entity[]): DesignRep
     error(
       'over_budget',
       'budget',
-      `The mission costs ${formatUsd(cost_usd)} (${formatUsd(build_cost_usd)} spacecraft, ${formatUsd(launch_cost_usd)} launch${ops_cost_usd > 0 ? `, ${formatUsd(ops_cost_usd)} operations` : ''}), which is ${formatUsd(cost_usd - budget_usd)} over the ${formatUsd(budget_usd)} budget. Swap something for a cheaper part.`,
+      `The mission costs ${formatUsd(cost_usd)} (${formatUsd(build_cost_usd)} spacecraft, ${formatUsd(launch_cost_usd)} launch${ops_cost_usd > 0 ? `, ${formatUsd(ops_cost_usd)} operations` : ''}), which is ${formatUsd(cost_usd - budget_usd)} over the ${formatUsd(budget_usd)} budget. ${launch_cost_usd >= build_cost_usd ? 'The launch is the biggest cost: look for a cheaper launch vehicle first.' : 'The spacecraft is the biggest cost: swap something for a cheaper part.'}`,
     )
   }
 
@@ -473,24 +555,25 @@ export function evaluateDesign(rawParams: Params, entities: Entity[]): DesignRep
   const radiation = Math.max(0, prop(orbit, 'radiation_factor', 1))
   const ratedLife_s = Number.isFinite(busLife_s) ? busLife_s : mission_s
   const survival_per_day = ratedLife_s > 0 ? Math.pow(clamp01(prop(bus, 'reliability', 1)), (radiation * DAY_S) / ratedLife_s) : 1
+  flight.survival_per_day = survival_per_day
   const bus_reliability = Math.pow(survival_per_day, lifetime_days)
-  if (params.random_failures !== false && bus && orbit && radiation > 1 && bus_reliability < SURVIVAL_WARNING) {
+  if (params.random_failures === true && bus && orbit && bus_reliability < SURVIVAL_WARNING) {
     warning(
       'radiation_risk',
       'design',
-      `Radiation in ${orbit.name} is ${n1(radiation)} times as strong as in low Earth orbit, so the chance of ${bus.name} surviving the mission is only ${pct(bus_reliability)}. A more reliable bus or a calmer orbit improves the odds.`,
+      `${radiation > 1 ? `Radiation in ${orbit.name} is ${n1(radiation)} times as strong as in low Earth orbit, so the` : 'The'} chance of ${bus.name} surviving the mission is only ${pct(bus_reliability)}. A more reliable bus or a calmer orbit improves the odds.`,
     )
   }
 
   // ---- Forecast: only worth showing once the design can launch.
-  if (science_goal > 0 && instruments.length > 0 && !issues.some((issue) => issue.severity === 'error') && science_expected < science_goal) {
+  if (science_goal > 0 && instruments.length > 0 && !issues.some((issue) => issue.severity === 'error') && science_expected < science_goal - SCIENCE_TOLERANCE) {
     warning(
       'science_short',
       'design',
       `This design can return about ${n1(science_expected)} of the ${n1(science_goal)} science points the mission needs. ${
         returnedShare < 1 - 1e-9
           ? 'Not all of its data gets home, so fix the downlink first.'
-          : instrument_uptime < 1
+          : missionUptime < 1 - 1e-9
             ? 'The instruments are switched off part of the time, so fix the power first.'
             : 'Add instruments, or pick ones that earn more science in this orbit.'
       }`,
@@ -534,15 +617,6 @@ export function evaluateDesign(rawParams: Params, entities: Entity[]): DesignRep
     cruise_days,
     mission_days,
     lifetime_days,
-  }
-  const flight: FlightModel = {
-    ...flightPower,
-    science_per_day_full,
-    data_gb_per_day_full,
-    downlink_gb_per_day,
-    storage_gb,
-    survival_per_day,
-    end_reason,
   }
   return { budgets, flight, issues, ready: !issues.some((issue) => issue.severity === 'error') }
 }
