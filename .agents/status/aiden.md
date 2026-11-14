@@ -33,27 +33,28 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** main (coordination); source follow-ups remain aiden-codex/shared-theme (#16), aiden-codex/leaderboard (#19)
-**Last updated:** 2026-11-14 11:16
+**Branch:** main (merge coordination); temporary isolated rehearsal/merge branches only
+**Last updated:** 2026-11-14 11:26
 
 ### Working on right now
 
-Aiden's team-unblock request handled: standing repo-level task go-ahead, per-owner nudges, sole merge coordinator delegation to claude@ethan, and GitHub Actions Pages enablement. No active source edits.
+Aiden explicitly asked Codex to execute merge batch #3 #2 #4 #5 #6 #7 #8 #9 #16 #10 #11 #13 #14 #15 and verify the existing Vite Pages deployment. Current #10 requires #22 first (updated GAME_PLAN). This temporarily supersedes the earlier Ethan-only merge delegation for this batch.
 
 ### Files / folders I'm touching (hands off)
 
-Only AGENTS.md authorization note, my status/BOARD lines, append-only LOG and my handoffs. ui/theme/ and ui/leaderboard/ remain my follow-up ownership. No other agent's status section or source branch touched.
+- Main: merge commits of requested PRs and required #22; no source branch changes/deletions.
+- README integration conflicts only, preserving all agents' sections/rows; no feature edits.
+- Own status/BOARD lines, append-only LOG, handoffs, and the prior codex-authored AGENTS merge-coordinator note to record temporary batch ownership.
+- Claude Aiden's status section and source branches remain untouched. No generic Pages workflow or Pages Source setting change.
 
 ### Just finished
 
-Inspected every status, relevant open handoff, current PR metadata and repo/Pages permissions. Published task authorization under Aiden's instruction, delegated merge coordination to Ethan (who offered it), and documented package/config + README boundaries. Enabled Pages using existing repo-owner account; API confirms workflow build type and public URL. No collaborator access changes and no PRs merged by Codex.
+Verified Pages already uses workflow source, read current deploy.yml (Vite npm test/build + Pages artifact/deploy), inspected current PR heads/checks. #6 conflicts with README; #22 is now required by #10. No competing merge claim recorded from Ethan.
 
 ### Missing / I need from someone
 
-- Ethan: claim merge-coordinator task; review/test current heads and merge ready dependency chains, publish sim-data/app PRs, report held PRs and deploy.
-- All owners: pull the all-agent nudge, continue within scope, acknowledge actual blockers. Package/test script edits require Claude/Ethan handoff; README stays section-specific.
-- Deployment/live device rehearsal remains unverified. Existing source follow-ups (theme/adoption/leaderboard mounting) stay in owners' handoffs.
+App loop/sim-data integration is not in the user's listed PR batch. I will verify what this batch actually deploys and report remaining app wiring honestly. Source issues beyond necessary integration conflicts go back to owners.
 
 ### Heads up for other agents
 
-Repo-lead permission is granted for non-overlapping tasks and normal owner-scoped handoff work; no fresh Aiden task-selection approval needed. Each teammate's personal human constraints still apply. Ethan alone coordinates merges after review/checks; this is not blanket approval of every PR. Nudge files are picked up on the next pull/resume; external Claude/Cursor sessions were not directly controlled.
+Ethan: hold merge execution for this named batch while Codex performs Aiden's newer direct instruction. Everyone may continue source work; moving PR heads must be rechecked. Existing Pages Actions workflow in #4 is the only deployment workflow to use.
