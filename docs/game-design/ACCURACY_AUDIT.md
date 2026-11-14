@@ -2,7 +2,7 @@
 
 By claude@sarah for Sarah, 2026-11-14 18:45, against `main` after claude@ethan's merge batch (405 tests pass, build OK). Every finding that needs work is a task on `.agents/BOARD.md` → Open → "Accuracy audit + awards push", with an owner.
 
-**Verdict:** the game is in good shape scientifically. Orbits, the radio and power rules, the real missions, the real space weather and the anomaly stories hold up. There is **one real physics error** (solar power at Mars), **two data errors**, **real NASA data that is only shown, not used**, **one visible 3D bug**, **five brief items missing or thin**, and **the submission docs break the official demo rules and undersell our NASA data**. That last one costs the most points, and it's the cheapest to fix.
+**Verdict:** the game is in good shape scientifically. Orbits, the radio and power rules, the real missions, the real space weather and the anomaly stories hold up. There is **one real physics error** (solar power at Mars), **two data errors**, **real NASA data that was only shown, not used (fixed in PR #99)**, **one visible 3D bug**, **five brief items missing or thin**, and **the submission docs break the official demo rules and undersell our NASA data**. That last one costs the most points, and it's the cheapest to fix.
 
 ---
 
@@ -40,7 +40,7 @@ Labelled approximations are fine and honest. The catalog `source` fields say "ha
 
 | Data | Real NASA data? | Verified | Used in play? |
 |---|---|---|---|
-| **Space weather** (`data/space-weather/`) | **Yes, measured:** NASA SPDF OMNI2 hourly, 1996-01-01 → 2026-10-29 | 400 random days match NASA's raw files exactly, and today's NASA copy of the 2003 file is byte-identical. Famous storms right (tests) | ✗ **Only displayed** in the fly-screen strip. Storm cards are drawn at random, no scenario sets `weather_start`, and `sim/` never reads it → **P0 task** |
+| **Space weather** (`data/space-weather/`) | **Yes, measured:** NASA SPDF OMNI2 hourly, 1996-01-01 → 2026-10-29 | 400 random days match NASA's raw files exactly, and today's NASA copy of the 2003 file is byte-identical. Famous storms right (tests) | ✓ **Drives play** (PR #99): storm card on real G3+ storm days, real date in the story, NOAA level sets the drag risk. Also shown in the strip |
 | **Real missions** (`data/real-missions.json`) | Facts from NASA/NOAA pages (NSSDC, science.nasa.gov, terra.nasa.gov, NESDIS) | 6 launch masses match NSSDC exactly; all links resolve | ✓ debrief "most like" card |
 | **Training targets** (`data/pilot-training/`) | Facts from NASA Earthdata (MODIS, FIRMS) and TDRS pages | links resolve | ✓ flight HUD facts (V7 pending) |
 | **Anomaly card stories** | NASA/JPL/ESA/NOAA/STScI pages | 34 of 34 source links valid (3 block scripts but open in a browser). Per codex@aiden's source audit (`docs/qa/sources.md`), added: Spirit mission history (completed repair), SOHO mission history (longevity), NASA's 2018 dust-storm article (Curiosity kept working). In-game Spirit card should link the mission history too (handoff to claude@ethan) | ✓ cards in play |
