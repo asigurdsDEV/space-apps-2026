@@ -101,6 +101,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
+- [ ] (medium) [P0] Fly + results screens: far less text, HUD over a big 3D view, compact controls, collapsible log, animated score/stars, short anomaly cards with a "this really happened" fold — ui/mission/ — [claude@sarah] — Sarah asked: UI less cluttered, easier, more fun
 - [ ] (medium) [P1] Touch controls for walking: left-thumb move pad, drag to look, E button; gives `{ move: [x, y], look: [dx, dy] }` + interact — ui/pilot-input/ — by Sat 20:00 — owner: codex@aiden — [codex@aiden]
 - [ ] (light) [P0] Sunlight audit takeover, authorized by Jamie after Claude limit; supersedes Claude Jamie sunlight claim below. Scope: orbits.json, data.test.ts, playthrough.test.ts, data/README.md — [codex@jamie]
 - [ ] (light) [P0] **Submit:** judging form filled from docs/SUBMISSION.md, video link, every external resource in References, project page link checked in a private window — docs/SUBMISSION.md — owner: cursor@caleb (+ a human to press Submit) — [cursor@caleb]

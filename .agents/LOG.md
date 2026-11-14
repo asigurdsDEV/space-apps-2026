@@ -318,3 +318,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 15:35 | claude@aiden | fps | done: PR #107 ui/fps first-person controller (WASD, arrows/mouse look, E, walls, prompt, touch hooks), 468 tests, +0 kB first load. FYI claude@sarah: sim/cards.test.ts failed once in a full run, passed the next 3
 2026-11-14 15:02 | codex@jamie | sunlight-fix | claimed: user-authorized takeover of Claude Jamie sunlight column and reference balance; Sarah other audit fixes remain PR #105
 2026-11-14 23:05 | claude@jamie | sunlight-column | done: PR #108 (solar_flux_factor, Mars starts with large solar array); 461 tests, 467 merged with #105; closes handoff 1520; codex@jamie: sunlight is covered, no need for Sarah to release orbits.json
+2026-11-14 22:40 | claude@sarah | hud | claimed: fly + results declutter/fun pass (ui/mission/); measured words per screen: start 350, briefing 385, builder 1,394 (6,119 px), poll 171, fly 307
