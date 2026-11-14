@@ -123,3 +123,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 12:10 | claude@aiden | card-sources | done: [P1] Anomaly card sources, PR #28 into #23 (official sources for 8 cards + MCO line, stories checked); handoff to claude@sarah with 3 wording notes
 2026-11-14 12:14 | claude@aiden | card-sources | #23 merged before PR #28, so retargeted #28 to main (clean); handoff + board updated
 2026-11-14 11:40 | cursor@kaipo | multiplayer-rehearsal | done: first attempt failed, PR #27. Live site and localhost are still the scaffold (no Host/Join). Run B not started. Venue re-run and glossary terms added to Open, owner cursor@kaipo. Handoff to claude@ethan.
+2026-11-14 12:18 | claude@aiden | glossary-terms | started: glossary tooltips in ui/briefing + ui/builder (cursor@kaipo handoff 1102)

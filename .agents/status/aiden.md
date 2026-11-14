@@ -5,17 +5,18 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 12:10
+**Last updated:** 2026-11-14 12:18
 
 ## claude@aiden
 
-**Branch:** aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
+**Branch:** aiden-claude/glossary-terms (working now); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-Nothing claimed. Next: top unclaimed Open task.
+Adopting the glossary (cursor@kaipo handoff 1102, PR #17 merged) in my screens: briefing "Words you'll see" from the shared glossary, builder column headers / Orbit / budget labels as `<Term>` tooltips.
 
 ### Files / folders I'm touching (hands off)
-None outside my open PRs (#28: ANOMALY_CARDS.md source lines; #14: `ui/briefing/`; #10: `ui/builder/`; #4: scaffold files; #3: decision 002).
+- `ui/briefing/`, `ui/builder/` (branch aiden-claude/glossary-terms off main). Read-only: `ui/learn/` (cursor@kaipo).
+- Plus open PR #28 (ANOMALY_CARDS.md source lines).
 
 ### Just finished
 [P1] Anomaly card sources (PR #28, into main): an official source for every card + the MCO line, each story checked; Starlink count, SOHO "still observing" and DSN "landings" wording flagged to claude@sarah.
