@@ -45,25 +45,25 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** aiden-codex/daily-regression (claim on main first)
-**Last updated:** 2026-11-14 12:26
+**Branch:** main (done coordination); aiden-codex/daily-regression (PR #56, merged)
+**Last updated:** 2026-11-14 12:33
 
 ### Working on right now
 
-Claiming focused Daily/stars/personal-best regression of the assembled game. Browser checks and existing tests only; document observed behavior and hand failures to source owners. Separate from Caleb's broad live/a11y check and Ethan's e2e implementation.
+Focused Daily/stars/personal-best regression complete. QA report PR #56 merged by Ethan in ddfb083; no active implementation claim. Recovery/source integration remains with its owners.
 
 ### Files / folders I'm touching (hands off)
 
-`docs/qa/daily-records.md` (new report), own status section, own BOARD line/Missing findings, append-only LOG and own handoffs. All app/, sim/, shared/, ui/mission/, ui/start/, net/, ui/scene3d/, workflow/config and Claude branches are read-only. No recovery changes: Claude owns them. Unrelated docs/CHALLENGE 2.md stays untouched.
+No active source edits. PR #56 changes only `docs/qa/daily-records.md`; own coordination/status/log/handoffs only on main. Claude sections/branches, app/, sim/, shared/, ui/mission/, ui/start/, net/, ui/scene3d/, workflows/config untouched. ui/leaderboard/ and ui/theme/ remain follow-up ownership. Unrelated docs/CHALLENGE 2.md left untouched.
 
 ### Just finished
 
-Checked main 8c7a293 (latest coordination caa0791): 294/294 tests, typecheck and production build pass. Live solo First Light Normal: Start → Briefing → Builder → Launch → Mission at 60× → Results. Starting design correctly misses science goal: 26 points, 365 days, 1.7/30 science, local best displayed. PRs #41 (bonus goals/program), #43 (offline), #44 (tips) are open with green build checks. Main entry JS is 959.41 kB / 263.53 kB gzip, so Ethan's lazy 3D split remains relevant.
+Live bundle index-Df1Hs8x_.js matches tested de0d869 build. Daily Moon ignores ordinary Hard picker: Normal budget $300M/goal75. Reference Daily win: 100 points, 3 stars, 730 days. After reload, regular Moon lower design: 69 points/0 stars, separate regular record. After another reload, lower Daily: current 69/0, saved Daily still 100/3 with original three instruments/high-gain dish. Expanded record fits 390px viewport with no horizontal overflow; console error log empty at inspection. 316/316 tests + typecheck/build pass. Exact steps and limitations in PR #56.
 
 ### Missing / I need from someone
 
-Ethan: Start currently ignores request.difficulty and shows variant IDs twice; daily callback/seed/UTC refresh, GO/NO-GO poll mounting, bonusGoal/stars/leaderboard metadata and spaceWeather still need app wiring. Sarah's anomaly/what-if UI requires Ethan's sim events/analysis. Kaipo and Caleb: live page now unblocks your network, phone and accessibility rehearsals. Jamie/Caleb: finalize demo run sheet and update submission/source descriptions that still describe a scaffold or no measured data. Detailed evidence in completion-check handoff.
+No Daily/record integration defect found. Ethan merged PR #56 with #52–#55; his merge receipt reports 331 tests/build pass. Live midnight rollover, blocked storage in browser, offline, venue co-op and newer recovery PR #53 are outside this check; Caleb/Kaipo/Claude retain their scopes. The former difficulty/Daily/GO-NO-GO/stars prop gaps are resolved on the tested revision.
 
 ### Heads up for other agents
 
-No blanket claim of multiplayer, phone, offline or winning live-run verification: this check was one desktop solo losing run. Ethan remains sole merge coordinator for ready PRs. Claude Aiden owns offline/PWA, bundle-size workflow and newly claimed sound; Ethan owns all 3D; Jamie Codex already completed tips in PR #44. Daily/stars storage helper is ready, but stars accompany the best-score design rather than an independent progression store.
+Readiness handoff 1156 is closed with observed assembled-app evidence. No app/shared/sim/data/UI source changes. Tests use existing coverage; no duplicate test harness/dependency added. Personal-best stars belong to the matching best-score design, not independent progression. Ethan remains merge coordinator; this QA does not certify later code changes.

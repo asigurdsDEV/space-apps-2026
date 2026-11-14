@@ -28,13 +28,13 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Missing / needed
 
-- Completion check 12:07: main has 294 passing tests + clean build; current gaps, ready PRs #41/#43/#44 and owner actions are in `20261114-1207-codex@aiden-all-completion-check.md`. Start difficulty request is not applied by app; Ethan already owns Start-list/integration fixes. Venue rehearsal, phone/a11y checks, final demo run sheet and refreshed submission/source claims remain — [found by codex@aiden]
+- Supersedes the 12:07 check: difficulty, Daily, GO/NO-GO, stars/weather/tips/sound and lazy 3D are integrated. Focused Daily/regular record regression passes on de0d869 (PR #56 report, 316 tests/build). The old completion handoff is historical for those integrations; venue rehearsal, full phone/a11y, final demo/submission and newer app-safety validation remain separate — [found by codex@aiden]
 
 - Builder first-time tips component ready in PR #44; mount BuilderTutorial once above/beside MissionBuilder while designing — app/builder owners (Ethan/Aiden); ui/tutorial/README.md API — [found by codex@jamie]
 
 - Resolved 12:07: Pages serves the real game (PR #42); codex@aiden completed live solo Start → Results (First Light Normal, starting design, 60×, science_shortfall, 26 points). Older scaffold/Pages permission blockers below are historical; Caleb and Kaipo can resume their checks — [found by codex@aiden]
 
-- Leaderboard PRs #19 + #37 are merged and regular results mounting works live. Still missing in app/: dailySeed only for Daily and supplied earned-star count; bonus goal must reach MissionScreen. App owner claude@ethan; see completion-check handoff — [found by codex@aiden]
+- Resolved: leaderboard #19/#37 props are now integrated. Live Daily 100 points/3 stars survives two reloads plus independent regular 69/0 and lower Daily 69/0; saved score, stars and original design remain paired. Evidence: PR #56, daily-regression-verified handoff — [found by codex@aiden]
 
 - Theme PR #16 is imported by app; builder/briefing use tokens. app currently pins Start/Lobby/Mission dark because those screens retain local palettes. Full light-theme adoption remains with screen owners; no blocker to the current dark game — [found by codex@aiden]
 
@@ -54,7 +54,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
-- [ ] (light) [P1] Daily/stars/personal-best regression: assembled-game persistence and regular-vs-daily isolation; report evidence only — docs/qa/daily-records.md (new); ui/leaderboard/ read-only — [codex@aiden]
 
 
 
@@ -80,6 +79,8 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 
 ## Done
+
+- [x] (light) [P1] Daily/stars/personal-best regression: assembled-game persistence and regular-vs-daily isolation; report evidence only — docs/qa/daily-records.md (new); ui/leaderboard/ read-only — [codex@aiden] — PR #56 merged (ddfb083): live Daily 100/3 stars retained through two reloads, regular 69/0 and lower Daily 69/0; saved winning design kept; 316 tests/build pass
 
 - [x] (light) [P1] Hidden glossary tooltips push past the right edge and add a horizontal scrollbar (builder budgets at 1024 px) — ui/learn/ — [cursor@kaipo] — in PR #58: tips use `display: none` until hover/focus; right-edge anchor when wide
 - [x] (light) [P1] Builder risk meter — ui/builder/ + app/useChance.ts — [claude@aiden] — in PR #57: "Chance of success" from 20 background test flights on Hard (0% starting design, 95% winning design), hidden on Easy/Normal
