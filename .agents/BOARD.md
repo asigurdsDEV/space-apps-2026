@@ -57,9 +57,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## In progress
 - [ ] (light) [P1] Daily/stars/personal-best regression: assembled-game persistence and regular-vs-daily isolation; report evidence only — docs/qa/daily-records.md (new); ui/leaderboard/ read-only — [codex@aiden]
-- [ ] (light) [P1] Bundle-size check in the deploy workflow: fail the build if the first-load JS grows past a set limit — .github/workflows/ — needs: lazy 3D split — owner: claude@aiden — [claude@aiden]
-- [ ] (light) [P0] Scroll to top on every screen change (briefing and builder open ~350 px down) — app/ — owner: claude@ethan — taken over by claude@aiden at Aiden's request (claude@ethan at usage limit until ~16:20; handoff offer-app-tasks); does not touch his paused ui/scene3d branches — [claude@aiden]
-- [ ] (light) [P1] Crash safety for judging: an error boundary around each screen with "Something went wrong, back to the builder" instead of a white page — app/ — owner: claude@ethan — taken over by claude@aiden at Aiden's request (claude@ethan at usage limit until ~16:20; handoff offer-app-tasks); does not touch his paused ui/scene3d branches — [claude@aiden]
 
 
 
@@ -87,6 +84,9 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Done
 
+- [x] (light) [P0] Scroll to top on every screen change — app/ — [claude@aiden] (taken over from claude@ethan at Aiden's request) — in PR #53: useScrollToTop at every screen switch; checked briefing/builder/poll/flight open at the top
+- [x] (light) [P1] Crash safety for judging — app/ — [claude@aiden] (taken over from claude@ethan) — in PR #53: ErrorBoundary + crash screen (Back to the builder / Main menu); crash-tested in the browser
+- [x] (light) [P1] Bundle-size check in the deploy workflow — scripts/, .github/workflows/ — [claude@aiden] — in PR #54: `npm run size`, first load 117 kB gzipped, limit 150 kB
 - [x] (light) Debrief polish: no nameless bonus star (playtest P2), real NASA mission match, 3D `SpaceView` orbit view on the fly screen, anomaly card wording (38 of 49 / SOHO 30 yrs / DSN launches) — ui/mission/, docs/game-design/ — [claude@sarah] — in PR #52; match needs #50 + app/ to pass `realMissions` (handoff to claude@ethan)
 - [x] (light) [P1] Start: scenario menu repeated Easy/Hard — app/ — [claude@ethan] — fixed on `main`: app passes only the three base scenarios, the Difficulty menu picks the level
 - [x] (light) [P1] Fast first load on phones: export a lazy-loading `SpaceView` from ui/scene3d (same props, `React.lazy` + Suspense) so three.js isn't in the first download for any screen — ui/scene3d/ — owner: claude@ethan (moved by claude@aiden at Aiden's request: 3D work is Ethan's; handoff lazy-3d) — [claude@ethan] — done in 10ae68e (main chunk 959 kB → 352 kB); claude@aiden's 15:00 takeover of this line withdrawn, Ethan had just finished it

@@ -5,21 +5,20 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Aiden
 **Agent:** Claude Code + Codex
 **Branch:**
-**Last updated:** 2026-11-14 15:00
+**Last updated:** 2026-11-14 15:20
 
 ## claude@aiden
 
-**Branch:** aiden-claude/app-safety + aiden-claude/bundle-check (working now); aiden-claude/briefing-bonus (PR #49); aiden-claude/mobile-budgets (PR #46); aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
+**Branch:** aiden-claude/app-safety (PR #53); aiden-claude/bundle-check (PR #54); aiden-claude/briefing-bonus (PR #49); aiden-claude/mobile-budgets (PR #46); aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-Taking over three of claude@ethan's tasks at Aiden's request (Ethan at usage limit until ~16:20): scroll to top on screen change, crash-safety error boundary (app/). Plus my bundle-size check (unblocked: Ethan's lazy 3D landed, main chunk 352 kB).
+Nothing claimed. Ready to take more of claude@ethan's tasks at Aiden's request, without touching his paused branches (scene3d-launch, scene3d-fly).
 
 ### Files / folders I'm touching (hands off)
-- `app/App.tsx`, `app/ErrorBoundary.tsx` (new): small changes only, on top of whatever claude@ethan merges.
-- `.github/workflows/` + a small size-check script (bundle-size check). Not `ui/scene3d/` (claude@ethan).
-- Plus open PR #49 (`ui/briefing/`).
+None outside my open PRs (#53 `app/App.tsx`, `app/ErrorBoundary.tsx`, `app/app.css`; #54 `scripts/`, `package.json`, deploy workflow; #49 `ui/briefing/`).
 
 ### Just finished
+Took over claude@ethan's scroll-to-top + crash safety (PR #53) at Aiden's request; bundle-size check in CI (PR #54, first load 117 kB / 150 kB). Ethan's lazy 3D, GO/NO-GO and daily lines moved to Done in his name.
 Briefing shows the bonus star goal (PR #49, claude@jamie handoff 1225 done).
 Playtest of main (won A 94 / lost F 26, no errors), 7 findings posted with owners. Fixed mine: compact phone budgets panel (PR #46).
 [P2] Sound (PR #45): `ui/audio/` generated sound effects + mute toggle; builder part-pick clicks; handoff to app/gonogo/results owners.
