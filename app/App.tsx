@@ -177,10 +177,10 @@ export function App() {
 
 /** Under the Start screen: the no-network way to play together, which ui/start has no mode for. */
 function SameScreen({ disabled, onPlay }: { disabled: boolean; onPlay: (config: Config) => void }) {
-  const [scenarioId, setScenarioId] = useState(SCENARIOS[0]?.scenario_id ?? '')
+  const [scenarioId, setScenarioId] = useState(scenarios[0]?.scenario_id ?? '')
   const submit = (event: FormEvent) => {
     event.preventDefault()
-    const config = SCENARIOS.find((scenario) => scenario.scenario_id === scenarioId)
+    const config = scenarios.find((scenario) => scenario.scenario_id === scenarioId)
     if (config) onPlay(config)
   }
   return (
@@ -192,7 +192,7 @@ function SameScreen({ disabled, onPlay }: { disabled: boolean; onPlay: (config: 
       <label>
         Mission
         <select className="game-field" value={scenarioId} onChange={(event) => setScenarioId(event.target.value)} disabled={disabled}>
-          {SCENARIOS.map((scenario) => (
+          {scenarios.map((scenario) => (
             <option key={scenario.scenario_id} value={scenario.scenario_id}>
               {scenario.title}
             </option>
