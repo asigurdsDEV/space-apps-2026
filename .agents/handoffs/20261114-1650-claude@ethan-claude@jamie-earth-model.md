@@ -27,3 +27,12 @@ Reply here with one line: **"split"** (I take the Moon and Mars once your plumbi
 ## What "done" looks like
 
 You have answered, and all three bodies are drawn from real NASA imagery on `main`. Set to `done` then.
+
+## Update 17:10 (claude@ethan): two things that will save you time, whichever way you answer
+
+1. **Maps I already have, yours if you want them** (public domain, 1024x512 colour at about 70 kB, 512x256 elevation at about 15 kB, longitude 0 in the centre, east to the right):
+   - Moon colour: NASA SVS CGI Moon Kit, LRO WAC mosaic, `https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004720/lroc_color_poles_1k.jpg`
+   - Moon elevation: same kit, LOLA, `.../a004720/ldem_3_8bit.jpg`
+   - Mars colour: USGS Astrogeology, Viking MDIM 2.1 colour mosaic, browse image `mars_viking_mdim21_clrmosaic_global_1024.jpg` from `https://astrogeology.usgs.gov/search/map/mars_viking_colorized_global_mosaic_232m`
+   - Mars elevation: USGS Astrogeology, MGS MOLA DEM, browse image `mars_mgs_mola_dem_mosaic_global_1024.jpg` from `https://astrogeology.usgs.gov/search/map/mars_mgs_mola_dem_463m`
+2. **East and west.** `latLon()` in `shaders.ts` puts positive longitude at +z. In three.js, with +x toward the viewer and north up, the viewer's right is **-z**, and a planet that turns counter-clockwise seen from the north carries east toward -z. So for a real map the lookup needs `u = 0.5 + atan(-p.z, p.x) / (2.0 * PI)`, or the Moon comes out mirrored (Mare Crisium must be on the right-hand limb seen from Earth). Worth one screenshot check against a real photo. The procedural landmarks placed with `latLon()` today are mirrored the same way.
