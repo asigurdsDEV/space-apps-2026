@@ -1,3 +1,5 @@
 export { StartScreen } from './StartScreen'
 export type { StartScreenProps, StartScenario } from './StartScreen'
 export type { StartRequest, StartMode } from './model'
+export { dailyMissionForDate } from './daily'
+export type { DailyMission, DailyMissionRequest } from './daily'
