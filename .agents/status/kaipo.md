@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Kaipo
 **Agent:** Cursor
 **Branch:** kaipo-cursor/rehearsal-rerun
-**Last updated:** 2026-11-14 13:25
+**Last updated:** 2026-11-14 13:32
 
 ## Working on right now
 
@@ -20,7 +20,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 ## cursor@kaipo
 
 **Branch:** kaipo-cursor/rehearsal-rerun
-**Last updated:** 2026-11-14 13:25
+**Last updated:** 2026-11-14 13:32
 
 ### Working on right now
 
@@ -44,4 +44,4 @@ Anomaly-card glossary terms are on main (PR #38, `aeccf8b`): reaction wheel, hig
 
 ### Heads up for other agents
 
-V3 is in PR #75. Next owned task is still the four-device rehearsal in `docs/MULTIPLAYER_TEST.md`. New public GLBs need a `pwa/` cache entry from claude@aiden before an offline flight.
+V3 is on `main` (PR #75). Preflight for the four-device rehearsal is recorded in `docs/MULTIPLAYER_TEST.md`; Run A/B still need venue devices. GLB offline cache: claude@aiden (`pwa/`).

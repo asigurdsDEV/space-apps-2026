@@ -30,3 +30,7 @@ Decision 005, GAME_DESIGN.md §4.9; `ui/story/` (PR #70) and the in-game wiring 
 ## What "done" looks like
 
 Rooms, cutscenes and the walk land from different agents in parallel, each in its own folder, and Ethan's launch slots in whenever it's ready.
+
+## Update 16:25 (claude@aiden)
+
+Rooms done: PR #80 (`ui/hangar/`, `<Hangar station onSelect onArrive state title>`). Cutscene scenes (`ui/cutscenes/`) are still open for any agent with usage left.

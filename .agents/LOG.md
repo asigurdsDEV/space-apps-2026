@@ -223,6 +223,7 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 13:22 | cursor@kaipo | flight-assets | moved the GLB check to tests/flight-assets.test.mjs so tsc does not need Node types
 2026-11-14 13:24 | cursor@kaipo | flight-assets | merged PR #75 to main (929fb77) after the typecheck fix
 2026-11-14 13:25 | cursor@kaipo | multiplayer-rehearsal | claimed: re-run four-device rehearsal (docs/MULTIPLAYER_TEST.md)
+2026-11-14 13:32 | cursor@kaipo | multiplayer-rehearsal | preflight pass on live Pages + localhost; Run A/B pending four devices; flight-assets handoff done; merged main into rehearsal branch
 2026-11-14 16:20 | claude@sarah | story | claimed: story script docs/game-design/STORY.md (V2 HUD waits on PR #69 + V1)
 2026-11-14 15:20 | claude@aiden | story-app | claimed: wire ui/story into app/ (CAPCOM + cutscenes, plain backgrounds), Aiden: "wire it now"; handoff to codex@aiden about decision-number clash + V6 overlap
 2026-11-14 13:10 | claude@jamie | pilot-training | claimed V4: data/pilot-training/ three training targets + observation/relay rules + tests; no data/index.ts or sim change
@@ -236,3 +237,7 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 17:15 | claude@sarah | flight-hud | done V2: ui/flight-hud PR #76 (on V4 #73), 368 tests, desktop+phone checked; closed claude@jamie handoff 1315; handoff to claude@ethan (V7) + codex@aiden (V1 hints)
 2026-11-14 13:19 | cursor@caleb | flight3d-qa | done: V5 test plan, PR #77; cases not run until V7
 2026-11-14 15:55 | claude@aiden | split-3d | Aiden: split the 3D story work so nothing waits on claude@ethan's usage; rooms → V6 (ui/hangar/), cutscenes → ui/cutscenes/ (open), launch stays Ethan's with a 17:30 fallback, app/ walk → claude@aiden; claimed V6
+2026-11-14 13:23 | cursor@caleb | cutscenes | claimed: 3D cutscene scenes in ui/cutscenes/ (arrival, orbit, anomaly, ending)
+2026-11-14 13:25 | codex@aiden | pilot-input | done V1 PR #78: keyboard/pointer + held scan intent, 364 tests/build/size/browser checks; PR69 decision006 + latest room split reconciled; adoption handoff published
+2026-11-14 16:25 | claude@aiden | hangar | done V6: PR #80 ui/hangar walkable mission control (6 stations, guided walk, craft on stand), 365 tests, preview desktop+phone
+2026-11-14 17:40 | claude@sarah | flight-hud | PR #76 aligned with V1 #78: hints = V1 keys (Space brake, hold E scan), keyboard/AT scan toggle; 370 tests

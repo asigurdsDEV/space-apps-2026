@@ -2,7 +2,7 @@
 
 How to check online co-op for up to 4 players, and what to do when the network fails. This is the venue script for the Space Mission Design Game (team Kimchi Trenchers).
 
-**Status:** first attempt recorded 2026-11-14 11:35 (Pacific). **Fail.** The live site and local dev both show the scaffold page ("Scaffold is running"). There is no Host online or Join control, so a room was never created. `ui/start/` has those controls, and `app/main.tsx` does not mount them yet (`ethan-claude/app-loop` is still open). Net unit tests passed (26/26) and do not count: they never open WebRTC. Run B was not started. Venue wifi, a phone hotspot, and four devices were not available on this machine. Re-run the tables when the live URL shows Host online.
+**Status:** first attempt 2026-11-14 11:35 **fail** (scaffold only). **Preflight 2026-11-14 13:30 pass:** live [Pages](https://asigurdsdev.github.io/space-apps-2026/) and local dev show **Play solo**, **Host online**, and **Join a room** (app loop on `main`, merge `929fb77+`). **Run A / Run B not started:** need four devices on venue wifi, then a phone hotspot if wifi fails. Net unit tests still do not prove WebRTC.
 
 Transport behavior below matches `net/README.md` (checked 2026-11-14). The room code is the **full PeerJS id**, not a short code.
 
@@ -30,6 +30,15 @@ A network **passes** when all of these happen:
 A network **fails** if join never completes, the room code is rejected, only some devices connect, or a guest can launch or edit another role's parts.
 
 PeerJS tests in the repo do **not** prove this. They never open a real WebRTC connection.
+
+## Preflight (before Run A)
+
+| Check | Result | Notes |
+|-------|--------|-------|
+| Live Start has Host / Join | pass | 2026-11-14 ~13:30 Pacific. Pages serves the full game; no "Scaffold is running". |
+| Local dev has Host / Join | pass | `http://localhost:5176/` (Vite on this machine). |
+| Four devices available | not run | One laptop only at preflight time. |
+| Venue wifi | not run | Do Run A at the event. |
 
 ## Run A — venue wifi
 

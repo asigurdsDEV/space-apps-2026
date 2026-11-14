@@ -9,15 +9,16 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## claude@aiden
 
-**Branch:** aiden-claude/story-app (PR #74, after #70); aiden-claude/story-popouts (PR #70); aiden-claude/launch-visible (PR #68); aiden-claude/debrief-fixes (PR #65); aiden-claude/risk-meter (PR #57); aiden-claude/what-if (PR #55); aiden-claude/app-safety (PR #53); aiden-claude/bundle-check (PR #54); aiden-claude/briefing-bonus (PR #49); aiden-claude/mobile-budgets (PR #46); aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
+**Branch:** aiden-claude/hangar (PR #80); aiden-claude/story-app (PR #74, after #70); aiden-claude/story-popouts (PR #70); aiden-claude/launch-visible (PR #68); aiden-claude/debrief-fixes (PR #65); aiden-claude/risk-meter (PR #57); aiden-claude/what-if (PR #55); aiden-claude/app-safety (PR #53); aiden-claude/bundle-check (PR #54); aiden-claude/briefing-bonus (PR #49); aiden-claude/mobile-budgets (PR #46); aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-V6 = decision 005's rooms: mission control in 3D with the guided walk, `ui/hangar/` (branch aiden-claude/hangar).
+Nothing claimed. Next: app/ walk between stations (needs #74 + #80).
 
 ### Files / folders I'm touching (hands off)
-None outside my open PRs #65 (`sim/analysis.ts`, one argument in `app/App.tsx` Flight) #68 (`ui/builder/builder.css`) #70 (`ui/story/`) and #74 (`app/StoryLayer.tsx`, `<StoryLayer>` lines + `online`/clock hold in `app/App.tsx`).
+None outside my open PRs #65 (`sim/analysis.ts`, one argument in `app/App.tsx` Flight) #68 (`ui/builder/builder.css`) #70 (`ui/story/`) and #80 (`ui/hangar/`), #74 (`app/StoryLayer.tsx`, `<StoryLayer>` lines + `online`/clock hold in `app/App.tsx`).
 
 ### Just finished
+Walkable mission control in 3D (PR #80, V6 = decision 005's rooms), after splitting the 3D story work at Aiden's request.
 Story wired into the game (PR #74): CAPCOM on every station, cutscenes at arrival/launch/Moon-Mars orbit/anomaly/ending.
 First-person story direction from Aiden: decision 005, GAME_DESIGN §4.9, 5 board tasks, handoff to all. Story pop-outs + cutscene frame (PR #70, `ui/story/`).
 Builder Launch stays on screen on short laptops (PR #68).
@@ -49,25 +50,27 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** aiden-codex/pilot-input (V1); aiden-codex/visual-overhaul-plan (PR #69 corrections)
-**Last updated:** 2026-11-14 13:15
+**Branch:** main (done coordination); aiden-codex/pilot-input (PR #78); aiden-codex/visual-overhaul-plan (PR #69)
+**Last updated:** 2026-11-14 13:25
 
 ### Working on right now
 
-V1 flight input kit: keyboard/touch intent, scoped focus and reliable release, standalone preview and tests. Astra assists with read-only design review per Aiden's request. Also correcting my PR #69 decision number to 006 and holding duplicate V6 pending room ownership; no room work starts.
+V1 complete in PR #78; handoff published for V2/V7 owners. No new implementation claimed. Astra performed read-only flight-control design review at Aiden's request; implementation/testing can use Sol. Latest cutscene task is now Caleb's; V6 is Claude Aiden's. No overlapping work taken.
 
 ### Files / folders I'm touching (hands off)
 
-New `ui/pilot-input/` only for implementation. Existing own PR #69: `docs/VISUAL_OVERHAUL.md`, rename `.agents/decisions/005-interactive-3d.md` to `006-interactive-3d.md`. Own BOARD rows, codex status section, append-only LOG and addressed/own handoffs. No app/scene3d/story/HUD/data/sim/shared/config edits; no Claude sections or branches. Unrelated docs/CHALLENGE 2.md untouched.
+No active production edits. PR #78 owns new `ui/pilot-input/` until review/merge; PR #69 only `docs/VISUAL_OVERHAUL.md` and `.agents/decisions/006-interactive-3d.md`. Own coordination only on main. Ethan's source/branches, Claude's section/branches, app/story/HUD/data/sim/shared/config untouched. Unrelated docs/CHALLENGE 2.md untouched.
 
 ### Just finished
 
-Read current claims/contracts/handoffs. V4 training route is in PR #73; V5 QA plan claimed by Caleb; Sarah awaits V1 labels for V2. V0 plan PR #69 published; resolving Claude's decision-number/room-overlap feedback before implementation.
+PR #78: plain craft-relative movement/brake/held-interaction intent, one-shot interaction callback, keyboard/native buttons/independent pointer sources, Escape/focus/blur/hidden/disabled/unmount release. Published labels and scan timing semantics to match Sarah's PR #76. Standalone themed preview; 364 tests, typecheck/build, size 125.1 kB gzip /150 pass before latest asset-only main merge; final merged head also covered by CI when green.
+
+Browser: keyboard press/release/repeat, Enter/Space buttons, outside text typing, pointer hold/drag-off, Escape/Tab, pause/unmount, dark/light and 390px no overflow. Clean final scan preview has no console errors. PR #69 decision renumbered 006, linked 005, latest room assignment reconciled.
 
 ### Missing / I need from someone
 
-V7 scene/app adoption remains with existing owners; input module alone does not move the production spacecraft. V6 is held to avoid duplicating decision 005 rooms. Scored flight requires an agreed sim contract; training input never writes SimState.
+V7 owners must mount controls with scene movement/aiming and V2/V4 route feedback; use held intent for scan duration, not the press callback. Real multi-touch, held-input window-hidden transitions, screen reader and integrated 3D flight remain unverified. Kaipo's GLBs are now on main; PWA cache adoption remains Claude's task.
 
 ### Heads up for other agents
 
-V1 will publish plain intent plus explicit interact/release actions; no global keyboard takeover, renderer or dependencies. Sarah can build V2 independently with mock props and adopt final labels from README. Ethan need not interrupt current work. No task assigned to another agent by this claim.
+Use PILOT_CONTROLS for final hints; intent.interact OR HUD scan hold drives local timing with pause/exit clearing both. No scored or network commands invented. Ethan remains merge coordinator. V6/rooms now one Claude Aiden task (1555 handoff); Caleb owns cutscenes. No newly Open task fits my ownership at this snapshot.
