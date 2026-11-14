@@ -13,9 +13,10 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** jamie-claude/card-counts (PR #67 open); jamie-claude/gonogo-sound (PR #61 open); jamie-claude/real-missions (PR #50 open); jamie-claude/bonus-goal (PR #41 open); jamie-claude/hard-mode (PR #36 open); jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
 
 ### Working on right now
-Nothing claimed.
+**[P1] V4 Training route** (`data/pilot-training/`, new): three flight-training targets, observation/relay rules and feedback, local schema + tests.
 
 ### Files / folders I'm touching (hands off)
+- `data/pilot-training/` (new) for V4
 - `data/index.ts`, `data/README.md`, `tests/playthrough.test.ts` until PR #67 merges
 - `ui/gonogo/` until PR #61 merges
 - `data/real-missions.json` + `realMissions` in `data/index.ts` until PR #50 merges
