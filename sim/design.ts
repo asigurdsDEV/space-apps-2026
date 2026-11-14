@@ -248,7 +248,7 @@ export function evaluateDesign(rawParams: Params, entities: Entity[]): DesignRep
       warning(
         'mass_margin_low',
         'mass',
-        `Only ${n1(mass_limit_kg - mass_kg)} kg of launch margin is left. Real missions keep at least 10% spare because designs grow.`,
+        `Only ${n1(mass_limit_kg - mass_kg)} kg of launch margin is left. Real missions keep at least 10% spare because designs grow. Trim some mass or pick a bigger launch vehicle.`,
       )
     }
   }
@@ -378,7 +378,7 @@ export function evaluateDesign(rawParams: Params, entities: Entity[]): DesignRep
       warning(
         'power_fades',
         'power',
-        `${solar.name} loses ${pct(degradation_per_year)} of its output each year. By the end of the mission it makes ${n1(endOfLife_w)} W, less than the ${n1(power_w)} W the spacecraft needs, so the instruments will run less. Leave more power margin.`,
+        `${solar.name} loses ${pct(degradation_per_year)} of its output each year. By the end of the mission it makes ${n1(endOfLife_w)} W, less than the ${n1(power_w)} W the spacecraft needs, so the instruments will run less. Pick a bigger power source.`,
       )
     }
   }
