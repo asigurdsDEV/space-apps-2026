@@ -17,9 +17,11 @@ export interface StoryLayerProps {
   scenarioId: string
   /** Told when a cutscene starts (true) and ends (false), e.g. to hold the mission clock. */
   onCutscene?: (playing: boolean) => void
+  /** Cutscenes the app already showed itself (the 3D launch), so the plain one is not played again. */
+  shown?: readonly string[]
 }
 
-export function StoryLayer({ screen, events = NO_EVENTS, scenarioId, onCutscene }: StoryLayerProps) {
+export function StoryLayer({ screen, events = NO_EVENTS, scenarioId, onCutscene, shown }: StoryLayerProps) {
   /** Beats whose cutscene has played on this screen. */
   const [played, setPlayed] = useState<string[]>([])
   /** The beat whose line was closed (or timed out). */
@@ -28,7 +30,7 @@ export function StoryLayer({ screen, events = NO_EVENTS, scenarioId, onCutscene 
   let beat = storyBeat(screen, events, scenarioId)
   // After the ending cutscene the results are on screen, so CAPCOM moves on to the debrief.
   if (beat.key === 'ending' && played.includes('ending')) beat = storyBeat('results', events, scenarioId)
-  const cutscene = beat.cutscene && !played.includes(beat.key) ? beat.cutscene : undefined
+  const cutscene = beat.cutscene && !played.includes(beat.key) && !shown?.includes(beat.cutscene) ? beat.cutscene : undefined
 
   const told = useRef(onCutscene)
   told.current = onCutscene

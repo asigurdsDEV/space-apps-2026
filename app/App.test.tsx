@@ -84,11 +84,14 @@ describe('game screen', () => {
     const { game, session } = soloSession()
     for (const command of designCommands) session.send(command)
     session.send({ type: 'launch', payload: {} })
-    const flying = screen(session)
-    expect(flying).toContain('mv-root')
-    expect(flying).not.toContain('class="mb"')
+    const launching = screen(session)
+    expect(launching).toContain('s3d-launch') // the 3D launch plays first
+    expect(launching).not.toContain('class="mb"')
 
     session.send({ type: 'set_speed', payload: { multiplier: 60 } })
+    // A reload or a late joiner lands mid-mission and goes straight to the mission screen.
+    for (let i = 0; i < 100 && session.getSnapshot().state.t_s <= 86400; i++) game.advance(1000)
+    expect(screen(session)).toContain('mv-root')
     for (let i = 0; i < 100; i++) game.advance(1000)
     expect(session.getSnapshot().state.status).toBe('ended')
     const results = screen(session)
