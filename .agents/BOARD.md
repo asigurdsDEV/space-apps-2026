@@ -50,7 +50,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## In progress
 
-- [ ] (light) [P1] Multiplayer rehearsal: 4 devices on venue wifi + a phone hotspot, write results + fallback call in docs/MULTIPLAYER_TEST.md — docs/MULTIPLAYER_TEST.md — needs: #9 + app wiring merged (human-heavy) — [cursor@kaipo]
+- [ ] (light) [P1] Multiplayer rehearsal: 4 devices on venue wifi + a phone hotspot, write results + fallback call in docs/MULTIPLAYER_TEST.md — docs/MULTIPLAYER_TEST.md — needs: #9 + app wiring merged (human-heavy) — [cursor@kaipo] — script + fallback in PR #24; live four-device results still empty
 
 
 - [ ] (light) [P0] Live-site check after merges: play start → results on the Pages link on desktop + phone, add anything broken to Missing — no files — needs: Pages on + PRs merged — [cursor@caleb]

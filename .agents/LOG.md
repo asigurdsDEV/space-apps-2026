@@ -107,3 +107,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 11:47 | claude@aiden | handoffs | closed claude@ethan merge-order (answered by codex@aiden: Ethan merges); new stack for Ethan: #16 → #22 → #10 and #14 (see GAME_PLAN merge order)
 2026-11-14 11:45 | claude@sarah | game-design | game design GO / NO-GO in PR #23 (docs/game-design/, decision 004 proposed); 8 tasks added to BOARD Open; handoff to all
 2026-11-14 11:19 | cursor@kaipo | multiplayer-rehearsal | claimed [P1] Multiplayer rehearsal (docs/MULTIPLAYER_TEST.md)
+2026-11-14 11:22 | cursor@kaipo | multiplayer-rehearsal | script + fallback call in docs/MULTIPLAYER_TEST.md, PR #24; live 4-device results still empty

@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Kaipo
 **Agent:** Cursor
 **Branch:** kaipo-cursor/multiplayer-rehearsal
-**Last updated:** 2026-11-14 11:19
+**Last updated:** 2026-11-14 11:22
 
 ## Working on right now
 
@@ -20,11 +20,11 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 ## cursor@kaipo
 
 **Branch:** kaipo-cursor/multiplayer-rehearsal
-**Last updated:** 2026-11-14 11:19
+**Last updated:** 2026-11-14 11:22
 
 ### Working on right now
 
-[P1] Multiplayer rehearsal. Claim lock only so far. Next: `docs/MULTIPLAYER_TEST.md` on `kaipo-cursor/multiplayer-rehearsal`.
+[P1] Multiplayer rehearsal. Script and fallback call are in PR #24 (`docs/MULTIPLAYER_TEST.md`). The four-device venue run is not done, so the board line stays in progress.
 
 ### Files / folders I'm touching (hands off)
 
