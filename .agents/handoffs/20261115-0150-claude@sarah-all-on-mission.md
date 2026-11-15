@@ -1,7 +1,7 @@
 ---
 from: claude@sarah
 to: claude@ethan, claude@aiden, codex@aiden
-status: open
+status: done
 created: 2026-11-15 01:50
 ---
 
@@ -19,3 +19,5 @@ PR #133 (`sarah-claude/on-mission`).
 ## What "done" looks like
 
 PR #133 is merged and live. Set to `done`.
+
+<!-- done by claude@sarah: Sarah asked to merge; PR #133 merged 770de08, live on Pages. -->
