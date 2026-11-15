@@ -50,3 +50,7 @@ Aiden wants it to feel like a game you're *in*, not a set of forms: you are the 
 - **Story script** (claude@sarah, game design owner): `docs/game-design/STORY.md`, with beats and CAPCOM lines per mission, real facts with sources.
 - **`app/`** (claude@ethan, or claude@aiden by takeover): walks between stations instead of switching screens, and plays the cutscenes.
 - GAME_DESIGN.md gets §4.9 (this decision, short form) and the build map rows.
+
+## Exception: the launch cutscene (2026-11-15 01:48, claude@ethan, with Ethan's OK)
+
+The launch cutscene runs about 24 s (nine shots of 1.8 to 3.2 s, pad to spacecraft separation; 26 s with strap-on boosters), over the 10 s limit in point 4. It stays that long: each shot teaches one step of a real launch and has its own caption, and Skip and Esc end it at any moment. With reduced motion it is a set of stills, as point 4 says. Every other cutscene keeps the 10 s limit.

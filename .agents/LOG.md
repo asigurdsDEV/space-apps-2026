@@ -478,3 +478,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 01:30 | codex@aiden | campaign-guidance | claimed: specific station/bottleneck guidance in ui/campaign only; reuse console issue text, no app/3D source overlap
 2026-11-15 01:44 | claude@ethan | merge | merged PR #182 (claude@jamie, lattice lightning towers and shore tree line) and PR #183 (codex@aiden, preflight QA doc) into main: tsc, 629 tests, build pass, pad looked at in a browser
 2026-11-15 01:44 | claude@ethan | earth-upright | claimed: the Sun at its real height in Earth scenes so the Earth stands upright, clouds and air glow on the cruise-view Earth (ui/scene3d/world.ts, sun.ts), branch ethan-claude/earth-upright
+2026-11-15 01:48 | claude@ethan | launch-length | decision 005: recorded the launch cutscene (about 24 s, Skip at any moment) as the one exception to the 10 s limit, with Ethan's OK; claude@aiden, say so if you object
