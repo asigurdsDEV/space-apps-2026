@@ -119,6 +119,27 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
   const heldClock = useRef(false)
   /** A late joiner skips the launch sequence. */
   const [launched, setLaunched] = useState(() => session.getSnapshot().state.t_s > 86400)
+  // The launch stays on screen over the spacecraft room until the room has drawn, so there is no black second
+  // while the room's code loads and its scene builds (claude@ethan's handoff 0100).
+  const [launchCover, setLaunchCover] = useState(false)
+  const flightRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!launchCover) return
+    let frame = 0
+    let drawn = 0
+    const look = () => {
+      // The canvas appears once the room's scene exists; two more frames and it has drawn.
+      if (flightRef.current?.querySelector('.app-world-view canvas')) drawn++
+      if (drawn > 2) setLaunchCover(false)
+      else frame = requestAnimationFrame(look)
+    }
+    frame = requestAnimationFrame(look)
+    const giveUp = setTimeout(() => setLaunchCover(false), 5000)
+    return () => {
+      cancelAnimationFrame(frame)
+      clearTimeout(giveUp)
+    }
+  }, [launchCover])
   const canTrain = flying && launched && !cutscene && !pendingDecision(state)
   const canProbe = canTrain && isEarthScenario(config.entities)
   const hold = !classic && (menuOpen || cutscene || (training && canTrain) || (flying && !launched))
@@ -134,7 +155,10 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
   }, [hold, roomCode, session])
   useEffect(() => {
     if (!flying) setLaunched(session.getSnapshot().state.t_s > 86400)
-    else if (!launched && !classic) playSound('launch')
+    else if (!launched && !classic) {
+      playSound('launch')
+      void import('../ui/interior/SpacecraftRoom') // fetch the room's code while the launch plays
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [flying])
 
@@ -174,16 +198,20 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
   )
   const enabled = !cutscene && !menuOpen
 
+  // Same element before and after the launch ends, so the room mounts under it without remounting the launch.
+  const launch = (!launched || launchCover) && (
+    <LaunchView
+      className="app-world-launch"
+      state={state}
+      onDone={() => {
+        setLaunchCover(true)
+        setLaunched(true)
+      }}
+    />
+  )
+
   if (flying && !launched) {
-    return (
-      <LaunchView
-        className="app-world-launch"
-        state={state}
-        onDone={() => {
-          setLaunched(true)
-        }}
-      />
-    )
+    return <div ref={flightRef} className="app-world game-theme" data-theme="dark">{null}{launch}</div>
   }
 
   if (training && canTrain) {
@@ -211,7 +239,7 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
     const may = canSend(me.role, { type: 'resolve_decision', payload: { decision_id: '', option_id: '' } }, players.map((p) => p.role), console)
     const holder = players.find((p) => p.role === console)
     return (
-      <div className={`app-world game-theme${menuOpen ? ' is-menu-open' : ''}`} data-theme="dark">
+      <div ref={flightRef} className={`app-world game-theme${menuOpen ? ' is-menu-open' : ''}`} data-theme="dark">
         <SpacecraftRoom
           className="app-world-view"
           state={state}
@@ -227,6 +255,7 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
           subscribeCrew={session.subscribeCrew}
           seat={Math.max(0, players.findIndex((p) => p.player_id === me.player_id))}
         />
+        {launch}
         {menu}
         <StoryLayer immersive screen="flight" events={events} scenarioId={state.scenario_id} design={state} onCutscene={onCutscene} shown={['launch']} />
       </div>
