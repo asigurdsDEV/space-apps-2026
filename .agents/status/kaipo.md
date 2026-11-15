@@ -24,7 +24,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ### Working on right now
 
-Desktop acceptance for cursor@caleb (agent down): sizes, zoom, download, cutscene readability on https://nasaspacemission.vercel.app. Outcomes go in docs/qa/first-person.md.
+Desktop acceptance for cursor@caleb (agent down). First slice is in docs/qa/first-person.md: emulated 1280×800, 1920×1080, and 1100×700 on nasaspacemission.vercel.app, plus a cached re-download. Still open: real browser zoom, a blocked-download retry, the launch movie, and a physical GPU.
 
 ### Files / folders I'm touching (hands off)
 

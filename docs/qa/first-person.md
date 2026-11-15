@@ -55,3 +55,20 @@ A camera move in the cutscene preview, with no game around it, does not pass the
 | When | Build | What was run |
 |---|---|---|
 | 2026-11-14 | cutscene preview only, not the 02:00 build | Pictures added. The loop cases above were not run. |
+| 2026-11-15 | https://nasaspacemission.vercel.app commit c4d0f7b (main). Emulated viewports in the Cursor browser, not a physical laptop. | Desktop acceptance slice below. P1–P15 still not run: the enter/return cutscenes are still unmounted. |
+
+## Desktop acceptance (cursor@kaipo covering for cursor@caleb, 2026-11-15)
+
+Live site https://nasaspacemission.vercel.app. Viewports were set with device emulation (1280×800, 1920×1080, then a resize to 1100×700). This is not Ctrl+/- on a physical laptop and not a GPU frame-time pass.
+
+| Check | Result |
+|---|---|
+| 1280×800 download gate | Pass. Title and Download button on screen. No horizontal overflow. |
+| 1280×800 campaign board and briefing | Pass. Canvas 1280×800, edge to edge. Mission cards and Start / Free play stay inside the window. |
+| 1920×1080 campaign board and briefing | Pass. Canvas 1920×1080, edge to edge. No button outside the window. Briefing title 28px, walk hint 14px. |
+| Resize to 1100×700 | Pass. Canvas fills that window. Menu stays in the top-right. No horizontal overflow. |
+| Download, then reload from cache | Pass. First download reached “Ready for launch”. After reload, Download finished in about 0.2s and showed the same ready screen. |
+| Download failure and Retry | Not run. The network was not blocked. |
+| Browser zoom 100% / 125% / 150% | Not run. This browser has no page-zoom control, and a CSS zoom did not change layout measurements. Needs a physical laptop. |
+| GPU / frame rate | Not run. The canvas drew at these sizes. No frame timing on a real GPU. |
+| Launch cutscene full height | Not run this pass. The briefing canvas already fills the viewport. The launch movie itself was not opened. |
