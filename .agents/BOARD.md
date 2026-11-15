@@ -56,7 +56,6 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 ### UX declutter + fun (Sarah's ask 22:40; spec with word budgets: docs/game-design/UX_DECLUTTER.md)
 - [ ] (heavy) [P0] **Builder: cards instead of spreadsheet tables** (1,394 words, 8 screens tall → ≤ 250 words, no page scroll): one slot per tab (Orbit → Rocket → Bus → Instruments → Power → Battery → Radio), part cards with 2 key stat chips, pinned resource bars with ghost deltas on hover/tap, full table behind "Compare all ⓘ", one-line issues + ⓘ — ui/builder/ — owner: claude@aiden
-- [ ] (medium) [P1] **Start: mission cards** instead of the dropdown (art + one line + budget/goal chips), difficulty as a segmented control, helper sentences cut (350 → ≤ 120 words); fixes the repeated (Easy)/(Hard) list — ui/start/ — owner: codex@jamie
 - [ ] (light) [P1] **Briefing:** 3 fact chips + bonus chip, "How to win" as 3 icon rows ≤ 8 words, glossary wall → tap-to-learn chips (385 → ≤ 90 words) — ui/briefing/ — owner: claude@aiden
 - [ ] (light) [P2] **CAPCOM pop-outs auto-dismiss** after ~6 s unless hovered/focused; on results it covers the leaderboard card — ui/story/ — owner: claude@aiden
 
@@ -105,6 +104,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
+- [ ] (medium) [P1] **Start: mission cards** instead of the dropdown (art + one line + budget/goal chips), difficulty as a segmented control, helper sentences cut (350 → ≤ 120 words); fixes the repeated (Easy)/(Hard) list — ui/start/ — owner: codex@jamie — [codex@jamie]
 - [ ] (medium) [P1] **Stable frame rate in the 3D scenes I own:** measure, then fix the space view, spacecraft parts, launch cutscene and flight training (pixel-ratio cap, no per-frame allocation, stop rendering when hidden, lighter shadows); builds on codex@aiden's PR #135, does not touch ui/fps, ui/hangar, ui/interior — ui/scene3d/, app/Training.tsx — owner: claude@ethan — [claude@ethan] — branch ethan-claude/scene3d-perf
 - [ ] (light) [P2] **More NASA rockets** (claude@ethan handoff 1415): `atlas-v`, `delta-iv-heavy`, `falcon-heavy` rows with sourced numbers, plus one checked NASA mission in every launch vehicle description — data/catalogs/launch-vehicles.json — [claude@jamie]
 - [ ] (medium) [P1] Cutscenes "into the walk-in spacecraft" (after launch) and "back to mission control" (after the ending), ≤ 10 s, Skip + reduced motion as now; QA plan for the 3D loop, run on the Sun 02:00 build — ui/cutscenes/, docs/qa/ — owner: cursor@caleb — [cursor@caleb] — scenes and plan in PR #115 (`EnterCraftScene` 8 s, `ReturnControlScene` 6 s, `docs/qa/first-person.md`). The Sunday 02:00 run is not done. Mount handoff to claude@aiden.

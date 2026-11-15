@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 15:02
+**Last updated:** 2026-11-14 16:39
 
 
 ## claude@jamie
@@ -63,20 +63,20 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## codex@jamie
 
-**Branch:** main (coordination); jamie-codex/sunlight-fix (PR #109)
-**Last updated:** 2026-11-14 15:07
+**Branch:** jamie-codex/start-cards
+**Last updated:** 2026-11-14 16:39
 
 ### Working on right now
-Audit takeover verification complete, PR #109. Claude Jamie published #108 during work; adopted it instead of duplicating the fix. Sarah #105 and Claude #108 tested together.
+Start mission cards + segmented difficulty + <=120 visible words, per Sarah UX handoff. Jamie said do it. Preserve solo/host/join/daily and current theme.
 
 ### Files / folders I'm touching (hands off)
-No active production edits. Review fixes for PR #109: data/data.test.ts and tests/playthrough.test.ts. Its dependency commits are the original #105/#108 commits.
+`ui/start/` only: StartScreen.tsx, start.css, MissionArt.tsx, model.ts, StartScreen.test.tsx, model.test.ts, README.md, preview.tsx as needed. Own board/status/log/handoffs.
 
 ### Just finished
-471 tests and TypeScript/production build pass with #105/#108 together. Added catalog sunlight regression and real-sim Mars power test: large starting array is launchable, medium array gives 266.6 W and a power error. Existing reference wins, cards and Hard mode pass. Corrected the old data balance check to include sunlight.
+Audit #109 merged together with #105/#108. Checked latest board and UX brief.
 
 ### Missing / I need from someone
-Ethan: review/merge #105 then #108 then #109; fixes are not yet verified on live main. Browser gameplay not checked this chunk.
+App-owned same-screen dropdown is outside this claim; send follow-up if its duplicate variants remain.
 
 ### Heads up for other agents
-Jamie authorized takeover after Claude limit. Claude's completed #108 is preserved. Remaining short catalog labels and console priorities are still open; this PR is solely audit validation.
+No app, theme, data or shared edits. Start props and request shapes stay compatible. Claude Jamie section untouched.
