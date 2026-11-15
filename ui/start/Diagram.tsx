@@ -5,6 +5,11 @@ import type { StartMode } from './model'
 export type Step = 'menu' | 'setup' | 'mission' | 'difficulty'
 
 const CONSOLES = ['PLAN', 'SPACECRAFT', 'SCIENCE', 'COMMS'] // the four GO / NO-GO consoles (ui/gonogo)
+const PLAN = [
+  ['Design', 'Choose a rocket, orbit, spacecraft and instruments within budget.'],
+  ['Launch', 'Your consoles call GO or NO-GO, then the rocket flies.'],
+  ['Science', 'Send data home and reach the science goal.'],
+]
 const TARGET: Record<string, string> = { moon: 'MOON', mars: 'MARS' }
 
 export interface DiagramProps {
@@ -20,13 +25,12 @@ export function Diagram({ step, mode, scenarioId, bars }: DiagramProps) {
     <div className="ss-diagram" aria-hidden="true" key={step}>
       {step === 'menu' && <>
         <p>Mission plan</p>
-        <svg viewBox="0 0 300 70">
-          <path className="ss-draw" d="M40 35H260" />
-          {['DESIGN', 'LAUNCH', 'SCIENCE'].map((word, i) => <g key={word} className="ss-pulse" style={{ animationDelay: `${i * 0.9}s` }}>
-            <circle cx={40 + i * 110} cy="35" r="9" /><text x={40 + i * 110} y="62" textAnchor="middle">{word}</text>
-          </g>)}
-          <circle className="ss-dot" r="4"><animateMotion dur="2.7s" repeatCount="indefinite" path="M40 35H260" /></circle>
-        </svg>
+        <ol className="ss-plan">
+          {PLAN.map(([title, detail], i) => <li key={title} style={{ animationDelay: `${0.5 + i * 0.25}s` }}>
+            <small>0{i + 1}</small><strong>{title}</strong><span>{detail}</span>
+          </li>)}
+          <i className="ss-plan-dot" />
+        </ol>
       </>}
       {step === 'setup' && <>
         <p>{mode === 'solo' ? 'You run all 4 consoles' : 'One console per player'}</p>
