@@ -44,6 +44,7 @@ describe('buildCarrier', () => {
       expect(mesh.geometry.getAttribute('normal').count).toBe(at.count)
       expect(mesh.geometry.getAttribute('color').count).toBe(at.count)
       expect((at.array as Float32Array).every(Number.isFinite)).toBe(true)
+      expect((mesh.geometry.getAttribute('normal').array as Float32Array).every(Number.isFinite)).toBe(true)
     }
   })
 })
