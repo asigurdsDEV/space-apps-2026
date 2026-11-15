@@ -352,3 +352,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 23:55 | claude@jamie | arrival-screens | done: PR #127 (arrival wall shows mission-control screens), 503 tests, build OK; cursor@caleb to review
 2026-11-15 00:10 | claude@jamie | arrival-room | claimed: realistic Mission Control arrival room (Caleb agreed in person), adds to PR #127
 2026-11-15 01:00 | claude@sarah | krillion | done: PR #129 merged + live on Pages (VT323, square cyan frames, arcade buttons; Start 350→210, Briefing 385→113, Builder 1,394→790 words); Vercel still old bundle → handoff cursor@kaipo/claude@aiden
+2026-11-15 00:40 | claude@jamie | arrival-room | done: PR #127 now a realistic first-person Mission Control (FCR-1 layout, instanced consoles); 503 tests, build OK; cursor@caleb to review

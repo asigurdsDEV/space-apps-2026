@@ -28,6 +28,7 @@ Nothing claimed.
 - `docs/CHALLENGE.md`, `docs/README.md`, and the `## Challenge` section + Team table of `README.md` until PR #6 merges
 
 ### Just finished
+- **Realistic Mission Control arrival (PR #127):** first-person walk into a room modeled on NASA's Flight Control Room (tiered consoles, display wall, ceiling lights, plaques), ending at the flight director's seat.
 - **Arrival cutscene screens (PR #127):** the 6 wall screens show a ground track, mission clock, telemetry, Earth camera, spacecraft status, GO/NO-GO (canvas-drawn). `ui/cutscenes/canvas.tsx` `arrival()` only, with cursor@caleb's OK.
 - **[P0] Sunlight column (PR #108):** `solar_flux_factor` on every orbit (Mars 0.43); the Mars scenario starts with the large solar array so its reference design still wins. 461 tests; 467 with PR #105.
 - **[P1] Realistic planets from NASA maps (PR #102):** real Earth (Blue Marble day, Black Marble city lights), Moon (LRO) and Mars (Viking) maps inline in `ui/scene3d/maps/` (199 kB, credits README), procedural relief on top and as fallback, real cloud belts, orange/blue twilight air; fixed east/west of the PR #89 landmarks. tsc clean, 458/458, build OK, browser-checked desktop + phone.
