@@ -9,7 +9,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 ## Open
 
 
-- [ ] (light) [P1] Investigate first-use offline lazy scene import failure in local production preview (Start/GLBs cached, Builder error boundary); compare Pages headers before asserting live impact — pwa/ + config owner: claude@aiden — needs: reproduction in docs/qa/offline-cache.md PR #101; no source claim transferred
 
 - [ ] (medium) [P2] Fly scene tied to sim time (craft position from `t_s`, ground stations, downlink beam, part highlight) — ui/scene3d/ — released by claude@ethan 13:55 so it does not block anyone; unfinished work is on branch `ethan-claude/scene3d-fly`. Ask claude@ethan before taking it (the folder is his)
 
@@ -53,12 +52,9 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 - [ ] (light) [P1] **Launch cutscene is ~20 s**, decision 005 says cutscenes ≤ 10 s (Skip exists). Shorten it or record the exception in decision 005 — ui/scene3d/ — owner: claude@ethan
 
 ### Accuracy audit + awards push (claude@sarah 18:45, Sarah's request; full report: docs/game-design/ACCURACY_AUDIT.md)
-- [ ] (light) [P1] **Schedule bar in the builder** (brief: show Time clearly): the sim gives `schedule_months` / `deadline_months` now that parts have build times (PR #105); today time only shows as an error — ui/builder/ — owner: claude@aiden
 
 ### UX declutter + fun (Sarah's ask 22:40; spec with word budgets: docs/game-design/UX_DECLUTTER.md)
-- [ ] (heavy) [P0] **Builder: cards instead of spreadsheet tables** (1,394 words, 8 screens tall → ≤ 250 words, no page scroll): one slot per tab (Orbit → Rocket → Bus → Instruments → Power → Battery → Radio), part cards with 2 key stat chips, pinned resource bars with ghost deltas on hover/tap, full table behind "Compare all ⓘ", one-line issues + ⓘ — ui/builder/ — owner: claude@aiden
-- [ ] (light) [P1] **Briefing:** 3 fact chips + bonus chip, "How to win" as 3 icon rows ≤ 8 words, glossary wall → tap-to-learn chips (385 → ≤ 90 words) — ui/briefing/ — owner: claude@aiden
-- [ ] (light) [P2] **CAPCOM pop-outs auto-dismiss** after ~6 s unless hovered/focused; on results it covers the leaderboard card — ui/story/ — owner: claude@aiden
+- [ ] (heavy) [P0] **Builder: cards instead of spreadsheet tables** (1,394 words, 8 screens tall → ≤ 250 words, no page scroll): one slot per tab (Orbit → Rocket → Bus → Instruments → Power → Battery → Radio), part cards with 2 key stat chips, pinned resource bars with ghost deltas on hover/tap, full table behind "Compare all ⓘ", one-line issues + ⓘ — ui/builder/ — owner: claude@aiden — claude@aiden 23:25: not started, and I suggest dropping it: since decision 007 the builder is only the Classic fallback (the 3D racks are the part cards), PR #129 already cut its words, and e2e/coop.mjs needs every slot's inputs in the page, so tabs would break those tests the night before the freeze. Aiden / claude@sarah to confirm
 
 ### Desktop readiness follow-up (Aiden screenshots + explicit download, 2026-11-14)
 - [ ] (light) [P0] Review/merge download/readability PR #144 when green (#135 merged); verify full launch framing for all rocket sizes at desktop aspect ratios, only change scene3d camera if fullscreen shell still clips — ui/scene3d/ + merge coordination — owner: claude@ethan
@@ -134,6 +130,10 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 
 ## Done
+- [x] (light) [P1] Investigate first-use offline lazy scene import failure in local production preview (Start/GLBs cached, Builder error boundary); compare Pages headers before asserting live impact — pwa/ + config owner: claude@aiden — needs: reproduction in docs/qa/offline-cache.md PR #101; no source claim transferred — [claude@aiden] no change needed: fixed by codex@aiden in PR #144 (`caches.match(…, { ignoreVary: true })` in pwa/sw-source.ts, with a test); the offline flow in docs/qa/offline-cache.md has not been re-run since
+- [x] (light) [P1] **Briefing:** 3 fact chips + bonus chip, "How to win" as 3 icon rows ≤ 8 words, glossary wall → tap-to-learn chips (385 → ≤ 90 words) — ui/briefing/ — owner: claude@aiden — [claude@aiden] no change needed after PR #129 + #158: 3 fact chips, bonus line, "How to win" is 4 rows of ≤ 8 words, glossary folded behind "Words you'll see"
+- [x] (light) [P1] **Schedule bar in the builder** (brief: show Time clearly): the sim gives `schedule_months` / `deadline_months` now that parts have build times (PR #105); today time only shows as an error — ui/builder/ — owner: claude@aiden — [claude@aiden] no change needed: the builder already draws it from `schedule_months` / `deadline_months` (seen in Classic view 23:20: "Schedule 10 months / 18 months"); the 3D hall shows it too (ui/hangar/screens.ts)
+- [x] (light) [P2] **CAPCOM pop-outs auto-dismiss** after ~6 s unless hovered/focused; on results it covers the leaderboard card — ui/story/ — owner: claude@aiden — [claude@aiden] in PR #169: stays while hovered or focused, closes 6 s after; checked in the Classic builder
 - [x] (light) [P1] Demo/PITCH for Download → guided campaign → first-person stations → alarm → debrief; consolidates both assigned narration tasks — docs/DEMO.md, docs/PITCH.md — [codex@jamie] — in PR #168: 60-word narration, current guided flow,38 tests; recording remains human task
 - [x] (light) [P1] **Ending cutscene:** the real Earth (NASA map, day and night) instead of a blue ball, one thin signal line instead of red dots — `ending()` in ui/cutscenes/canvas.tsx — owner: claude@aiden — [claude@aiden] — in PR #167: both endings played in the cutscene preview; not checked in a full game or on a phone
 - [x] (light) [P1] **One look:** standard `backdrop-filter` on the start and download screens; hall and operations-room screens in white and grey instead of cyan and amber — ui/start/, app/assets-download.css, ui/hangar/screens.ts, ui/cutscenes/screens.ts — owner: codex@jamie — [claude@jamie] (taken over from codex@jamie at Jamie's request: Codex is not running and items 1 are claude@jamie's own files) — branch jamie-claude/one-look — PR #165 withdrawn in favor of concurrent Claude Jamie #166; Codex608 tests/build/blur evidence retained
