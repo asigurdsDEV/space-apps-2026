@@ -22,6 +22,8 @@ export interface LiveScene {
   pick(index: number, name: string): void
   /** Turns the view to a place on the ground (degrees). */
   lookAt(lat: number, lon: number): void
+  /** Marks the player's own place (only after they agreed to share it) and turns the view to it. */
+  setHere(lat: number, lon: number): void
   show(layer: Layer, on: boolean): void
   dispose(): void
 }
@@ -39,6 +41,11 @@ const ATMOSPHERE_R = 1.06
 const FOV = 38
 const RING_POINTS = 181
 const RAD = Math.PI / 180
+/** A rough middle of each continent's land (degrees), for its name on the globe. */
+const CONTINENTS: [string, number, number][] = [
+  ['North America', 45, -100], ['South America', -15, -60], ['Europe', 50, 15], ['Africa', 5, 20],
+  ['Asia', 45, 90], ['Australia', -25, 134], ['Antarctica', -80, 30],
+]
 
 /** A round dot; with `edge`, a dark rim so it shows over white cloud; with `ring`, a storm's ring round a small dot. */
 function glyph(edge: boolean, ring = false): THREE.CanvasTexture {
@@ -157,6 +164,14 @@ export function createLiveScene(container: HTMLElement, options: LiveSceneOption
   }
   const pickedTag = tag('le-tag le-tag--picked', '')
   let stormTags: Tag[] = []
+  /** A point on the ground (degrees) in the Earth's frame, just above the surface so the globe does not hide it. */
+  const ground = (t: Tag, lat: number, lon: number) => {
+    const c = Math.cos(lat * RAD)
+    t.at.set(c * Math.cos(lon * RAD), Math.sin(lat * RAD), -c * Math.sin(lon * RAD)).multiplyScalar(1.005)
+    return t
+  }
+  const placeTags = CONTINENTS.map(([name, lat, lon]) => ground(tag('le-tag le-tag--place', name), lat, lon))
+  let hereTag: Tag | null = null
 
   const controls = new OrbitControls(camera, renderer.domElement)
   controls.enableDamping = true
@@ -348,6 +363,8 @@ export function createLiveScene(container: HTMLElement, options: LiveSceneOption
     renderer.render(scene, camera)
     place(pickedTag, shown.satellites && picked >= 0)
     for (const t of stormTags) place(t, shown.storms)
+    for (const t of placeTags) place(t, true)
+    if (hereTag) place(hereTag, true)
     spread()
     steady(dt_s)
   }
@@ -416,6 +433,11 @@ export function createLiveScene(container: HTMLElement, options: LiveSceneOption
     lookAt(lat, lon) {
       const c = Math.cos(lat * RAD)
       lookFrom(local.set(c * Math.cos(lon * RAD), Math.sin(lat * RAD), -c * Math.sin(lon * RAD)), home, 0.7)
+    },
+    setHere(lat, lon) {
+      hereTag ??= tag('le-tag le-tag--here', 'You are here')
+      ground(hereTag, lat, lon)
+      this.lookAt(lat, lon)
     },
     show(layer, on) {
       shown[layer] = on
