@@ -723,7 +723,10 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   const far = WORLD_R / Math.sin(HALF)
   /** From the world's centre up to the craft, and along the ground toward the far limb. */
   const zenith = new THREE.Vector3(0, Math.sin(down), Math.cos(down))
-  const ahead = new THREE.Vector3(0, Math.cos(down), -Math.sin(down))
+  /** The orbit turns the world about the window's side-to-side axis: the ground comes in over the far limb and slides under you. */
+  const ACROSS = new THREE.Vector3(1, 0, 0)
+  /** One orbit in about three minutes at 1×; faster at higher speeds by the square root, so 60× is a brisk 23 s, not a spin. */
+  const ORBIT_RATE = (Math.PI * 2) / 180
   const starGeo = new THREE.BufferGeometry()
   const pts: number[] = []
   const v = new THREE.Vector3()
@@ -1037,8 +1040,9 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   const observer = new ResizeObserver(resize)
   observer.observe(host)
   resize()
-  let worldTurn = 0
-  let worldSpin = 0
+  let orbitAngle = 0
+  let pace = 1
+  let wantPace = 1
   /** Screens redraw only when their numbers change, and at most 4 times a second (the sim can step 60 times a second). */
   let screensKey = ''
   let screensAt = 0
@@ -1049,10 +1053,11 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
     fps.update(dt)
     onPose?.(fps.feet())
     crew.update(dt)
-    // The sim's day arrives in steps. Glide towards it every frame and keep the craft moving along its orbit between
-    // steps, so the ground never jumps: it slides across the window, and the Sun stays where it really is over it.
-    worldSpin += (worldTurn - worldSpin) * (1 - Math.exp(-dt * 2.5))
-    world.quaternion.multiplyQuaternions(orbit.setFromAxisAngle(ahead, worldSpin + now * 0.000004), start)
+    // The craft flies on in real time at a steady pace, eased when the speed changes and stopped while paused, so the
+    // ground never jumps or whirls: it slides across the window, and the Sun stays where it really is over it.
+    pace += (wantPace - pace) * (1 - Math.exp(-dt * 1.5))
+    orbitAngle += dt * pace * ORBIT_RATE
+    world.quaternion.multiplyQuaternions(orbit.setFromAxisAngle(ACROSS, orbitAngle), start)
     uSun.value.copy(sunMap).applyQuaternion(world.quaternion)
     cloudTime.value = now / 1000
     craftHolder.rotation.y += dt * 0.4
@@ -1128,7 +1133,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
       windowLight.color.setHex(body === 'earth' ? 0xb4cdf2 : body === 'moon' ? 0xd5d9e2 : 0xe2a67e)
       spillMat.color.copy(windowLight.color)
       shine = body === 'earth' ? 1 : 0.5
-      worldTurn = (s.day / 365) * Math.PI * 2 * 6 // a few turns over a year: you can see it move at speed
+      wantPace = s.paused ? 0 : Math.sqrt(Math.max(s.speed, 1))
       // Sim steps clone params; equal craft values must not rebuild GPU geometry every tick.
       const nextCraftKey = JSON.stringify(s.craft)
       if (nextCraftKey !== craftKey) {
