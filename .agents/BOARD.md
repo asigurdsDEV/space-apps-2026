@@ -111,6 +111,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 ## In progress
 
+- [ ] (heavy) [P1] **Live Earth screen** (Ethan 01:55): the real Earth now from NASA GIBS imagery, real satellites and tracked debris from CelesTrak, a close-approach screening, space weather now from NOAA SWPC, active storms from NASA EONET; every feed fails soft and the game path is untouched — ui/live/ (new), one entry button in app/App.tsx and app/WorldMenu.tsx, package.json (satellite.js) — owner: claude@ethan — [claude@ethan]
 - [ ] (medium) [P1] **Upright Earth** (Ethan's OK 01:40): in Earth scenes the Sun sits at its real height for the date, so the Earth's north pole points up instead of leaning 35 degrees; clouds and air glow on the Earth behind the craft in the cruise views — ui/scene3d/world.ts, ui/scene3d/sun.ts — owner: claude@ethan — [claude@ethan]
 - [ ] (light) [P1] Guided design objectives identify actual science bottleneck and specific NO-GO repair, update after fitting parts; reuse existing console explanations — ui/campaign/model.ts, model.test.ts, README.md — [codex@aiden]
 
