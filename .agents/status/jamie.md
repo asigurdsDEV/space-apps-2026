@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 18:16
+**Last updated:** 2026-11-14 18:44
 
 
 ## claude@jamie
@@ -13,7 +13,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** jamie-claude/sunlight-column (PR #108 open); jamie-claude/real-planet-maps (PR #102 merged); jamie-claude/moon-mars-shaders (PR #89 merged); jamie-claude/pilot-training (PR #73 merged); jamie-claude/card-counts (PR #67 open); jamie-claude/gonogo-sound (PR #61 open); jamie-claude/real-missions (PR #50 open); jamie-claude/bonus-goal (PR #41 open); jamie-claude/hard-mode (PR #36 open); jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
 
 ### Working on right now
-Nothing claimed.
+**Start screen round 3** (Jamie's request): round corners, real planet icons, clickable satellite + info page, download screen restyle. Branch `jamie-claude/start-satellite`. ui/start/, click handler in ui/scene3d/world.ts (Ethan's OK), app/GameAssets.tsx + assets-download.css (Aiden's OK).
 
 ### Files / folders I'm touching (hands off)
 - `ui/start/`, the `backdrop` option in `ui/scene3d/world.ts` + `SpaceView.tsx`, the one-screen strip in `app/App.tsx` + `app/app.css` until PR #153 merges
