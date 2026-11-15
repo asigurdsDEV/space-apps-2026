@@ -72,7 +72,8 @@ const SHORT: Record<string, string> = {
   orbit_life_short: 'Orbit decays before the end',
 }
 
-function shortOf(issue: Issue, max: number): string {
+/** A few words for one issue (shared with the CAPCOM callouts in ui/story). */
+export function shortOf(issue: Issue, max = CONSOLE_LINE_MAX): string {
   const known = SHORT[issue.code] ?? (issue.code.startsWith('unknown_') ? 'Unknown part picked' : undefined)
   if (known) return known
   const first = issue.message.split(/(?<=\.)\s/)[0] ?? issue.message
