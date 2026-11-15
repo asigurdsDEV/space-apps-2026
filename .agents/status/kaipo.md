@@ -4,8 +4,8 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 **Human:** Kaipo
 **Agent:** Cursor
-**Branch:** kaipo-cursor/crew-models
-**Last updated:** 2026-11-14 17:00
+**Branch:** kaipo-cursor/deploy-check
+**Last updated:** 2026-11-14 17:38
 
 ## Working on right now
 
@@ -19,14 +19,16 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@kaipo
 
-**Branch:** kaipo-cursor/crew-models
-**Last updated:** 2026-11-14 17:00
+**Branch:** kaipo-cursor/deploy-check
+**Last updated:** 2026-11-14 17:38
 
 ### Working on right now
 
 ### Files / folders I'm touching (hands off)
 
 ### Just finished
+
+**Deployment check (P0):** Pages and Vercel both serve the app at commit `d70c4e8`. Each host's `game-assets.json` lists 45 files and every URL returned HTTP 200 (Pages base `/space-apps-2026/`, Vercel base `/`). Vercel production is deployment `dpl_Cq7xhw4P4aFipP2rTYrt5aegyTmC` at https://kimchispacemission.vercel.app. The Earth shader chunk has `uHasClouds` and the crew chunk has the name tag. `/api/ice` returned 200 with a TURN relay. Cache/gate source was not edited. A second device was not used this pass; the last cross-device join is still the 2026-11-14 note in `docs/MULTIPLAYER_TEST.md`. Kaipo can see other players.
 
 **Crew models:** in a shared room, each other player is a low-poly astronaut with their name above the helmet. Where they stand is a `pose` message (decision 009), relayed by the host. Solo play is unchanged.
 
