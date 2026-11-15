@@ -5,7 +5,7 @@
 // Seen from above (you start at the back, facing the window):
 //
 //   z=-3    [        WINDOW: where your spacecraft is        ]
-//   z=-2.1  [ DASHBOARD: gauges · time lever ]
+//   z=-2.1  [ CONSOLE: gauges · your craft · pause button · speed switch ]
 //   x=-4    power  battery                    radio  storage   x=+4
 //   z=+3    [ instruments along the back wall ]
 
@@ -17,9 +17,11 @@ export const ROOM = { min: [-4, 0, -3] as Vec3, max: [4, 3.2, 3] as Vec3 }
 export const START: { pos: Vec3; yaw: number } = { pos: [0, 0, 1.6], yaw: 0 }
 /** Floor hatch: look at it and press E to go down to the surface. */
 export const HATCH: Vec3 = [-1.6, 0.04, 1.15]
-export const WINDOW = { x: 0, y: 1.9, w: 5, h: 1.6 }
+export const WINDOW = { x: 0, y: 2, w: 5.6, h: 1.8 }
 export const DASH = { z: -2.15, w: 4.4, depth: 0.6, top: 0.95 }
 export const SPEEDS = [1, 5, 20, 60] as const
+/** Where the speed switch points, radians clockwise from straight ahead: its stops fan evenly across the top of its dial. */
+export const dialAngle = (speed: number) => (Math.max(0, SPEEDS.indexOf(speed as (typeof SPEEDS)[number])) - (SPEEDS.length - 1) / 2) * 0.7
 
 export type ModuleKey = 'solar' | 'battery' | 'comms' | 'storage' | 'bus' | `instrument:${string}`
 
@@ -45,9 +47,9 @@ export function modules(state: Pick<SimState, 'entities' | 'params'>): Module[] 
     { key: 'storage', name: 'Data storage', at: [3.5, 0, 1.2], face: [-1, 0] },
   ]
   const instruments = parseIds(params.instruments).map((id) => find(entities, 'instrument', id)).filter((e): e is Entity => !!e)
-  const n = instruments.length
   instruments.forEach((part, i) => {
-    const x = n === 1 ? 0 : -2.4 + (4.8 * i) / (n - 1)
+    // Either side of the hatch in the back wall, working outwards: nothing is bolted across the door.
+    const x = (i % 2 ? 1 : -1) * (1.7 + Math.floor(i / 2) * 0.9)
     out.push({ key: `instrument:${part.id}`, name: 'Instrument', part, at: [x, 0, 2.5], face: [0, -1] })
   })
   return out
@@ -69,7 +71,7 @@ export function choiceSpots(decision: Decision, list: readonly Module[]): { at: 
   return decision.options.map((_, i) => {
     const off = (i - (n - 1) / 2) * 0.45
     if (!m) return { at: [1.5 + off, 1.45, -1.1] as Vec3, along: [1, 0] as [number, number] }
-    const along: [number, number] = [-m.face[1], m.face[0]]
+    const along: [number, number] = [m.face[1], -m.face[0]] // your right as you face the module, so A is on the left
     return { at: [m.at[0] + m.face[0] * 0.75 + along[0] * off, 1.2, m.at[2] + m.face[1] * 0.75 + along[1] * off] as Vec3, along }
   })
 }
@@ -118,7 +120,7 @@ export function gauges(m: Metrics): Gauge[] {
 /** At most `words` words. */
 export const words = (text: string, max: number) => text.split(/\s+/).slice(0, max).join(' ').replace(/[,;:.–-]+$/, '')
 
-/** Room walls and module pedestals, so the player walks around them. */
+/** Room walls, the console and the module mounts, so the player walks around them. */
 export function obstacles(list: readonly Module[]): Obstacle[] {
   const [x0, , z0] = ROOM.min
   const [x1, , z1] = ROOM.max
@@ -145,12 +147,12 @@ export interface FlightOptions {
   onProbe?: () => void
 }
 
-/** What E does in the spacecraft: the time lever, and the anomaly card's choices when one is waiting. */
+/** What E does in the spacecraft: the pause button and the speed switch on the console, the floor hatch on Earth missions, and the anomaly card's choices when one is waiting. */
 export function interactables(list: readonly Module[], { send, paused, speed, decision, decisionBlocked, onProbe }: FlightOptions): Interactable[] {
   const next = SPEEDS.find((s) => s > speed) ?? SPEEDS[0]
   const out: Interactable[] = [
-    { id: 'pause', at: [1.4, 1.1, DASH.z + 0.05], label: paused ? 'Resume time' : 'Pause time', disabled: decision ? 'Answer the alarm first' : undefined, use: () => send({ type: paused ? 'resume' : 'pause', payload: {} }) },
-    { id: 'speed', at: [1.9, 1.1, DASH.z + 0.05], label: `Speed ${next}×`, use: () => send({ type: 'set_speed', payload: { multiplier: next } }) },
+    { id: 'pause', at: [1.4, 1, DASH.z + 0.1], label: paused ? 'Resume time' : 'Pause time', disabled: decision ? 'Answer the alarm first' : undefined, use: () => send({ type: paused ? 'resume' : 'pause', payload: {} }) },
+    { id: 'speed', at: [1.9, 1, DASH.z + 0.1], label: `Speed ${next}×`, use: () => send({ type: 'set_speed', payload: { multiplier: next } }) },
   ]
   if (onProbe) {
     out.push({
