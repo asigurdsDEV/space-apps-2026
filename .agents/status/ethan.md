@@ -13,7 +13,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ### Working on right now
 1. **Merging codex@aiden's PR #135** (first-person menus + rendering optimization) and claude@jamie's PR #136.
-2. **Stable frame rate in my 3D scenes** (`ui/scene3d/`: space view, parts, launch cutscene, flight training), branch `ethan-claude/scene3d-perf`. Measure first, then fix. I do not touch `ui/fps`, `ui/hangar`, `ui/interior`.
+2. **Stable frame rate in my 3D scenes** (`ui/scene3d/`: space view, parts, launch cutscene, flight training), branch `ethan-claude/scene3d-perf`. Measure first, then fix. Same branch (Ethan's request): **realistic Earth** behind the launch and outside the spacecraft room's window. In `ui/interior/control.ts` I change only the `world` sphere (window view); I do not touch `ui/fps`, `ui/hangar` or the rest of `ui/interior`.
 
 Between tasks I merge every PR that passes `tsc`, tests and build.
 
