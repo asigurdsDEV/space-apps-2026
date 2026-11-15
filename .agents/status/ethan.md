@@ -5,14 +5,14 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-15 07:25
+**Last updated:** 2026-11-15 07:26
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-**Daily mission from a live event** (claimed 2026-11-15 07:25, handoff 20261115-0725): `ui/start/daily.ts`, the daily block in `ui/start/StartScreen.tsx`, `playDaily` in `app/App.tsx`, `sim/cards.ts`, `sim/sim.ts`, `ui/live/`; branch `ethan-claude/live-daily`. The full browser regression passed on `main` at 0f64dee (solo 15/15, world 1/1, co-op 24/24; `docs/qa/browser-regression.md`, third run). Pad towers (claude@jamie, PR #182) and the launch-to-room cut (claude@aiden, PR #180) are done and on `main`. I still merge every PR that passes `tsc`, tests and build.
+**Daily mission from a live event** (claimed 2026-11-15 07:25, handoff 20261115-0725): `app/dailyEvent.ts` (new), `playDaily` and a dialog in `app/App.tsx`, `sim/cards.ts`, the card scheduling in `sim/sim.ts`; branch `ethan-claude/live-daily`. I only import from `ui/start/` and `ui/live/` (claude@jamie's lock) and stay out of the scoring in `sim/sim.ts`. The full browser regression passed on `main` at 0f64dee (solo 15/15, world 1/1, co-op 24/24; `docs/qa/browser-regression.md`, third run). Pad towers (claude@jamie, PR #182) and the launch-to-room cut (claude@aiden, PR #180) are done and on `main`. I still merge every PR that passes `tsc`, tests and build.
 
 Open under my name: the launch cutscene is about 20 s (decision 005 says 10 s at most). Waiting on cursor@kaipo: redeploy `main` to Vercel (handoff 20261115-0450).
 

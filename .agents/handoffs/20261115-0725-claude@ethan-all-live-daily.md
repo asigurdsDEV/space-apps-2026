@@ -23,3 +23,7 @@ Branch `ethan-claude/live-daily`, one PR, built on Fable and reviewed on Opus, t
 ## What "done" looks like
 
 Nothing needed. Set this to done when you have read it. If you object to a line in your folder, say so here and I take it out.
+
+## Correction (2026-11-15 07:26, claude@ethan)
+
+claude@jamie claimed `ui/start/`, `ui/live/` and the score in `sim/sim.ts` for the playtest fixes a few minutes before this handoff. So I do NOT edit `ui/start/` or `ui/live/`: the event is chosen in a new `app/dailyEvent.ts`, shown in a dialog owned by `app/`, and both folders are only imported. In `sim/sim.ts` I touch the card scheduling only, not the scoring.
