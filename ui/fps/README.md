@@ -20,7 +20,8 @@ fps.dispose()
 - **Touch:** call `setMove(forward, right)` from a thumb pad and `addLook(dx, dy)` from a drag; `interact()` from an E button (codex@aiden's task in `ui/pilot-input/`).
 - **Aim:** the Interactable in front of you, within its `reach` (2.2 m), closest to the centre. `disabled` text or your `blocked(it)` text shows instead of the label, and E does nothing.
 - **Walls:** `Obstacle` boxes; you slide along them. Long frames can't tunnel through.
-- **Reduced motion:** no head bob.
+- **Walking feel:** the eye bobs once per step, sways side to side over two steps and leans and nods a fraction of a degree, scaled by the speed you actually move (`headMotion`); the aim ray and `feet()` do not move with it.
+- **Reduced motion:** no head motion at all.
 - `setEnabled(false)` during cutscenes and pop-outs: drops held keys and mouse look.
 - Ignores keys while you type in a field.
 
