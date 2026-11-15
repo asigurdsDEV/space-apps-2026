@@ -18,8 +18,9 @@ import { rocketSpec } from '../scene3d/launch/vehicles'
 import type { Entity, Metrics } from '../../shared'
 import { CALL_WALL, CRAFT_Y, GAUGES, HOLO_Y, LAUNCH, PEDESTAL, ROOM, SIDE_WALL, START, STAND, TRACK_WALL, shortLabel, type Debrief, type Menu, type MenuCard, type Station } from './layout'
 import { addMissionControlDecor } from './decor'
-import { CALL_GRID, GOOD, MAP_URL, TILE_GRID, drawCalls, drawDesign, drawMargins, drawMission, drawPlan, drawTiles, drawTrack, face, wrap, type TrackScreen } from './screens'
+import { CALL_GRID, GOOD, MAP_URL, TILE_GRID, drawCalls, drawDesign, drawMargins, drawMission, drawPlan, drawPresets, drawTiles, drawTrack, face, wrap, type TrackScreen } from './screens'
 import { mountCrew, type CrewPose } from '../crew/crew'
+import { PRESET_CANVAS, PRESET_WALL, type PresetTile } from './presets'
 
 export interface RoomScreens {
   title: string
@@ -38,6 +39,8 @@ export interface RoomScreens {
   objective?: string
   launchUtc?: string
   debrief?: Pick<Debrief, 'grade' | 'score' | 'outcome'> & { fix?: string }
+  /** The rocket preset wall by the door (presets.ts). */
+  presets?: PresetTile[]
 }
 
 export interface ControlRoom {
@@ -273,6 +276,7 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
   const marginScreen = hang(1536, 768, GAUGES, [GAUGES.x, GAUGES.y, z0 + 0.085], 0)
   const designScreen = hang(1280, 640, SIDE_WALL, [-x1 + 0.085, SIDE_WALL.y, SIDE_WALL.z], Math.PI / 2)
   const planScreen = hang(1280, 640, SIDE_WALL, [x1 - 0.085, SIDE_WALL.y, SIDE_WALL.z], -Math.PI / 2)
+  const presetScreen = hang(PRESET_CANVAS.w, PRESET_CANVAS.h, PRESET_WALL, [PRESET_WALL.x, PRESET_WALL.y, PRESET_WALL.z], Math.PI)
   /** A screen is painted again only when what it shows (`key`) has changed. */
   const painted = new Map<object, string>()
   const paint = (screen: ReturnType<typeof canvasScreen>, key: string, draw: (g: CanvasRenderingContext2D) => void) => {
@@ -627,6 +631,7 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
     paint(planScreen, JSON.stringify([fontTick, s.launchUtc, rocket?.id]) + metrics, (g) => drawPlan(g, s.metrics, s.launchUtc, rocket && shortLabel(rocket)))
     paint(tileScreen, JSON.stringify([fontTick, mapTick, fit, s.bars, s.numbers, track]) + metrics, (g) => drawTiles(g, { stations: s.stations, bars: s.bars, metrics: s.metrics, numbers: s.numbers, track }, mapImage))
     paint(callScreen, JSON.stringify([fontTick, calls]), (g) => drawCalls(g, s.calls))
+    paint(presetScreen, JSON.stringify([fontTick, s.presets]), (g) => drawPresets(g, s.presets ?? []))
   }
 
   // ---- Walking.
