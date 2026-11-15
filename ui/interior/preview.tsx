@@ -1,6 +1,7 @@
 // Preview: npm run dev, then /ui/interior/preview.html. Query: scenario=demo|moon|mars (the world outside),
 // card=spacecraft|comms-resources|science|mission-planning (an anomaly card at that console), days=<sim days flown>,
-// instruments=<ids, comma separated> (e.g. camera-basic,magnetometer,laser-altimeter,subsurface-radar).
+// instruments=<ids, comma separated> (e.g. camera-basic,magnetometer,laser-altimeter,subsurface-radar),
+// probe (the gold hatch answers E, as on Earth missions: the page title becomes "surveyed").
 import { useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { getDatasets, getScenario } from '../../data'
@@ -27,7 +28,7 @@ function Preview() {
         if (c.type === 'pause' || c.type === 'resume') setPaused(c.type === 'pause')
         if (c.type === 'set_speed') setSpeed(c.payload.multiplier)
         if (c.type === 'resolve_decision') setOpen(null)
-      }} />
+      }} onProbe={q.has('probe') ? () => (document.title = 'surveyed') : undefined} />
     </div>
   )
 }

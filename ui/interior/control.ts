@@ -567,21 +567,25 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
       lockers(k, 2.66, 0.44)
       slab(k.skins, 0.33, 2.56, 0.08, 0.04, 0.004, 0.099, SKIN.blue)
     },
+    // Low drawers, for the end wall under the window.
+    (k) => lockers(k, Y0 + 0.335, 0.65),
   ] as ((k: Kit) => void)[]).map((build) => {
     const k: Kit = { skins: [], metals: [], darks: [], lamps: [] }
     build(k)
+    // One piece per material, so standing a rack somewhere copies four geometries, not fifty.
+    for (const key of ['skins', 'metals', 'darks', 'lamps'] as const) if (k[key].length) k[key] = [mergeGeometries(k[key])]
     return k
   })
   const fittings: Kit = { skins, metals, darks, lamps }
   const rackAt = (kind: number, turn: number, x: number, z: number) => {
     const to = new THREE.Matrix4().makeRotationY(turn).setPosition(x, 0, z)
     for (const key of ['skins', 'metals', 'darks', 'lamps'] as const) for (const g of racks[kind]![key]) fittings[key].push(g.clone().applyMatrix4(to))
-    // Baked shade: the light is overhead, so rack fronts darken gently towards the deck.
+    // Baked shade: rack fronts darken gently towards the deck, and again up under the stand-off's overhang.
     for (const g of skins.slice(-racks[kind]!.skins.length)) {
       const at = g.getAttribute('position')
       const c = g.getAttribute('color')
       for (let i = 0; i < c.count; i++) {
-        const k = 0.66 + 0.34 * smooth(at.getY(i), 0.1, 1.5)
+        const k = (0.66 + 0.34 * smooth(at.getY(i), 0.1, 1.5)) * (1 - 0.2 * smooth(at.getY(i), 2, 2.4))
         c.setXYZ(i, c.getX(i) * k, c.getY(i) * k, c.getZ(i) * k)
       }
     }
@@ -592,6 +596,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   }
   for (const [i, x] of [-3.5, -2.5, -1.5, 1.5, 2.5, 3.5].entries()) rackAt([2, 0, 1, 3, 2, 0][i]!, Math.PI, x, z1)
   for (const x of [-2.5, -1.5, 1.5, 2.5]) rackAt(4, Math.PI, x, z1)
+  for (let x = -2.5; x < 3; x++) rackAt(5, 0, x, z0)
   rackAt(0, 0, -3.5, z0)
   rackAt(2, 0, 3.5, z0)
   for (const x of [-3, -2, 2, 3]) put(metals, rounded(0.07, 2.26, RIB, 0.01, 1), x, Y0 + 1.1, z1 - RIB / 2)
@@ -605,6 +610,13 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
       for (const y of [1.42, 2.02]) put(rails, new THREE.CylinderGeometry(0.012, 0.012, 0.08, 8).rotateZ(FACING), x + out * (RIB + 0.035), y, z)
     }
     put(rails, new THREE.BoxGeometry(0.34, 0.014, D), x + out * 0.33, 0.007, 0)
+    // Two cables drop from the tray beside a frame and plug into the rack below.
+    for (const z of [-1, 1]) {
+      for (const [dz, r] of [[0, 0.013], [0.03, 0.009]] as const)
+        put(darks, new THREE.TubeGeometry(new THREE.CatmullRomCurve3([[0.19, 2.54, 0.07], [0.2, 2.36, 0.07], [0.19, 2.05, 0.08], [0.17, 1.86, 0.1], [0.125, 1.78, 0.15]].map(([off, y, along]) => new THREE.Vector3(x + out * off!, y, z + along! + dz))), 20, r, 6))
+      put(metals, new THREE.BoxGeometry(0.03, 0.03, 0.09), x + out * 0.185, 2.2, z + 0.09)
+      put(darks, new THREE.CylinderGeometry(0.03, 0.03, 0.03, 16).rotateZ(FACING), x + out * 0.115, 1.78, z + 0.165)
+    }
     // Shade where the deck meets the wall.
     put(shades, fadeStrip(D, 0.9).rotateX(-FACING).rotateY(-out * FACING), x + out * 0.45, 0.004, 0)
   }
@@ -767,6 +779,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   put(metals, new THREE.CylinderGeometry(0.014, 0.014, 3.7, 12).rotateZ(FACING), 0, 0.868, DASH.z + 0.365)
   for (let i = 0; i < 5; i++) put(metals, new THREE.CylinderGeometry(0.008, 0.008, 0.07, 8).rotateX(FACING), (i - 2) * 0.9, 0.868, DASH.z + 0.335)
   put(shades, flatOn(DASH.w + 1.3, 2), 0, 0.005, DASH.z + 0.05)
+  put(shades, flatOn(DASH.w + 0.3, 1), 0, 0.007, DASH.z - 0.05)
   /** Onto the control shelf, x along the desk and z metres in front of DASH.z; and onto the face of the instrument panel. */
   const onShelf = (x: number, z: number) => new THREE.Matrix4().makeRotationX(SHELF).setPosition(x, 0.912 + (0.3 - z) * (0.11 / 0.35), DASH.z + z)
   const onPanel = new THREE.Matrix4().makeRotationX(-TILT).setPosition(0, 1.18, DASH.z - 0.108)
@@ -856,6 +869,12 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   fitted(hatch, new THREE.MeshStandardMaterial({ map: brushed, color: 0xa9aeb7, roughness: 0.42, metalness: 0.3 }))
   fitted(shades, shadeMat).renderOrder = 1
   fitted(glows, glowMat).renderOrder = 1
+  // Daylight from the window, pooled on the control shelf and on the deck in front of the console. It follows the Sun outside.
+  const spillMat = new THREE.MeshBasicMaterial({ map: blob, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false })
+  const spill: Pieces = []
+  put(spill, flatOn(DASH.w + 0.6, 0.8), 0, 0.034, 0, onShelf(0, 0.14))
+  put(spill, flatOn(5.4, 2.6), 0, 0.009, DASH.z + 1.45)
+  fitted(spill, spillMat).renderOrder = 1
 
   // ---- Modules (rebuilt when the design changes) and anomaly choices (rebuilt per card).
   const moduleGroup = new THREE.Group()
@@ -1011,6 +1030,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
     fill.intensity = FILL * room
     for (const lamp of strips) lamp.intensity = STRIP * room
     windowLight.intensity = shine * (0.4 + 4.2 * smooth(zenith.dot(uSun.value), -0.1, 0.55))
+    spillMat.opacity = windowLight.intensity * 0.04
     const flash = alarmKey && lights.get(alarmKey)
     if (flash) flash.emissiveIntensity = 0.3 + 2.5 * pulse
     washMat.opacity = flash ? 0.45 * pulse : 0
@@ -1061,6 +1081,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
       if (body === 'mars') uAir.value.setRGB(0.75, 0.45, 0.3)
       else uAir.value.setRGB(0.3, 0.55, 1)
       windowLight.color.setHex(body === 'earth' ? 0xb4cdf2 : body === 'moon' ? 0xd5d9e2 : 0xe2a67e)
+      spillMat.color.copy(windowLight.color)
       shine = body === 'earth' ? 1 : 0.5
       worldTurn = (s.day / 365) * Math.PI * 2 * 6 // a few turns over a year: you can see it move at speed
       // Sim steps clone params; equal craft values must not rebuild GPU geometry every tick.
