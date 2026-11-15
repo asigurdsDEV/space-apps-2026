@@ -252,7 +252,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   scene.add(world)
   const clouds = new THREE.Mesh(
     new THREE.SphereGeometry(40.4, 96, 64),
-    new THREE.ShaderMaterial({ ...toScreen(cloudShader), uniforms: { uSun, uTime: { value: 0 } }, transparent: true, depthWrite: false }),
+    new THREE.ShaderMaterial({ ...toScreen(cloudShader), uniforms: { uSun, uTime: { value: 0 }, ...worldMaps.maps.earth }, transparent: true, depthWrite: false }),
   )
   world.add(clouds)
   // A soft glow of air around the limb, brightest on the sunlit side.

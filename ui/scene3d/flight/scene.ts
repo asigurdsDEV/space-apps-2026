@@ -81,7 +81,7 @@ export function createFlightScene(container: HTMLElement, options: FlightSceneOp
     new THREE.Mesh(new THREE.SphereGeometry(1, 160, 120), new THREE.ShaderMaterial({ ...planetShader, uniforms: { uSun, uBody: { value: BODY_INDEX[options.body] }, ...maps.maps[options.body] } })),
   )
   if (options.body === 'earth') {
-    scene.add(new THREE.Mesh(new THREE.SphereGeometry(1.012, 128, 96), new THREE.ShaderMaterial({ ...cloudShader, uniforms: { uSun, uTime }, transparent: true, depthWrite: false })))
+    scene.add(new THREE.Mesh(new THREE.SphereGeometry(1.012, 128, 96), new THREE.ShaderMaterial({ ...cloudShader, uniforms: { uSun, uTime, ...maps.maps.earth }, transparent: true, depthWrite: false })))
   }
   const air = ATMOSPHERE[options.body]
   if (air !== null) {
