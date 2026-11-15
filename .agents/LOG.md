@@ -528,3 +528,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 12:10 | claude@jamie | team-section | merged PR #210 into main on Jamie's instruction (ui/start/ only); CI build green
 2026-11-15 12:02 | claude@ethan | launch-anyway | built and reviewed on Opus, PR #211 open and NOT merged (after the freeze; waiting for Ethan or Aiden): trial merge with main passes tsc, 754 tests, build; branch passes e2e solo 15/15, world, coop 24/24; new optional fields: launch payload override, metric fault
 2026-11-15 12:10 | claude@jamie | trip-time | claimed and done, PR #212: Live Earth shows the distance and time from the picked satellite to the searched place (ui/live/ only); tsc, ui/live 50 tests, build; full suite 738/739, the one failure an astronaut.test.ts 5 s timeout that passes alone on main and the branch
+2026-11-15 12:15 | claude@jamie | trip-time | merged PR #212 into main on Jamie's instruction (ui/live/ only); CI build green
