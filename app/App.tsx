@@ -649,7 +649,7 @@ function Flight({ session, config, daily, online, skipLaunch, onLaunchDone }: { 
           <Training state={state} onClose={() => showTraining(false)} />
         </Suspense>
         {/* The same key as below keeps it mounted, so the story does not start over when the player comes back. */}
-        <StoryLayer key="story" screen="flight" events={events} scenarioId={state.scenario_id} onCutscene={holdClock} shown={SHOWN_BY_APP} />
+        <StoryLayer key="story" screen="flight" events={events} scenarioId={state.scenario_id} design={state} onCutscene={holdClock} shown={SHOWN_BY_APP} />
       </>
     )
   }
@@ -695,7 +695,7 @@ function Flight({ session, config, daily, online, skipLaunch, onLaunchDone }: { 
           />
         </div>
       )}
-      <StoryLayer key="story" screen="flight" events={events} scenarioId={state.scenario_id} onCutscene={holdClock} shown={SHOWN_BY_APP} />
+      <StoryLayer key="story" screen="flight" events={events} scenarioId={state.scenario_id} design={state} onCutscene={holdClock} shown={SHOWN_BY_APP} />
     </>
   )
 }

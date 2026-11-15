@@ -53,3 +53,16 @@ describe('CAPCOM pop-out', () => {
     expect(holds).toEqual([true, true, false, false])
   })
 })
+
+describe('StoryLayer craft', () => {
+  it('passes the flown spacecraft to the ending cutscene', async () => {
+    const { getDatasets, getScenario } = await import('../data')
+    const { catalogEntities } = await import('../sim')
+    const { sceneSpec } = await import('../ui/scene3d/model')
+    const config = getScenario('demo')!
+    const design = { entities: catalogEntities(getDatasets(config.datasets)), params: config.params }
+    const end: SimEvent = { type: 'scenario_ended', tick: 1, t_s: 1, payload: { reason: 'x', summary: { outcome: 'success' } as Summary } }
+    expect(renderToStaticMarkup(<StoryLayer screen="flight" events={[end]} scenarioId="demo" design={design} />)).toContain('st-cutscene')
+    expect(sceneSpec(design).craft.bus).toBeTruthy()
+  })
+})
