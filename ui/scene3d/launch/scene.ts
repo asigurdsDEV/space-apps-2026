@@ -289,8 +289,9 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
     scene.add(storm.group)
     composer.insertPass(storm.grade, 1)
   }
+  // Where the rocket's nose and base are, for the strike's bolt.
   const nose = new THREE.Vector3()
-  const tail = new THREE.Vector3()
+  const base = new THREE.Vector3()
 
   // ---- Timeline bookkeeping: when each event happens on screen, and when its shot ends.
   const eventAt = new Map<StageId, number>()
@@ -854,9 +855,9 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
     if (storm) {
       camera.updateMatrixWorld()
       // The rocket's ends where it is now; where it blew up, after.
-      if (boom < 0) onAxis(1, nose), onAxis(0, tail)
-      else nose.copy(blastAt).addScaledVector(blastUp, 0.5 * H), tail.copy(blastAt).addScaledVector(blastUp, -0.5 * H)
-      const lit = storm.update(t, camera, blastT - STORM.strikeLead, nose, tail)
+      if (boom < 0) onAxis(1, nose), onAxis(0, base)
+      else nose.copy(blastAt).addScaledVector(blastUp, 0.5 * H), base.copy(blastAt).addScaledVector(blastUp, -0.5 * H)
+      const lit = storm.update(t, camera, blastT - STORM.strikeLead, nose, base)
       // Overcast: no hard sunlight, a grey wash of sky light, and lightning lighting everything up for an instant.
       sunLight.intensity *= 0.3
       hemi.color.set(0x8a93a3)
