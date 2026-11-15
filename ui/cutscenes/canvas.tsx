@@ -184,7 +184,8 @@ function orbit(scene: THREE.Scene, camera: THREE.PerspectiveCamera, body: 'moon'
 }
 
 function anomaly(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Shot {
-  scene.background = new THREE.Color(0x14060c)
+  // Near-black like the other shots; the pulsing red light alone says "alarm" (no floating lamp).
+  scene.background = new THREE.Color(0x000002)
   lights(scene, 0xffe4e8, 0xff4455)
   stars(scene, 160)
   const craft = craftMesh()
@@ -194,14 +195,10 @@ function anomaly(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Shot {
   const alarm = new THREE.PointLight(0xff2040, 2, 8)
   alarm.position.set(0.2, 0.55, 0.9)
   scene.add(alarm)
-  const beacon = new THREE.Mesh(new THREE.SphereGeometry(0.045, 16, 12), new THREE.MeshBasicMaterial({ color: 0xff2040 }))
-  beacon.position.set(0, 0.28, 0.15)
-  scene.add(beacon)
   return {
     update(progress, elapsedMs, aspect) {
       const blink = Math.abs(Math.sin(elapsedMs / 160))
       alarm.intensity = blink * 8
-      beacon.scale.setScalar(1 + blink * 0.45)
       const e = ease(progress)
       craft.rotation.y = 0.7 + e * 0.25
       camera.position.set(0.35, 0.7, lerp(distance(aspect, 3.2), distance(aspect, 2.3), e))
