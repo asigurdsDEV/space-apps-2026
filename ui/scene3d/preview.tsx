@@ -1,4 +1,5 @@
 // Dev-only preview: `npm run dev`, then open /ui/scene3d/preview.html. Not part of the build.
+// ?date=2026-06-21T12:00Z draws the Earth's day and night for that moment instead of now.
 // shortcut: a hand-copied subset of data/ catalog rows (PR #8); the real screens pass state.entities.
 import { StrictMode, useState } from 'react'
 import { createRoot } from 'react-dom/client'
@@ -35,6 +36,8 @@ const entities: Entity[] = [
   e('instrument', 'uv-telescope', 'Ultraviolet space telescope', { category: 'telescope' }),
   e('instrument', 'synthetic-aperture-radar', 'Synthetic aperture radar', { category: 'radar' }),
 ]
+
+const date = new URLSearchParams(location.search).get('date')
 
 const pick = (kind: string, where?: (x: Entity) => boolean) => entities.filter((x) => x.kind === kind && (!where || where(x)))
 
@@ -77,7 +80,7 @@ function Preview() {
           </label>
         ))}
       </div>
-      <SpaceView state={{ entities, params }} mode={mode} className="preview-big" />
+      <SpaceView state={{ entities, params }} mode={mode} date={date ? new Date(date) : undefined} className="preview-big" />
       <style>{'.preview-big { height: min(72vh, 640px); }'}</style>
     </div>
   )

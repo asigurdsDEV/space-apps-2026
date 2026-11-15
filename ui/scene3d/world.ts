@@ -14,6 +14,7 @@ import { planetMaps } from './maps'
 import { steadyResolution } from './steady'
 import { atmosphereShader, cloudShader, planetShader } from './shaders'
 import { COMPANIONS, companionPosition, type Companion } from './sky'
+import { earthOrientation, sunDirection } from './sun'
 
 /** "cruise" shows Earth → the Moon or Mars on the transfer arc; with an Earth orbit it shows "orbit". */
 export type ViewMode = 'spacecraft' | 'orbit' | 'cruise'
@@ -30,6 +31,8 @@ export interface WorldOptions {
   backdrop?: boolean
   /** Called when the spacecraft is clicked or tapped (orbit mode). The pointer turns into a hand over it. */
   onCraftClick?: () => void
+  /** The moment the Earth's day and night are drawn for. Left out: now. */
+  date?: number | Date
 }
 
 export interface World {
@@ -41,6 +44,7 @@ export interface World {
 }
 
 const SUN = new THREE.Vector3(1, 0.35, 0.55).normalize()
+const Y = new THREE.Vector3(0, 1, 0)
 const ATMOSPHERE_R = 1.06
 const BODY_INDEX: Record<Body, number> = { earth: 0, moon: 1, mars: 2 }
 const ATMOSPHERE: Record<Body, THREE.Color | null> = { earth: new THREE.Color(0.28, 0.55, 1.0), mars: new THREE.Color(0.4, 0.23, 0.14), moon: null }
@@ -123,6 +127,13 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
   sun.scale.setScalar(110)
   scene.add(sun)
 
+  // Real day and night (sun.ts): every Earth here is turned so the place where it is noon at `date` faces SUN, then spins on
+  // from there about its own tilted axis. The shaders light in world space, so ground, city lights, clouds and air all agree.
+  const sunXYZ = SUN.toArray()
+  const sunInMap = sunDirection(new Date(options.date ?? Date.now()))
+  const earthUpright = new THREE.Quaternion().fromArray(earthOrientation(sunInMap, sunXYZ))
+  const earthInSky = new THREE.Quaternion() // the same, seen from inside the tipped globe group
+
   // Planet, clouds, atmosphere.
   const uSun = { value: SUN.clone() }
   const uTime = { value: 0 }
@@ -147,18 +158,20 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
       depthWrite: false,
     }),
   )
-  // The globe tilts in close-up mode so mid-latitudes, not the polar ice, turn under the craft.
   const globe = new THREE.Group()
   globe.add(planet, clouds)
   scene.add(globe, atmosphere)
 
   // Cruise mode: Earth behind us and the transfer arc to the destination (the globe above).
   const home = new THREE.Mesh(planet.geometry, new THREE.ShaderMaterial({ ...planetShader, uniforms: { uSun, uBody: { value: 0 }, ...bodyMaps.maps.earth } }))
+  const homeAxis = new THREE.Group() // holds the real tilt; `home` spins inside it
+  homeAxis.quaternion.copy(earthUpright)
+  homeAxis.add(home)
   const arc = new THREE.Line(
     new THREE.BufferGeometry(),
     new THREE.LineDashedMaterial({ color: 0xbcd2ff, dashSize: 0.22, gapSize: 0.12, transparent: true, opacity: 0.95, depthWrite: false }),
   )
-  scene.add(home, arc)
+  scene.add(homeAxis, arc)
 
   // The rest of the sky, to scale (sky.ts): the Moon from Earth orbit, Earth from lunar orbit, Phobos and Deimos at Mars.
   // It hangs off the globe so it tilts with the planet in the close-up.
@@ -190,14 +203,16 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
       return { around, c, mesh }
     }),
   )
-  const sunXYZ = SUN.toArray()
   function placeSky() {
+    // The sky hangs off the globe, and in the Earth's own frame the Sun stands at sunInMap.
+    const sun = spec.body === 'earth' ? sunInMap : sunXYZ
     for (const { c, mesh } of companions) {
       if (!mesh.visible) continue
-      mesh.position.set(...companionPosition(c, planet.rotation.y, sunXYZ))
-      if (c.turnsPerSpin) mesh.rotation.y = planet.rotation.y * c.turnsPerSpin
+      mesh.position.set(...companionPosition(c, planet.rotation.y, sun))
+      // Only the Earth (from lunar orbit) turns on its own axis.
+      if (c.turnsPerSpin) mesh.quaternion.setFromAxisAngle(Y, planet.rotation.y * c.turnsPerSpin).premultiply(earthInSky)
       else {
-        mesh.lookAt(sky.getWorldPosition(pos)) // one face always towards the planet
+        mesh.lookAt(0, 0, 0) // one face always towards the planet, which sits at the origin (and `pos` stays the craft's, for the click test)
         if (c.look !== 'rock') mesh.rotateY(-Math.PI / 2) // lookAt aims +z; a mapped body's near side (longitude 0) is +x
       }
     }
@@ -272,7 +287,7 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
   function craftPosition(out: THREE.Vector3): THREE.Vector3 {
     if (shown === 'spacecraft') return out.set(0, closeRadius(), 0)
     if (shown === 'cruise' && spec.body !== 'earth') return out.set(...transferPoint(spec.body, progress ?? looped))
-    return out.set(Math.cos(angle) * radius, 0, Math.sin(angle) * radius).applyEuler(orbitPivot.rotation)
+    return out.set(Math.cos(angle) * radius, 0, Math.sin(angle) * radius).applyQuaternion(orbitPivot.quaternion)
   }
 
   function applySpec(next: SceneSpec) {
@@ -285,7 +300,6 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
     const air = ATMOSPHERE[spec.body]
     atmosphere.visible = !!air
     if (air) uAtmo.value.copy(air)
-    orbitPivot.rotation.set(spec.inclination_rad, 0, 0)
     ring.scale.setScalar(radius)
     if (craft) {
       holder.remove(craft)
@@ -301,7 +315,14 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
     const reframe = !framed || next !== shown
     shown = next
     holder.scale.setScalar(CRAFT_SIZE[shown])
-    globe.rotation.x = shown === 'spacecraft' ? 1.1 : 0
+    // The close-up tips the pole toward the camera so mid-latitudes, not the polar ice, turn under the craft.
+    const tip = shown === 'spacecraft' ? 1.1 : 0
+    if (spec.body === 'earth') globe.quaternion.fromArray(earthOrientation(sunInMap, sunXYZ, [0, Math.cos(tip), Math.sin(tip)]))
+    else globe.rotation.set(tip, 0, 0)
+    earthInSky.copy(globe.quaternion).invert().multiply(earthUpright)
+    // Inclination is measured from the equator, so the orbit leans with the globe.
+    orbitPivot.rotation.set(spec.inclination_rad, 0, 0)
+    orbitPivot.quaternion.premultiply(globe.quaternion)
     ring.visible = shown === 'orbit'
     marker.visible = shown !== 'spacecraft' && !options.backdrop
     home.visible = arc.visible = shown === 'cruise'
@@ -309,8 +330,8 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
     const target = shown === 'spacecraft' ? new THREE.Vector3(0, closeRadius(), 0) : new THREE.Vector3()
     if (shown === 'cruise' && spec.body !== 'earth') {
       const { earthRadius, distance } = cruiseLayout(spec.body)
-      home.position.set(-distance, 0, 0)
-      home.scale.setScalar(earthRadius)
+      homeAxis.position.set(-distance, 0, 0)
+      homeAxis.scale.setScalar(earthRadius)
       arc.geometry.dispose()
       arc.geometry = new THREE.BufferGeometry().setFromPoints(transferArc(spec.body).map(([x, y, z]) => new THREE.Vector3(x, y, z)))
       arc.computeLineDistances()

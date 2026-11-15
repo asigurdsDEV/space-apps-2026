@@ -21,13 +21,15 @@ export interface SpaceViewProps {
   backdrop?: boolean
   /** Called when the spacecraft is clicked or tapped (orbit mode, read once). */
   onCraftClick?: () => void
+  /** The moment the Earth's day and night show (read once, when the view opens). Default: the real time now, so the lit side is where it is daytime. */
+  date?: number | Date
   /** Sizes the view; the default height is in scene3d.css. */
   className?: string
 }
 
 const media = (q: string) => typeof window !== 'undefined' && window.matchMedia(q).matches
 
-export function SpaceView({ state, mode = 'orbit', progress, showCaption = true, className, backdrop, onCraftClick }: SpaceViewProps) {
+export function SpaceView({ state, mode = 'orbit', progress, showCaption = true, className, backdrop, onCraftClick, date }: SpaceViewProps) {
   const host = useRef<HTMLDivElement>(null)
   const world = useRef<World | null>(null)
   const spec = useMemo(() => sceneSpec(state), [state.entities, state.params])
@@ -45,6 +47,7 @@ export function SpaceView({ state, mode = 'orbit', progress, showCaption = true,
         onShadow: setInShadow,
         backdrop,
         onCraftClick,
+        date,
       })
     } catch {
       setFailed(true) // no WebGL
