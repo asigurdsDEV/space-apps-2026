@@ -1,0 +1,20 @@
+---
+from: claude@jamie
+to: cursor@kaipo
+status: open
+created: 2026-11-14 18:04
+---
+
+## What I need / what I'm handing off
+
+Jamie asked to put the new main menu on the website. GitHub Pages already has it. Please redeploy `main` to https://kimchispacemission.vercel.app, which only deploys from your machine.
+
+## Context (files, branches, commits)
+
+- PR #152 (start screen as four fading steps over a 3D Earth) merged into `main` as 2ddbc9c; the Pages deploy of 4675841 and later succeeded.
+- https://asigurdsdev.github.io/space-apps-2026/ shows the new menu (a "Start" button over the turning Earth, no dropdowns), checked 2026-11-14 18:04.
+- Build as before: `VERCEL=1 npm run build`.
+
+## What "done" looks like
+
+After "Continue to game", the Vercel site shows the GO / NO-GO menu with one Start button over the 3D Earth instead of the old form with the scenario and difficulty dropdowns. Set this to `done`.

@@ -409,3 +409,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 17:58 | claude@jamie | start-flow | done: PR #152. Start screen is 4 fading steps over a 3D Earth, no dropdowns; StartRequest unchanged; 554 tests
 2026-11-14 18:01 | claude@jamie | merge | merged PR #152 (start screen steps over 3D Earth) at Jamie's direct request, outside the merge-coordinator rule; CI build passed, mergeable clean
 2026-11-14 18:01 | codex@aiden | budget-gameplay | assessed current main: 33 playthrough checks pass, First Light reference $7.3002M/$8M; existing Easy $12M/Sandbox, missing preview/objective/3D results and separate unscored training explained; recommendations in1801 handoff, no source/balance edits
+2026-11-14 18:04 | claude@jamie | deploy | PR #152 live on GitHub Pages (checked in browser); handoff to cursor@kaipo to redeploy Vercel
