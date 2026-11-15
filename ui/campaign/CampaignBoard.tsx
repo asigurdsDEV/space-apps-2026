@@ -3,6 +3,7 @@ import { playSound } from '../audio'
 import { SpaceView } from '../scene3d'
 import { readName, rememberName } from '../start/name'
 import { GLOBES } from '../start/StartScreen'
+import { Team } from '../start/Team'
 import '../start/start.css'
 import { canStartMission, funding, MISSIONS, nextMission, type CampaignProgress } from './model'
 import './campaign.css'
@@ -18,6 +19,7 @@ export function CampaignBoard({ progress, persistent, onStart, onFreePlay }: Pro
   const next = nextMission(progress)
   const [selected, setSelected] = useState(next?.id ?? MISSIONS[0]!.id)
   const [name, setName] = useState(readName)
+  const [team, setTeam] = useState(false)
   const mission = MISSIONS.find((m) => m.id === selected)!
   const index = MISSIONS.indexOf(mission)
   const title = mission.config.title.split(':')[0].replace(' (Easy)', '')
@@ -32,7 +34,7 @@ export function CampaignBoard({ progress, persistent, onStart, onFreePlay }: Pro
     <main className="ss-root campaign" aria-labelledby="campaign-title">
       <SpaceView className="ss-bg" state={{ entities: mission.config.entities, params: mission.config.params }} mode="orbit" showCaption={false} backdrop />
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500&display=swap" precedence="default" />
-      <div className="ss-masthead"><span className="ss-brand"><span aria-hidden="true">✦</span> First Flight</span><span>Guided missions · Solo</span><span className="ss-edition">NASA Space Apps · 2026</span></div>
+      <div className="ss-masthead"><span className="ss-brand"><span aria-hidden="true">✦</span> First Flight</span><span>Guided missions · Solo</span><button className="ss-team-link" type="button" onClick={() => setTeam(true)}>About the team</button><span className="ss-edition">NASA Space Apps · 2026</span></div>
       <form className="ss-stage" onSubmit={submit}>
         <div className="ss-side">
           <header className="ss-intro">
@@ -51,6 +53,12 @@ export function CampaignBoard({ progress, persistent, onStart, onFreePlay }: Pro
           </ol>
         </div>
         <fieldset className="ss-panel">
+          {team ? <>
+            <p className="ss-panel-kicker">Kimchi Trenchers</p>
+            <h2 className="ss-step-title">About the team</h2>
+            <Team />
+            <div className="ss-nav"><button type="button" className="ss-back" onClick={() => setTeam(false)}>Back to missions</button></div>
+          </> : <>
           <p className="ss-panel-kicker">Assignment 0{index + 1}</p>
           <h2 className="ss-step-title">{title}</h2>
           <p className="ss-hint ss-lead">{mission.config.params.objective_text}</p>
@@ -61,6 +69,7 @@ export function CampaignBoard({ progress, persistent, onStart, onFreePlay }: Pro
           <div className="ss-nav"><button type="submit" className="ss-primary">{index < progress.length ? 'Replay mission' : progress.length ? 'Continue campaign' : 'Start guided mission'}</button></div>
           <p className="ss-hint" role="status">{persistent ? 'Progress saves in this browser. Retrying keeps your grant.' : 'Browser storage is unavailable. Progress lasts for this visit.'}</p>
           <button type="button" className="ss-daily-button" onClick={onFreePlay}>Free play, Daily &amp; online</button>
+          </>}
         </fieldset>
       </form>
     </main>

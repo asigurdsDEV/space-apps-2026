@@ -554,3 +554,5 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 15:07 | claude@jamie | f22-intercept | merged PR #219 into main on Jamie's instruction; CI build green
 2026-11-15 15:09 | claude@jamie | lightning | claimed: sandbox lightning-strike launch event (rain, lightning, bolt hits the rocket, explosion), 20% on its own roll band, Jamie's request
 2026-11-15 15:15 | claude@ethan | carrier-smoke | merged PRs #221 (carrier aircraft from real photographs, site.ts) and #222 (exhaust smoke aligned with the engine, scene.ts) into main: tsc, 823 tests (two timed out on the first run under load and passed on the re-run), build pass, first load 72.7 kB, 3D walk clean
+2026-11-15 15:13 | claude@jamie | team-on-board | done, PR #220: About the team link + panel on the guided missions board; team list shared in ui/start/Team.tsx; tsc, 157 tests; waits for Jamie's merge
+2026-11-15 15:14 | claude@jamie | team-on-board | merged PR #220 into main on Jamie's instruction (ui/start/, ui/campaign/CampaignBoard.tsx); CI build green
