@@ -48,7 +48,7 @@ function shots(spec: RocketSpec, failed: boolean): Shot[] {
         { id: 'airstart', seconds: 2.8, met: [5, 12], title: 'Ignition', caption: 'The motor lights, and the wing helps the rocket pull up.', detail: 'The solid rocket motor lights. The wing helps the rocket pull up and start to climb.' },
       ]
     : [
-        { id: 'countdown', seconds: 2.8, met: [-10, -3], title: 'On the pad', caption: `${name} waits on the pad at dawn. Your spacecraft ${spec.rideshare ? 'shares the nose with many others' : 'is inside the nose'}.`, detail: `${name} stands on the launch pad at dawn${spec.rideshare ? ', carrying your spacecraft and many others' : ' with your spacecraft tucked inside its nose'}. The countdown is almost at zero.` },
+        { id: 'countdown', seconds: 2.8, met: [-10, -3], title: 'On the pad', caption: `${name} waits on the pad in sunshine. Your spacecraft ${spec.rideshare ? 'shares the nose with many others' : 'is inside the nose'}.`, detail: `${name} stands on the launch pad under a clear morning sky${spec.rideshare ? ', carrying your spacecraft and many others' : ' with your spacecraft tucked inside its nose'}. The countdown is almost at zero.` },
         { id: 'ignition', seconds: 1.8, met: [-3, 0], title: 'Ignition', caption: 'Engines light. Water floods the pad to soak up heat and noise.', detail: 'The engines light a few seconds early so computers can check they are healthy. Water floods the pad to soak up heat and noise.' },
         { id: 'liftoff', seconds: 3, met: [0, 8], title: 'Lift-off', caption: 'Thrust beats gravity: the rocket rises straight up past the tower.', detail: 'The engines now push up harder than gravity pulls down, so the rocket rises. It climbs straight up to clear the tower.' },
       ]

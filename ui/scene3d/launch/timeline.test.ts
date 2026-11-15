@@ -25,6 +25,8 @@ describe('launchTimeline', () => {
         expect(s.caption.split(' ').length, `${v.id} ${s.id}`).toBeLessThanOrEqual(18)
         expect(s.detail.length, `${v.id} ${s.id}`).toBeGreaterThan(s.caption.length * 0.8)
         expect(s.detail.length, `${v.id} ${s.id}`).toBeLessThan(230)
+        // The launch is drawn in full daylight.
+        expect(s.caption + s.detail, `${v.id} ${s.id}`).not.toMatch(/dawn/i)
       })
       expect(tl.stages.at(-1)!.end).toBe(tl.duration)
       expect(tl.stages.at(-1)!.id).toBe('deploy')

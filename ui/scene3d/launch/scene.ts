@@ -12,10 +12,9 @@ import { buildCraft, disposeObject } from '../craft'
 import { planetMaps } from '../maps'
 import { steadyResolution } from '../steady'
 import type { CraftSpec } from '../model'
-import { cloudShader, planetShader } from '../shaders'
 import { makeBirds } from './birds'
 import { altitudeM, downrangeM, pitchRad, vacuum } from './flight'
-import { flameColor, makeCloudDeck, makeGlow, makeGround, makePlume, makePuffs, makeSky, makeSpaceSky, makeStars, smokiness, type Plume } from './fx'
+import { flameColor, makeCloudDeck, makeEarthBelow, makeGlow, makeGround, makePlume, makePuffs, makeSky, makeSpaceSky, makeStars, smokiness, type Plume } from './fx'
 import { siteUnit } from './layout'
 import { buildRocket, type Nozzle } from './rocket'
 import { buildCarrier, buildPad } from './site'
@@ -49,10 +48,14 @@ const SPACE = new Set<StageId>(['boosters', 'staging', 'fairing', 'burn', 'deplo
 const SUN_GROUND = new THREE.Vector3(0.8, 0.32, 0.36).normalize()
 const SUN_SPACE = new THREE.Vector3(0.45, 0.6, 0.66).normalize()
 const CARRIER_MS = 240
+/** Ground that slides under the vehicle per second of screen time in the space shots, on top of the real distance flown: a shot is a few seconds long, and at true speed the Earth would look parked. */
+const GROUND_MS = 22_000
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x))
 const smooth = (a: number, b: number, x: number) => { const u = clamp01((x - a) / (b - a)); return u * u * (3 - 2 * u) }
 const lerp = (a: number, b: number, u: number) => a + (b - a) * u
+/** Distance covered `s` seconds after a spring's push: it eases in, then runs at a steady speed for good. */
+const coast = (s: number) => s - (1 - Math.exp(-s * 3)) / 3
 const hash = (i: number) => { const s = Math.sin(i * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s) }
 
 export function createLaunchScene(container: HTMLElement, options: LaunchSceneOptions): LaunchScene {
@@ -123,6 +126,12 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
     const glow = makeGlow(nozzle.propellant, nozzle.radius)
     plume.mesh.position.y = nozzle.y
     glow.position.y = nozzle.y - nozzle.radius
+    // The upper stage only ever burns in vacuum: a small blue-white knot, not the ball of lit air a booster has.
+    if (of === 's2') {
+      glow.material.color.setRGB(1.3, 1.6, 2.4)
+      glow.scale.setScalar(nozzle.radius * 3)
+      glow.position.y = nozzle.y - nozzle.radius * 0.4
+    }
     parent.add(plume.mesh, glow)
     plumes.push({ plume, glow, of })
     model.heat[of].emissive.setRGB(...flameColor(nozzle.propellant))
@@ -171,23 +180,9 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
   const stars = makeStars(900)
   stars.renderOrder = -9
   stars.frustumCulled = false
-  const backdrop = { depthTest: false, depthWrite: false }
-  // Real NASA maps (../maps/README.md); the planet is procedural until they have loaded.
+  // Real NASA maps (../maps/README.md) say where land, sea and cloud are; the ground is plain ocean until they have loaded.
   const maps = planetMaps(renderer.capabilities.getMaxAnisotropy())
-  const planet = new THREE.Mesh(
-    new THREE.SphereGeometry(EARTH_R, 192, 96),
-    new THREE.ShaderMaterial({ ...planetShader, uniforms: { uSun: spaceU.uSun, uBody: { value: 0 }, ...maps.maps.earth }, ...backdrop }),
-  )
-  const clouds = new THREE.Mesh(
-    new THREE.SphereGeometry(EARTH_R + 9_000, 192, 96),
-    // Blended but not "transparent": it must draw with the backdrop, before the rocket, not over it.
-    new THREE.ShaderMaterial({ ...cloudShader, uniforms: { uSun: spaceU.uSun, uTime: skyU.uTime, ...maps.maps.earth }, blending: THREE.CustomBlending, ...backdrop }),
-  )
-  planet.renderOrder = -8
-  clouds.renderOrder = -7
-  planet.frustumCulled = clouds.frustumCulled = false
-  const globe = new THREE.Group()
-  globe.add(planet, clouds)
+  const globe = makeEarthBelow({ uSun: spaceU.uSun, uTime: skyU.uTime, ...maps.maps.earth }, EARTH_R)
   high.add(spaceSky, stars, globe)
   scene.add(high)
   // Which part of the Earth is below: lift-off from Cape Canaveral (28.5 N, 80.6 W), flying north-east up the coast,
@@ -320,13 +315,21 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
     model.stage1.position.set(0, sS > 0 ? -H * (0.1 * sS + 0.22 * sS * sS) : 0, 0)
     model.stage1.rotation.z = sS > 0 ? 0.05 * sS : 0
     const sF = since('fairing')
+    // Pushers swing each half open about its base rim; then it is free, and the stack, still thrusting, leaves it behind:
+    // it falls back along the flight path faster and faster, drifting outward with a slow tumble of its own.
+    const swing = 0.55 * smooth(0, 0.45, sF)
+    const free = Math.max(sF - 0.3, 0)
     model.fairing.forEach((half, i) => {
       const dir = i === 0 ? 1 : -1
+      const L = spec.fairing.length
+      const R = spec.fairing.radius
       half.visible = !over('fairing')
-      const open = Math.max(sF, 0)
-      half.position.set(dir * spec.fairing.radius * (0.5 * open + 1.6 * open * open), fairingHome - spec.fairing.length * 0.35 * open * open, 0)
-      // Each half swings out, then tumbles as it falls behind.
-      half.rotation.set(dir * 0.5 * open * open, 0.35 * open * open, -dir * Math.min(open * 0.8, 1.3))
+      half.position.set(
+        dir * (R * (1 - Math.cos(swing)) + L * (0.45 * free + 0.25 * free * free)),
+        fairingHome + R * Math.sin(swing) - L * (0.35 * free + 3.4 * free * free),
+        dir * L * 0.3 * free * free,
+      )
+      half.rotation.set(dir * (0.35 + 0.2 * i) * free, dir * 0.5 * free * free, -dir * (swing + (0.7 + 0.5 * i) * free))
     })
     if (model.escape) {
       // The abort tower's own motor pulls it straight off the nose.
@@ -334,20 +337,19 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
       model.escape.visible = !over('fairing')
       model.escape.position.y = escapeHome + spec.fairing.length * (0.3 * up + 1.2 * up * up)
     }
-    // Separation starts at the deploy event, not at the start of the shot. The upper stage
-    // drifts back and the spacecraft coasts forward, so the gap reads against the Earth.
+    // Separation starts at the deploy event, not at the start of the shot. The springs give a short push, then both
+    // coast at steady speeds: the spacecraft ahead with a slow tumble, the spent stage falling behind, the gap always opening.
     const sD = Math.max(since('deploy'), 0)
-    const kick = 1 - Math.exp(-sD * 1.35)
-    model.upper.position.y = upperHome - kick * model.payloadRadius * 1.6
-    model.payload.position.y = payloadHome + kick * model.payloadRadius * 7
-    model.payload.rotation.y = kick * 0.55
+    const gone = coast(sD)
+    model.upper.position.y = upperHome - gone * model.payloadRadius * 1.3
+    model.payload.position.y = payloadHome + gone * model.payloadRadius * 3.4
+    model.payload.rotation.set(0.16 * gone, 0.42 * gone, 0.08 * gone)
     model.others.forEach((o, i) => {
-      const delay = 0.35 + (i % 3) * 0.28
-      const leave = 1 - Math.exp(-Math.max(sD - delay, 0) * 1.2)
+      const leave = coast(Math.max(sD - 0.35 - (i % 3) * 0.28, 0))
       outAxis.set(othersHome[i]!.x, 0.35, othersHome[i]!.z)
       if (outAxis.lengthSq() < 1e-4) outAxis.set(i % 2 === 0 ? 1 : -1, 0.2, 0.4)
       outAxis.normalize()
-      o.position.copy(othersHome[i]!).addScaledVector(outAxis, leave * spec.fairing.radius * 1.15)
+      o.position.copy(othersHome[i]!).addScaledVector(outAxis, leave * spec.fairing.radius * 0.9)
     })
 
     // ---- Engines.
@@ -366,15 +368,28 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
     if (id === 'failure') p1 *= 1 - smooth(0.1, 0.16, p), pBoost *= 1 - smooth(0.1, 0.16, p)
     for (const { plume, glow, of } of plumes) {
       const power = of === 's1' ? p1 : of === 's2' ? p2 : pBoost
-      plume.set(power, of === 's2' ? 1 : thin, t)
+      const vac = of === 's2' ? 1 : thin
+      // Many strap-ons side by side: their flames and glows add up to a white-out, so each gets a share.
+      const share = of === 'booster' ? Math.min(1, 2 / model.boosters.length) : 1
+      plume.set(power * Math.sqrt(share), vac, t)
       glow.visible = power > 0.01
-      // Many strap-ons side by side: their glows add up, so each gets a share.
-      glow.material.opacity = power * (of === 's2' ? 0.5 : of === 'booster' ? Math.min(1, 2 / model.boosters.length) : 1)
+      // In vacuum there is no air to light up: only a faint halo is left.
+      glow.material.opacity = power * share * lerp(1, 0.16, vac)
       model.heat[of].emissiveIntensity = power * 1.6
     }
     const thrust = Math.max(p1, pBoost)
-    onAxis(-0.08, flame.position)
-    flame.intensity = space ? 0 : thrust * 1.1 * (1 - 0.6 * thin)
+    if (space && p2 > 0) {
+      // The upper stage's bell runs red-hot in vacuum: its glow fills the bell and spills onto the stage's tail.
+      onAxis((model.upper.position.y + n2.y + n2.radius * 0.6) / H, flame.position)
+      flame.color.setRGB(1, 0.5, 0.12)
+      flame.intensity = p2 * 0.6
+      flame.distance = n2.radius * 7
+    } else {
+      onAxis(-0.08, flame.position)
+      flame.color.set(0xff8a3c)
+      flame.distance = 0
+      flame.intensity = thrust * 1.1 * (1 - 0.6 * thin) * (space ? 0.35 : 1)
+    }
     fireU.value.set(flame.position.x, flame.position.y, flame.position.z, flame.intensity)
 
     // ---- Light.
@@ -476,8 +491,11 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
         break
       case 'fairing': {
         const L = spec.fairing.length
-        onAxis(1 - (0.55 * L) / H, target)
-        eye.copy(target).add(tmp.set(1.3 * L, 0.7 * L, lerp(2.9, 2.5, p) * L))
+        // From ahead of the nose, looking back down the stack: the halves fall away from the camera, toward the limb.
+        onAxis(1 - ((0.55 + 0.9 * smooth(0.35, 1, p)) * L) / H, target)
+        eye.copy(target).addScaledVector(axis, lerp(1.7, 2.6, p) * L).add(tmp.set(0, 0, lerp(2.7, 2.2, p) * L))
+        // Low enough that the limb and black space stay in the top of the frame.
+        eye.y = target.y + lerp(0.95, 0.8, p) * L
         widen = 1.6
         break
       }
@@ -501,19 +519,27 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
         tmp.set(-axis.z, 0, axis.x)
         if (tmp.lengthSq() < 1e-4) tmp.set(1, 0, 0)
         tmp.normalize()
-        eye.copy(target).addScaledVector(tmp, gap * 1.65)
-        eye.y += gap * 0.95
+        eye.copy(target).addScaledVector(tmp, gap * lerp(1.9, 1.6, p)).addScaledVector(axis, gap * lerp(-0.5, 0.5, p))
+        eye.y += gap * 0.5
         fov = 36
-        widen = 1.2
+        widen = 1.9
         break
       }
     }
     if (!space && eye.y < 1.5) eye.y = 1.5
+    // A tall screen sees far more sky: look down more steeply, so the Earth, not black space, fills it (the burn shot already looks down).
+    if (space && tall > 1 && id !== 'burn') eye.y += eye.distanceTo(target) * 0.18 * Math.min(tall - 1, 1.5)
     const dist = eye.distanceTo(target)
     if (shake > 0 && !options.reducedMotion) {
       const k = shake * dist * 0.006
       target.x += (Math.sin(t * 47.3) + Math.sin(t * 31.7 + 1.3)) * k
       target.y += (Math.sin(t * 53.1 + 0.7) + Math.sin(t * 38.9 + 2.1)) * k
+    }
+    if (space && !options.reducedMotion) {
+      // A camera held by hand, not bolted down: it breathes a little.
+      const k = dist * 0.0035
+      target.x += (Math.sin(t * 1.3) + 0.6 * Math.sin(t * 2.9 + 1.7)) * k
+      target.y += (Math.sin(t * 1.7 + 0.4) + 0.6 * Math.sin(t * 3.7 + 2.3)) * k
     }
     camera.position.copy(eye)
     camera.up.set(0, 1, 0)
@@ -542,7 +568,7 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
       spaceSky.position.copy(eye)
       stars.position.copy(eye)
       globe.position.set(0, -(EARTH_R + altitude), 0)
-      globe.quaternion.copy(spin.setFromAxisAngle(Z, downrangeM(met) / EARTH_R)).multiply(globeStart)
+      globe.quaternion.copy(spin.setFromAxisAngle(Z, (downrangeM(met) + GROUND_MS * t) / EARTH_R)).multiply(globeStart)
     } else {
       skyU.uSpace.value = smooth(4_000, 45_000, eye.y)
       skyDome.position.copy(eye)
@@ -660,6 +686,8 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
       }
       burst(sS, (spec.s1.length + spec.interstage.length) / H, 12, spec.s1.radius)
       burst(sB, 0.3, 10, W)
+      // The fairing's pushers vent along the split line.
+      burst(sF * 2, 1 - (0.8 * spec.fairing.length) / H, 6, spec.fairing.radius * 0.35)
     }
     sunView.copy(sun).transformDirection(camera.matrixWorldInverse)
     puffs.commit(sunView, 1, space)

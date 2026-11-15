@@ -1,6 +1,7 @@
-// Shader effects for the launch: dawn sky, ground, cloud deck, engine plumes and smoke puffs.
-// Everything is procedural (no texture files). Colors are linear; OutputPass tone-maps.
+// Shader effects for the launch: sky, ground, cloud deck, engine plumes, smoke puffs and the Earth from low orbit.
+// Everything is procedural (no texture files) except the Earth, which reads the NASA maps. Colors are linear; OutputPass tone-maps.
 import * as THREE from 'three'
+import type { MapUniforms } from '../maps'
 import { ASSEMBLY, COAST_GLSL, CRAWLER_TURN } from './layout'
 import type { Nozzle } from './stack'
 import type { Propellant } from './vehicles'
@@ -304,10 +305,10 @@ void main() {
 // `body`: how solid the flame looks. Kerosene and solid motors burn sooty and opaque; hydrogen and methane flames are
 // thin enough to see the shock diamonds through. `smoke`: how much of a trail is left behind.
 const PLUME_COLORS: Record<Propellant, { core: [number, number, number]; edge: [number, number, number]; diamonds: number; length: number; body: number; smoke: number }> = {
-  kerolox: { core: [3.2, 2.0, 0.9], edge: [1.8, 0.55, 0.1], diamonds: 0.6, length: 1, body: 0.9, smoke: 0.6 },
+  kerolox: { core: [3.4, 2.5, 1.3], edge: [1.9, 0.6, 0.1], diamonds: 0.7, length: 1, body: 0.9, smoke: 0.6 },
   methalox: { core: [2.2, 2.0, 3.0], edge: [0.9, 0.5, 1.5], diamonds: 1, length: 0.9, body: 0.5, smoke: 0.35 },
   hydrolox: { core: [1.5, 1.9, 2.8], edge: [0.3, 0.45, 1.0], diamonds: 1, length: 0.7, body: 0.35, smoke: 0.22 },
-  solid: { core: [4.6, 3.2, 1.5], edge: [2.6, 1.1, 0.25], diamonds: 0, length: 1.3, body: 1.2, smoke: 1 },
+  solid: { core: [4.6, 3.6, 2.2], edge: [2.8, 1.3, 0.35], diamonds: 0, length: 1.3, body: 1.2, smoke: 1 },
 }
 
 export const smokiness = (p: Propellant) => PLUME_COLORS[p].smoke
@@ -323,12 +324,13 @@ export interface Plume {
 let plumeGeometry: THREE.BufferGeometry | null = null
 
 /**
- * The flame of a stage, hanging down -y from its origin: one wide soft flame for the whole cluster, about `length`
- * long at sea level, and inside it a narrow bright jet with shock diamonds for every engine.
+ * The flame of a stage, hanging down -y from its origin, as nested soft shells: a wide outer flame for the whole
+ * cluster (about `length` long at sea level), a narrow white-hot core inside it, and a jet with shock diamonds for
+ * every engine. In thin air the outer shell opens into a wide, faint fan and the core shrinks to a knot at the nozzle.
  */
 export function makePlume(nozzle: Nozzle, length: number, seed = 0): Plume {
-  // One shared open cone, 1 long and 1 wide; the vertex shader shapes it.
-  plumeGeometry ??= new THREE.CylinderGeometry(1, 1, 1, 20, 14, true).translate(0, -0.5, 0)
+  // One shared open tube, 1 long and 1 wide; the vertex shader shapes it.
+  plumeGeometry ??= new THREE.CylinderGeometry(1, 1, 1, 28, 24, true).translate(0, -0.5, 0)
   const look = PLUME_COLORS[nozzle.propellant]
   const uniforms = {
     uPower: { value: 0 },
@@ -348,21 +350,28 @@ export function makePlume(nozzle: Nozzle, length: number, seed = 0): Plume {
       vertexShader: /* glsl */ `
 uniform float uVacuum;
 varying float vAlong;
-varying float vJet;
+varying float vRadii;
+varying float vLayer;
 varying vec3 vN;
 varying vec3 vView;
 void main() {
   vAlong = -position.y;
-  // Instance 0 is the cluster's flame; the others are single engines' jets.
-  vJet = gl_InstanceID > 0 ? 1.0 : 0.0;
-  vec3 p = position;
-  // Sea level: a long narrow flame. Thin air: the exhaust balloons out into a wide, short bell.
-  float w = mix(1.0 + mix(0.9, 0.25, vJet) * sqrt(vAlong) - 1.2 * vAlong * vAlong, 1.0 + 6.0 * pow(vAlong, 0.6), uVacuum);
-  p.xz *= max(w, 0.05);
-  vec4 mv = modelViewMatrix * instanceMatrix * vec4(p, 1.0);
-  // The instance is stretched along the flame, so its normals lean the other way.
+  // Instance 0 is the cluster's outer flame, 1 its hot core; the others are single engines' jets.
+  vLayer = float(gl_InstanceID > 1 ? 2 : gl_InstanceID);
   vec3 stretch = vec3(length(instanceMatrix[0].xyz), length(instanceMatrix[1].xyz), length(instanceMatrix[2].xyz));
-  vN = normalize(normalMatrix * (vec3(normal.x, 0.25, normal.z) / stretch));
+  // How far downstream, counted in nozzle radii: in vacuum the exhaust spreads at a fixed angle whatever the engine's size.
+  vRadii = vAlong * stretch.y / stretch.x;
+  vec3 p = position;
+  float root = sqrt(vAlong);
+  // Sea level: the air squeezes the flame into a long narrow spindle. Thin air: it fans out the moment it leaves the bell.
+  float fan = uVacuum * step(vLayer, 0.5) * 0.9;
+  float outer = 1.0 + (1.0 - uVacuum) * (0.9 * root - 1.2 * vAlong * vAlong) + fan * vRadii;
+  float core = mix(0.62 + 0.25 * root - 0.7 * vAlong, 0.6 + 0.2 * vRadii, uVacuum);
+  float jet = 1.0 + 0.25 * root - 1.2 * vAlong * vAlong;
+  p.xz *= max(vLayer < 0.5 ? outer : vLayer < 1.5 ? core : jet, 0.05);
+  vec4 mv = modelViewMatrix * instanceMatrix * vec4(p, 1.0);
+  // The shell's normal leans upstream by the angle it opens at.
+  vN = normalize(normalMatrix * vec3(normal.x, fan + 0.02, normal.z));
   vView = normalize(-mv.xyz);
   gl_Position = projectionMatrix * mv;
 }
@@ -378,22 +387,50 @@ uniform float uDiamonds;
 uniform float uBody;
 uniform float uSolid;
 varying float vAlong;
-varying float vJet;
+varying float vRadii;
+varying float vLayer;
 varying vec3 vN;
 varying vec3 vView;
 ${NOISE2}
 void main() {
+  // A shell seen face-on is the thick middle of the flame; seen edge-on it is the thin rim, so it fades out: no outline.
   float facing = abs(dot(normalize(vN), normalize(vView)));
-  // Solid motors burn rough: their flame boils. Liquid engines only shimmer.
-  float flick = mix(0.75 + 0.5 * noise2(vec2(vAlong * 7.0 - uTime * 11.0, uSeed * 13.0 + facing * 2.0)),
-                    0.45 + 1.1 * noise2(vec2(vAlong * 16.0 - uTime * 17.0, uSeed * 13.0 + facing * 5.0)), uSolid);
-  float fade = pow(1.0 - vAlong, mix(1.4, 2.6, uVacuum)) * smoothstep(0.0, 0.02, vAlong);
-  // Shock diamonds: bright knots where the air squeezes the jet. They fade out as the air thins.
-  float knots = pow(max(sin(vAlong * 50.0 - 0.6), 0.0), 3.0) * (1.0 - smoothstep(0.1, 0.75, vAlong)) * uDiamonds * (1.0 - uVacuum);
-  vec3 col = mix(uEdge, uCore, max(pow(facing, 2.5) * (1.0 - 0.75 * vAlong), vJet * (0.85 - 0.5 * vAlong)));
-  float a = pow(facing, mix(1.3, 2.0, vJet)) * fade * flick * uPower * mix(1.0, 0.22, uVacuum);
-  // The cluster's flame is as solid as the propellant burns; a jet is faint between its knots. In thin air the jets merge into the one wide plume.
-  a *= mix(uBody * (1.0 + 0.5 * knots), (0.3 + 0.3 * uBody + 2.4 * knots) * (1.0 - 0.8 * uVacuum), vJet);
+  float air = 1.0 - uVacuum;
+  // Solid motors burn rough: their flame boils. Liquid engines only shimmer, and in vacuum the fan is steady.
+  float flick = mix(0.8 + 0.4 * noise2(vec2(vAlong * 7.0 - uTime * 11.0, uSeed * 13.0 + facing * 2.0)),
+                    0.5 + 1.0 * noise2(vec2(vAlong * 16.0 - uTime * 17.0, uSeed * 13.0 + facing * 5.0)), uSolid);
+  flick = mix(1.0, flick, mix(0.25, 1.0, air));
+  float start = smoothstep(0.0, 0.015, vAlong);
+  vec3 col;
+  float a;
+  if (vLayer < 0.5) {
+    // Outer flame: white-yellow where it leaves the engines, orange further down, dull red where it turns to smoke.
+    float hot = pow(facing, 2.0) * (1.0 - vAlong);
+    col = mix(mix(uEdge, uEdge * vec3(0.55, 0.3, 0.2), smoothstep(0.35, 1.0, vAlong)), uCore, smoothstep(0.3, 0.95, hot * 1.25));
+    a = pow(facing, 1.4) * pow(1.0 - vAlong, 1.3) * uBody;
+    // Vacuum: a wide bluish-white fan, brightest in a small zone behind the bell, then thinning out fast as it spreads.
+    vec3 fan = mix(vec3(0.3, 0.46, 1.0), vec3(0.55, 0.7, 1.0), facing) + 0.04 * uCore;
+    // Even across the cone and soft only at its outline: a peak where a wall faces the eye reads as a torch beam.
+    float thin = smoothstep(0.0, 0.5, facing) * (0.012 + 0.12 / (1.0 + 0.1 * vRadii * vRadii)) * (0.45 + 0.5 * uBody) * pow(1.0 - vAlong, 1.5) * smoothstep(0.0, 3.0, vRadii);
+    col = mix(col, fan, uVacuum);
+    // The flame dims faster than it widens: the same light spread over a far bigger cone.
+    a = a * air * air + thin * uVacuum;
+  } else if (vLayer < 1.5) {
+    // Core: too bright to have a colour at the nozzle.
+    col = mix(uCore, vec3(3.6, 3.3, 2.8), (1.0 - vAlong) * air * (1.0 - 0.5 * uSolid) * 0.7);
+    a = pow(facing, 2.4) * pow(1.0 - vAlong, 1.1) * (0.5 + 0.8 * uBody) * (1.0 - 0.4 * uDiamonds);
+    // Vacuum: a short blue-white knot at the exit of the bell.
+    col = mix(col, vec3(0.9, 1.3, 2.4) + 0.15 * uCore, uVacuum);
+    a = a * air * air + pow(facing, 2.0) * exp(-vRadii * 2.0) * 0.5 * uVacuum;
+  } else {
+    // One engine's jet. Shock diamonds: bright knots where the air squeezes it, closer and dimmer down the jet, gone in thin air.
+    float knots = pow(max(sin(vAlong * 44.0 * (1.0 + 0.35 * vAlong) - 0.5), 0.0), 4.0) * (1.0 - smoothstep(0.08, 0.7, vAlong)) * uDiamonds * air;
+    col = mix(uEdge, uCore, 0.85 - 0.5 * vAlong) + vec3(1.2, 1.1, 0.9) * knots;
+    a = pow(facing, 2.0) * pow(1.0 - vAlong, 1.4) * (0.3 + 0.3 * uBody + 4.5 * knots) * air;
+  }
+  a *= start * flick * uPower;
+  // A grain finer than one colour step, so the long faint gradients do not show bands.
+  a *= 0.97 + 0.06 * hash2(gl_FragCoord.xy + uSeed);
   gl_FragColor = vec4(col * a, 1.0);
 }
 `,
@@ -402,12 +439,14 @@ void main() {
       depthWrite: false,
       side: THREE.DoubleSide,
     }),
-    1 + nozzle.engines.length,
+    2 + nozzle.engines.length,
   )
   const m = new THREE.Matrix4()
-  mesh.setMatrixAt(0, m.makeScale(nozzle.radius, length * look.length, nozzle.radius))
-  const jet = Math.min(length * look.length * 0.6, nozzle.exit * 22)
-  nozzle.engines.forEach(([x, z], i) => mesh.setMatrixAt(i + 1, m.makeScale(nozzle.exit * 0.8, jet, nozzle.exit * 0.8).setPosition(x, 0, z)))
+  const long = length * look.length
+  mesh.setMatrixAt(0, m.makeScale(nozzle.radius, long, nozzle.radius))
+  mesh.setMatrixAt(1, m.makeScale(nozzle.radius, long * 0.8, nozzle.radius))
+  const jet = Math.min(long * 0.6, nozzle.exit * 22)
+  nozzle.engines.forEach(([x, z], i) => mesh.setMatrixAt(i + 2, m.makeScale(nozzle.exit * 0.8, jet, nozzle.exit * 0.8).setPosition(x, 0, z)))
   mesh.frustumCulled = false
   mesh.visible = false
   return {
@@ -422,19 +461,24 @@ void main() {
   }
 }
 
+let glowMap: THREE.DataTexture | null = null
+
 /** Soft additive glow at a nozzle, so a firing engine also reads from behind. */
 export function makeGlow(propellant: Propellant, radius: number): THREE.Sprite {
-  const [r, g, b] = PLUME_COLORS[propellant].core
-  const c = document.createElement('canvas')
-  c.width = c.height = 64
-  const ctx = c.getContext('2d')!
-  const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32)
-  grad.addColorStop(0, 'rgba(255,255,255,1)')
-  grad.addColorStop(0.25, 'rgba(255,255,255,0.55)')
-  grad.addColorStop(1, 'rgba(255,255,255,0)')
-  ctx.fillStyle = grad
-  ctx.fillRect(0, 0, 64, 64)
-  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), color: new THREE.Color(r, g, b), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }))
+  if (!glowMap) {
+    // Computed, not drawn on a canvas: browsers dither canvas gradients, and at low alpha that came out as coloured speckles.
+    const size = 64
+    const data = new Uint8Array(size * size * 4)
+    for (let i = 0; i < size * size; i++) {
+      const r = Math.hypot((i % size) + 0.5 - size / 2, Math.floor(i / size) + 0.5 - size / 2) / (size / 2)
+      const v = Math.round(255 * Math.max(0, Math.exp(-r * r * 4.5) - 0.011) / 0.989)
+      data.set([v, v, v, 255], i * 4)
+    }
+    glowMap = new THREE.DataTexture(data, size, size)
+    glowMap.magFilter = glowMap.minFilter = THREE.LinearFilter
+    glowMap.needsUpdate = true
+  }
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowMap, color: new THREE.Color(...PLUME_COLORS[propellant].core), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }))
   sprite.scale.setScalar(radius * 5)
   sprite.visible = false
   return sprite
@@ -602,4 +646,138 @@ void main() {
   sky.renderOrder = -10
   sky.frustumCulled = false
   return sky
+}
+
+const NOISE3 = /* glsl */ `
+float hash3(vec3 p) {
+  p = fract(p * 0.3183099 + 0.1);
+  p *= 17.0;
+  return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
+}
+float noise3(vec3 x) {
+  vec3 i = floor(x);
+  vec3 f = fract(x);
+  f = f * f * (3.0 - 2.0 * f);
+  return mix(
+    mix(mix(hash3(i), hash3(i + vec3(1, 0, 0)), f.x), mix(hash3(i + vec3(0, 1, 0)), hash3(i + vec3(1, 1, 0)), f.x), f.y),
+    mix(mix(hash3(i + vec3(0, 0, 1)), hash3(i + vec3(1, 0, 1)), f.x), mix(hash3(i + vec3(0, 1, 1)), hash3(i + vec3(1, 1, 1)), f.x), f.y),
+    f.z);
+}
+float fbm3(vec3 p) {
+  float sum = 0.0;
+  float amp = 0.5;
+  for (int i = 0; i < 4; i++) {
+    sum += amp * noise3(p);
+    p = p * 2.07 + 0.17;
+    amp *= 0.5;
+  }
+  return sum / 0.9375;
+}
+`
+
+/**
+ * The Earth seen from 100 to 400 km up, as one sphere of radius `radius`: ground, clouds, their shadows and the air.
+ * ../shaders.ts draws the whole globe from far away, where one texel of the NASA maps (39 km) is a pixel. From this
+ * low the same texel covers a fifth of the screen, so here the maps only say where land, sea and cloud are, and
+ * noise draws the coastline, the shallows and the cloud cells at the size the eye expects (a few km down to a few hundred m).
+ */
+export function makeEarthBelow(u: { uSun: { value: THREE.Vector3 }; uTime: { value: number } } & Pick<MapUniforms, 'uMap' | 'uHasMap' | 'uClouds' | 'uHasClouds'>, radius: number): THREE.Mesh {
+  const earth = new THREE.Mesh(
+    new THREE.SphereGeometry(radius, 192, 96),
+    new THREE.ShaderMaterial({
+      uniforms: { ...u },
+      vertexShader: /* glsl */ `
+varying vec3 vObj;
+varying vec3 vWorldN;
+varying vec3 vWorldPos;
+void main() {
+  vObj = position;
+  vWorldN = normalize(mat3(modelMatrix) * normal);
+  vec4 wp = modelMatrix * vec4(position, 1.0);
+  vWorldPos = wp.xyz;
+  gl_Position = projectionMatrix * viewMatrix * wp;
+}
+`,
+      fragmentShader: /* glsl */ `
+uniform vec3 uSun;
+uniform float uTime;
+uniform sampler2D uMap;
+uniform float uHasMap;
+uniform sampler2D uClouds;
+uniform float uHasClouds;
+uniform mat4 modelMatrix;
+varying vec3 vObj;
+varying vec3 vWorldN;
+varying vec3 vWorldPos;
+${NOISE3}
+// Equirectangular map coordinates without a seam at lon 180 (as ../shaders.ts).
+vec2 mapUv(vec3 p) {
+  float u1 = atan(-p.z, p.x) / 6.2831853 + 0.5;
+  float u2 = fract(u1 + 0.5) - 0.5;
+  float u = fwidth(u1) <= fwidth(u2) + 1e-6 ? u1 : u2;
+  return vec2(u, asin(clamp(p.y, -1.0, 1.0)) / 3.14159265 + 0.5);
+}
+// How much cloud stands over a point: the real weather systems from the map, broken into cells and streets.
+float cloudAt(vec3 q) {
+  float a = uTime * 0.0015;
+  vec3 m = vec3(q.x * cos(a) - q.z * sin(a), q.y, q.x * sin(a) + q.z * cos(a));
+  float seen = uHasClouds > 0.5 ? texture2D(uClouds, mapUv(m)).r : fbm3(m * 5.0);
+  float cells = fbm3(m * 300.0);
+  float fine = noise3(m * 2600.0);
+  // Thick decks are not a flat sheet either: the cells show as lumps and the gaps between them.
+  return seen * (1.0 - 0.45 * smoothstep(0.55, 0.3, cells) * smoothstep(0.5, 0.9, seen)) + (0.5 * (cells - 0.5) + 0.12 * (fine - 0.5)) * smoothstep(0.02, 0.3, seen);
+}
+void main() {
+  vec3 p = normalize(vObj);
+  vec3 n = normalize(vWorldN);
+  vec3 v = normalize(cameraPosition - vWorldPos);
+  // shortcut: plain ocean until the map has decoded (a few frames, long before the first space shot); no drawn continents.
+  vec3 m = uHasMap > 0.5 ? texture2D(uMap, mapUv(p)).rgb : vec3(0.004, 0.012, 0.05);
+  float rough = fbm3(p * 420.0);
+  float grain = noise3(p * 5200.0);
+  // Blue Marble: oceans are the only places bluer than red or green (1 open sea, -1 land); ice is bright everywhere.
+  float blue = (m.b - max(m.r, m.g)) / (m.b + max(m.r, m.g) + 0.004);
+  // The noise moves the waterline by less than a texel, which turns the map's soft edge into bays and headlands.
+  float c = blue - 0.1 + 0.7 * (rough - 0.5) + 0.06 * (grain - 0.5);
+  float w = fwidth(c) * 1.4 + 0.02;
+  float ice = smoothstep(0.35, 0.6, min(m.r, min(m.g, m.b)));
+  float water = smoothstep(-w, w, c) * (1.0 - ice);
+  // Land: the map's colour, mottled by fields, forest and bare ground. Sea: deep blue, turquoise shallows along the coast.
+  // The map's forests are darker than they look from orbit next to the sea; deserts and ice are already bright.
+  vec3 land = m * (1.9 - min(dot(m, vec3(0.3, 0.6, 0.1)), 1.0)) * (0.8 + 0.5 * rough) * mix(vec3(1.0), vec3(0.86, 0.97, 0.8), smoothstep(0.45, 0.7, grain) * (1.0 - ice));
+  float shallow = 1.0 - smoothstep(0.1, 0.75, blue);
+  vec3 sea = mix(vec3(0.002, 0.012, 0.045) * (0.8 + 0.4 * rough), vec3(0.02, 0.2, 0.24), 0.65 * shallow * shallow);
+  vec3 col = mix(land, sea, water);
+
+  vec3 sunObj = normalize(uSun * mat3(modelMatrix));
+  float here = cloudAt(p);
+  // The same clouds a dozen km toward the Sun: thick there means shadow here, on the ground and on the cloud's far side.
+  float sunward = cloudAt(normalize(p + (sunObj - p * dot(sunObj, p)) * 0.002));
+  float cover = smoothstep(0.3, 0.6, here);
+  float shadow = smoothstep(0.3, 0.6, sunward);
+
+  float d = dot(n, uSun);
+  float sunlit = max(d, 0.0);
+  vec3 lit = col * (0.012 + 1.25 * sunlit) * (1.0 - 0.55 * shadow);
+  // Sun glint on open water.
+  vec3 hv = normalize(uSun + v);
+  lit += water * (1.0 - shadow) * (pow(max(dot(n, hv), 0.0), 500.0) * 0.5 + pow(max(dot(n, hv), 0.0), 40.0) * 0.03) * vec3(1.0, 0.88, 0.7) * step(0.0, d);
+  // Clouds: bright where they face the Sun and where they are thick, blue-grey on the side turned away.
+  float relief = clamp((here - sunward) * 6.0, -1.0, 1.0);
+  vec3 cloud = mix(vec3(0.42, 0.48, 0.62), vec3(1.0), clamp(0.7 + 0.5 * relief, 0.0, 1.0)) * (0.02 + 1.12 * smoothstep(-0.08, 0.35, d));
+  lit = mix(lit, cloud, cover * 0.94);
+  // The air between the ground and the eye: almost none looking straight down, a pale blue veil toward the horizon.
+  // At the very limb the ground is gone behind the air and takes the colour of the sky's bright line, so the edge of the sphere does not show as a stepped line.
+  float veil = 1.0 - exp(-0.035 * (1.0 / max(dot(n, v), 0.012) - 1.0));
+  vec3 air = mix(mix(vec3(0.16, 0.38, 0.95), vec3(0.62, 0.8, 1.0), veil), vec3(0.65, 0.96, 1.3), veil * veil * veil) * smoothstep(-0.2, 0.35, d);
+  gl_FragColor = vec4(mix(lit, air, veil * (0.85 + 0.15 * veil)), 1.0);
+}
+`,
+      depthTest: false,
+      depthWrite: false,
+    }),
+  )
+  earth.renderOrder = -8
+  earth.frustumCulled = false
+  return earth
 }

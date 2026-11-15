@@ -46,8 +46,8 @@ export interface Skin {
   /** Blotchiness, 0 to 1: spray-on foam is mottled, paint is not. */
   grain?: number
   marks?: Mark[]
-  /** Anything else, drawn last on the colour. x runs around the body, y down from the top. Give a `key` so the result can be shared. */
-  extra?: (ctx: CanvasRenderingContext2D, w: number, h: number) => void
+  /** Anything else, drawn last on the colour (and on `relief`: red height, green roughness, blue metalness). x runs around the body, y down from the top. Give a `key` so the result can be shared. */
+  extra?: (ctx: CanvasRenderingContext2D, w: number, h: number, relief: CanvasRenderingContext2D) => void
   key?: string
   roughness?: number
   metalness?: number
@@ -241,7 +241,8 @@ function paintSkin(s: Skin, w: number, h: number, sx: number, sy: number): SkinM
   }
   // A mark may straddle the texture's edge: that is the side facing the camera.
   for (const m of s.marks ?? []) for (const turn of [-1, 0, 1]) drawMark(c, d, m, (m.u + turn) * w, y(m.v), sx, sy)
-  s.extra?.(c, w, h)
+  d.globalCompositeOperation = 'source-over'
+  s.extra?.(c, w, h, d)
   const texture = (el: HTMLCanvasElement, srgb: boolean) => {
     const t = new THREE.CanvasTexture(el)
     if (srgb) t.colorSpace = THREE.SRGBColorSpace
@@ -291,8 +292,9 @@ export function palette() {
     bell: skin({ base: '#5a524d', bands: [[0, 0.2, '#6b5645'], [0.2, 0.34, '#4d4a52']], ribs: [[0, 1, 32]], seams: [0.3, 0.62, 0.93], roughness: 0.38, metalness: 0.9, relief: 2, shell: true }, 1, 1, 128),
     /** Ablative nozzles of solid motors and the RS-68. */
     char: skin({ base: '#221f1d', grain: 0.6, seams: [0.3, 0.9], roughness: 0.85, metalness: 0.1, shell: true }, 1, 1, 64),
+    /** Vacuum engines: brazed cooling tubes from the throat down to the coolant manifold, then a thin dark radiation-cooled extension with stiffening rings. */
+    vac: skin({ base: '#2b2c31', bands: [[0, 0.3, '#7d5f47'], [0.3, 0.33, '#8e9197']], ribs: [[0, 0.3, 48]], seams: [0.47, 0.64, 0.81, 0.97], rivets: [0.34], roughness: 0.46, metalness: 0.85, relief: 2, shell: true }, 1, 1, 128),
     foil: paint(0xd8a740, 0.35, 1),
-    cells: paint(0x16245a, 0.25, 0.6),
   }
 }
 export type Palette = ReturnType<typeof palette>
@@ -339,12 +341,12 @@ export function ogive(R: number, L: number, y0 = 0, blunt = 0.05, n = 10): Profi
   return [...pts, ...dome(at(cut), L - cut, y0 + cut, 4)]
 }
 
-/** A bell nozzle hanging down from y = 0: throat at the top, exit `len` below, with a rolled lip. */
-export function bell(exitRadius: number, len: number, seg = 18): THREE.LatheGeometry {
+/** A bell nozzle hanging down from y = 0: throat at the top (`throat` of the exit radius), exit `len` below, with a rolled lip. */
+export function bell(exitRadius: number, len: number, seg = 18, throat = 0.3): THREE.LatheGeometry {
   const pts: Profile = []
   for (let i = 0; i <= 8; i++) {
     const u = i / 8
-    pts.push([exitRadius * (0.3 + 0.7 * Math.sqrt(u)), -u * len])
+    pts.push([exitRadius * (throat + (1 - throat) * Math.sqrt(u)), -u * len])
   }
   pts.push([exitRadius * 1.05, -len])
   return lathe(pts, seg)
@@ -357,23 +359,50 @@ export function cluster(n: number, r: number, turn = 0, centre = false): [number
   return spots
 }
 
+/** A pipe, cable or strut from a to b, `r` in radius. */
+export function pipe(a: [number, number, number], b: [number, number, number], r: number, seg = 8): THREE.BufferGeometry {
+  const from = new THREE.Vector3(...a)
+  const dir = new THREE.Vector3(...b).sub(from)
+  const len = dir.length()
+  return new THREE.CylinderGeometry(r, r, len, seg).translate(0, len / 2, 0).applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.normalize())).translate(...a)
+}
+
 /**
  * Engines at `spots`, their throats at height y: one mesh of bells and one of throats, which `glow` lights when they fire.
- * With `heads`, also what sits on top of an engine you can see: chamber, turbopumps, propellant duct and gimbal block.
+ * With `vac`, an upper-stage engine you see whole once the first stage is gone: a narrow throat opening into a long
+ * two-part bell, and above it the chamber, turbopumps, propellant lines, coolant manifold and gimbal actuators.
  */
-export function engines(parent: THREE.Object3D, k: Palette, glow: THREE.Material, spots: [number, number][], exit: number, len: number, y: number, o: { heads?: boolean; mat?: THREE.Material; seg?: number } = {}): void {
+export function engines(parent: THREE.Object3D, k: Palette, glow: THREE.Material, spots: [number, number][], exit: number, len: number, y: number, o: { vac?: boolean; mat?: THREE.Material; seg?: number } = {}): void {
   // One mesh per kind of part, however many engines: a Falcon Heavy has 27.
   const all = (geo: THREE.BufferGeometry) => mergeGeometries(spots.map(([x, z]) => geo.clone().translate(x, y, z)))
-  put(parent, all(bell(exit, len, o.seg ?? 18)), o.mat ?? k.bell)
-  put(parent, all(new THREE.CircleGeometry(exit * 0.42, 12).rotateX(Math.PI / 2).translate(0, -len * 0.04, 0)), glow)
-  if (!o.heads) return
-  const pump = new THREE.CylinderGeometry(exit * 0.17, exit * 0.17, exit * 0.9, 8)
+  const throat = o.vac ? 0.16 : 0.3
+  put(parent, all(bell(exit, len, o.seg ?? 18, throat)), o.mat ?? (o.vac ? k.vac : k.bell))
+  put(parent, all(new THREE.CircleGeometry(exit * (o.vac ? 0.3 : 0.42), 12).rotateX(Math.PI / 2).translate(0, -len * 0.04, 0)), glow)
+  if (!o.vac) return
+  // The powerhead of a big-nozzled engine is no bigger than a small one's: the bell is what grows.
+  const s = Math.min(exit, 0.8)
+  const joint = exit * (throat + (1 - throat) * Math.sqrt(0.3))
   put(parent, all(mergeGeometries([
-    new THREE.CylinderGeometry(exit * 0.4, exit * 0.3, exit * 0.55, 12).translate(0, exit * 0.27, 0),
-    new THREE.CylinderGeometry(exit * 0.15, exit * 0.22, exit * 0.4, 8).translate(0, exit * 0.75, 0),
-    pump.clone().translate(exit * 0.58, exit * 0.4, 0),
-    pump.clone().translate(-exit * 0.58, exit * 0.4, 0),
-    new THREE.TorusGeometry(exit * 0.5, exit * 0.06, 5, 14).rotateX(Math.PI / 2).translate(0, exit * 0.1, 0),
+    // Chamber, injector dome and the gimbal block the engine swivels on.
+    new THREE.CylinderGeometry(s * 0.3, exit * (throat + 0.02), s * 0.5, 16).translate(0, s * 0.25, 0),
+    new THREE.SphereGeometry(s * 0.3, 16, 8).scale(1, 0.6, 1).translate(0, s * 0.5, 0),
+    new THREE.CylinderGeometry(s * 0.1, s * 0.14, s * 0.3, 10).translate(0, s * 0.8, 0),
+    // Fuel and oxidiser turbopumps either side, each with its turbine housing.
+    new THREE.CylinderGeometry(s * 0.15, s * 0.15, s * 0.55, 12).translate(s * 0.52, s * 0.36, 0),
+    new THREE.SphereGeometry(s * 0.18, 12, 8).translate(s * 0.52, s * 0.68, 0),
+    new THREE.CylinderGeometry(s * 0.12, s * 0.12, s * 0.45, 12).translate(-s * 0.48, s * 0.34, 0),
+    new THREE.SphereGeometry(s * 0.14, 12, 8).translate(-s * 0.48, s * 0.6, 0),
+    // Feed lines down from the tanks, the high-pressure lines into the injector, the turbine exhaust duct down the bell.
+    pipe([s * 0.52, s * 0.7, 0], [s * 0.34, s * 1.05, s * 0.22], s * 0.07),
+    pipe([-s * 0.48, s * 0.62, 0], [-s * 0.3, s * 1.05, -s * 0.2], s * 0.06),
+    pipe([s * 0.52, s * 0.2, 0], [s * 0.2, s * 0.52, 0], s * 0.045),
+    pipe([-s * 0.48, s * 0.2, 0], [-s * 0.2, s * 0.52, 0], s * 0.045),
+    pipe([-s * 0.48, s * 0.14, 0], [-joint * 0.99, -len * 0.3, 0], s * 0.05),
+    // The manifold that feeds coolant into the tube wall, where the extension bolts on.
+    new THREE.TorusGeometry(joint * 1.02, exit * 0.035, 6, 24).rotateX(Math.PI / 2).translate(0, -len * 0.3, 0),
+    // Two actuators that steer the engine.
+    pipe([0, s * 0.18, s * 0.32], [0, s * 0.95, s * 0.6], s * 0.035),
+    pipe([0, s * 0.18, -s * 0.32], [0, s * 0.95, -s * 0.6], s * 0.035),
   ])), k.metal)
 }
 
