@@ -53,6 +53,14 @@ describe('launchTimeline', () => {
     expect(ids('electron', true)).not.toContain('deploy')
   })
 
+  it('a failure with a known cause says that cause on the failure shot, and the same shots play', () => {
+    const cause = 'Too heavy: the rocket fell short of orbital speed, so range safety destroyed it.'
+    const tl = launchTimeline(byId('electron'), { failed: true, cause })
+    expect(tl.stages.at(-1)!.caption).toBe(cause)
+    expect(tl.stages.at(-1)!.detail).toContain(cause)
+    expect(tl.stages.map((s) => [s.id, s.start, s.end])).toEqual(launchTimeline(byId('electron'), { failed: true }).stages.map((s) => [s.id, s.start, s.end]))
+  })
+
   it('never throws on unknown or missing vehicles', () => {
     const odd: Entity = { id: 'starship-9', kind: 'launch_vehicle', name: 'Mystery rocket', props: { payload_leo_kg: 100_000, colour: 'pink' } }
     expect(launchTimeline(odd).stages.map((s) => s.id)).toContain('boosters')

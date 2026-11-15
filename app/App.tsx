@@ -13,7 +13,8 @@ import { catalogEntities, choicesOf, pendingDecision, simCore, whatIf } from '..
 import { SoundToggle } from '../ui/audio'
 import { Briefing } from '../ui/briefing'
 import { MissionBuilder } from '../ui/builder'
-import { GoNoGoPoll } from '../ui/gonogo'
+import { commandAccess } from '../ui/builder/model'
+import { GoNoGoPoll, LaunchAnyway } from '../ui/gonogo'
 import { LocalLeaderboard } from '../ui/leaderboard'
 import { CampaignBoard } from '../ui/campaign/CampaignBoard'
 import { awardMission, canStartMission, MISSIONS } from '../ui/campaign/model'
@@ -39,6 +40,7 @@ import { cleanRoomCode, openRoom } from './room'
 import { createGuestSession, createHostSession, createSoloSession, ROLE_LABELS, type Session } from './session'
 import { useChance } from './useChance'
 import { useSession } from './useSession'
+import { launchCause, tryAgain, WhatWentWrong } from './WhatWentWrong'
 import './app.css'
 
 export const GAME_NAME = 'First Flight'
@@ -413,7 +415,7 @@ export function Room({ active, onExit, onCampaignNext }: { active: Active; onExi
           <StoryLayer screen="briefing" scenarioId={state.scenario_id} />
         </>
       ) : (
-        <GameScreen session={session} config={config} onExit={onExit} roomCode={roomCode} daily={active.daily} />
+        <GameScreen session={session} config={config} onExit={onExit} roomCode={roomCode} daily={active.daily} campaign={!!active.campaign} />
       )}
     </>
   )
@@ -434,10 +436,12 @@ export interface GameScreenProps {
   onFirstPerson?: () => void
   /** The classic launch finished, so going back to first person does not play it again. */
   onLaunchDone?: () => void
+  /** A guided campaign mission: "What went wrong" leads back to the mission board. */
+  campaign?: boolean
 }
 
 /** The builder while the mission is being designed, the flight once it has launched. */
-export function GameScreen({ session, config, onExit, roomCode, daily, skipLaunch = false, onFirstPerson, onLaunchDone }: GameScreenProps) {
+export function GameScreen({ session, config, onExit, roomCode, daily, skipLaunch = false, onFirstPerson, onLaunchDone, campaign = false }: GameScreenProps) {
   const snapshot = useSession(session)
   const { state, notice, players, me } = snapshot
   const designing = state.metrics.phase === 'design'
@@ -484,7 +488,7 @@ export function GameScreen({ session, config, onExit, roomCode, daily, skipLaunc
         ) : (
           // Unmounts on reset, so every launch starts it fresh.
           <main>
-            <Flight session={session} config={config} daily={daily} online={roomCode != null} skipLaunch={skipLaunch} onLaunchDone={onLaunchDone} />
+            <Flight session={session} config={config} daily={daily} online={roomCode != null} skipLaunch={skipLaunch} onLaunchDone={onLaunchDone} campaign={campaign} onExit={onExit} />
           </main>
         )}
       </ErrorBoundary>
@@ -558,6 +562,10 @@ function Design({ session, config }: { session: Session; config: Config }) {
         me={me}
         chance={chance}
       />
+      <div className="app-anyway">
+        <LaunchAnyway issues={state.issues} disabled={!commandAccess({ type: 'launch', payload: {} }, players, me).canEdit}
+          onLaunch={() => session.send({ type: 'launch', payload: { override: true } })} />
+      </div>
       <section className="app-share" aria-labelledby="app-share-title">
         <h2 id="app-share-title">Save, share and compare designs</h2>
         <SharePanel state={state} send={session.send} />
@@ -571,7 +579,7 @@ function Design({ session, config }: { session: Session; config: Config }) {
  * successful launch, between the poll and the mission screen, until it calls `onDone` (it has
  * its own Skip). Set this to null and the game goes straight to the mission screen.
  */
-const LaunchView = SceneLaunchView as ComponentType<{ state: SimState; onDone: () => void }> | null
+const LaunchView = SceneLaunchView as ComponentType<{ state: SimState; onDone: () => void; failed?: boolean; cause?: string }> | null
 /** The story layer's plain launch cutscene is not played on top of the real one. */
 const SHOWN_BY_APP = ['launch']
 /** Survey: fly to a place on Earth, then float above that ground. Loaded only when the player opens it. */
@@ -602,7 +610,7 @@ export function weatherStart(config: Config, seed: number): string {
 }
 
 /** Everything after launch: (the launch sequence,) cruise and operations, then the results with the personal best. */
-function Flight({ session, config, daily, online, skipLaunch, onLaunchDone }: { session: Session; config: Config; daily?: DailyPlay; online?: boolean; skipLaunch?: boolean; onLaunchDone?: () => void }) {
+function Flight({ session, config, daily, online, skipLaunch, onLaunchDone, campaign = false, onExit }: { session: Session; config: Config; daily?: DailyPlay; online?: boolean; skipLaunch?: boolean; onLaunchDone?: () => void; campaign?: boolean; onExit: () => void }) {
   const { state, events, paused, speed, players, me } = useSession(session)
   // A late joiner, a reload, or a switch from the walkable game lands mid-mission: no launch to watch.
   const [launchDone, setLaunchDone] = useState(() => skipLaunch || session.getSnapshot().state.t_s > 86400)
@@ -613,6 +621,9 @@ function Flight({ session, config, daily, online, skipLaunch, onLaunchDone }: { 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   const ended = state.status === 'ended'
+  // Lost after a "Launch anyway": its launch plays even when the mission ended at once, then "What went wrong".
+  const fault = ended ? String(state.metrics.fault ?? '') : ''
+  const [wrongClosed, setWrongClosed] = useState(false)
   useScreen(ended ? 'results' : 'flight', `${ended ? 'Results' : 'Flight'} · ${config.title}`)
   // Story cutscenes (decision 005) hold the mission clock so nothing happens unseen. Online the
   // clock is shared by the whole crew, so it keeps running there.
@@ -662,7 +673,7 @@ function Flight({ session, config, daily, online, skipLaunch, onLaunchDone }: { 
     [ended],
   )
 
-  if (LaunchView && !launchDone && !ended) {
+  if (LaunchView && !launchDone && (!ended || fault)) {
     const done = () => {
       holdClock(false)
       setLaunchDone(true)
@@ -671,7 +682,7 @@ function Flight({ session, config, daily, online, skipLaunch, onLaunchDone }: { 
     return (
       <>
         <WalkTo screen="launch" />
-        <LaunchView state={state} onDone={done} />
+        <LaunchView state={state} onDone={done} failed={state.metrics.outcome === 'launch_failure' && fault !== ''} cause={launchCause(fault)} />
       </>
     )
   }
@@ -742,7 +753,7 @@ function Flight({ session, config, daily, online, skipLaunch, onLaunchDone }: { 
         // An event daily flies today's real event, not the seed's historical weather.
         spaceWeather={weather && typeof day === 'number' && !daily?.event ? weather.weatherForMissionDay(weatherStart(config, daily?.seed ?? config.seed), day) : null}
       />
-      {summary && typeof summary.score === 'number' && (
+      {summary && typeof summary.score === 'number' && !fault && (
         <div className="app-best">
           <LocalLeaderboard
             scenarioId={state.scenario_id}
@@ -753,7 +764,9 @@ function Flight({ session, config, daily, online, skipLaunch, onLaunchDone }: { 
           />
         </div>
       )}
-      <StoryLayer key="story" screen="flight" events={events} scenarioId={state.scenario_id} design={state} onCutscene={holdClock} shown={SHOWN_BY_APP} />
+      <StoryLayer key="story" screen="flight" events={events} scenarioId={state.scenario_id} design={state} onCutscene={holdClock} shown={fault ? [...SHOWN_BY_APP, 'ending-loss'] : SHOWN_BY_APP} />
+      {fault && !wrongClosed && <WhatWentWrong state={state} campaign={campaign} onTryAgain={() => tryAgain(session.send, state.params)}
+        onExit={onExit} onBack={() => setWrongClosed(true)} />}
     </>
   )
 }

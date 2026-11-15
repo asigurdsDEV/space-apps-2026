@@ -38,7 +38,7 @@ interface Shot { id: StageId; seconds: number; met: [number, number]; title: str
 /** A shot that covers `span` real seconds, with the event at `at` (0 to 1) of the way through. */
 const around = (event: number, at: number, span: number): [number, number] => [event - at * span, event + (1 - at) * span]
 
-function shots(spec: RocketSpec, failed: boolean): Shot[] {
+function shots(spec: RocketSpec, failed: boolean, cause?: string): Shot[] {
   const ev = spec.events
   const name = spec.name
   const start: Shot[] = spec.airLaunch
@@ -59,12 +59,12 @@ function shots(spec: RocketSpec, failed: boolean): Shot[] {
     { id: 'maxq', seconds: 2.5, met: around(ev.maxq, EVENT_AT.maxq, 8), title: 'Max-Q', caption: 'Max-Q: the moment the air pushes hardest on the rocket.', detail: 'Max-Q is when the air pushes hardest on the rocket: it is already fast and the air is still thick. After this the air thins and the ride gets easier.' },
   ]
   if (failed) {
-    // The sim only reports that the launch failed (outcome "launch_failure"), not when or how.
+    // The sim reports that the launch failed (outcome "launch_failure"), not when; `cause` says why when the crew launched against a NO-GO.
     const pct = Math.round(spec.reliability * 100)
     return [...start, ...climb, {
       id: 'failure', seconds: 4.5, met: [ev.maxq + 4, ev.maxq + 14], title: 'Launch failure',
-      caption: 'The rocket did not reach orbit. The spacecraft is lost.',
-      detail: `The rocket did not reach orbit, and the spacecraft is lost. ${name} succeeds about ${pct}% of the time: even good rockets sometimes fail, so reliability is part of choosing one.`,
+      caption: cause ?? 'The rocket did not reach orbit. The spacecraft is lost.',
+      detail: cause ? `${cause} The spacecraft is lost.` : `The rocket did not reach orbit, and the spacecraft is lost. ${name} succeeds about ${pct}% of the time: even good rockets sometimes fail, so reliability is part of choosing one.`,
     }]
   }
   // Real vehicles differ in order: most drop the first stage before the fairing, SLS the other way round.
@@ -85,11 +85,11 @@ function shots(spec: RocketSpec, failed: boolean): Shot[] {
 }
 
 /** The stages of the launch for a launch-vehicle row (any row, or none: unknown vehicles get a generic rocket). */
-export function launchTimeline(vehicle: VehicleLike | RocketSpec | undefined, options: { failed?: boolean } = {}): LaunchTimeline {
+export function launchTimeline(vehicle: VehicleLike | RocketSpec | undefined, options: { failed?: boolean; cause?: string } = {}): LaunchTimeline {
   const spec = vehicle && 'events' in vehicle ? vehicle : rocketSpec(vehicle)
   const failed = options.failed === true
   let t = 0
-  const stages = shots(spec, failed).map(({ seconds, ...shot }): LaunchStage => ({ ...shot, start: t, end: (t += seconds) }))
+  const stages = shots(spec, failed, options.cause).map(({ seconds, ...shot }): LaunchStage => ({ ...shot, start: t, end: (t += seconds) }))
   return { stages, duration: t, failed }
 }
 

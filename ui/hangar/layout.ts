@@ -212,6 +212,8 @@ export interface PlayOptions {
   send: (command: Command) => void
   /** Why the launch button can't be pressed now (an `error` issue is open), ≤ 6 words. */
   launchBlocked?: string
+  /** Set while the NO-GO is one a crew may overrule: the launch button stays usable and calls this to ask first. */
+  launchAnyway?: () => void
   debrief?: Debrief
   /** The open station's menu, if one is open. */
   menu?: Menu
@@ -222,7 +224,7 @@ export interface PlayOptions {
 }
 
 /** What E does on everything in the room right now. */
-export function interactables(stationList: readonly Station[], { send, launchBlocked, debrief, menu: open, armed = true, toggle }: PlayOptions): Interactable[] {
+export function interactables(stationList: readonly Station[], { send, launchBlocked, launchAnyway, debrief, menu: open, armed = true, toggle }: PlayOptions): Interactable[] {
   if (debrief) {
     const out: Interactable[] = [{ id: 'again', at: LAUNCH, label: 'Design again', use: debrief.again }]
     if (debrief.fix) out.push({ id: 'fix', at: [STAND[0], 1.4, STAND[2] + 1.4], reach: 2.6, label: 'Try the fix', use: debrief.fix.run })
@@ -255,7 +257,8 @@ export function interactables(stationList: readonly Station[], { send, launchBlo
       })
     }
   }
-  out.push({ id: 'launch', at: LAUNCH, label: 'Launch mission', disabled: launchBlocked, use: () => send({ type: 'launch', payload: {} }) })
+  if (launchBlocked && launchAnyway) out.push({ id: 'launch', at: LAUNCH, label: 'Launch anyway', use: launchAnyway })
+  else out.push({ id: 'launch', at: LAUNCH, label: 'Launch mission', disabled: launchBlocked, use: () => send({ type: 'launch', payload: {} }) })
   return out
 }
 

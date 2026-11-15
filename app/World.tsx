@@ -22,6 +22,7 @@ import { fitCallout } from '../ui/story'
 import { useSession } from './useSession'
 import { hasWebGL } from './Walk'
 import { WorldMenu } from './WorldMenu'
+import { launchCause, tryAgain, WhatWentWrong } from './WhatWentWrong'
 import { useRisingSound } from '../ui/audio/moments'
 import { CampaignResult } from '../ui/campaign/CampaignBoard'
 import { designGuide } from '../ui/campaign/model'
@@ -45,7 +46,7 @@ export interface WorldProps {
   onCampaignNext?: (id: string) => void
 }
 
-const LaunchView = SceneLaunchView as ComponentType<{ state: SimState; onDone: () => void; className?: string }>
+const LaunchView = SceneLaunchView as ComponentType<{ state: SimState; onDone: () => void; className?: string; failed?: boolean; cause?: string }>
 const Training = lazy(() => import('./Training'))
 
 export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
@@ -71,9 +72,19 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
   const [arrived, setArrived] = useState(false)
   const phase = state.metrics.phase
   const ended = state.status === 'ended'
+  // Lost after a "Launch anyway": its launch is shown (it may have ended before one played), then "What went wrong".
+  const fault = ended ? String(state.metrics.fault ?? '') : ''
+  const [watched, setWatched] = useState(false)
+  const [wrongClosed, setWrongClosed] = useState(false)
   useEffect(() => {
-    if (ended && active.campaign && !cutscene) setMenuOpen(true)
-  }, [ended, active.campaign, cutscene])
+    if (phase !== 'design') return
+    setWatched(false)
+    setWrongClosed(false)
+  }, [phase])
+  const wrongOpen = fault !== '' && watched && !wrongClosed && !cutscene
+  useEffect(() => {
+    if (ended && active.campaign && !cutscene && !(fault && !wrongClosed)) setMenuOpen(true)
+  }, [ended, active.campaign, cutscene, fault, wrongClosed])
 
   // "What would have fixed it": the flown mission rerun with every single change, once, when it ends.
   const fixes = useMemo(
@@ -84,7 +95,7 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
   const summary = ended ? finalSummary(events) : undefined
   const bonusGoal = typeof config.params.bonus_goal === 'string' ? config.params.bonus_goal : undefined
   useEffect(() => {
-    if (summary && typeof summary.score === 'number') {
+    if (summary && typeof summary.score === 'number' && !state.metrics.fault) {
       savePersonalBest(state.scenario_id, summary.score, state.params, {
         dailySeed: daily?.seed,
         stars: stars(summary, bonusGoal).filter((star) => star.earned).length,
@@ -185,7 +196,8 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
         daily={daily}
         skipLaunch={launched}
         onFirstPerson={() => setClassic(false)}
-        onLaunchDone={() => setLaunched(true)}
+        onLaunchDone={() => { setLaunched(true); setWatched(true) }}
+        campaign={!!active.campaign}
       />
     )
   }
@@ -197,7 +209,7 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
   }
   // No menu while the launch still covers the room, as during the launch: it would hold the clock, and the first step with it.
   const menu = (
-    <WorldMenu open={menuOpen} disabled={cutscene || launchCover} onOpenChange={setMenuOpen}
+    <WorldMenu open={menuOpen} disabled={cutscene || launchCover || wrongOpen} onOpenChange={setMenuOpen}
       online={roomCode !== null}
       onTraining={canTrain ? () => { setMenuOpen(false); setMoonSurface(false); setTraining(true) } : undefined}
       onClassic={() => { setMenuOpen(false); setClassic(true) }}
@@ -217,9 +229,19 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
         launchTick.current = state.tick
         setLaunchCover(true)
         setLaunched(true)
+        setWatched(true)
       }}
     />
   )
+
+  if (fault && !watched) {
+    return (
+      <div className="app-world game-theme" data-theme="dark">
+        <LaunchView className="app-world-launch" state={state} failed={state.metrics.outcome === 'launch_failure'}
+          cause={launchCause(fault)} onDone={() => setWatched(true)} />
+      </div>
+    )
+  }
 
   if (flying && !launched) {
     return <div ref={flightRef} className="app-world game-theme" data-theme="dark">{null}{launch}</div>
@@ -299,7 +321,10 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
         design={state}
         onCutscene={onCutscene}
         callout={ended ? null : callout}
+        shown={fault ? ['ending-loss'] : undefined}
       />
+      {wrongOpen && <WhatWentWrong state={state} campaign={!!active.campaign} onTryAgain={() => tryAgain(session.send, state.params)}
+        onExit={onExit} onBack={() => setWrongClosed(true)} />}
     </div>
   )
 }

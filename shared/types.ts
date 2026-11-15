@@ -197,8 +197,11 @@ export type Command =
   | { type: 'reset'; payload: Record<string, never> }
   | { type: 'set_param'; payload: { key: string; value: ParamValue } }
   | { type: 'select_entity'; payload: { id: Id | null } }
-  /** Leave the design phase and fly the mission. Refused (with a `warning` event) while there are `error` issues. */
-  | { type: 'launch'; payload: Record<string, never> }
+  /**
+   * Leave the design phase and fly the mission. Refused (with a `warning` event) while there are `error` issues,
+   * unless `override` is true and every error is one a crew may launch anyway (sim/ LAUNCH_ANYWAY): then it flies and is lost.
+   */
+  | { type: 'launch'; payload: { override?: boolean } }
   /** Answer the anomaly card that is waiting. Time does not move until it is answered. */
   | { type: 'resolve_decision'; payload: { decision_id: string; option_id: string } }
 

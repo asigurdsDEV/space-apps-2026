@@ -17,6 +17,8 @@ export interface LaunchViewProps {
    * the sequence ends with the rocket lost instead of reaching orbit. Pass it from the first render; changing it restarts the sequence.
    */
   failed?: boolean
+  /** With `failed`: why it was lost, one sentence for the failure shot's caption (a launch against a NO-GO). */
+  cause?: string
   /** Sizes the view; the default height is in launch.css. */
   className?: string
   /** Step through still frames instead of playing. Default: the system's "reduce motion" setting. */
@@ -29,7 +31,7 @@ export interface LaunchViewProps {
 
 const media = (q: string) => typeof window !== 'undefined' && window.matchMedia(q).matches
 
-export function LaunchView({ state, onDone, failed = false, className, reducedMotion, startAt = 0, paused = false }: LaunchViewProps) {
+export function LaunchView({ state, onDone, failed = false, cause, className, reducedMotion, startAt = 0, paused = false }: LaunchViewProps) {
   const host = useRef<HTMLDivElement>(null)
   const clock = useRef<HTMLSpanElement>(null)
   const scene = useRef<LaunchScene | null>(null)
@@ -40,7 +42,7 @@ export function LaunchView({ state, onDone, failed = false, className, reducedMo
   const rocketKey = JSON.stringify(rocketSpec(vehicle))
   const craftKey = JSON.stringify(sceneSpec(state).craft)
   const rocket = useMemo(() => rocketSpec(vehicle), [rocketKey])
-  const timeline = useMemo(() => launchTimeline(rocket, { failed }), [rocket, failed])
+  const timeline = useMemo(() => launchTimeline(rocket, { failed, cause }), [rocket, failed, cause])
   const craft = useMemo(() => sceneSpec(state).craft, [craftKey])
   const stages = timeline.stages
 
