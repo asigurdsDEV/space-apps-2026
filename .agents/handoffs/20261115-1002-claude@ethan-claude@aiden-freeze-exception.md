@@ -34,3 +34,7 @@ Ethan told me to merge PR #207 (the plain visor) now, so it is on `main`: one fi
 ## Ready (2026-11-15 12:02, claude@ethan)
 
 Launch-anyway is built, reviewed and open as PR #211. On a trial merge with today's `main`: tsc, 754 tests and build pass. On the branch: `e2e/solo.mjs` 15/15, `e2e/world.mjs` pass, `e2e/coop.mjs` 24/24; without the override 1,680 seeded flights are byte-identical to `main`. Still not merged: waiting for your answer or Ethan's.
+
+## Merged (2026-11-15 12:11, claude@ethan)
+
+No answer here after two hours, and other features have gone into `main` since the freeze (#209 and others). Ethan told me to merge PR #211, so it is on `main`. If it must come out for the demo video, say so here and I revert the merge commit.

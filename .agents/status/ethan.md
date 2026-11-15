@@ -5,14 +5,14 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-15 12:02
+**Last updated:** 2026-11-15 12:11
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-**Launch anyway, fail, try again** (claimed 2026-11-15 10:02, after the freeze; built and reviewed, PR #211 open, 754 tests on a trial merge; branch `ethan-claude/launch-anyway`, held out of `main` until Ethan or Aiden says so, handoff 20261115-1002): the launch block in `sim/sim.ts`, `shared/`, the Launch control in `ui/hangar/` and `ui/gonogo/`, `ui/scene3d/launch/timeline.ts`, a screen in `app/`. The full browser regression passed on `main` at 0f64dee (solo 15/15, world 1/1, co-op 24/24; `docs/qa/browser-regression.md`, third run). Pad towers (claude@jamie, PR #182) and the launch-to-room cut (claude@aiden, PR #180) are done and on `main`. I still merge every PR that passes `tsc`, tests and build.
+Nothing claimed. The full browser regression passed on `main` at 0f64dee (solo 15/15, world 1/1, co-op 24/24; `docs/qa/browser-regression.md`, third run). Pad towers (claude@jamie, PR #182) and the launch-to-room cut (claude@aiden, PR #180) are done and on `main`. I still merge every PR that passes `tsc`, tests and build.
 
 Open under my name: the launch cutscene is about 20 s (decision 005 says 10 s at most). Waiting on cursor@kaipo: redeploy `main` to Vercel (handoff 20261115-0450).
 
@@ -27,6 +27,8 @@ Released to Open (ask me first, the folder is mine): fly scene tied to sim time 
 - Plus my usual shared-file edits: this section, my BOARD.md lines, append-only LOG.md lines, my own handoffs
 
 ### Just finished
+- **Launch anyway, fail, try again** (PR #211, on `main`; built and reviewed on Opus; merged after the freeze on Ethan's instruction, claude@aiden told by handoff 20261115-1002): `launch` payload `override?: true` and metric `fault` (rows in CONTRACTS.md); `LAUNCH_ANYWAY` and `launchAnywayFault` in `sim/sim.ts`; `ui/gonogo/LaunchAnyway.tsx`; `launchAnyway` in `ui/hangar/layout.ts`; `cause` on `LaunchView`; `app/WhatWentWrong.tsx`. Known: in First Light a too-heavy design is always also blocked by budget or fit, so only the orbit and power cases can be launched anyway there; no e2e case covers it; co-op not played through this path; `ui/gonogo/model.ts` imports from `sim/sim` directly.
+- **Plain visor** (PR #207, on `main`): `ui/crew/astronaut.ts`, no reflection on the visor or the helmet glass.
 - **Daily mission from a live event** (PR #201 plus one follow-up commit, on `main`): `app/dailyEvent.ts` picks the day's event from the `ui/live` feeds by a fixed rule and fixes it per UTC day in localStorage; `app/DailyEventDialog.tsx` shows it; `playDaily` in `app/App.tsx` flies First Light (`demo`) with the optional sim param `headline_card` (row added to CONTRACTS.md). An event daily has its own personal-best slot (seed = date digits times 10 plus the kind). Known: the builder's helper died on a network drop after committing, so there was no separate reviewer: I checked it on `main` myself (tests, build, the dialog and start in a browser with the live feeds, `e2e/solo.mjs`); two players can differ on a day when a feed changes; a debris day needs a bus with a thruster; I did not play through to the first alarm in a browser.
 - **Pass 4, second half** (PRs #197, #198, #199, on `main`; each reviewed once on Opus):
   - Climb (`ui/scene3d/launch/fx.ts`, `scene.ts`): the ground is built in kilometres (beach, shelf water, lagoons, marsh, crawlerway), with cloud fields and a haze band at max-Q; pad close-ups and space shots unchanged. Known: far buildings still read as white boxes from the air; booster separation still uses the orbit view.

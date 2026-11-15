@@ -203,6 +203,7 @@ Each command has one owning role. A player may send it if they hold that role, *
 
 - A scenario turns cards on with the param `anomaly_cards` (how many are drawn during operations; 0 or missing = none). `app/` sets 1 / 2 / 3 for easy / normal / hard when the scenario does not.
 - Optional param `headline_card` (a card id, set by `app/dailyEvent.ts` for a daily mission built on a real event): that card is drawn at the first draw it is eligible for. Missing or not eligible = the normal draw; the roll is spent either way, so later draws do not move.
+- Command `launch` takes an optional payload field `override: true` ("Launch anyway"): it launches past a NO-GO only when every error is one a crew could still fly with (`mass_over_limit`, `orbit_unreachable`, `power_negative`, `delta_v_short`); any other error still refuses. The mission is then lost, and the optional metric `fault` (one of those four codes) says why. Without the field nothing changes.
 - While a card waits, `step` does not advance time and emits nothing. `state.metrics.decision_id`, `decision_card` and `decision_console` say which card is waiting (empty strings when none).
 - Cards are drawn from their own seeded random stream, so the same seed and the same answers give the same mission, and turning cards on never changes the failure rolls.
 - The deck and its effects are in `sim/cards.ts`; wording and stories come from `docs/game-design/ANOMALY_CARDS.md`.
