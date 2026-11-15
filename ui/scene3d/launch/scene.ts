@@ -391,10 +391,11 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
       onAxis(-0.08, flame.position)
       flame.color.set(0xff8a3c)
       flame.distance = 0
-      flame.intensity = thrust * 1.1 * (1 - 0.6 * thin) * (space ? 0.35 : 1)
+      // In the air the fire throws warm light on the tower and the rocket's tail.
+      flame.intensity = thrust * (space ? 0.385 : 2) * (1 - 0.6 * thin)
     }
     // What the ground, the water and the clouds see glowing is the lower part of the flame, down to where it hits the pad.
-    fireU.value.set(flame.position.x, space || air ? flame.position.y : Math.max(flame.position.y - 0.5 * H, 0.1 * H), flame.position.z, flame.intensity)
+    fireU.value.set(flame.position.x, space || air ? flame.position.y : Math.max(flame.position.y - 0.5 * H, 0.1 * H), flame.position.z, space ? flame.intensity : thrust * 1.1 * (1 - 0.6 * thin))
 
     // ---- Light.
     const sun = space ? SUN_SPACE : SUN_GROUND
@@ -642,6 +643,8 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
         // Pad clouds: the flame trench throws steam and smoke out of both ends. It rolls out along the ground,
         // piles up as high as half the rocket by the time the tower is cleared, and hangs there.
         const s = t - ignition
+        // The engines stay in view while they light; once the rocket is off the pad the clouds close in under it.
+        const clear = 1 - 0.85 * smooth(0.5, 5, met)
         for (let i = 0; i < 220; i++) {
           const age = s - 0.2 - hash(i + 0.4) * 4.2
           if (age <= 0) continue
@@ -650,7 +653,7 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
           const size = H * (0.08 + 0.16 * Math.pow(age, 0.55)) * (0.6 + 0.8 * hash(i + 0.75))
           // Some of it piles up in towers: puffs come in groups of eight that share how high they climb.
           const lift = H * 0.45 * hash(i + 0.25) ** 2 * (0.4 + 0.9 * hash((i >> 3) + 0.6)) * (1 - Math.exp(-age * 0.45))
-          clouds.add(dir * (pad.mount * 0.9 + H * (0.15 + 1.5 * hash(i)) * out), size * 0.28 + lift, (hash(i + 0.5) - 0.5) * H * (0.2 + 0.9 * (1 - Math.exp(-age * 0.35))), size, Math.min(age * 4, 1) * clamp01((14 - age) / 5), Math.exp(-age * 2.5) * 0.5, hash(i + 0.1))
+          clouds.add(dir * (pad.mount * 0.9 * clear + H * (0.15 * clear + 1.5 * hash(i)) * out), size * 0.28 + lift, (hash(i + 0.5) - 0.5) * H * (0.2 + 0.9 * (1 - Math.exp(-age * 0.35))), size, Math.min(age * 4, 1) * clamp01((14 - age) / 5), Math.exp(-age * 2.5) * 0.5, hash(i + 0.1))
         }
       }
       if (thrust > 0 || id === 'failure' || met > 0) {

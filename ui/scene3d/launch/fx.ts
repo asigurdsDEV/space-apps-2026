@@ -167,7 +167,8 @@ void main() {
   // ---- Water on a still morning: mostly a mirror of the sky. Trains of low ripples, each with its own heading,
   // length and speed, bent a little by noise so the crests are not ruler-straight. The breeze ruffles it in long
   // patches and leaves glassy slicks between them. The short ripples fade with distance, where they would only shimmer.
-  float inlet = step(1.0, p.y / U);
+  // South of the apron all the water is the inlet (its north bank wanders either side of one unit out).
+  float inlet = step(0.3, p.y / U);
   float jit = mid * 14.0 + local * 3.0 + 5.0 * noise2(p * 0.045);
   float f1 = 1.0 - smoothstep(30.0, 220.0, dist);
   float f2 = 1.0 - smoothstep(100.0, 800.0, dist);
@@ -395,15 +396,17 @@ void main() {
   // Sea level: the air squeezes the flame into a long narrow spindle. Thin air: it fans out the moment it leaves the bell.
   float fan = uVacuum * step(vLayer, 0.5) * 0.9;
   float air = 1.0 - uVacuum;
-  // Thick air: the flame leaves as wide as the engines, flares out and stays lit far downstream; its edge boils.
+  // Thick air (below about 20 km): the flame leaves as wide as the engines, flares out and stays lit far downstream;
+  // its edge boils. Higher up the thinning air only squeezes it into a spindle, until it fans out in vacuum.
+  float thick = pow(air, 8.0);
   vAround = position.x * 1.7 + position.z * 1.1;
-  float boil = 1.0 + 0.09 * vAlong * sin(vAlong * 37.0 - uTime * 21.0 + vAround * 2.0 + uSeed * 5.0);
   float wide = uFlare * pow(vAlong, 0.6);
-  float outer = 1.0 + air * wide * boil + fan * vRadii;
-  float core = mix((0.55 + 0.35 * wide) * (1.0 - 0.45 * vAlong), 0.6 + 0.2 * vRadii, uVacuum);
+  float boil = 1.0 + 0.09 * vAlong * sin(vAlong * 37.0 - uTime * 21.0 + vAround * 2.0 + uSeed * 5.0);
+  float outer = 1.0 + mix(air * (0.9 * root - 1.2 * vAlong * vAlong), wide * boil, thick) + fan * vRadii;
+  float core = mix(mix(0.62 + 0.25 * root - 0.7 * vAlong, (0.55 + 0.35 * wide) * (1.0 - 0.45 * vAlong), thick), 0.6 + 0.2 * vRadii, uVacuum);
   float jet = 1.0 + 0.25 * root - 1.2 * vAlong * vAlong;
   p.xz *= max(vLayer < 0.5 ? outer : vLayer < 1.5 ? core : jet, 0.05);
-  p.y *= 1.0 + air * (uReach - 1.0) * step(vLayer, 1.5);
+  p.y *= 1.0 + thick * (uReach - 1.0) * step(vLayer, 1.5);
   vec4 mv = modelViewMatrix * instanceMatrix * vec4(p, 1.0);
   // The shell's normal leans upstream by the angle it opens at.
   vN = normalize(normalMatrix * vec3(normal.x, fan + 0.02, normal.z));
@@ -435,6 +438,8 @@ void main() {
   float air = 1.0 - uVacuum;
   // Never below zero: at the very end of the tube the interpolated value can overshoot, and pow() of a negative is not a number.
   float left = max(1.0 - vAlong, 0.0);
+  // How much of the sooty low-altitude flame is left: by 30 km up it has gone.
+  float thick = pow(air, 8.0);
   // Solid motors burn rough: their flame boils. Liquid engines only shimmer, and in vacuum the fan is steady.
   float flick = mix(0.8 + 0.4 * noise2(vec2(vAlong * 7.0 - uTime * 11.0, uSeed * 13.0 + facing * 2.0)),
                     0.5 + 1.0 * noise2(vec2(vAlong * 16.0 - uTime * 17.0, uSeed * 13.0 + facing * 5.0)), uSolid);
@@ -443,13 +448,16 @@ void main() {
   vec3 col;
   float a;
   if (vLayer < 0.5) {
-    // Outer flame: thick with glowing soot, so it is bright right across with a soft rim: white-yellow in the middle,
-    // the edge colour outside, cooling to the tail colour where it breaks up into ragged tongues.
+    // Outer flame. Low down it is thick with glowing soot, so it is bright right across with a soft rim: white-yellow
+    // in the middle, the edge colour outside, cooling to the tail colour where it breaks up into ragged tongues.
     float tongues = noise2(vec2(vAlong * 9.0 - uTime * 13.0, vAround * 2.0 + uSeed * 13.0));
     float fine = noise2(vec2(vAlong * 38.0 - uTime * 29.0, vAround * 7.0 + uSeed * 7.0));
     float hot = facing * (1.0 - 0.75 * vAlong);
     col = mix(mix(uEdge, uTail, smoothstep(0.3, 0.9, vAlong)) * (0.7 + 0.3 * facing), uCore, smoothstep(0.4, 0.9, hot));
     a = smoothstep(0.0, 0.25, facing) * (1.0 - smoothstep(0.65, 1.0, vAlong + (tongues - 0.5) * 0.5)) * uBody * (0.7 + 0.5 * tongues) * (0.85 + 0.3 * fine);
+    // High up, a thin spindle: white-yellow where it leaves the engines, orange further down, dull red at its tip.
+    col = mix(mix(mix(uEdge, uEdge * vec3(0.55, 0.3, 0.2), smoothstep(0.35, 1.0, vAlong)), uCore, smoothstep(0.3, 0.95, facing * facing * left * 1.25)), col, thick);
+    a = mix(pow(facing, 1.4) * pow(left, 1.3) * uBody, a, thick);
     // Vacuum: a wide bluish-white fan, brightest in a small zone behind the bell, then thinning out fast as it spreads.
     vec3 fan = mix(vec3(0.3, 0.46, 1.0), vec3(0.55, 0.7, 1.0), facing) + 0.04 * uCore;
     // Even across the cone and soft only at its outline: a peak where a wall faces the eye reads as a torch beam.
@@ -460,7 +468,7 @@ void main() {
   } else if (vLayer < 1.5) {
     // Core: too bright to have a colour at the nozzle.
     col = mix(uCore, vec3(3.6, 3.3, 2.8), (1.0 - vAlong) * air * (1.0 - 0.5 * uSolid) * 0.7);
-    a = pow(facing, 1.6) * pow(left, 0.8) * (0.4 + 0.6 * uBody) * (1.0 - 0.4 * uDiamonds);
+    a = mix(pow(facing, 2.4) * pow(left, 1.1) * (0.5 + 0.8 * uBody), pow(facing, 1.6) * pow(left, 0.8) * (0.4 + 0.6 * uBody), thick) * (1.0 - 0.4 * uDiamonds);
     // Vacuum: a short blue-white knot at the exit of the bell.
     col = mix(col, vec3(0.9, 1.3, 2.4) + 0.15 * uCore, uVacuum);
     a = a * air * air + pow(facing, 2.0) * exp(-vRadii * 2.0) * 0.5 * uVacuum;
@@ -475,8 +483,8 @@ void main() {
   a *= 0.97 + 0.06 * hash2(gl_FragCoord.xy + uSeed);
   // In thick air the sooty flame also hides what is behind it, so its orange edge keeps its colour against a bright
   // sky and the layers settle at the flame's own brightness instead of adding up. In vacuum it only adds light.
-  float solid = min(a, 1.0) * air * step(vLayer, 1.5);
-  gl_FragColor = vec4(col * mix(a, min(a, 1.0), air), solid);
+  float solid = min(a, 1.0) * thick * step(vLayer, 1.5);
+  gl_FragColor = vec4(col * mix(a, min(a, 1.0), thick), solid);
 }
 `,
       blending: THREE.CustomBlending,
@@ -607,8 +615,9 @@ void main() {
   vec2 q = vUv + vData.z * vec2(31.0, 17.0);
   // The ball is pulled out of round, a different way for every puff.
   float r2 = dot(vUv, vUv) * (0.75 + 0.9 * noise2(q * 1.1));
-  vec3 big = lumps(q * 1.6);
-  vec3 small = lumps(q * 4.1);
+  // Lobes of a different size on every puff, so the bank is not all one grain.
+  vec3 big = lumps(q * (1.25 + 0.8 * vData.z));
+  vec3 small = lumps(q * (3.4 + 1.6 * fract(vData.z * 7.3)));
   // The finest lumps only show on a puff that fills much of the screen: skip the work on the rest.
   float close = smoothstep(0.012, 0.005, fwidth(vUv.x));
   vec3 fine = close > 0.0 ? lumps(q * 9.7) * close : vec3(0.0);
@@ -627,7 +636,7 @@ void main() {
   vec3 col = (uLit * sun * sun + uShade * (0.6 + 0.4 * dot(n, up))) * open;
   vec3 toFire = (viewMatrix * vec4(uFire.xyz, 1.0)).xyz - vAt - vec3(0.0, 0.0, h * vHalf);
   float d2 = dot(toFire, toFire);
-  col += vec3(6.0, 2.6, 0.7) * uFire.w * (0.15 + 0.85 * max(dot(n, toFire) * inversesqrt(d2), 0.0)) / (1.0 + d2 / (0.1 * uUnit * uUnit));
+  col += vec3(4.5, 2.0, 0.55) * uFire.w * (0.4 + 0.6 * max(dot(n, toFire) * inversesqrt(d2), 0.0)) / (1.0 + d2 / (0.1 * uUnit * uUnit));
   col += vec3(3.0, 1.1, 0.25) * vData.y * (1.0 - r2 * 0.6);
   gl_FragColor = vec4(col, a);
 }
