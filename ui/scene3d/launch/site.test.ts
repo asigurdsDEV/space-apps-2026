@@ -29,8 +29,8 @@ describe('buildCarrier', () => {
     expect(box.min.x).toBeCloseTo(-27, 1)
     expect(box.max.z).toBeCloseTo(23.74, 1)
     expect(box.min.z).toBeCloseTo(-23.74, 1)
-    // The belly ahead of the wing is 1.9 rocket radii above the rocket's axis.
-    expect(lowest(13, 17, 0.3)).toBeCloseTo(1.9 * R, 1)
+    // The belly of the constant tube (it ends where the nose begins) is 1.9 rocket radii above the rocket's axis.
+    expect(lowest(19, 20, 0.3)).toBeCloseTo(1.9 * R, 2)
   })
 
   it('leaves the rocket room to hang under the belly and fall straight down', () => {

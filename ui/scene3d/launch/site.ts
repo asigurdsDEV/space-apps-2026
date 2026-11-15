@@ -633,8 +633,8 @@ totalEmissiveRadiance += diffuseColor.rgb * vec3(0.17, 0.2, 0.25) * max(-inverse
 
   // ---- Navigation lights: red on the left wingtip, green on the right, white at the tail.
   const light = new THREE.SphereGeometry(0.2, 8, 6)
-  add(lamp, light.clone().translate(-9.4, cy + 0.52, 23.75), 0x1dff5a)
-  add(lamp, light.clone().translate(-9.4, cy + 0.52, -23.75), 0xff2a1a)
+  add(lamp, light.clone().translate(-9, cy + 0.5, 23.54), 0x1dff5a)
+  add(lamp, light.clone().translate(-9, cy + 0.5, -23.54), 0xff2a1a)
   add(lamp, light.translate(-26.7, cy + 0.6, 0), 0xffffff)
 
   for (const mat of [paint, metal, glass, lamp]) {
