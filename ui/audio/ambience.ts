@@ -51,7 +51,8 @@ function sync() {
         const name = list[Math.floor(Math.random() * list.length)]!
         // Keys come as a short uneven run; everything else is a single event.
         let at = ctx!.currentTime
-        for (let n = name === 'tap' ? 3 + Math.floor(Math.random() * 4) : 1; n > 0; n--, at += 0.09 + 0.16 * Math.random()) sound.cue(name, at)
+        // A held or interrupted context keeps everything scheduled and would play it all at once when it wakes.
+        if (ctx!.state === 'running') for (let n = name === 'tap' ? 3 + Math.floor(Math.random() * 4) : 1; n > 0; n--, at += 0.09 + 0.16 * Math.random()) sound.cue(name, at)
         again()
       }, detailGap(Math.random()) * 1000)
     }
@@ -68,8 +69,8 @@ if (typeof window !== 'undefined') {
     if (!live) sync()
     else if (ctx && ctx.state !== 'running') void ctx.resume().catch(() => {})
   }
-  addEventListener('pointerdown', unlock, true)
-  addEventListener('keydown', unlock, true)
+  // A touch counts as a gesture only when the finger lifts, and some phones only take a tap or a click.
+  for (const type of ['pointerdown', 'pointerup', 'touchend', 'click', 'keydown']) addEventListener(type, unlock, true)
   // Dev builds only: QA reads what is sounding (`__sound()`), next to `__fps`.
   if (import.meta.env.DEV) Object.assign(window, { __sound: () => ({ place: live?.want.place ?? null, graphs, state: ctx?.state ?? 'none' }) })
 }
@@ -111,5 +112,6 @@ export function useLaunchSound(rocket: RocketSpec, timeline: LaunchTimeline, pla
 }
 
 function frame(t: number) {
-  if (live?.want.place === 'launch' && ctx) live.sound.frame(t, ctx.currentTime)
+  // Not while the context is held: its clock stands still, and every cue passed meanwhile would sound together later.
+  if (live?.want.place === 'launch' && ctx?.state === 'running') live.sound.frame(t, ctx.currentTime)
 }
