@@ -1,6 +1,6 @@
 # Contracts
 
-**Stack:** TypeScript + Vite + React, static browser app on GitHub Pages and on Vercel (`kimchispacemission.vercel.app`). Online co-op (up to 4) is host-authoritative peer-to-peer over WebRTC (PeerJS). Vercel's only server route, `/api/ice`, mints short-lived Cloudflare TURN credentials; it does not run the sim, store a mission, or keep accounts. See `.agents/decisions/002-stack.md` and `.agents/decisions/008-vercel-turn.md`.
+**Stack:** TypeScript + Vite + React, static browser app on GitHub Pages and on Vercel (`nasaspacemission.vercel.app`). Online co-op (up to 4) is host-authoritative peer-to-peer over WebRTC (PeerJS). Vercel's only server route, `/api/ice`, mints short-lived Cloudflare TURN credentials; it does not run the sim, store a mission, or keep accounts. See `.agents/decisions/002-stack.md` and `.agents/decisions/008-vercel-turn.md`.
 
 The interfaces between parts of the simulator. Agents must not break these without a decision record.
 
