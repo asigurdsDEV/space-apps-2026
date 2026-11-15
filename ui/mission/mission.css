@@ -225,7 +225,9 @@
 
 /* ---------- anomaly card (decision 004) */
 .mv-decision {
-  background: var(--mv-card);
+  /* Glass, not the card colour: it sits over the lit planet, where a see-through card loses its text. */
+  background: var(--mv-glass);
+  backdrop-filter: var(--mv-glass-blur);
   border: 1px solid var(--mv-warn);
   border-radius: var(--game-radius, 22px);
   padding: 20px 22px;
@@ -340,15 +342,16 @@
   flex: none;
   white-space: nowrap;
 }
-/* One white button on the screen ("Design a new mission"); "Try it" is an outline. */
-.mv .mv-fixes button.mv-primary:not(:disabled) {
+/* One white button on the screen ("Design a new mission"); "Try it" is an outline.
+   .mv-root in front so this outranks the shared primary-button rules. */
+.mv-root .mv .mv-fixes button.mv-primary:not(:disabled) {
   background: transparent;
-  border-color: var(--mv-control);
+  border: 1px solid rgb(255 255 255 / 0.3);
   color: var(--mv-text);
   min-height: 44px;
   padding: 6px 14px;
 }
-.mv .mv-fixes button.mv-primary:not(:disabled):hover {
+.mv-root .mv .mv-fixes button.mv-primary:not(:disabled):hover {
   background: color-mix(in srgb, var(--mv-text) 5%, transparent);
   border-color: color-mix(in srgb, var(--mv-text) 60%, transparent);
 }
