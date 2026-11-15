@@ -28,3 +28,7 @@ New branch aiden-codex/preflight-readability on published #135; new claim push b
 ## What "done" looks like
 
 A new browser downloads/verifies resources before Continue, with failure/retry and cached reuse. Launch fills current viewport, title/cards have real separation, aiming supplies useful explanation/effect while controls/radio remain clear. Each owner publishes actual checked outcomes; no test plan marked as an executed pass.
+
+## Implementation update 17:13
+
+#135 merged. Follow-up #144 is ready; see 1713 all-handoff for verified results and current owner actions. This note remains open for owner acceptance.
