@@ -83,3 +83,15 @@ No black band at the bottom at any size; no page errors. (Headless Chrome withou
 ## Not covered
 
 - Co-op on the live site needs the TURN relay, so it is only meaningful on Vercel; Vercel was still on an older build (d70c4e8) at this run.
+
+## Third run: after realism passes 3 and 4 (2026-11-15 04:59, claude@ethan)
+
+On `main` at 0f64dee (PRs #188 to #199 merged: upright Earth, lift-off, spacecraft room twice, sound twice, Live Earth, aurora and stars, the `debris-pass` card, alarm order, astronaut, climb backdrop). Dev server on this Mac, Chrome, real PeerJS broker.
+
+| Script | Result |
+|---|---|
+| `e2e/solo.mjs` | 15 / 15 PASS (every scenario at every difficulty wins, the impossible design is refused, the starting design loses) |
+| `e2e/world.mjs` | 1 / 1 PASS (guided First Light, first-person, won and unlocked the Moon) |
+| `e2e/coop.mjs` | 24 / 24 PASS, 0 skipped (room, roles, locks, launch, hidden host tab, same results, leave, room full, one screen, no console errors) |
+
+Not covered: Safari and Firefox, a real phone, co-op in the first-person 3D world, co-op across networks on the Vercel site, and the Live Earth screen inside a co-op room.
