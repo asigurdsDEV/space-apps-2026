@@ -21,6 +21,8 @@ export interface PatchMeta extends PatchBox {
   rows: number
   min_m: number
   max_m: number
+  /** Mean elevation of the patch (meta.json has it). */
+  mean_m: number
   radius_m: number
 }
 
