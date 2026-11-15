@@ -12,8 +12,8 @@ import { cruiseLayout, transferArc, transferPoint } from './cruise'
 import { lapSeconds, orbitRadius, type Body, type SceneSpec } from './model'
 import { planetMaps } from './maps'
 import { steadyResolution } from './steady'
-import { atmosphereShader, cloudShader, planetShader } from './shaders'
-import { COMPANIONS, companionPosition, type Companion } from './sky'
+import { atmosphereShader, auroraShader, cloudShader, planetShader, starShader } from './shaders'
+import { brightStars, COMPANIONS, companionPosition, milkyWay, skyDirection, skyTurn, type Companion } from './sky'
 import { earthOrientation, sunDirection, uprightSun } from './sun'
 
 /** "cruise" shows Earth → the Moon or Mars on the transfer arc; with an Earth orbit it shows "orbit". */
@@ -40,6 +40,8 @@ export interface World {
   setMode(mode: ViewMode): void
   /** Cruise mode: 0–1 along the transfer. null: the craft loops along it on its own. */
   setProgress(progress: number | null): void
+  /** The aurora: 0 none, up to 1 for the strongest geomagnetic storm (model.ts `stormGlow`). Earth only. */
+  setStorm(glow: number): void
   dispose(): void
 }
 
@@ -64,26 +66,64 @@ function spriteTexture(draw: (g: CanvasRenderingContext2D, size: number) => void
   return t
 }
 
-function makeStars(): THREE.Points {
-  const n = 2200
+// Star colours by spectral class, hot to cool.
+const STAR_TINT: Record<string, [number, number, number]> = { O: [0.62, 0.72, 1], B: [0.7, 0.8, 1], A: [0.87, 0.91, 1], F: [1, 0.97, 0.9], G: [1, 0.91, 0.76], K: [1, 0.8, 0.56], M: [1, 0.66, 0.44] }
+const FAINT_KINDS = 'BBAAAFFGGKKKM' // about how the faint naked-eye stars divide
+
+/** The real sky, in sky.ts's frame: the bright stars where they are, fainter ones filled in, and the Milky Way's band. Two draws. */
+function makeSky(uPixels: { value: number }): THREE.Group {
+  const real = brightStars()
+  const n = real.length + 2200
   const pos = new Float32Array(n * 3)
-  const col = new Float32Array(n * 3)
+  const tint = new Float32Array(n * 3)
+  const size = new Float32Array(n)
   let seed = 42
   const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647)
-  const tints = [new THREE.Color(1, 1, 1), new THREE.Color(0.75, 0.85, 1), new THREE.Color(1, 0.9, 0.75)]
-  for (let i = 0; i < n; i++) {
+  const put = (i: number, dir: [number, number, number], mag: number, kind: string) => {
+    pos.set([dir[0] * 900, dir[1] * 900, dir[2] * 900], i * 3)
+    // Five magnitudes are a hundred times the light. A screen cannot span that, so brightness is squeezed and the brightest stars also grow.
+    const light = 0.17 * 10 ** (-0.17 * (mag - 6))
+    tint.set(STAR_TINT[kind]!.map((c) => c * light), i * 3)
+    size[i] = 1.7 + 0.7 * Math.max(0, 4 - mag)
+  }
+  real.forEach((star, i) => put(i, skyDirection(star.ra_h, star.dec_deg), star.mag, star.kind))
+  for (let i = real.length; i < n; ) {
     const u = rnd() * 2 - 1
     const a = rnd() * Math.PI * 2
     const r = Math.sqrt(1 - u * u)
-    pos.set([Math.cos(a) * r * 900, u * 900, Math.sin(a) * r * 900], i * 3)
-    const b = Math.pow(rnd(), 6) * 1.6 + 0.12
-    const t = tints[Math.floor(rnd() * tints.length)]!
-    col.set([t.r * b, t.g * b, t.b * b], i * 3)
+    const dir: [number, number, number] = [Math.cos(a) * r, u, Math.sin(a) * r]
+    if (rnd() > 0.35 + 0.65 * milkyWay(dir)) continue // faint stars crowd toward the Milky Way
+    // Fainter than the real table (3.6 to 6.2), and each magnitude down has about three times as many stars.
+    put(i++, dir, 3.6 + 2 * Math.log10(1 + rnd() * 19), FAINT_KINDS[Math.floor(rnd() * FAINT_KINDS.length)]!)
   }
   const geo = new THREE.BufferGeometry()
   geo.setAttribute('position', new THREE.BufferAttribute(pos, 3))
-  geo.setAttribute('color', new THREE.BufferAttribute(col, 3))
-  return new THREE.Points(geo, new THREE.PointsMaterial({ size: 1.6, sizeAttenuation: false, vertexColors: true, depthWrite: false }))
+  geo.setAttribute('tint', new THREE.BufferAttribute(tint, 3))
+  geo.setAttribute('size', new THREE.BufferAttribute(size, 1))
+  const stars = new THREE.Points(geo, new THREE.ShaderMaterial({ ...starShader, uniforms: { uPixels }, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false }))
+
+  // The Milky Way as a small map of the whole sky (sky.ts), wrapped on a sphere behind the stars.
+  const w = 512
+  const h = 256
+  const glow = new Uint8Array(w * h * 4)
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const v = 255 * milkyWay(skyDirection(((x + 0.5) / w - 0.5) * 24, ((y + 0.5) / h - 0.5) * 180))
+      glow.set([v, v, v, 255], (y * w + x) * 4)
+    }
+  }
+  const map = new THREE.DataTexture(glow, w, h)
+  map.wrapS = THREE.RepeatWrapping
+  map.magFilter = map.minFilter = THREE.LinearFilter
+  map.needsUpdate = true
+  const band = new THREE.Mesh(
+    new THREE.SphereGeometry(950, 48, 24),
+    new THREE.MeshBasicMaterial({ map, color: new THREE.Color(0.021, 0.024, 0.03), side: THREE.BackSide, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false }),
+  )
+  band.renderOrder = stars.renderOrder = -1 // behind everything else that is see-through
+  const sky = new THREE.Group()
+  sky.add(band, stars)
+  return sky
 }
 
 export function createWorld(container: HTMLElement, initial: SceneSpec, options: WorldOptions): World {
@@ -107,7 +147,9 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
   const earthshine = new THREE.DirectionalLight(0x6d90d0, 0.6)
   scene.add(sunLight, earthshine, earthshine.target, new THREE.AmbientLight(0x3a4560, 0.12))
 
-  scene.add(makeStars())
+  const uPixels = { value: renderer.getPixelRatio() }
+  const stars = makeSky(uPixels)
+  scene.add(stars)
   const sun = new THREE.Sprite(
     new THREE.SpriteMaterial({
       map: spriteTexture((g, s) => {
@@ -130,12 +172,15 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
   // Real day and night (sun.ts): every Earth here is turned so the place where it is noon at `date` faces the Sun, then spins on
   // from there about its own axis. The shaders light in world space, so ground, city lights, clouds and air all agree.
   const sunXYZ = SUN.toArray()
-  const when = new Date(options.date ?? Date.now())
+  const asked = new Date(options.date ?? Date.now())
   // An unreadable date would make the Sun NaN, and a NaN Sun sprite blacks out the whole frame through the bloom: show now instead.
-  const sunInMap = sunDirection(Number.isNaN(+when) ? new Date() : when)
+  const when = Number.isNaN(+asked) ? new Date() : asked
+  const sunInMap = sunDirection(when)
   // An Earth that is not the main body (behind the craft in cruise, in the Moon's sky) is lit by the studio Sun, so its pole leans.
   const earthStudio = new THREE.Quaternion().fromArray(earthOrientation(sunInMap, sunXYZ))
   const sunForUpright = new THREE.Vector3(...uprightSun(sunInMap, sunXYZ))
+  // The stars are fixed to the same moment: turned about the pole until the Sun's real place among them is over the map's Sun.
+  const starsInMap = new THREE.Quaternion().setFromAxisAngle(Y, skyTurn(when, sunInMap))
   const earthInSky = new THREE.Quaternion() // the same, seen from inside the tipped globe group
 
   // Planet, clouds, atmosphere.
@@ -145,7 +190,8 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
   const uBody = { value: 0 }
   // Real NASA maps (maps/README.md), one shared set of uniforms per body; procedural until they load.
   const bodyMaps = planetMaps(renderer.capabilities.getMaxAnisotropy())
-  const planetMaterial = new THREE.ShaderMaterial({ ...planetShader, uniforms: { uSun, uBody, ...bodyMaps.maps.earth } })
+  const uSunset = { value: 0 } // 1 on the Earth: the orange day/night line and the sunset arc at the limb
+  const planetMaterial = new THREE.ShaderMaterial({ ...planetShader, uniforms: { uSun, uBody, uSunset, ...bodyMaps.maps.earth } })
   const planet = new THREE.Mesh(new THREE.SphereGeometry(1, 160, 120), planetMaterial)
   const clouds = new THREE.Mesh(
     new THREE.SphereGeometry(1.012, 128, 96),
@@ -153,20 +199,30 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
   )
   const uAtmo = { value: new THREE.Color() }
   const uThickness = { value: Math.sqrt(1 - 1 / (ATMOSPHERE_R * ATMOSPHERE_R)) }
-  const airMaterial = (uColor: { value: THREE.Color }) =>
-    new THREE.ShaderMaterial({ ...atmosphereShader, uniforms: { uSun, uColor, uThickness }, side: THREE.BackSide, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false })
-  const atmosphere = new THREE.Mesh(new THREE.SphereGeometry(ATMOSPHERE_R, 96, 64), airMaterial(uAtmo))
+  const airMaterial = (uColor: { value: THREE.Color }, sunset: { value: number }) =>
+    new THREE.ShaderMaterial({ ...atmosphereShader, uniforms: { uSun, uColor, uThickness, uSunset: sunset }, side: THREE.BackSide, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false })
+  const atmosphere = new THREE.Mesh(new THREE.SphereGeometry(ATMOSPHERE_R, 96, 64), airMaterial(uAtmo, uSunset))
+  // The aurora of a geomagnetic storm (setStorm): one more draw, and only while a storm is on. It turns with the ground.
+  const uStorm = { value: 0 }
+  const uRipple = { value: 0 }
+  const aurora = new THREE.Mesh(
+    new THREE.SphereGeometry(1.055, 96, 64),
+    // Both faces in one pass: the far side shows past the limb, and adding light needs no back-to-front order.
+    new THREE.ShaderMaterial({ ...auroraShader, uniforms: { uSun, uStorm, uRipple }, side: THREE.DoubleSide, forceSinglePass: true, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false }),
+  )
+  aurora.visible = false
+  planet.add(aurora)
   const globe = new THREE.Group()
   globe.add(planet, clouds)
   scene.add(globe, atmosphere)
 
   // Cruise mode: Earth behind us and the transfer arc to the destination (the globe above).
-  const home = new THREE.Mesh(planet.geometry, new THREE.ShaderMaterial({ ...planetShader, uniforms: { uSun, uBody: { value: 0 }, ...bodyMaps.maps.earth } }))
+  const home = new THREE.Mesh(planet.geometry, new THREE.ShaderMaterial({ ...planetShader, uniforms: { uSun, uBody: { value: 0 }, uSunset: { value: 1 }, ...bodyMaps.maps.earth } }))
   const homeAxis = new THREE.Group() // holds the real tilt; `home` spins inside it
   homeAxis.quaternion.copy(earthStudio)
   homeAxis.add(home)
   // The same clouds and air as the main Earth: its geometry, cloud material and shader, so two more draws and nothing new to load.
-  home.add(new THREE.Mesh(clouds.geometry, clouds.material), new THREE.Mesh(atmosphere.geometry, airMaterial({ value: ATMOSPHERE.earth! })))
+  home.add(new THREE.Mesh(clouds.geometry, clouds.material), new THREE.Mesh(atmosphere.geometry, airMaterial({ value: ATMOSPHERE.earth! }, { value: 1 })))
   const arc = new THREE.Line(
     new THREE.BufferGeometry(),
     new THREE.LineDashedMaterial({ color: 0xbcd2ff, dashSize: 0.22, gapSize: 0.12, transparent: true, opacity: 0.95, depthWrite: false }),
@@ -277,6 +333,7 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
   let inShadow: boolean | null = null
   let progress: number | null = null
   let looped = 0.5
+  let storm = 0
   // What is drawn: cruise needs somewhere to go, so an Earth orbit falls back to the orbit view.
   let shown: ViewMode = mode
 
@@ -294,6 +351,7 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
     spec = next
     radius = orbitRadius(spec)
     uBody.value = BODY_INDEX[spec.body]
+    uSunset.value = spec.body === 'earth' ? 1 : 0
     Object.assign(planetMaterial.uniforms, bodyMaps.maps[spec.body])
     clouds.visible = spec.body === 'earth'
     for (const { around, mesh } of companions) mesh.visible = around === spec.body
@@ -324,6 +382,8 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
     if (spec.body === 'earth') globe.quaternion.fromArray(earthOrientation(sunInMap, sunNow.toArray(), [0, Math.cos(tip), Math.sin(tip)]))
     else globe.rotation.set(tip, 0, 0)
     earthInSky.copy(globe.quaternion).invert().multiply(earthStudio)
+    // The celestial pole lies along the Earth's: the one on screen, or from the Moon and Mars the one the Earth in their sky has.
+    stars.quaternion.copy(spec.body === 'earth' ? globe.quaternion : earthStudio).multiply(starsInMap)
     // Inclination is measured from the equator, so the orbit leans with the globe.
     orbitPivot.rotation.set(spec.inclination_rad, 0, 0)
     orbitPivot.quaternion.premultiply(globe.quaternion)
@@ -430,6 +490,7 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
   const steady = steadyResolution((ratio) => {
     renderer.setPixelRatio(ratio)
     composer.setPixelRatio(ratio)
+    uPixels.value = ratio
   }, renderer.getPixelRatio())
   let last = performance.now()
   function frame(now: number) {
@@ -437,6 +498,10 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
     const dt = Math.min((now - last) / 1000, 0.1)
     last = now
     uTime.value += dt
+    // The aurora fades in and out over a few seconds and ripples slowly; with reduced motion it holds still.
+    uStorm.value += (storm - uStorm.value) * Math.min(1, dt / 1.5)
+    aurora.visible = spec.body === 'earth' && uStorm.value > 0.004
+    uRipple.value += dt * motion
     planet.rotation.y += ((dt * Math.PI * 2) / SPIN_S[spec.body]) * motion
     clouds.rotation.y += ((dt * Math.PI * 2) / (SPIN_S[spec.body] * 0.85)) * motion
     if (shown === 'cruise') {
@@ -485,6 +550,9 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
     },
     setProgress(next) {
       progress = next === null ? null : Math.min(1, Math.max(0, next))
+    },
+    setStorm(glow) {
+      storm = Math.min(1, Math.max(0, glow))
     },
     dispose() {
       renderer.domElement.removeEventListener('pointermove', hover)

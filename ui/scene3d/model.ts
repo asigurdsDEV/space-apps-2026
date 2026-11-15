@@ -1,6 +1,6 @@
 // Pure: turns SimState (picked params + part entities) into what the 3D scene draws.
 // No three.js here, so it is easy to test. Columns follow data/README.md (PR #8).
-import type { Entity, ParamValue, SimState } from '../../shared'
+import type { Entity, Metrics, Params, ParamValue, SimState } from '../../shared'
 import { BUS, CUBESAT } from './parts/references'
 
 export type Body = 'earth' | 'moon' | 'mars'
@@ -140,6 +140,21 @@ export function sceneSpec(state: Pick<SimState, 'entities' | 'params'>): SceneSp
     },
     names: { orbit: orbit?.name, bus: bus?.name, power: solar?.name, battery: battery?.name, comms: comms?.name, instruments: instruments.map((i) => i.name) },
   }
+}
+
+/**
+ * How strong a geomagnetic storm the mission is flying through right now, as the aurora's glow: 0 none, 0.6 for NOAA level G3,
+ * 0.8 for G4, 1 for G5. A storm is on while the sim's storm card waits for its answer, and on every real storm day in flight
+ * (`real_storms`, "day:G,…" from NASA OMNI). A storm card that is not from real data counts as G3.
+ */
+export function stormGlow(state: { params: Params; metrics?: Metrics }): number {
+  const m = state.metrics
+  const card = m?.decision_card === 'geomagnetic-storm'
+  if (!m || (!card && m.phase !== 'cruise' && m.phase !== 'operations')) return 0
+  // The card's id ends with the day of its storm.
+  const day = card ? Number(str(m.decision_id).split('-').pop()) : Math.floor(num(m.mission_day, -1))
+  const g = Number(new RegExp(`(?:^|,)${day}:(\\d)`).exec(str(state.params.real_storms))?.[1] ?? (card ? 3 : 0))
+  return Math.min(1, g / 5)
 }
 
 /**

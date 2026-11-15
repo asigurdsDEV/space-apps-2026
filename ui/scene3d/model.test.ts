@@ -1,6 +1,8 @@
 import { describe as group, expect, it } from 'vitest'
 import type { Entity, Params } from '../../shared'
-import { antennaOf, busSize, describe, lapSeconds, orbitRadius, sceneSpec, wingSpan } from './model'
+import { getDatasets, getScenario } from '../../data'
+import { init, step } from '../../sim'
+import { antennaOf, busSize, describe, lapSeconds, orbitRadius, sceneSpec, stormGlow, wingSpan } from './model'
 
 const e = (kind: string, id: string, name: string, props: Params = {}): Entity => ({ id, kind, name, props })
 const entities: Entity[] = [
@@ -78,5 +80,45 @@ group('helpers', () => {
     expect(geo).toBeGreaterThan(leo)
     expect(geo).toBeLessThan(3)
     expect(lapSeconds(86164)).toBeGreaterThan(lapSeconds(5550))
+  })
+})
+
+group('stormGlow', () => {
+  it('is off without flight metrics, in the design phase and on a quiet day', () => {
+    expect(stormGlow({ params: { real_storms: '0:5' } })).toBe(0) // screens that pass only entities and params
+    expect(stormGlow({ params: { real_storms: '0:5' }, metrics: { phase: 'design', mission_day: 0 } })).toBe(0)
+    expect(stormGlow({ params: { real_storms: '13:3,28:5' }, metrics: { phase: 'operations', mission_day: 12.9 } })).toBe(0)
+    expect(stormGlow({ params: {}, metrics: { phase: 'operations', mission_day: 13 } })).toBe(0)
+  })
+
+  it('follows the real storm of the day, stronger for a higher NOAA level', () => {
+    const params = { real_storms: '13:3,28:5,113:4' }
+    const on = (mission_day: number) => stormGlow({ params, metrics: { phase: 'operations', mission_day } })
+    expect(on(13.4)).toBeCloseTo(0.6)
+    expect(on(28)).toBe(1)
+    expect(on(113.99)).toBeCloseTo(0.8)
+    expect(on(3)).toBe(0) // day 3 is not day 13 or 113
+  })
+
+  it('is on while the storm card waits: the real level, or G3 for a card that is not from real data', () => {
+    const card = { phase: 'operations', mission_day: 40.2, decision_card: 'geomagnetic-storm', decision_id: 'geomagnetic-storm-28' }
+    expect(stormGlow({ params: { real_storms: '13:3,28:5' }, metrics: card })).toBe(1) // the card's own day, not today
+    expect(stormGlow({ params: {}, metrics: { ...card, decision_id: 'geomagnetic-storm-40' } })).toBeCloseTo(0.6)
+    expect(stormGlow({ params: {}, metrics: { ...card, decision_card: 'reaction-wheel', decision_id: 'reaction-wheel-40' } })).toBe(0)
+  })
+
+  it('reads the state the real sim makes when a real storm hits', () => {
+    const demo = getScenario('demo')!
+    // 1 Oct 2003 launch: the first strong storm (G3) is on 14 Oct, mission day 13 (sim/real-storms.test.ts).
+    const config = { ...demo, params: { ...demo.params, random_failures: false, anomaly_cards: 0, weather_start: '2003-10-01', real_storms: '13:3,28:5' } }
+    let state = init(config, getDatasets(demo.datasets))
+    expect(stormGlow(state)).toBe(0)
+    state = step(state, [{ type: 'launch', payload: {} }], config.dt_s).state
+    for (let i = 0; state.status !== 'ended' && !state.metrics.decision_id && i < 2000; i++) {
+      expect(stormGlow(state)).toBe(0)
+      state = step(state, [], config.dt_s).state
+    }
+    expect(state.metrics.decision_card).toBe('geomagnetic-storm')
+    expect(stormGlow(state)).toBeCloseTo(0.6)
   })
 })
