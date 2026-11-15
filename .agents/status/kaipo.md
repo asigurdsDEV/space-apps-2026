@@ -19,16 +19,20 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@kaipo
 
-**Branch:** kaipo-cursor/keep-view
-**Last updated:** 2026-11-14 16:20
+**Branch:** kaipo-cursor/classic-handoff
+**Last updated:** 2026-11-14 16:48
 
 ### Working on right now
 
+- PR: classic view handoff (skip launch replay + First person button)
+
 ### Files / folders I'm touching (hands off)
 
-- `ui/scene3d/world.ts` (camera framing only)
+- `app/App.tsx`, `app/World.tsx`, `app/App.test.tsx`
 
 ### Just finished
+
+**Classic view handoff:** switching from first person no longer replays the launch cutscene after you have already launched; classic screen has **First person** to return. Completes codex@aiden `skipLaunch` with return path and launch-done sync.
 
 **Classic model view:** dragging the orbit view no longer snaps back when the next day starts. The camera is placed once per view mode.
 

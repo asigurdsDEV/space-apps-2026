@@ -80,6 +80,16 @@ describe('game screen', () => {
     expect(screen(session)).toMatch(/<h1 class="app-bar-title">.*<main>.*class="s3d-launch/s) // the 3D launch plays first
   })
 
+  it('opens on the mission, with a way back, when switched from the walkable game', () => {
+    const { session } = soloSession()
+    designCommands.forEach(session.send)
+    session.send({ type: 'launch', payload: {} })
+    const html = renderToStaticMarkup(<GameScreen session={session} config={config} onExit={() => {}} skipLaunch onFirstPerson={() => {}} />)
+    expect(html).not.toContain('s3d-launch')
+    expect(html).toContain('mv-hud')
+    expect(html).toContain('First person')
+  })
+
   it('shows the builder in the design phase', () => {
     const { session } = soloSession()
     const html = screen(session)
