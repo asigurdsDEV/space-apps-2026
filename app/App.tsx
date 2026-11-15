@@ -141,12 +141,16 @@ export function App() {
   /** The daily the player asked for, while the "Today's event" dialog is open. */
   const [asking, setAsking] = useState<DailyMissionRequest | null>(null)
   const date = daily?.date
-  const onStart = !active && !guided
+  // Asked for as soon as no game is running (the campaign board too), so it is usually here before the Play button is.
+  const onStart = !active
+  const looking = useRef<Promise<DailyEvent | null> | null>(null)
   useEffect(() => {
     if (!onStart || !date) return
     let gone = false
-    void loadDailyEvent(date).then((event) => { if (!gone && event) setTodays({ date, event }) })
-    return () => { gone = true }
+    const look = loadDailyEvent(date)
+    looking.current = look
+    void look.then((event) => { if (!gone && event) setTodays({ date, event }) })
+    return () => { gone = true; looking.current = null }
   }, [onStart, date])
   const event = todays?.date === date ? todays?.event : undefined
 
@@ -191,7 +195,18 @@ export function App() {
     playSolo(withEvent({ ...config, seed: mission.seed }, event), mission.name, mission)
   }
   // No event yet (the feeds are slow or silent): today's ordinary daily starts at once.
-  const playDaily = (request: DailyMissionRequest) => (event ? setAsking(request) : flyDaily(request))
+  // A press before the feeds have answered waits for them (4 s at most, app/dailyEvent.ts) rather than flying the ordinary daily.
+  const playDaily = (request: DailyMissionRequest) => {
+    if (event) return setAsking(request)
+    const look = looking.current
+    if (!look) return flyDaily(request)
+    looking.current = null // a second press while waiting starts nothing twice
+    void look.then((found) => {
+      if (!found) return flyDaily(request)
+      setTodays({ date: request.date, event: found })
+      setAsking(request)
+    })
+  }
 
   // One seat holding no role, so all four roles' controls work on this device. No network, no lobby.
   const playSameScreen = (config: Config) => {
