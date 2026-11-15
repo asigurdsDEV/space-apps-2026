@@ -1,6 +1,6 @@
 # GO / NO-GO: Space Mission Design Game
 
-**Play it now: https://asigurdsdev.github.io/space-apps-2026/** (browser only, works on a phone, solo or co-op for up to 4)
+**Play it now: https://nasaspacemission.vercel.app** (browser only, works on a phone, solo or co-op for up to 4; mirror: https://asigurdsdev.github.io/space-apps-2026/)
 
 NASA Space Apps Challenge 2026 · [Space Mission Design Game](https://www.spaceappschallenge.org/2026/challenges/space-mission-design-game/) · Team Kimchi Trenchers (Seattle) · MIT License
 
@@ -43,12 +43,12 @@ docs/                challenge brief, research, pitch notes
 
 | Name | Role | Agent |
 |------|------|-------|
-| Aiden | | Claude Code |
-| Ethan | | Claude Code |
-| Jamie | | Claude Code |
-| Sarah | Frontend / UI: mission run + results screens | Claude Code |
-| Caleb | | |
-| Kaipo | Player guide and glossary | Cursor |
+| Aiden | Repo and team workflow, mission builder, story layer, the first-person 3D game | Claude Code + Codex |
+| Ethan | Simulation core, 3D planets, rockets and launch, merge coordinator | Claude Code |
+| Jamie | Data catalogs and scenarios, real missions, multiplayer, start screen | Claude Code + Codex |
+| Sarah | Mission run + results screens, real NASA space weather, game design | Claude Code |
+| Caleb | 3D cutscenes, accessibility, QA, submission | Cursor |
+| Kaipo | Player guide and glossary, 3D props, Vercel host + online relay | Cursor |
 
 ## Challenge
 
@@ -62,13 +62,16 @@ Full brief, design hints and NASA resources: [`docs/CHALLENGE.md`](docs/CHALLENG
 
 Play **First Light**, a student mission from design to result. You pick the parts, the game runs the mission, and the score explains why it worked or failed.
 
-**Play it:** [https://asigurdsdev.github.io/space-apps-2026/](https://asigurdsdev.github.io/space-apps-2026/) once GitHub Pages is on (Settings → Pages → Source: GitHub Actions) and the site deploy is merged. Until then, from a checkout that has the app: `npm ci` then `npm run dev`.
+**Play it:** [https://nasaspacemission.vercel.app](https://nasaspacemission.vercel.app). Or from a checkout: `npm ci` then `npm run dev`.
 
-1. **Start.** Pick the scenario. Play solo, host an online room, or join with a room code (up to 4 players).
-2. **Lobby** (online only). Share the room code, claim a role, and let the host start.
-3. **Briefing.** Read the objective, the budget, the science goal, and how to win.
-4. **Build.** Choose a spacecraft bus, instruments, power, communications, a launch vehicle, and an orbit. The bars update as you go: mass, power, budget, data, downlink, and schedule. Fix anything that says it blocks launch.
-5. **Fly.** Watch the mission. Pause, change speed, or reset. Events show shortfalls such as eclipse power or a radio that cannot send the data home.
-6. **Results.** Read the score and why. Change the design and fly again.
+You play in first person: **W A S D** to walk, the mouse to look, **E** to use what you face. On a phone, the thumb pads do the same.
+
+1. **Mission board.** Start the guided campaign (First Light, then the Moon, then Mars), or open free play, the daily mission and online rooms (host or join with a room code, up to 4 players in roles).
+2. **Mission control.** Walk to the hologram stations and fit a bus, instruments, power, battery, radio, rocket and orbit. The wall shows mass, power, budget and data as you go.
+3. **GO / NO-GO.** Four consoles call GO or NO-GO. A red NO-GO blocks launch.
+4. **Launch, then fly from inside the spacecraft.** Change the speed at the console. When an alarm sounds, walk to its panels and choose.
+5. **Debrief.** Back in mission control: the grade, why, and the one change that would have saved it. A win unlocks the next mission.
+
+**Classic view** in the menu (or `?world=classic`) plays the same game on 2D screens: Briefing, Build, GO/NO-GO, Fly, Results.
 
 Science only counts after the data reaches the ground. A better instrument can lose if it is too heavy for the rocket, too expensive, or makes more data than the radio can send. Dashed words in the game open a short definition. Hover or tab to them.
