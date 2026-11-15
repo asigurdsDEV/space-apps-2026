@@ -32,7 +32,7 @@ How it behaves:
 
 Measured in headless Chrome (Metal) on 2026-11-15 with other work running on the machine: 6 draw calls a frame and 16.6 ms a frame (the display's own rate, slowest frame 16.8 ms) at 1290x690 and at 390x844 at twice the pixels, with all 2,681 debris pieces shown, in the preview and from both entries in the game.
 
-Checked in that browser, from pictures: the preview and both game entries at both sizes; each feed blocked in turn (the picture, all of CelesTrak, one satellite group, one debris group, NOAA, EONET, the satellite.js download), everything blocked, the browser offline, and a browser with no WebGL. During these checks CelesTrak's answers were the copies downloaded at 09:52 UTC, replayed to the page, to keep to its one download per two hours; NOAA, EONET and GIBS were asked for real.
+Checked in that browser, from pictures: the preview and both game entries at both sizes; each feed blocked in turn (the picture, all of CelesTrak, one satellite group, one debris group, NOAA, EONET, the satellite.js download), everything blocked, the browser offline, and a browser with no WebGL. During these checks CelesTrak's answers were the copies downloaded at 09:52 UTC, replayed to the page, to keep to its one download per two hours; NOAA, EONET and GIBS were asked for real. At 11:53 UTC, two hours after those downloads, the screen was run once with nothing replayed: all eight CelesTrak groups, NOAA, EONET and GIBS answered 200 with `Access-Control-Allow-Origin: *`, and a reload then asked for nothing.
 
 ## The data layer
 
