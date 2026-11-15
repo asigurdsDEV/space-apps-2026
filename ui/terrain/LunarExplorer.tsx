@@ -26,7 +26,7 @@ async function loadPatch(signal: AbortSignal): Promise<{ meta: PatchMeta; height
   return { meta, heights: new Float32Array(bytes) }
 }
 
-export default function LunarExplorer({ onClose }: { onClose: () => void }) {
+export default function LunarExplorer({ onClose, leaveLabel = 'Back to orbit' }: { onClose: () => void; leaveLabel?: string }) {
   const stage = useRef<HTMLDivElement>(null)
   const elev = useRef<HTMLElement>(null)
   const where = useRef<HTMLElement>(null)
@@ -156,10 +156,10 @@ export default function LunarExplorer({ onClose }: { onClose: () => void }) {
           <h2 id="lunar-title">Taurus-Littrow</h2>
           <p>
             Apollo 17, from SLDEM2015 elevation and an LROC WAC photo. The eye is {EYE.toFixed(1)} m above the ground.
-            Q or Esc returns to orbit. This does not change the mission.
+            Q or Esc leaves the surface. This does not change the mission.
           </p>
         </div>
-        <button type="button" className="game-button" onClick={onClose}>Back to orbit</button>
+        <button type="button" className="game-button" onClick={onClose}>{leaveLabel}</button>
       </header>
       <div className="lunar-stage" ref={stage}>
         {!patch && !error && <p className="lunar-status" role="status">Loading the lunar elevation and the WAC photo…</p>}

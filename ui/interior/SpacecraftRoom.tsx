@@ -33,7 +33,7 @@ export interface SpacecraftRoomProps {
   subscribeCrew?: (listener: (crew: readonly CrewPose[]) => void) => () => void
   /** Which crew member this browser is (0 is the host). Spreads spawn points so bodies do not stack. */
   seat?: number
-  /** Earth missions: E on the gold floor hatch opens the surface. */
+  /** Earth or Moon: E on the gold floor hatch opens the surface. */
   onProbe?: () => void
 }
 

@@ -174,7 +174,7 @@ export interface FlightOptions {
   decision: Decision | null
   /** Why this player can't answer it (co-op: another role holds that console). */
   decisionBlocked?: string
-  /** Earth missions: E on the floor hatch sets the crew on the surface. */
+  /** Earth or Moon: E on the floor hatch sets the crew on the surface. */
   onProbe?: () => void
 }
 

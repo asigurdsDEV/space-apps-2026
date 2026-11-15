@@ -5,7 +5,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { getDatasets, getScenario } from '../data'
 import { LocalTransport, type MessageHandler } from '../net'
-import { isCommand, isNetMessage, ownerRole, type Command, type Entity, type NetMessage } from '../shared'
+import { isCommand, isNetMessage, ownerRole, ROLES, type Command, type Entity, type NetMessage } from '../shared'
 import { simCore } from '../sim'
 import { DEFAULT_SLOTS } from '../ui/builder'
 import { BASELINE, GameScreen, SCENARIOS } from './App'
@@ -70,13 +70,23 @@ async function settle(): Promise<void> {
   for (let i = 0; i < 20; i++) await Promise.resolve()
 }
 
+function lobbyRoles(host: { claimRole?: (role: (typeof ROLES)[number]) => void }, guests: { claimRole?: (role: (typeof ROLES)[number]) => void }[]) {
+  const seats = [host, ...guests]
+  seats.forEach((seat, index) => seat.claimRole?.(ROLES[index % ROLES.length]!))
+}
+
 async function startRoom(...names: string[]) {
   const r = room()
   const game = newGame()
   const host = createHostSession(game, r.endpoint('host'), 'Hana', { baseline })
   const guests = names.map((name) => createGuestSession(r.endpoint(name.toLowerCase()), name, { baseline }))
   await settle()
+  lobbyRoles(host, guests)
+  await settle()
   host.start!()
+  await settle()
+  host.claimRole!(null)
+  for (const guest of guests) guest.claimRole!(null)
   await settle()
   return { ...r, game, host, guests }
 }
@@ -152,6 +162,9 @@ describe('state messages', () => {
     const host = createHostSession(createGame({ config: mars, datasets: getDatasets(mars.datasets), sim: simCore }), r.endpoint('host'), 'Hana', { baseline })
     const guest = createGuestSession(r.endpoint('g'), 'Gus', { baseline })
     await settle()
+    host.claimRole!(ROLES[0])
+    guest.claimRole!(ROLES[1])
+    await settle()
     host.start!()
     await settle()
     expect(guest.getSnapshot().state.scenario_id).toBe('mars-hard')
@@ -206,6 +219,9 @@ describe('state messages', () => {
     const r = room()
     const host = createHostSession(newGame(), r.endpoint('host'), 'Hana', { baseline })
     const guest = createGuestSession(r.endpoint('g'), 'Gus', { baseline: baseline.slice(1) })
+    await settle()
+    host.claimRole!(ROLES[0])
+    guest.claimRole!(ROLES[1])
     await settle()
     host.start!()
     await settle()

@@ -256,8 +256,17 @@ describe('co-op screens', () => {
     expect(html).not.toContain('Continue to briefing')
   })
 
-  it('lets the host continue to the briefing', () => {
-    expect(room(frozen({ stage: 'lobby', me: players[0] }))).toContain('Continue to briefing')
+  it('lets the host continue to the briefing once every player has a role', () => {
+    const html = room(frozen({ stage: 'lobby', me: players[0] }))
+    expect(html).toContain('Continue to briefing')
+    expect(html).not.toMatch(/<button[^>]*disabled[^>]*>Continue to briefing<\/button>/)
+  })
+
+  it('holds the host until every player has a role', () => {
+    const waiting = [players[0], { ...players[1], role: null }]
+    const html = room(frozen({ stage: 'lobby', me: waiting[0], players: waiting }))
+    expect(html).toContain('Every player needs a role')
+    expect(html).toMatch(/<button[^>]*disabled[^>]*>Continue to briefing<\/button>/)
   })
 
   it('shows every player the briefing of the scenario the host picked, then the builder with role locks', () => {

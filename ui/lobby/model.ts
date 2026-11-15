@@ -7,6 +7,11 @@ export const ROLE_DETAILS: Record<Role, { title: string; description: string }> 
   'comms-resources': { title: 'Communications & resources', description: 'Choose communications and ground support to bring your science home.' },
 }
 
+/** True when the room has someone in it and every one of them holds a role. */
+export function crewReady(players: readonly Pick<Player, 'role'>[]): boolean {
+  return players.length > 0 && players.every((player) => player.role !== null)
+}
+
 export function roleChoices(players: readonly Player[], selfId: string) {
   return ROLES.map(role => {
     const owner = players.find(player => player.role === role)

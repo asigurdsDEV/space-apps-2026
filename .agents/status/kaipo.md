@@ -24,16 +24,12 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ### Working on right now
 
-Pushing the Apollo 17 walk and a smaller Earth-survey change (closer hover, less vertical stretch) to main. Moon terrain lighting and mesh are not being retuned.
+Moon hatch opens the Apollo 17 ground from the ship (Earth hatch unchanged). Host cannot leave the lobby until every player in the room has a role. On `main` after this push.
 
 ### Files / folders I'm touching (hands off)
 
-- `ui/terrain/`
-- `public/terrain/moon/apollo17/`
-- `scripts/terrain/prepare_apollo17.py`
-- `app/Training.tsx` (Moon walk entry only)
-- `pwa/public-files.ts` (three new public files)
-- `CALEB_AGENT_HANDOFF.md`
+- `app/World.tsx`, `app/Training.tsx` (Moon hatch opens the lunar ground)
+- `app/session.ts`, `ui/lobby/` (every player needs a role before the host continues)
 - this section
 
 ### Just finished

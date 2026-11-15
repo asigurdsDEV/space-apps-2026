@@ -2,7 +2,7 @@ import { useId, useRef, useState } from 'react'
 import type { Player, Role } from '../../shared'
 import { Term } from '../learn'
 import '../learn/learn.css'
-import { ROLE_DETAILS, roleChoices } from './model'
+import { ROLE_DETAILS, crewReady, roleChoices } from './model'
 import './lobby.css'
 import { ConsoleArt } from './ConsoleArt'
 
@@ -23,6 +23,7 @@ export function LobbyScreen({ code, players, me, onClaimRole, onContinue, onLeav
   const [copiedCode, setCopiedCode] = useState<string | null>(null)
   const [copyError, setCopyError] = useState(false)
   const self = players.find(player => player.player_id === me.player_id)
+  const ready = crewReady(players)
   async function copyCode() {
     if (!code) return
     try {
@@ -77,11 +78,11 @@ export function LobbyScreen({ code, players, me, onClaimRole, onContinue, onLeav
           {error && <p className="ls-error" role="alert">{error}</p>}
           <div className="ls-actions">
             <button type="button" className="ls-secondary" onClick={onLeave} disabled={busy}>Leave room</button>
-            {self?.is_host ? <button type="button" className="ls-primary" onClick={onContinue} disabled={busy}>
+            {self?.is_host ? <button type="button" className="ls-primary" onClick={onContinue} disabled={busy || !ready}>
               {busy ? 'Please wait…' : 'Continue to briefing'}
             </button> : <p className="ls-hint" role="status">Waiting for the host to continue to the mission briefing.</p>}
           </div>
-          <p className="ls-hint">The host can continue with one to four players. You will review the mission and build your spacecraft before launch.</p>
+          <p className="ls-hint">{ready ? 'You will review the mission and build your spacecraft before launch.' : 'Every player needs a role before the host can continue.'}</p>
         </section>
       </div>
     </main>

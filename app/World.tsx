@@ -55,6 +55,7 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
   useRisingSound(players.length, 'join')
   const [menuOpen, setMenuOpen] = useState(false)
   const [training, setTraining] = useState(false)
+  const [moonSurface, setMoonSurface] = useState(false)
   const [cutscene, setCutscene] = useState(false)
   // CAPCOM answers every design choice in the hall (ui/story fitCallout).
   const [callout, setCallout] = useState<{ key: string; text: string } | null>(null)
@@ -148,7 +149,8 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
     }
   }, [launchCover])
   const canTrain = flying && launched && !cutscene && !pendingDecision(state)
-  const canProbe = canTrain && isEarthScenario(config.entities)
+  const moonBody = config.entities.some((entity) => entity.id === 'moon')
+  const canProbe = canTrain && (isEarthScenario(config.entities) || moonBody)
   const hold = !classic && (menuOpen || cutscene || (training && canTrain) || (flying && !launched))
   useEffect(() => {
     if (roomCode !== null) return
@@ -167,7 +169,10 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
   }, [flying])
 
   useEffect(() => {
-    if (training && !canTrain) setTraining(false)
+    if (training && !canTrain) {
+      setTraining(false)
+      setMoonSurface(false)
+    }
   }, [training, canTrain])
 
   if (classic) {
@@ -194,7 +199,7 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
   const menu = (
     <WorldMenu open={menuOpen} disabled={cutscene || launchCover} onOpenChange={setMenuOpen}
       online={roomCode !== null}
-      onTraining={canTrain ? () => { setMenuOpen(false); setTraining(true) } : undefined}
+      onTraining={canTrain ? () => { setMenuOpen(false); setMoonSurface(false); setTraining(true) } : undefined}
       onClassic={() => { setMenuOpen(false); setClassic(true) }}
       onExit={onExit}>
       {ended && active.campaign && <CampaignResult missionId={active.campaign} success={summary?.outcome === 'success'}
@@ -226,7 +231,8 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
         <Suspense fallback={<p className="app-training-loading" aria-busy="true">Loading flight training…</p>}>
           <Training
             state={state}
-            onClose={() => setTraining(false)}
+            onClose={() => { setTraining(false); setMoonSurface(false) }}
+            startOnSurface={moonSurface}
             survey={roomCode !== null ? {
               host: me.is_host,
               seat: Math.max(0, players.findIndex((p) => p.player_id === me.player_id)),
@@ -250,7 +256,7 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
           className="app-world-view"
           state={state}
           send={session.send}
-          onProbe={canProbe ? () => setTraining(true) : undefined}
+          onProbe={canProbe ? () => { setMoonSurface(moonBody && !isEarthScenario(config.entities)); setTraining(true) } : undefined}
           paused={paused}
           speed={speed}
           decision={decision}

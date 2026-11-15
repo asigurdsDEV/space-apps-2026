@@ -604,6 +604,12 @@ export function createHostSession(
     },
     start() {
       if (closed || stage !== 'lobby') return
+      // Same-screen play is one seat with no role. A room with more than one person waits until each has chosen.
+      if (players.length > 1 && players.some((player) => !player.role)) {
+        notice = 'Every player needs a role before the mission can start.'
+        refresh()
+        return
+      }
       stage = 'playing'
       sentEvents = []
       sendState()

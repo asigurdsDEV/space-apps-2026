@@ -392,7 +392,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   const SECTION = [...half, ...half.slice(0, -1).reverse().map((p) => new THREE.Vector2(-p.x, p.y))] // right deck, over the crown, to the left deck
   const CROWN = half.at(-1)!.y
   const hull: Pieces = []
-  // cursor@kaipo's survey hatch: a round gold hatch in the floor (E on it goes down to the ground on Earth missions).
+  // cursor@kaipo's survey hatch: a round gold hatch in the floor (E on it goes down to the ground on Earth and Moon missions).
   const gold: Pieces = []
   put(gold, new THREE.TorusGeometry(0.45, 0.035, 10, 48).rotateX(FACING), 0, 0.02, 0)
   put(gold, new THREE.LatheGeometry([[0.43, 0.02], [0.41, 0.04], [0.37, 0.04], [0.345, 0.024], [0.3, 0.026], [0.2, 0.046], [0.17, 0.05], [0.14, 0.05], [0.125, 0.03], [0, 0.03]].map(([r, y]) => new THREE.Vector2(r, y)), 48))

@@ -52,11 +52,13 @@ export interface TrainingProps {
   onClose: () => void
   /** Online: one landing spot, shared by the crew. Solo leaves this out. */
   survey?: SurveyLink
+  /** Moon hatch: open the lunar ground immediately, the way Earth opens its surface. */
+  startOnSurface?: boolean
 }
 
 const EMPTY_SPOT: SurveySpot = { lat: 0, lon: 0, placed: false, landed: false }
 
-export default function Training({ state, onClose, survey }: TrainingProps) {
+export default function Training({ state, onClose, survey, startOnSurface = false }: TrainingProps) {
   const root = useRef<HTMLElement>(null)
   const where = useRef<HTMLElement>(null)
   const ground = useRef({ lat: 0, lon: 0 })
@@ -71,7 +73,7 @@ export default function Training({ state, onClose, survey }: TrainingProps) {
   const earth = isEarthScenario(state.entities)
   const moon = bodyOf(state) === 'moon'
   const guest = !!survey && !survey.host
-  const [onMoon, setOnMoon] = useState(false)
+  const [onMoon, setOnMoon] = useState(startOnSurface)
 
   const focusPad = () => root.current?.querySelector<HTMLElement>('.pi-pad')?.focus({ preventScroll: true })
   const close = useRef(onClose)
@@ -131,7 +133,10 @@ export default function Training({ state, onClose, survey }: TrainingProps) {
   if (onMoon) {
     return (
       <Suspense fallback={<p className="app-training-loading" aria-busy="true">Loading the ground…</p>}>
-        <LunarExplorer onClose={() => setOnMoon(false)} />
+        <LunarExplorer
+          leaveLabel={startOnSurface ? 'Return to the ship' : 'Back to orbit'}
+          onClose={() => (startOnSurface ? close.current() : setOnMoon(false))}
+        />
       </Suspense>
     )
   }

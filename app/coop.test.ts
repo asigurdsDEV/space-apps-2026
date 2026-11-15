@@ -2,7 +2,7 @@
 
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { LocalTransport, type MessageHandler } from '../net'
-import { isNetMessage, type Command, type Config, type NetMessage } from '../shared'
+import { isNetMessage, ROLES, type Command, type Config, type NetMessage } from '../shared'
 import { simCore } from '../sim'
 import { demoConfig, fixtureDatasets, goodDesign } from '../sim/testing/fixtures'
 import { createGame } from './game'
@@ -89,6 +89,12 @@ async function settle(): Promise<void> {
   for (let i = 0; i < 20; i++) await Promise.resolve()
 }
 
+/** Give every seat a role so the host may leave the lobby. */
+function lobbyRoles(host: { claimRole?: (role: (typeof ROLES)[number]) => void }, guests: { claimRole?: (role: (typeof ROLES)[number]) => void }[]) {
+  const seats = [host, ...guests]
+  seats.forEach((seat, index) => seat.claimRole?.(ROLES[index % ROLES.length]!))
+}
+
 /** A started room: a host called Hana and one guest per name. */
 async function startRoom(...guestNames: string[]) {
   const room = localRoom()
@@ -98,7 +104,13 @@ async function startRoom(...guestNames: string[]) {
   const wires = guestNames.map((name) => room.endpoint(name.toLowerCase()))
   const guests = guestNames.map((name, i) => createGuestSession(wires[i], name))
   await settle()
+  lobbyRoles(host, guests)
+  await settle()
   host.start!()
+  await settle()
+  // The lobby gate is done. Release the seats so these tests still cover unclaimed roles.
+  host.claimRole!(null)
+  for (const guest of guests) guest.claimRole!(null)
   await settle()
   return { room, game, host, hostWire, guests, wires }
 }
@@ -122,6 +134,13 @@ describe('lobby', () => {
     expect(host.getSnapshot().me.is_host).toBe(true)
     expect(guest.getSnapshot().stage).toBe('lobby')
 
+    host.start!()
+    await settle()
+    expect(host.getSnapshot().stage).toBe('lobby')
+    expect(host.getSnapshot().notice).toMatch(/role/)
+    host.claimRole!(ROLES[0])
+    guest.claimRole!(ROLES[1])
+    await settle()
     host.start!()
     await settle()
     expect(host.getSnapshot().stage).toBe('playing')
@@ -275,6 +294,9 @@ describe('commands', () => {
   it('takes launch, speed, pause and reset from a guest', async () => {
     const { game, host, guests } = await startRoom('Gus')
     const [guest] = guests
+    host.claimRole!('science')
+    guest.claimRole!('mission-planning')
+    await settle()
     for (const command of designCommands) guest.send(command)
     guest.send(launch)
     guest.send({ type: 'set_speed', payload: { multiplier: 5 } })
