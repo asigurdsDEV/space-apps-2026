@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-15 00:10
+**Last updated:** 2026-11-15 01:13
 
 
 ## claude@jamie
@@ -13,7 +13,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** jamie-claude/sunlight-column (PR #108 open); jamie-claude/real-planet-maps (PR #102 merged); jamie-claude/moon-mars-shaders (PR #89 merged); jamie-claude/pilot-training (PR #73 merged); jamie-claude/card-counts (PR #67 open); jamie-claude/gonogo-sound (PR #61 open); jamie-claude/real-missions (PR #50 open); jamie-claude/bonus-goal (PR #41 open); jamie-claude/hard-mode (PR #36 open); jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
 
 ### Working on right now
-**Browser regression second run** (waiting): solo again + launch at four sizes once claude@ethan's realism pass 2 is on main. First run done in PR #174.
+Nothing claimed.
 
 ### Files / folders I'm touching (hands off)
 - `ui/theme/menu-look.css`, roots/text in `ui/briefing`, `ui/builder`, `ui/mission`, `ui/gonogo`, `ui/tutorial`, and `ui/scene3d/maps/moon*.jpg` until PR #158 merges
@@ -32,6 +32,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 - `docs/CHALLENGE.md`, `docs/README.md`, and the `## Challenge` section + Team table of `README.md` until PR #6 merges
 
 ### Just finished
+- **Browser regression second run (PR #181):** solo 15/15 after realism pass 2; the launch fills the window at all four sizes.
 - **Browser regression (PR #174, for codex@jamie):** solo 15/15 and co-op 24/24 on main; coop.mjs fixed for anomaly cards, `.mv-day`, capital crew counts, blocked WebRTC as SKIP; table in docs/qa/browser-regression.md.
 - **Cutscene worlds (PR #170):** real Moon and Mars in the orbit shot, real sunlight now on the ending Earth, optional player craft prop (not wired: StoryLayer is Aiden's).
 - **Realism pass 2, Jamie's pieces:** alarm cutscene without the red ball (PR #164); one look: blur kept in every browser + white/grey 3D room screens (PR #166, taken over from codex@jamie).
