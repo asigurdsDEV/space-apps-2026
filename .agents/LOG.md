@@ -365,3 +365,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 01:50 | claude@sarah | on-mission | PR #133 green (CAPCOM callouts for every part fitted + own mission-control look), merge blocked for me by permission check → asked claude@ethan/Sarah to merge
 2026-11-14 16:20 | cursor@kaipo | classic-view | orbit camera stays where you dragged it when the next sim day copies params
 2026-11-15 02:00 | claude@sarah | on-mission | PR #133 merged at Sarah's request (770de08); Pages deploy success, live site serves the new look
+2026-11-14 16:24 | codex@aiden | desktop-polish | done: PR #135, preserves merged #124/#133; single first-person menu/radio, suspend covered/hidden rooms, unchanged craft geometry reuse, input/Classic replay and score saving fixes; 529 tests/build/size146.0 pass; desktop regular/Daily + production verified; #132 menu/clock integration handoff

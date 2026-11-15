@@ -8,7 +8,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ## Open
 
-- [ ] (light) [P1] Preserve personal-best saving in the 3D debrief before default flip: World bypasses LocalLeaderboard, so completed score/design/stars are not stored; reuse existing save helper, preserve daily/regular separation — app/World.tsx — owner: claude@aiden — needs: desktop evidence PR #118; no Codex source claim
 
 - [ ] (light) [P1] Investigate first-use offline lazy scene import failure in local production preview (Start/GLBs cached, Builder error boundary); compare Pages headers before asserting live impact — pwa/ + config owner: claude@aiden — needs: reproduction in docs/qa/offline-cache.md PR #101; no source claim transferred
 
@@ -66,7 +65,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 ## Missing / needed
 - Vercel site kimchispacemission.vercel.app does not update on push (still old bundle after PR #129); needs claude@aiden to approve the Vercel GitHub app or cursor@kaipo to redeploy — [found by claude@sarah]
 
-- Desktop QA #118 on #114 head 1804d2b: design→flight→3D debrief→Try the fix works, but no personal best saved. Claude World owner follow-up before 3D default. Native Escape/hardware and full 3D interior remain unverified; smaller prompt/focus observations in report — [found by codex@aiden]
+- Desktop QA #118 on #114 head 1804d2b: design→flight→3D debrief→Try the fix works, but no personal best saved. Claude World owner follow-up before 3D default. Native Escape/hardware and full 3D interior remain unverified; smaller prompt/focus observations in report — [found by codex@aiden] **Resolved in PR #135:** saved 3D regular/Daily records and played first-person flight/module choices; physical hardware/native pointer-lock Escape still unverified.
 - 5 duplicate handoff files ending in " 2.md" (identical copies, e.g. `20261114-2305-claude@sarah-all-ux-declutter 2.md`) were committed in fad54ba; safe to `git rm` them — claude@aiden (committer) — [found by claude@sarah]
 
 - Jamie reached Claude usage limit; codex@jamie takes over Jamie follow-ups. Sarah fixes are PR #105; Claude Jamie sunlight is PR #108; Codex regression/integration checks are PR #109. Merge coordinator Ethan has the handoff — [found by codex@jamie]
@@ -108,7 +107,6 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
-- [ ] (medium) [P0] Finish desktop first-person performance + menu polish, authorized by Aiden after Claude limit: build on #124 without editing Claude branches; single game menu, clear radio/prompt layout, suspend covered rooms, reliable input recovery and played checks — app/World.tsx + WorldMenu/tests + StoryLayer/tests + app.css; ui/fps/; ui/hangar/{control,MissionControl}.tsx/ts; ui/interior/{control,SpacecraftRoom}.tsx/ts; docs/qa/desktop-world.md — [codex@aiden]; scope add: app/App.tsx + App.test.tsx skipLaunch prop only (no V7 edits)
 - [ ] (medium) [P1] Cutscenes "into the walk-in spacecraft" (after launch) and "back to mission control" (after the ending), ≤ 10 s, Skip + reduced motion as now; QA plan for the 3D loop, run on the Sun 02:00 build — ui/cutscenes/, docs/qa/ — owner: cursor@caleb — [cursor@caleb] — scenes and plan in PR #115 (`EnterCraftScene` 8 s, `ReturnControlScene` 6 s, `docs/qa/first-person.md`). The Sunday 02:00 run is not done. Mount handoff to claude@aiden.
 - [ ] (light) [P1] **Walk + cutscenes on a phone and with reduced motion / a screen reader:** hall and panels at 375 px, reduced motion cuts straight to each station, screen reader hears the screens not the hall, cutscene Skip/Escape works — app/Walk.tsx, app/StoryLayer.tsx, app/app.css — owner: claude@aiden — [claude@aiden]
 
@@ -130,6 +128,8 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 
 ## Done
+- [x] (light) [P1] Preserve personal-best saving in the 3D debrief before default flip: World bypasses LocalLeaderboard, so completed score/design/stars are not stored; reuse existing save helper, preserve daily/regular separation — app/World.tsx — owner: claude@aiden — needs: desktop evidence PR #118; no Codex source claim — completed by codex@aiden at Aiden request in PR #135; regular 26 and Daily 25 retained separately
+- [x] (medium) [P0] Finish desktop first-person performance + menu polish, authorized by Aiden after Claude limit: build on #124 without editing Claude branches; single game menu, clear radio/prompt layout, suspend covered rooms, reliable input recovery and played checks — app/World.tsx + WorldMenu/tests + StoryLayer/tests + app.css; ui/fps/; ui/hangar/{control,MissionControl}.tsx/ts; ui/interior/{control,SpacecraftRoom}.tsx/ts; docs/qa/desktop-world.md — [codex@aiden]; scope add: app/App.tsx + App.test.tsx skipLaunch prop only (no V7 edits) — in PR #135: single menu/radio, covered-room suspension, stable craft geometry, input/Classic handoff and saved records; #133 integrated; 529 tests/build pass, 146.0/150 kB
 - [x] (light) [P1] Flight training reachable from the 3D first-person game (Ethan's request) — app/World.tsx, app/World.test.tsx, app/app.css — [claude@ethan] — in PR #132: a Flight training button in the 3D game's top bar while the mission flies (hidden during the launch, a cutscene, an anomaly card and the debrief), opening the same `app/Training.tsx`; the bar wraps to a second row. Played in a browser from 3D mission control to the training and back. codex@aiden: it is one block in the bar, move it into your menu as you like.
 - [x] (light) [P0] `short_label` (≤ 4 words) for every catalog row the player picks (orbits, launch vehicles, buses, solar, battery, instruments, comms, ground stations) + a test for the length — data/catalogs/ — by Sat 20:00 — owner: claude@jamie — [claude@jamie] — in PR #130: 43 rows, ≤ 3 words each so "Fit <label>" ≤ 4; test in data.test.ts; 520 tests. No ground-station catalog exists yet
 - [x] (light) Launch into orbit and the satellite deploy read clearly — ui/scene3d/launch/scene.ts — [cursor@caleb] — in PR #128: the burn shot holds the upper stage over the Earth limb; the stage drifts back and the satellite coasts clear, with the camera above the gap. Timeline length is unchanged. Rocket meshes stay as in PR #123.
