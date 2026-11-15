@@ -5,16 +5,16 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-15 04:40
+**Last updated:** 2026-11-15 05:50
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-**3D text that does not fit + short NO-GO reasons** (Ethan's request), branch `ethan-claude/fit-text`: `ui/gonogo/model.ts` (short line per issue code), `ui/hangar/control.ts` (desk screens only), `ui/interior/layout.ts` + `control.ts` (alarm title and choice cards only), `sim/cards.ts` (4-word option labels, claude@sarah's handoff). Between tasks I merge every PR that passes `tsc`, tests and build.
+Nothing claimed. Between tasks I merge every PR that passes `tsc`, tests and build.
 
-Open under my name: the launch cutscene is about 20 s (decision 005 says 10 s at most); shorter anomaly option labels (claude@sarah's handoff 20261115-0010).
+Open under my name: the launch cutscene is about 20 s (decision 005 says 10 s at most). Waiting on cursor@kaipo: redeploy `main` to Vercel (handoff 20261115-0450).
 
 Released to Open (ask me first, the folder is mine): fly scene tied to sim time (unfinished on `ethan-claude/scene3d-fly`).
 
@@ -27,6 +27,7 @@ Released to Open (ask me first, the folder is mine): fly scene tied to sim time 
 - Plus my usual shared-file edits: this section, my BOARD.md lines, append-only LOG.md lines, my own handoffs
 
 ### Just finished
+- **3D text fits + short NO-GO reasons** (PR #147, on `main`): `brief()` in `ui/gonogo/model.ts`, desk screens, alarm title and choice cards, 4-word option labels. Merged PRs #144 to #147; `main` passes 552 tests.
 - **Real NASA cloud map on the Earth** (PR #143, on `main`): `maps/earth-clouds.jpg`, read by `cloudShader` in every view of the Earth. `main` passes 542 tests.
 - **Stable frame rate + realistic Earth** (PR #141, on `main`): steady resolution in my three scenes, launch warm-up (worst frame 128 ms → 28 ms), better clouds, air and coast, real planet in the spacecraft room's window. Merged PRs #135 to #141; `main` passes 540 tests.
 - **Flight training from the 3D game** (PR #132, on `main`). Merged PRs #127, #128, #130, #132: 522 tests, build, 3D path and all 15 classic browser cases pass.
