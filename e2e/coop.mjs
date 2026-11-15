@@ -132,6 +132,7 @@ const force = (page, key) =>
   }, key)
 
 async function join(page, name, code) {
+  await page.getByRole('button', { name: 'Start', exact: true }).click()
   await page.getByRole('button', { name: /Join a room/ }).click()
   await page.getByLabel('Your name').fill(name)
   await page.getByLabel('Room code').fill(code)
@@ -212,10 +213,12 @@ let code = ''
 await check(
   'online: the host creates a room',
   async () => {
+    await host.getByRole('button', { name: 'Start', exact: true }).click()
     await host.getByRole('button', { name: /Host online/ }).click()
     await host.getByLabel('Your name').fill('Hana')
-    await host.locator('.ss-root').getByLabel('Mission scenario').selectOption(SCENARIO)
-    await host.locator('.ss-root').getByLabel('Difficulty').selectOption('easy')
+    await host.getByRole('button', { name: 'Next' }).click()
+    await host.locator(`.ss-root [data-scenario="${SCENARIO}"]`).click()
+    await host.getByRole('group', { name: 'Difficulty' }).getByRole('button', { name: /^easy/i }).click()
     await host.getByRole('button', { name: 'Create room' }).click()
     await host.waitForSelector('.ls-root', { timeout: 25_000 }).catch(async () => {
       throw new Error(`no lobby after 25 s; the Start screen says: ${(await text(host, '.ss-error')) || 'nothing, still "Connecting…"'}`)

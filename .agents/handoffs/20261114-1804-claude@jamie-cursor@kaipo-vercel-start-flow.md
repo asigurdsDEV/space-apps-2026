@@ -18,3 +18,7 @@ Jamie asked to put the new main menu on the website. GitHub Pages already has it
 ## What "done" looks like
 
 After "Continue to game", the Vercel site shows the GO / NO-GO menu with one Start button over the 3D Earth instead of the old form with the scenario and difficulty dropdowns. Set this to `done`.
+
+## Update 2026-11-14 18:18
+
+PR #153 (the quieter start screen look) is also on `main` now (4cc0d51) and live on Pages. Redeploying `main` covers both.

@@ -5,7 +5,7 @@
 import * as THREE from 'three'
 import type { Entity } from '../../../shared'
 import { num } from '../model'
-import { box, cyl, mats, partGroup, put, strut, tileBox } from './kit'
+import { box, cyl, fuse, mats, partGroup, put, sheeted, strut } from './kit'
 import { batterySize, type CraftLayout, type WingShape } from './layout'
 import { BATTERY, MMRTG } from './references'
 
@@ -23,11 +23,14 @@ export function buildWings(id: string, w: WingShape, [bx, by, bz]: [number, numb
   const gap = Math.min(0.03 * pl, 0.03)
   // One texture tile is 2 x 4 cells: real cells are a few centimeters, so big wings show a fine grid.
   const cell = clamp(w.width / 5, 0.08, 0.32)
-  const panel = tileBox(box(pl - gap, w.width, t), Math.max(1, Math.round(pl / cell)), Math.max(1, Math.round(w.width / cell)), 1)
-  const barrel = cyl(t * 1.3, t * 1.3, 0.1 * w.width, 8)
+  // The cells stop short of the panel edge, so the substrate shows as a frame all round.
+  const rim = 0.03 * w.width
+  const tray: THREE.BufferGeometry[] = [box(pl - gap, w.width, t)]
   // Hold-down points: where the folded stack was bolted to the bus for launch.
-  const holdDown = cyl(0.022 * w.width, 0.022 * w.width, t * 1.25, 10)
-  const faces = [m.alu, m.alu, m.alu, m.alu, m.cells, m.cellBack]
+  for (const a of [-1, 1]) for (const b of [-1, 1]) tray.push(cyl(0.022 * w.width, 0.022 * w.width, t * 1.5, 10).rotateX(Math.PI / 2).translate(a * 0.3 * pl, b * 0.3 * w.width, 0))
+  const panel = sheeted(fuse(tray), pl - gap - 2 * rim, w.width - 2 * rim, t * 0.58, Math.max(1, Math.round(pl / cell)), Math.max(1, Math.round(w.width / cell)))
+  const barrel = cyl(t * 1.3, t * 1.3, 0.1 * w.width, 8)
+  const faces = [m.alu, m.cells, m.cellBack]
   for (const side of [-1, 1]) {
     let frame: THREE.Object3D = new THREE.Group()
     frame.position.x = (side * bx) / 2
@@ -65,7 +68,6 @@ export function buildWings(id: string, w: WingShape, [bx, by, bz]: [number, numb
       }
       put(frame, panel, faces, side * (x + pl / 2), 0, 0)
       if (i > 0) for (const a of [-0.32, 0, 0.32]) put(frame, barrel, m.steel, side * x, a * w.width, -t)
-      for (const a of [-1, 1]) for (const b of [-1, 1]) put(frame, holdDown, m.alu, side * (x + pl * (0.5 + a * 0.3)), b * 0.3 * w.width, 0, Math.PI / 2)
       x += pl
     }
   }
@@ -91,10 +93,11 @@ export function buildBodyCells(id: string, e: Entity, bus: CraftLayout['bus']): 
     const rows = cube ? Math.max(1, Math.round(by / 0.1135)) : 1
     const w = cube ? faceW / n - 0.05 * faceW : Math.min(0.86 * faceW, side)
     const h = cube ? by / rows - 0.02 * by : Math.min(0.3 * by, (side * side) / w)
-    const slab = tileBox(box(w, h, t), cube ? 1 : Math.max(1, Math.round(w / 0.16)), cube ? 1 : Math.max(1, Math.round(h / 0.16)), 1)
+    const rim = 0.04 * Math.min(w, h)
+    const slab = sheeted(box(w, h, t), w - 2 * rim, h - 2 * rim, t * 0.58, cube ? 1 : Math.max(1, Math.round(w / 0.16)), cube ? 1 : Math.max(1, Math.round(h / 0.16)), false)
     for (let i = 0; i < n; i++) for (let j = 0; j < rows; j++) {
       const across = (i + 0.5) * (faceW / n) - faceW / 2
-      const p = put(g, slab, [m.alu, m.alu, m.alu, m.alu, m.cells, m.alu], 0, (j + 0.5) * (by / rows) - by / 2, 0)
+      const p = put(g, slab, [m.alu, m.cells], 0, (j + 0.5) * (by / rows) - by / 2, 0)
       p.rotation.y = Math.atan2(nx, nz)
       p.position.x = nx * (bx / 2 + t / 2) + nz * across
       p.position.z = nz * (bz / 2 + t / 2) - nx * across

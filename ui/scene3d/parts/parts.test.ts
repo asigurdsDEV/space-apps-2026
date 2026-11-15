@@ -4,10 +4,11 @@ import { describe, expect, it } from 'vitest'
 import { getDatasets } from '../../../data'
 import type { Entity, Params } from '../../../shared'
 import { catalogEntities } from '../../../sim/parts'
-import { buildCraft } from '../craft'
+import { buildCraft, disposeObject } from '../craft'
 import { sceneSpec } from '../model'
 import doc from './REFERENCES.md?raw'
 import { REFERENCES, SLOT, batterySize, buildBus, craftLayout, dishDiameter, instrumentSize, mats, modelKey, packDeck, referenceFor, triangles, wingShape, type Slot } from './index'
+import { foilRelief, groupBox, reliefNormals, sheeted } from './kit'
 
 const entities = catalogEntities(getDatasets())
 const of = (kind: string) => entities.filter((e) => e.kind === kind)
@@ -217,5 +218,53 @@ describe('buildCraft', () => {
     expect(triangles(root)).toBeGreaterThan(100)
     const { parts: _, ...legacy } = craft({ bus: 'smallsat' })
     expect(triangles(buildCraft(legacy))).toBeGreaterThan(100)
+  })
+
+  it('keeps the shared materials when a craft is thrown away, and draws a wing panel in three calls', () => {
+    const root = buildCraft(craft(designs.mid!))
+    let disposed = 0
+    for (const m of Object.values(mats())) m.addEventListener('dispose', () => disposed++)
+    const panels: THREE.Mesh[] = []
+    root.traverse((o) => void (o instanceof THREE.Mesh && Array.isArray(o.material) && o.material.includes(mats().cells) && panels.push(o)))
+    expect(panels.length).toBeGreaterThan(0)
+    for (const p of panels) {
+      expect(p.material).toEqual([mats().alu, mats().cells, mats().cellBack])
+      expect(p.geometry.groups).toHaveLength(3)
+    }
+    disposeObject(root)
+    expect(disposed).toBe(0)
+  })
+})
+
+describe('kit', () => {
+  it('crumples foil all over, leaning no way in particular', () => {
+    const s = 64
+    const px = reliefNormals(foilRelief(s), s)
+    expect(px).toHaveLength(s * s * 4)
+    let [sx, sy, tilted] = [0, 0, 0]
+    for (let i = 0; i < px.length; i += 4) {
+      const [x, y, z] = [px[i]! / 127.5 - 1, px[i + 1]! / 127.5 - 1, px[i + 2]! / 127.5 - 1]
+      expect(z).toBeGreaterThan(0.5)
+      expect(Math.hypot(x, y, z)).toBeCloseTo(1, 1)
+      sx += x
+      sy += y
+      if (Math.hypot(x, y) > 0.1) tilted++
+    }
+    expect(Math.hypot(sx, sy) / (s * s)).toBeLessThan(0.1)
+    expect(tilted / (s * s)).toBeGreaterThan(0.5)
+  })
+
+  it('groups a box by material and keeps every face', () => {
+    const geo = groupBox(new THREE.BoxGeometry(1, 2, 3), [0, 0, 1, 1, 0, 0])
+    expect(geo.groups).toEqual([{ start: 0, count: 24, materialIndex: 0 }, { start: 24, count: 12, materialIndex: 1 }])
+    // +y and -y are the box's third and fourth faces: vertices 8 to 15.
+    const index = Array.from(geo.index!.array)
+    expect(index.slice(24).every((v) => v >= 8 && v < 16)).toBe(true)
+    expect(new Set(index).size).toBe(24)
+    const panel = sheeted(new THREE.BoxGeometry(1, 1, 0.1), 0.9, 0.9, 0.06, 2, 3)
+    expect(panel.groups.map((g) => [g.count, g.materialIndex])).toEqual([[36, 0], [6, 1], [6, 2]])
+    // The front sheet faces +z and the back sheet -z, each just proud of the tray.
+    const [pos, normal] = [panel.getAttribute('position'), panel.getAttribute('normal')]
+    expect([pos.getZ(24), normal.getZ(24), pos.getZ(28), normal.getZ(28)].map((v) => +v.toFixed(3))).toEqual([0.06, 1, -0.06, -1])
   })
 })

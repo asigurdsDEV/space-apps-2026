@@ -26,6 +26,8 @@ export interface WorldOptions {
   interactive: boolean
   /** Called when the spacecraft enters or leaves the planet's shadow (orbit mode). */
   onShadow?: (inShadow: boolean) => void
+  /** Drawn as a page background: the craft laps 3 times slower and has no locator ring. */
+  backdrop?: boolean
 }
 
 export interface World {
@@ -298,7 +300,7 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
     holder.scale.setScalar(CRAFT_SIZE[shown])
     globe.rotation.x = shown === 'spacecraft' ? 1.1 : 0
     ring.visible = shown === 'orbit'
-    marker.visible = shown !== 'spacecraft'
+    marker.visible = shown !== 'spacecraft' && !options.backdrop
     home.visible = arc.visible = shown === 'cruise'
     sky.visible = shown !== 'cruise' // cruise is a diagram, not to scale
     const target = shown === 'spacecraft' ? new THREE.Vector3(0, closeRadius(), 0) : new THREE.Vector3()
@@ -391,7 +393,7 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
       home.rotation.y += ((dt * Math.PI * 2) / SPIN_S.earth) * motion
       looped = (looped + (dt / CRUISE_LOOP_S) * motion) % 1
     }
-    if (shown === 'orbit') angle += ((dt * Math.PI * 2) / lapSeconds(spec.period_s)) * motion
+    if (shown === 'orbit') angle += ((dt * Math.PI * 2) / lapSeconds(spec.period_s)) * motion * (options.backdrop ? 1 / 3 : 1)
     placeCraft()
     placeSky()
     controls.update(dt)

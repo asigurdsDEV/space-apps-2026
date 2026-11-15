@@ -1,10 +1,13 @@
 // A crew member for co-op: a white spacesuit with a round helmet and dark visor, chest pack, backpack, ribbed
 // knees and elbows, cuff rings, gloves and boots. Drawn in code, so it needs no model file and works offline.
-// The shapes are built once and shared by every astronaut (six draw calls each). The name sits above the helmet.
+// The shapes are built once and shared by every astronaut. The body is one mesh per material; each arm and leg is
+// two more groups (upper and lower) that turn at the shoulder, elbow, hip and knee: 32 draw calls an astronaut, plus
+// the name above the helmet. `poseAstronaut` moves them; the angles come from `./motion`.
 
 import * as THREE from 'three'
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js'
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js'
+import { HIP, THIGH, type Pose } from './motion'
 
 /** One material each: suit cloth, hard white shell, ribbed joint cloth, dark rubber, anodised rings, visor glass. */
 type Look = 'fabric' | 'shell' | 'ribbed' | 'rubber' | 'metal' | 'visor'
@@ -90,57 +93,74 @@ const FLAT: V3 = [Math.PI / 2, 0, 0]
 const SIDEWAYS: V3 = [0, 0, Math.PI / 2]
 const FORWARD: V3 = [Math.PI / 2, 0, 0]
 
-/** Every shape of the suit, merged into one geometry per material. Front is -Z, up is +Y, feet at y = 0. */
-function shapes(): Record<Look, THREE.BufferGeometry> {
-  const parts: Record<Look, THREE.BufferGeometry[]> = { fabric: [], shell: [], ribbed: [], rubber: [], metal: [], visor: [] }
+/** One geometry per material, for the materials a part uses. */
+type Geo = Partial<Record<Look, THREE.BufferGeometry>>
+/** Shapes waiting to be merged. `y` is the height of this part's own pivot in the frame its shapes are given in. */
+interface Bin { looks: Partial<Record<Look, THREE.BufferGeometry[]>>; y: number }
+/** An arm or leg: hangs from `at`, swung outwards by `swing` radians, with a joint `joint` down its length. */
+interface LimbShapes { at: V3; swing: number; joint: number; upper: Geo; lower: Geo }
+/** Legs first, then arms; within each the -X side first. */
+interface Suit { body: Geo; limbs: LimbShapes[] }
+const ELBOW = 0.345
+
+/** Every shape of the suit, merged into one geometry per material and moving part. Front is -Z, up is +Y, feet at y = 0. */
+function shapes(): Suit {
+  const bin = (y = 0): Bin => ({ looks: {}, y })
+  const body = bin()
+  const legs: LimbShapes[] = []
+  const arms: LimbShapes[] = []
   const m = new THREE.Matrix4()
   const q = new THREE.Quaternion()
   const e = new THREE.Euler()
-  /** Adds a shape: scaled, turned (radians), moved, and then placed in a limb's own frame if one is given. */
-  const add = (look: Look, shape: THREE.BufferGeometry, at: V3, turn: V3 = [0, 0, 0], frame?: THREE.Matrix4, scale: V3 = [1, 1, 1]) => {
-    m.compose(new THREE.Vector3(...at), q.setFromEuler(e.set(...turn)), new THREE.Vector3(...scale))
-    if (frame) m.premultiply(frame)
+  /** Adds a shape: scaled, turned (radians) and moved, in the body's frame or in the frame of the limb part given. */
+  const add = (look: Look, shape: THREE.BufferGeometry, at: V3, turn: V3 = [0, 0, 0], into: Bin = body, scale: V3 = [1, 1, 1]) => {
+    m.compose(new THREE.Vector3(at[0], at[1] - into.y, at[2]), q.setFromEuler(e.set(...turn)), new THREE.Vector3(...scale))
     const flat = shape.index ? shape.toNonIndexed() : shape // merging needs every shape in the same form
-    parts[look].push(flat.applyMatrix4(m))
+    ;(into.looks[look] ??= []).push(flat.applyMatrix4(m))
   }
-  /** A limb's frame: hangs from `at`, swung outwards by `swing` radians. */
-  const limb = (at: V3, swing: number) => new THREE.Matrix4().makeRotationZ(swing).setPosition(...at)
+  const merged = (part: Bin): Geo => Object.fromEntries(Object.entries(part.looks).map(([look, list]) => [look, mergeGeometries(list)]))
 
   for (const s of [-1, 1]) {
     // ---- Leg: thigh, ribbed knee-to-shin pad, shin, ankle ring, boot. Thin rings of cloth are the folds of a loose suit.
-    const leg = limb([s * 0.125, 0.935, 0], s * 0.06)
-    add('fabric', cyl(0.132, 0.11, 0.42), [0, -0.22, 0], undefined, leg)
-    for (const y of [-0.09, -0.19, -0.3]) add('fabric', ring(0.132 + y * 0.05, 0.009), [0, y, 0], FLAT, leg)
-    add('fabric', ball(0.114), [0, -0.44, 0], undefined, leg)
-    add('ribbed', slab(0.18, 0.36, 0.07, 0.022), [0, -0.52, -0.086], undefined, leg)
-    add('fabric', cyl(0.108, 0.092, 0.36), [0, -0.61, 0], undefined, leg)
-    for (const y of [-0.66, -0.72]) add('fabric', ring(0.096, 0.008), [0, y, 0], FLAT, leg)
-    add('metal', ring(0.096, 0.013), [0, -0.775, 0], FLAT, leg)
-    add('shell', cyl(0.096, 0.102, 0.08), [0, -0.815, 0], undefined, leg)
-    add('shell', slab(0.165, 0.12, 0.32, 0.05), [0, -0.862, -0.05], undefined, leg)
-    add('ribbed', slab(0.172, 0.04, 0.09, 0.012), [0, -0.83, -0.06], [0.25, 0, 0], leg) // instep strap
-    add('rubber', slab(0.175, 0.045, 0.345, 0.016), [0, -0.913, -0.05], undefined, leg)
-    add('rubber', slab(0.15, 0.07, 0.09, 0.026), [0, -0.88, -0.195], undefined, leg)
+    // The leg's shapes are given from the hip; the knee is THIGH down it.
+    const thigh = bin()
+    const shin = bin(-THIGH)
+    add('fabric', cyl(0.132, 0.11, 0.42), [0, -0.22, 0], undefined, thigh)
+    for (const y of [-0.09, -0.19, -0.3]) add('fabric', ring(0.132 + y * 0.05, 0.009), [0, y, 0], FLAT, thigh)
+    add('fabric', ball(0.114), [0, -0.44, 0], undefined, thigh)
+    add('ribbed', slab(0.18, 0.36, 0.07, 0.022), [0, -0.52, -0.086], undefined, shin)
+    add('fabric', cyl(0.108, 0.092, 0.36), [0, -0.61, 0], undefined, shin)
+    for (const y of [-0.66, -0.72]) add('fabric', ring(0.096, 0.008), [0, y, 0], FLAT, shin)
+    add('metal', ring(0.096, 0.013), [0, -0.775, 0], FLAT, shin)
+    add('shell', cyl(0.096, 0.102, 0.08), [0, -0.815, 0], undefined, shin)
+    add('shell', slab(0.165, 0.12, 0.32, 0.05), [0, -0.862, -0.05], undefined, shin)
+    add('ribbed', slab(0.172, 0.04, 0.09, 0.012), [0, -0.83, -0.06], [0.25, 0, 0], shin) // instep strap
+    add('rubber', slab(0.175, 0.045, 0.345, 0.016), [0, -0.913, -0.05], undefined, shin)
+    add('rubber', slab(0.15, 0.07, 0.09, 0.026), [0, -0.88, -0.195], undefined, shin)
+    legs.push({ at: [s * 0.125, HIP, 0], swing: s * 0.06, joint: -THIGH, upper: merged(thigh), lower: merged(shin) })
     // Harness strap from the hip down to the crotch.
     add('ribbed', slab(0.06, 0.3, 0.022, 0.008), [s * 0.09, 0.93, -0.158], [0, 0, -s * 0.45])
 
     // ---- Arm, held a little out from the body: shoulder, upper arm, ribbed elbow, forearm, wrist ring, glove.
-    const arm = limb([s * 0.29, 1.45, 0], s * 0.42)
+    const upper = bin()
+    const fore = bin(-ELBOW)
     add('fabric', ball(0.118), [s * 0.285, 1.452, 0])
-    add('fabric', cyl(0.098, 0.087, 0.3), [0, -0.16, 0], undefined, arm)
-    for (const y of [-0.1, -0.2]) add('fabric', ring(0.092, 0.008), [0, y, 0], FLAT, arm)
-    add('ribbed', cyl(0.093, 0.089, 0.12), [0, -0.345, 0], undefined, arm)
-    add('fabric', cyl(0.087, 0.068, 0.25), [0, -0.5, 0], undefined, arm)
-    add('fabric', ring(0.073, 0.007), [0, -0.57, 0], FLAT, arm)
-    add('ribbed', slab(0.03, 0.17, 0.08, 0.01), [s * 0.068, -0.48, 0], undefined, arm)
-    add('metal', ring(0.072, 0.013), [0, -0.635, 0], FLAT, arm)
-    add('shell', cyl(0.07, 0.06, 0.045), [0, -0.662, 0], undefined, arm)
+    add('fabric', cyl(0.098, 0.087, 0.3), [0, -0.16, 0], undefined, upper)
+    for (const y of [-0.1, -0.2]) add('fabric', ring(0.092, 0.008), [0, y, 0], FLAT, upper)
+    add('ribbed', cyl(0.093, 0.089, 0.12), [0, -0.345, 0], undefined, upper)
+    add('ribbed', ball(0.086), [0, -ELBOW, 0], undefined, upper) // hidden inside the elbow until it bends
+    add('fabric', cyl(0.087, 0.068, 0.25), [0, -0.5, 0], undefined, fore)
+    add('fabric', ring(0.073, 0.007), [0, -0.57, 0], FLAT, fore)
+    add('ribbed', slab(0.03, 0.17, 0.08, 0.01), [s * 0.068, -0.48, 0], undefined, fore)
+    add('metal', ring(0.072, 0.013), [0, -0.635, 0], FLAT, fore)
+    add('shell', cyl(0.07, 0.06, 0.045), [0, -0.662, 0], undefined, fore)
     // Dark panel down the side of the body, under the arm.
     add('ribbed', slab(0.03, 0.3, 0.13, 0.012), [s * 0.212, 1.2, 0.01])
     // Glove: palm towards the leg, four fingers curled a little, thumb forward.
-    add('rubber', slab(0.046, 0.1, 0.088, 0.016), [0, -0.728, 0], undefined, arm)
-    for (let f = 0; f < 4; f++) add('rubber', new THREE.CapsuleGeometry(0.0115, 0.05, 3, 8), [-s * 0.008, -0.805, -0.033 + f * 0.022], [0, 0, -s * 0.25], arm)
-    add('rubber', new THREE.CapsuleGeometry(0.013, 0.04, 3, 8), [0, -0.735, -0.058], [-0.8, 0, 0], arm)
+    add('rubber', slab(0.046, 0.1, 0.088, 0.016), [0, -0.728, 0], undefined, fore)
+    for (let f = 0; f < 4; f++) add('rubber', new THREE.CapsuleGeometry(0.0115, 0.05, 3, 8), [-s * 0.008, -0.805, -0.033 + f * 0.022], [0, 0, -s * 0.25], fore)
+    add('rubber', new THREE.CapsuleGeometry(0.013, 0.04, 3, 8), [0, -0.735, -0.058], [-0.8, 0, 0], fore)
+    arms.push({ at: [s * 0.29, 1.45, 0], swing: s * 0.42, joint: -ELBOW, upper: merged(upper), lower: merged(fore) })
     // Strap from the chest pack over the shoulder.
     add('ribbed', slab(0.05, 0.17, 0.03, 0.01), [s * 0.105, 1.475, -0.165], [0.35, 0, 0])
     // Helmet side module with its ring.
@@ -180,10 +200,10 @@ function shapes(): Record<Look, THREE.BufferGeometry> {
   add('shell', slab(0.07, 0.03, 0.06, 0.01), [0, 1.868, -0.07])
   add('rubber', slab(0.04, 0.016, 0.012, 0.004), [0, 1.868, -0.102])
 
-  return Object.fromEntries(LOOKS.map((look) => [look, mergeGeometries(parts[look])])) as Record<Look, THREE.BufferGeometry>
+  return { body: merged(body), limbs: [...legs, ...arms] }
 }
 
-let shared: { shapes: Record<Look, THREE.BufferGeometry>; materials: Record<Look, THREE.MeshStandardMaterial> } | null = null
+let shared: { suit: Suit; materials: Record<Look, THREE.MeshStandardMaterial> } | null = null
 
 /** Short name that still fits over the helmet. */
 export function crewLabel(name: string): string {
@@ -196,7 +216,7 @@ function nameTag(name: string): THREE.Object3D {
   if (typeof document === 'undefined') {
     const holder = new THREE.Object3D()
     holder.name = label
-    holder.position.y = 2.15
+    holder.position.y = TAG
     return holder
   }
   const canvas = document.createElement('canvas')
@@ -214,21 +234,74 @@ function nameTag(name: string): THREE.Object3D {
   const texture = new THREE.CanvasTexture(canvas)
   texture.colorSpace = THREE.SRGBColorSpace
   const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, transparent: true, depthWrite: false }))
-  sprite.position.y = 2.15
+  sprite.position.y = TAG
   sprite.scale.set(1.7, 0.42, 1)
   sprite.name = label
   return sprite
 }
+
+/** The moving parts of one astronaut. `rest` is the limb's outward swing when standing. */
+interface Rig {
+  body: THREE.Group
+  tag: THREE.Object3D
+  limbs: { upper: THREE.Group; lower: THREE.Group; rest: number; leg: boolean }[]
+}
+const rigs = new WeakMap<THREE.Object3D, Rig>()
+const TAG = 2.15
+const HEAD = 1.715
 
 /**
  * A standing astronaut, about 1.9 m, origin at the feet.
  * The visor faces local -Z, the same way the first-person camera looks when yaw is 0.
  */
 export function createAstronaut(name: string): THREE.Group {
-  shared ??= { shapes: shapes(), materials: materials() }
+  const { suit, materials: looks } = (shared ??= { suit: shapes(), materials: materials() })
+  const put = (parent: THREE.Group, geo: Geo) => {
+    for (const look of LOOKS) {
+      if (!geo[look]) continue
+      const mesh = new THREE.Mesh(geo[look], looks[look])
+      mesh.name = look
+      parent.add(mesh)
+    }
+  }
   const crew = new THREE.Group()
   crew.name = crewLabel(name)
-  for (const look of LOOKS) crew.add(new THREE.Mesh(shared.shapes[look], shared.materials[look]))
-  crew.add(nameTag(name))
+  const body = new THREE.Group()
+  put(body, suit.body)
+  const limbs = suit.limbs.map((limb, i) => {
+    const upper = new THREE.Group()
+    upper.position.set(...limb.at)
+    upper.rotation.z = limb.swing
+    put(upper, limb.upper)
+    const lower = new THREE.Group()
+    lower.position.y = limb.joint
+    put(lower, limb.lower)
+    upper.add(lower)
+    body.add(upper)
+    return { upper, lower, rest: limb.swing, leg: i < 2 }
+  })
+  const tag = nameTag(name)
+  crew.add(body, tag)
+  rigs.set(crew, { body, tag, limbs })
   return crew
+}
+
+/** Puts an astronaut from `createAstronaut` into a pose from `./motion`. The body turns about the hips. */
+export function poseAstronaut(crew: THREE.Object3D, pose: Pose): void {
+  const rig = rigs.get(crew)
+  if (!rig) return
+  const { body, tag } = rig
+  body.rotation.set(-pose.pitch, 0, -pose.roll)
+  body.position.set(0, -HIP, 0).applyEuler(body.rotation)
+  body.position.x += pose.sway
+  body.position.y += HIP + pose.lift
+  body.position.z -= pose.slide // forwards is -Z
+  // The name stays upright, over the helmet wherever the lean has taken it.
+  tag.position.set(0, HEAD, 0).applyEuler(body.rotation).add(body.position)
+  tag.position.y += TAG - HEAD
+  rig.limbs.forEach(({ upper, lower, rest, leg }, i) => {
+    const limb = (leg ? pose.legs : pose.arms)[i % 2]!
+    upper.rotation.set(limb.swing, 0, rest + Math.sign(rest) * limb.spread)
+    lower.rotation.x = leg ? -limb.bend : limb.bend
+  })
 }

@@ -5,14 +5,14 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-15 06:45
+**Last updated:** 2026-11-15 08:40
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-**Realism pass, four parts** (Ethan's request): smooth planet spin and a space-station look for the walk-in spacecraft (`ui/interior/control.ts`, look only), realistic satellite exteriors (`ui/scene3d/parts/`, `craft.ts`), astronaut movement (`ui/crew/`). Branches `ethan-claude/interior-module`, `ethan-claude/sat-exterior`, `ethan-claude/crew-motion`. Between tasks I merge every PR that passes `tsc`, tests and build.
+Nothing claimed. Between tasks I merge every PR that passes `tsc`, tests and build.
 
 Open under my name: the launch cutscene is about 20 s (decision 005 says 10 s at most). Waiting on cursor@kaipo: redeploy `main` to Vercel (handoff 20261115-0450).
 
@@ -27,6 +27,7 @@ Released to Open (ask me first, the folder is mine): fly scene tied to sim time 
 - Plus my usual shared-file edits: this section, my BOARD.md lines, append-only LOG.md lines, my own handoffs
 
 ### Just finished
+- **Realism pass** (PRs #151, #154, #155, on `main`): station-module interior, smooth planet spin, realistic satellite exteriors (orbit view 141 → 88 draw calls), astronaut walk and float animation. `e2e/` updated for claude@jamie's four-step start menu (#152). `main` passes 569 tests.
 - **Realistic astronaut for the crew** (PR #150, on `main`): detailed spacesuit in `ui/crew/astronaut.ts`, same API, six draw calls each. Merged PRs #148 and #150; `main` passes 553 tests.
 - **3D text fits + short NO-GO reasons** (PR #147, on `main`): `brief()` in `ui/gonogo/model.ts`, desk screens, alarm title and choice cards, 4-word option labels. Merged PRs #144 to #147; `main` passes 552 tests.
 - **Real NASA cloud map on the Earth** (PR #143, on `main`): `maps/earth-clouds.jpg`, read by `cloudShader` in every view of the Earth. `main` passes 542 tests.

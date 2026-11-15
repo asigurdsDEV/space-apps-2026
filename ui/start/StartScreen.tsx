@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
+import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import type { Config } from '../../shared'
 import { PROGRAM, type Difficulty } from '../../data'
 import { SpaceView } from '../scene3d'
@@ -23,6 +23,8 @@ export interface StartScreenProps {
   error?: string | null
   /** The step shown first. Default "menu"; previews and tests open a later one. */
   initialStep?: Step
+  /** Shown under the menu step only, on the same space background (the app's one-screen strip). */
+  children?: ReactNode
 }
 const modes: { mode: StartMode; title: string; detail: string }[] = [
   { mode: 'solo', title: 'Play solo', detail: '1 player' },
@@ -32,12 +34,12 @@ const modes: { mode: StartMode; title: string; detail: string }[] = [
 const LEVELS = ['easy', 'normal', 'hard'] as const
 const STEPS: Step[] = ['menu', 'setup', 'mission', 'difficulty']
 const HEADINGS: Record<Step, string> = { menu: 'GO / NO-GO', setup: 'Mission setup', mission: 'Choose your mission', difficulty: 'Choose difficulty' }
-const FADE_MS = 280 // matches .ss-stage's transition in start.css
+const FADE_MS = 700 // each way; matches .ss-stage's transition in start.css
 const usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
 /** A positive number, else undefined (the sandbox has no budget or goal to show). */
 const amount = (value: unknown) => (typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : undefined)
 
-export function StartScreen({ scenarios, onStart, scenarioPreview, dailyMission, onDailyMission, difficultyLabels = { easy: 'Easy', normal: 'Normal', hard: 'Hard' }, busy = false, error, initialStep = 'menu' }: StartScreenProps) {
+export function StartScreen({ scenarios, onStart, scenarioPreview, dailyMission, onDailyMission, difficultyLabels = { easy: 'Easy', normal: 'Normal', hard: 'Hard' }, busy = false, error, initialStep = 'menu', children }: StartScreenProps) {
   const id = useId()
   const [step, setStep] = useState<Step>(initialStep)
   const [fading, setFading] = useState(false)
@@ -108,7 +110,9 @@ export function StartScreen({ scenarios, onStart, scenarioPreview, dailyMission,
 
   return (
     <main className="ss-root">
-      {scenario?.entities && <SpaceView className="ss-bg" state={{ entities: scenario.entities, params: scenario.params }} mode="orbit" showCaption={false} />}
+      {scenario?.entities && <SpaceView className="ss-bg" state={{ entities: scenario.entities, params: scenario.params }} mode="orbit" showCaption={false} backdrop />}
+      {/* Inter Tight, a free stand-in for Ferrari Sans; without the network the system sans is used. React hoists it into <head>. */}
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500&display=swap" precedence="default" />
       <div className="ss-masthead"><span className="ss-brand"><span aria-hidden="true">✦</span> GO / NO-GO</span><span>Space Mission Design Game</span><span className="ss-edition">NASA Space Apps · 2026</span></div>
       <form id="mission-setup" className={`ss-stage${fading ? ' is-fading' : ''}`} onSubmit={submit} onChange={() => setValidation(null)} aria-busy={busy}>
         <div className="ss-side">
@@ -192,6 +196,7 @@ export function StartScreen({ scenarios, onStart, scenarioPreview, dailyMission,
           </div>}
         </fieldset>
       </form>
+      {step === 'menu' && children && <div className={`ss-footer${fading ? ' is-fading' : ''}`}>{children}</div>}
     </main>
   )
 }
