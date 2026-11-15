@@ -49,15 +49,17 @@ npx vercel git connect https://github.com/asigurdsDEV/space-apps-2026.git --yes 
 
 Until step 2 is done, Kaipo still runs the hand-deploy command above after `main` changes.
 
-### Update 2026-11-15 00:05 (claude@aiden): the Vercel app is installed
+### Update 2026-11-15 00:20 (claude@aiden): Vercel is now Aiden's only
 
-Aiden installed the Vercel GitHub app on the repo. Pushes and PRs now deploy, but to a **second Vercel project, `kimchi-trenchers/space-apps-2026`**, not to `lit-turtle/kimchispacemission`:
-- `main` and PR #173 show a green "Vercel" status; the Vercel bot comments on PRs.
-- Its URLs (e.g. `space-apps-2026-kimchi-trenchers.vercel.app`) redirect to a Vercel login: **Deployment Protection is on**, so the public and judges can't open them.
-- It has no `/api/ice` env (not checkable from outside the login), so online co-op there would have no TURN relay until the two Cloudflare values are added.
-- https://kimchispacemission.vercel.app is still Kaipo's hand deploy.
+Aiden decided: **his project `kimchi-trenchers/space-apps-2026` is the only Vercel site.** It already deploys every push to `main` and every PR (Vercel GitHub app installed 2026-11-15). Steps, in order:
 
-Pick one public Vercel site: either Kaipo now connects `kimchispacemission` to the repo (the install should make `vercel git connect` work) and the second project is removed, or the second project becomes the public one (turn off Deployment Protection for Production, add the two Cloudflare TURN env values, share its production URL).
+1. **Kaipo** removes the domain `kimchispacemission.vercel.app` from `lit-turtle/kimchispacemission` (Settings → Domains), then deletes that project (Settings → Advanced → Delete). Handoff `20261115-0020-claude@aiden-cursor@kaipo-vercel-move.md`.
+2. **Aiden**, in Vercel → `space-apps-2026`:
+   - Settings → **Deployment Protection** → Vercel Authentication: **Only Preview Deployments** (or off). Today every URL of the project redirects to a Vercel login.
+   - Settings → **Environment Variables**: add `CLOUDFLARE_TURN_KEY_ID` and `CLOUDFLARE_TURN_API_TOKEN` for Production and Preview. Make a TURN key in your own Cloudflare account (Calls / Realtime → TURN), or get Kaipo's values over a private message, never in the repo.
+   - Settings → **Domains** → add `kimchispacemission.vercel.app` (after step 1 frees it).
+   - **Redeploy** `main` (Deployments → … → Redeploy) so the env values take effect.
+3. Check: `https://kimchispacemission.vercel.app` opens without a login, `/api/ice` returns 200, and a commit on GitHub shows the green "Vercel" status.
 
 ## claude@aiden
 

@@ -28,3 +28,8 @@ Decision 002 kept the site static so judging does not depend on a game server we
 ## What this changes (update CONTRACTS.md if needed)
 
 The stack line in `.agents/CONTRACTS.md` now names this credential route. Decision 002 still decides the engine, the host-authoritative sim, and "no game server." Its "no TURN" risk is narrowed by this record. `shared/` message shapes, `net/` transport messages, and `sim/` are unchanged.
+
+## Update 2026-11-15 (claude@aiden, Aiden's request)
+
+Hosting moves to **Aiden's Vercel project `kimchi-trenchers/space-apps-2026`**, connected to the repo with the Vercel GitHub app, so every push to `main` deploys and every PR gets a preview. Cursor@kaipo's `lit-turtle/kimchispacemission` project is retired; the address `kimchispacemission.vercel.app` moves to Aiden's project so every existing link (README, SUBMISSION, MULTIPLAYER_TEST) keeps working. The decision itself is unchanged: `/api/ice` only mints Cloudflare TURN credentials, now from Aiden's Vercel env.
+
