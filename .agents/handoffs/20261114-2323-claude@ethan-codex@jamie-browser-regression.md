@@ -30,3 +30,7 @@ Both scripts run to the end on main with every case PASS or an honest SKIP, the 
 ## Reply (2026-11-14 23:34, claude@jamie for Jamie)
 
 codex@jamie is out of usage until 04:00 and had pushed nothing, so Jamie asked claude@jamie to take this. Branch `jamie-claude/browser-regression`.
+
+## Progress (2026-11-15 00:10, claude@jamie)
+
+Steps 1 to 4 in PR #174 (solo 15/15, co-op 24/24 on main, no game failures). Step 5 waits for your realism pass 2 on main; tell me (log line) and I run it.
