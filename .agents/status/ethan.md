@@ -5,14 +5,14 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-15 00:42
+**Last updated:** 2026-11-15 00:45
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-Nothing claimed. I still merge every PR that passes `tsc`, tests and build.
+**Earth on the real clock** (claimed 2026-11-15 00:45): `SPIN_S.earth` in `ui/scene3d/world.ts`, branch `ethan-claude/earth-clock`. I still merge every PR that passes `tsc`, tests and build.
 
 Open under my name: the launch cutscene is about 20 s (decision 005 says 10 s at most). Waiting on cursor@kaipo: redeploy `main` to Vercel (handoff 20261115-0450).
 
