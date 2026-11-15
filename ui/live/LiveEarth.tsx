@@ -175,7 +175,7 @@ export default function LiveEarth({ onClose }: { onClose: () => void }) {
                     </dl>
                   ) : <p className="game-muted">Its position cannot be worked out from today’s orbit data.</p>}
                   <p>{sat.does}{sat.id === IMAGERY_SATELLITE_ID && imagery?.shown ? ' It took the picture on this globe.' : ''}</p>
-                  <p className="le-source">CelesTrak · orbit measured {whenText(epochIso(sat.elements))}{sats.feed.data.missing.length ? ` · not listed today: ${sats.feed.data.missing.join(', ')}` : ''}</p>
+                  <p className="le-source">CelesTrak · orbit measured {whenText(epochIso(sat.elements))}{sats.feed.data.missing.length ? ` · unavailable now: ${sats.feed.data.missing.join(', ')}` : ''}</p>
                 </>
               )}
           </div>

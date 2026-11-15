@@ -30,7 +30,9 @@ How it behaves:
 - **A phone** (900 px wide or less): the globe takes the top half and everything else is one sheet that scrolls in the bottom half.
 - **No WebGL:** the panels still work and say the globe cannot be drawn.
 
-Measured in headless Chrome (Metal) on 2026-11-15 with other work running on the machine: 6 draw calls a frame, 16.6 ms a frame (the display's own rate) at 1290x690 and at 390x844 with all 2,681 debris pieces shown.
+Measured in headless Chrome (Metal) on 2026-11-15 with other work running on the machine: 6 draw calls a frame and 16.6 ms a frame (the display's own rate, slowest frame 16.8 ms) at 1290x690 and at 390x844 at twice the pixels, with all 2,681 debris pieces shown, in the preview and from both entries in the game.
+
+Checked in that browser, from pictures: the preview and both game entries at both sizes; each feed blocked in turn (the picture, all of CelesTrak, one satellite group, one debris group, NOAA, EONET, the satellite.js download), everything blocked, the browser offline, and a browser with no WebGL. During these checks CelesTrak's answers were the copies downloaded at 09:52 UTC, replayed to the page, to keep to its one download per two hours; NOAA, EONET and GIBS were asked for real.
 
 ## The data layer
 
