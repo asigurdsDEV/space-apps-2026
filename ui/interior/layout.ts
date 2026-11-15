@@ -15,6 +15,8 @@ import type { Command, Decision, Entity, Metrics, Role, SimState } from '../../s
 
 export const ROOM = { min: [-4, 0, -3] as Vec3, max: [4, 3.2, 3] as Vec3 }
 export const START: { pos: Vec3; yaw: number } = { pos: [0, 0, 1.6], yaw: 0 }
+/** Floor hatch: look at it and press E to go down to the surface. */
+export const HATCH: Vec3 = [-1.6, 0.04, 1.15]
 export const WINDOW = { x: 0, y: 1.9, w: 5, h: 1.6 }
 export const DASH = { z: -2.15, w: 4.4, depth: 0.6, top: 0.95 }
 export const SPEEDS = [1, 5, 20, 60] as const
@@ -139,15 +141,26 @@ export interface FlightOptions {
   decision: Decision | null
   /** Why this player can't answer it (co-op: another role holds that console). */
   decisionBlocked?: string
+  /** Earth missions: E on the floor hatch sets the crew on the surface. */
+  onProbe?: () => void
 }
 
 /** What E does in the spacecraft: the time lever, and the anomaly card's choices when one is waiting. */
-export function interactables(list: readonly Module[], { send, paused, speed, decision, decisionBlocked }: FlightOptions): Interactable[] {
+export function interactables(list: readonly Module[], { send, paused, speed, decision, decisionBlocked, onProbe }: FlightOptions): Interactable[] {
   const next = SPEEDS.find((s) => s > speed) ?? SPEEDS[0]
   const out: Interactable[] = [
     { id: 'pause', at: [1.4, 1.1, DASH.z + 0.05], label: paused ? 'Resume time' : 'Pause time', disabled: decision ? 'Answer the alarm first' : undefined, use: () => send({ type: paused ? 'resume' : 'pause', payload: {} }) },
     { id: 'speed', at: [1.9, 1.1, DASH.z + 0.05], label: `Speed ${next}×`, use: () => send({ type: 'set_speed', payload: { multiplier: next } }) },
   ]
+  if (onProbe) {
+    out.push({
+      id: 'probe',
+      at: [HATCH[0], 0.9, HATCH[2]],
+      label: 'Survey the ground',
+      disabled: decision ? 'Answer the alarm first' : undefined,
+      use: onProbe,
+    })
+  }
   if (decision) {
     const spots = choiceSpots(decision, list)
     decision.options.forEach((o, i) =>

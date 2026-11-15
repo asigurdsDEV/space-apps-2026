@@ -65,6 +65,15 @@ const SPRING = 40
 const R_FLOOR = 1.1
 const R_CEIL = 2.08
 
+/** Latitude and east longitude, in degrees, of the ground directly under the craft. */
+export function groundLatLon(pos: Vec3): { lat: number; lon: number } {
+  const r = Math.hypot(pos[0], pos[1], pos[2]) || 1
+  return {
+    lat: (Math.asin(Math.min(1, Math.max(-1, pos[1] / r))) * 180) / Math.PI,
+    lon: (Math.atan2(-pos[2], pos[0]) * 180) / Math.PI,
+  }
+}
+
 /** Low off West Africa, where Atlantic hurricanes start, facing the first target. */
 export function startPose(): Pose {
   const pos = at(12, -15, 1.25)

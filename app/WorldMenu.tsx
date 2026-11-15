@@ -48,7 +48,7 @@ export function WorldMenu({ open, disabled, onOpenChange, onClassic, onTraining,
         <p className="game-muted">{online ? 'Your crew’s mission keeps running.' : 'Take a breath. Your mission is held.'}</p>
         {children}
         <button type="button" className="game-button" autoFocus onClick={() => onOpenChange(false)}>Back to game</button>
-        {onTraining && <button type="button" className="game-button" onClick={onTraining}>Flight training</button>}
+        {onTraining && <button type="button" className="game-button" onClick={onTraining}>Survey the planet</button>}
         <SoundToggle />
         <button type="button" className="game-button" onClick={onClassic}>Classic view</button>
         <button type="button" className="game-button" onClick={onExit}>Main menu</button>

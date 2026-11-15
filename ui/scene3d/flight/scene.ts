@@ -15,7 +15,7 @@ import { planetMaps } from '../maps'
 import { steadyResolution } from '../steady'
 import { BODY_RADIUS_M, type Body, type CraftSpec } from '../model'
 import { atmosphereShader, cloudShader, planetShader } from '../shaders'
-import { chase, nextFocus, SPOTS, startPose, stepPose, type FlightTarget, type Vec3 } from './model'
+import { chase, groundLatLon, nextFocus, SPOTS, startPose, stepPose, type FlightTarget, type Vec3 } from './model'
 
 export interface FlightSceneOptions {
   body: Body
@@ -27,6 +27,8 @@ export interface FlightSceneOptions {
   input: () => { intent: PilotIntent; scanning: boolean; done: readonly string[] }
   /** The target in the crosshair. Called when it changes, and about ten times a second while its distance or hold time changes. */
   onFocus: (focus: HudFocus | null) => void
+  /** Ground under the craft, in degrees. Called every frame while flying. */
+  onGround?: (lat: number, lon: number) => void
   /** The browser took the WebGL context away. */
   onLost: () => void
 }
@@ -244,6 +246,8 @@ export function createFlightScene(container: HTMLElement, options: FlightSceneOp
     last = now
     const { intent, scanning, done } = options.input()
     pose = stepPose(pose, intent, dt)
+    const ground = groundLatLon(pose.pos)
+    options.onGround?.(ground.lat, ground.lon)
     focus = nextFocus(focus, pose, options.targets, done, intent.interact || scanning, dt, unit_m)
     report(now)
     if (!options.reducedMotion) {

@@ -20,11 +20,15 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 ## cursor@kaipo
 
 **Branch:** kaipo-cursor/deploy-check
-**Last updated:** 2026-11-14 17:38
+**Last updated:** 2026-11-14 22:50
 
 ### Working on right now
+Surface probe: walk a real NASADEM patch with NASA POWER temperature. Not committed yet.
 
 ### Files / folders I'm touching (hands off)
+- `ui/probe/`
+- `app/App.tsx`, `app/World.tsx`, `app/WorldMenu.tsx` (button and screen only)
+- `package.json` / `package-lock.json` (`geotiff`)
 
 ### Just finished
 

@@ -14,7 +14,7 @@ import { planetMaps } from '../scene3d/maps'
 import { atmosphereShader, cloudShader, planetShader, toScreen } from '../scene3d/shaders'
 import type { CraftSpec } from '../scene3d/model'
 import type { Decision } from '../../shared'
-import { choiceSpots, choiceTitleAt, DASH, moduleFor, ROOM, START, WINDOW, type Gauge, type Module } from './layout'
+import { choiceSpots, choiceTitleAt, DASH, HATCH, moduleFor, ROOM, START, WINDOW, type Gauge, type Module } from './layout'
 import { mountCrew, type CrewPose } from '../crew/crew'
 
 export interface CabinScreens {
@@ -314,6 +314,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   const SQUARE: [number, number] = [1, 1]
   const RACKS: [number, number] = [2, y1]
   box(W, t, D, 0, -t / 2, 0, new THREE.MeshStandardMaterial({ map: floorMap(), color: 0xd2d6dd, roughness: 0.82 }), SQUARE)
+  box(0.9, 0.04, 0.9, HATCH[0], 0.02, HATCH[2], new THREE.MeshStandardMaterial({ color: 0xc9a227, emissive: 0x6a4e10, emissiveIntensity: 0.35, roughness: 0.45 }))
   box(W, t, D, 0, y1 + t / 2, 0, wallMat, SQUARE)
   box(t, y1, D, x0 - t / 2, y1 / 2, 0, rackMat, RACKS)
   box(t, y1, D, x1 + t / 2, y1 / 2, 0, rackMat, RACKS)

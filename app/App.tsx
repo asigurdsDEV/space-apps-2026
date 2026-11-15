@@ -534,7 +534,7 @@ function Design({ session, config }: { session: Session; config: Config }) {
 const LaunchView = SceneLaunchView as ComponentType<{ state: SimState; onDone: () => void }> | null
 /** The story layer's plain launch cutscene is not played on top of the real one. */
 const SHOWN_BY_APP = ['launch']
-/** Flight training (decision 006): the 3D flight with its HUD, controls and route. Loaded only when the player opens it. */
+/** Survey: fly to a place on Earth, then float above that ground. Loaded only when the player opens it. */
 const Training = lazy(() => import('./Training'))
 
 /** The summary the sim sent with `scenario_ended`. */
@@ -657,12 +657,12 @@ function Flight({ session, config, daily, online, skipLaunch, onLaunchDone }: { 
     <>
       <WalkTo screen={ended ? 'results' : 'flight'} />
       {canTrain && (
-        <aside className="app-training-entry" aria-label="Flight training">
+        <aside className="app-training-entry" aria-label="Survey the planet">
           <button type="button" className="game-button" ref={focusAfterTraining} onClick={() => showTraining(true)}>
-            Flight training
+            Survey the planet
           </button>
           <span className="game-muted">
-            Practice flying your spacecraft. No score, and the mission {online ? 'keeps running' : 'waits for you'}.
+            Fly to a place, then float above that ground. No score, and the mission {online ? 'keeps running' : 'waits for you'}.
           </span>
         </aside>
       )}

@@ -1,13 +1,16 @@
-// Flight training (decision 006): ui/scene3d's FlightView with the V2 HUD over it and the V1 pad feeding it.
-// The route's progress is React state in here and nowhere else: nothing sends a command, and the mission's
-// science, score and stars never change. Loaded only when the player opens it (see App.tsx).
+// Survey (was flight training): fly the spacecraft to choose a patch of Earth, then float above it.
+// Nothing here sends a command, and the mission's science, score and stars never change.
+// `scan` and `partIds` stay for the old route checks; the storm and fire marks are not shown.
 
-import { useEffect, useRef, useState } from 'react'
-import { interact, routeComplete, trainingRoute } from '../data/pilot-training'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { interact } from '../data/pilot-training'
 import type { SimState } from '../shared'
-import { DEFAULT_HINTS, FlightHud, type FlightHudProps, type HudFocus, type Results } from '../ui/flight-hud'
+import type { FlightHudProps, Results } from '../ui/flight-hud'
 import { PilotInput, type PilotIntent } from '../ui/pilot-input'
+import { isEarthScenario } from '../ui/probe/nasa'
 import { FlightView } from '../ui/scene3d'
+
+const ProbeExplorer = lazy(() => import('../ui/probe/ProbeExplorer'))
 
 export interface Progress {
   results: Results
@@ -26,12 +29,10 @@ export function scan(progress: Progress, id: string, parts: readonly string[]): 
   return { results: outcome === 'blocked' ? progress.results : { ...progress.results, [id]: outcome }, message: { ...result, id } }
 }
 
-// The route is written for Earth (a hurricane, a wildfire), whatever planet the mission goes to.
-const BODY = (['earth', 'moon', 'mars'] as const).find((body) => body === trainingRoute.body)
 const IDLE: PilotIntent = { forward: 0, right: 0, up: 0, brake: false, interact: false }
-// In here Esc leaves the training, so the HUD's last hint says so.
-const HINTS = [...DEFAULT_HINTS.slice(0, -1), { keys: 'Esc', action: 'Back to the mission' }]
-const MESSAGE_MS = 12_000
+
+const bodyOf = (state: Pick<SimState, 'entities'>) =>
+  (['earth', 'moon', 'mars'] as const).find((id) => state.entities.some((entity) => entity.id === id)) ?? 'earth'
 
 export interface TrainingProps {
   /** Read for the craft's parts only. */
@@ -42,74 +43,71 @@ export interface TrainingProps {
 
 export default function Training({ state, onClose }: TrainingProps) {
   const root = useRef<HTMLElement>(null)
+  const where = useRef<HTMLElement>(null)
+  const ground = useRef({ lat: 0, lon: 0 })
   const [intent, setIntent] = useState(IDLE)
-  const [scanHeld, setScanHeld] = useState(false)
-  const [focus, setFocus] = useState<HudFocus | null>(null)
-  const [progress, setProgress] = useState<Progress>({ results: {}, message: null })
-  const parts = partIds(state)
-  const done = Object.keys(progress.results)
+  const [drop, setDrop] = useState<{ lat: number; lon: number } | null>(null)
+  const earth = isEarthScenario(state.entities)
 
-  // V1's keys only work while its pad has the focus, and it has no prop for that.
   const focusPad = () => root.current?.querySelector<HTMLElement>('.pi-pad')?.focus({ preventScroll: true })
   const close = useRef(onClose)
   close.current = onClose
   useEffect(() => {
-    // The app's panel starts well down the page; the scene and the pad only fit the window from the training's own top.
+    if (drop) return
     root.current?.scrollIntoView()
     focusPad()
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') close.current()
+      if (event.code !== 'KeyQ' || event.repeat || !earth) return
+      event.preventDefault()
+      setDrop({ ...ground.current })
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [])
-  // A result steps aside after a while: on a phone its panel sits over the craft.
-  useEffect(() => {
-    if (!progress.message) return
-    const timer = setTimeout(() => setProgress((p) => ({ ...p, message: null })), MESSAGE_MS)
-    return () => clearTimeout(timer)
-  }, [progress.message])
+  }, [drop, earth])
 
-  const onFocus = (next: HudFocus | null) => {
-    setFocus(next)
-    const target = trainingRoute.targets.find((t) => t.id === next?.id)
-    if (!next || !target || next.held_s < target.hold_s) return
-    setScanHeld(false)
-    setProgress((p) => scan(p, next.id, parts))
-  }
-  // The view only counts a hold on a target that is still to do, so "too early" is said on the press instead.
-  const press = () => {
-    if (focus?.inRange && interact(focus.id, done, parts)?.outcome === 'blocked') setProgress((p) => scan(p, focus.id, parts))
+  if (drop) {
+    return (
+      <Suspense fallback={<p className="app-training-loading" aria-busy="true">Loading the ground…</p>}>
+        <ProbeExplorer lat={drop.lat} lon={drop.lon} onClose={() => close.current()} />
+      </Suspense>
+    )
   }
 
   return (
     <section ref={root} className="app-training" aria-labelledby="app-training-title">
       <header className="app-training-bar">
         <div>
-          <h2 id="app-training-title">Flight training</h2>
-          <p className="game-muted">Practice only: nothing here changes your mission or your score.</p>
+          <h2 id="app-training-title">Survey the planet</h2>
+          <p className="game-muted">Practice only: nothing here changes your mission or your score. Fly to a place, then press Q to float above that ground.</p>
         </div>
         <button type="button" className="game-button app-small" onClick={onClose}>
           Back to the mission
         </button>
       </header>
-      {/* A click on the scene gives the keys back to the pad. */}
       <div className="app-training-view" onClick={focusPad}>
-        <FlightView className="app-training-scene" state={state} body={BODY} intent={intent} scanning={scanHeld} targets={trainingRoute.targets} done={done} onFocus={onFocus} />
-        <FlightHud
-          objective={trainingRoute.intro}
-          targets={trainingRoute.targets}
-          results={progress.results}
-          focus={focus}
-          message={progress.message}
-          completeText={routeComplete(done) ? trainingRoute.complete_text : null}
-          hints={HINTS}
-          onScanStart={() => setScanHeld(true)}
-          onScanEnd={() => setScanHeld(false)}
-          scanHeld={scanHeld}
+        <FlightView
+          className="app-training-scene"
+          state={state}
+          body={bodyOf(state)}
+          intent={intent}
+          targets={[]}
+          done={[]}
+          onFocus={() => {}}
+          onGround={(lat, lon) => {
+            ground.current = { lat, lon }
+            if (where.current) where.current.textContent = `${lat.toFixed(2)}°, ${lon.toFixed(2)}°`
+          }}
         />
+        <p className="game-muted" style={{ position: 'absolute', left: 16, bottom: 16, maxWidth: 420, margin: 0 }}>
+          Ground under the craft: <strong ref={where}>—</strong>
+          <br />
+          {earth
+            ? 'No storm or fire marks. W A S D fly, R up, F down. Q floats you above this spot. On the ground, Q returns to the ship.'
+            : 'NASA’s elevation grid covers Earth. Fly around, then go back to the mission.'}
+        </p>
       </div>
-      <PilotInput onIntent={setIntent} onInteract={press} />
+      <PilotInput onIntent={setIntent} onInteract={() => {}} />
     </section>
   )
 }

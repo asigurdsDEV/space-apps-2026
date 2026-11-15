@@ -25,6 +25,7 @@ import { hasWebGL } from './Walk'
 import { WorldMenu } from './WorldMenu'
 import { CampaignResult } from '../ui/campaign/CampaignBoard'
 import { designGuide } from '../ui/campaign/model'
+import { isEarthScenario } from '../ui/probe/nasa'
 
 /** First-person 3D, unless the address says `?world=classic` or the browser can't draw it. */
 export const WORLD_3D = typeof location !== 'undefined' && new URLSearchParams(location.search).get('world') !== 'classic' && hasWebGL()
@@ -119,6 +120,7 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
   /** A late joiner skips the launch sequence. */
   const [launched, setLaunched] = useState(() => session.getSnapshot().state.t_s > 86400)
   const canTrain = flying && launched && !cutscene && !pendingDecision(state)
+  const canProbe = canTrain && isEarthScenario(config.entities)
   const hold = !classic && (menuOpen || cutscene || (training && canTrain) || (flying && !launched))
   useEffect(() => {
     if (roomCode !== null) return
@@ -205,6 +207,7 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
           className="app-world-view"
           state={state}
           send={session.send}
+          onProbe={canProbe ? () => setTraining(true) : undefined}
           paused={paused}
           speed={speed}
           decision={decision}

@@ -14,6 +14,7 @@ export function partHelp(part: Entity | undefined): InspectionHelp | undefined {
 export function flightHelp(id: string | undefined, decision: Decision | null): InspectionHelp | undefined {
   if (id === 'pause') return { title: 'Mission clock', text: 'Pause to inspect your spacecraft. Resume when you are ready to keep collecting science.' }
   if (id === 'speed') return { title: 'Time speed', text: 'Cycle through 1×, 5×, 20× and 60×. An alarm stops mission time until your crew makes a choice.' }
+  if (id === 'probe') return { title: 'Surface survey', text: 'Opens the flight so you can choose a place on Earth. Q floats you above that ground. Q again returns to the ship.' }
   const option = decision?.options.find((o) => id === `option:${decision.decision_id}:${o.id}`)
   if (option) return { title: option.label, text: option.effect_text }
   return undefined

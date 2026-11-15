@@ -17,7 +17,7 @@ describe('World', () => {
     const game = createGame({ config, datasets: fixtureDatasets, sim: simCore })
     const session = createSoloSession(game)
     const bar = () => renderToStaticMarkup(<World active={{ session, roomCode: null }} config={config} onExit={() => {}} />)
-    const button = /<button[^>]*>Flight training<\/button>/
+    const button = /<button[^>]*>Survey the planet<\/button>/
     expect(bar()).not.toMatch(button) // mission control, designing
     for (const command of design) session.send(command)
     session.send({ type: 'launch', payload: {} })

@@ -148,7 +148,7 @@ describe('game screen', () => {
 
   it('offers flight training while the mission flies, and only then', () => {
     const { game, session } = soloSession()
-    const button = /<button[^>]*>Flight training<\/button>/
+    const button = /<button[^>]*>Survey the planet<\/button>/
     expect(screen(session)).not.toMatch(button) // the builder
     for (const command of designCommands) session.send(command)
     session.send({ type: 'launch', payload: {} })

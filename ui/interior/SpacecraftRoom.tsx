@@ -32,11 +32,13 @@ export interface SpacecraftRoomProps {
   subscribeCrew?: (listener: (crew: readonly CrewPose[]) => void) => () => void
   /** Which crew member this browser is (0 is the host). Spreads spawn points so bodies do not stack. */
   seat?: number
+  /** Earth missions: E on the gold floor hatch opens the surface. */
+  onProbe?: () => void
 }
 
 const media = (q: string) => typeof window !== 'undefined' && !!window.matchMedia?.(q).matches
 
-export function SpacecraftRoom({ state, send, paused, speed, decision, decisionBlocked, enabled = true, onFailed, className, reportPose, subscribeCrew, seat = 0 }: SpacecraftRoomProps) {
+export function SpacecraftRoom({ state, send, paused, speed, decision, decisionBlocked, enabled = true, onFailed, className, reportPose, subscribeCrew, seat = 0, onProbe }: SpacecraftRoomProps) {
   const host = useRef<HTMLDivElement>(null)
   const cabin = useRef<Cabin | null>(null)
   const [failed, setFailed] = useState(false)
@@ -96,8 +98,8 @@ export function SpacecraftRoom({ state, send, paused, speed, decision, decisionB
       playSound('click')
       send(command)
     }
-    c.fps.setPlace(interactables(list, { send: sendWithSound, paused, speed, decision, decisionBlocked }), walls)
-  }, [state, list, walls, craft, body, paused, speed, decision, decisionBlocked, send])
+    c.fps.setPlace(interactables(list, { send: sendWithSound, paused, speed, decision, decisionBlocked, onProbe }), walls)
+  }, [state, list, walls, craft, body, paused, speed, decision, decisionBlocked, send, onProbe])
 
   useEffect(() => cabin.current?.setActive(enabled), [enabled])
 
@@ -105,7 +107,7 @@ export function SpacecraftRoom({ state, send, paused, speed, decision, decisionB
     <div className={`sc${className ? ` ${className}` : ''}`}>
       <div ref={host} className="sc-canvas" role="application" aria-label="Your spacecraft. W A S D to walk, arrow keys or mouse to look, E to use what you face." tabIndex={0} />
       {failed ? <p className="sc-fallback">This view needs WebGL, which is off in this browser.</p> : enabled && <FpsPrompt aimed={aimed} locked={locked}
-        help={flightHelp(aimed?.id, decision)} objective={decision ? 'Alarm · Walk to the red choice panels · Look to inspect · E to choose' : 'Read the gauges · E on the clock or speed control'} />}
+        help={flightHelp(aimed?.id, decision)} objective={decision ? 'Alarm · Walk to the red choice panels · Look to inspect · E to choose' : onProbe ? 'Gold hatch · E to survey the ground' : 'Read the gauges · E on the clock or speed control'} />}
     </div>
   )
 }

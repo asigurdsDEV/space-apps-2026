@@ -3,7 +3,7 @@
 
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
-import { routeComplete, trainingRoute } from '../data/pilot-training'
+import { routeComplete } from '../data/pilot-training'
 import { simCore } from '../sim'
 import { demoConfig, fixtureDatasets } from '../sim/testing/fixtures'
 import Training, { partIds, scan, type Progress } from './Training'
@@ -11,16 +11,13 @@ import Training, { partIds, scan, type Progress } from './Training'
 const state = simCore.init(demoConfig, fixtureDatasets)
 
 describe('flight training', () => {
-  it('opens as the scene box with the HUD over it, the flight pad under it and a way back', () => {
+  it('opens as the flight used to pick a place, with a way back and no storm or fire marks', () => {
     const html = renderToStaticMarkup(<Training state={state} onClose={() => {}} />)
-    expect(html).toContain('Practice only') // labelled as training, not as the mission
+    expect(html).toContain('Practice only')
     expect(html).toMatch(/<button[^>]*>Back to the mission<\/button>/)
-    // The 3D scene is still loading on the first render: its box holds the layout and three.js is not in this chunk.
     expect(html).toMatch(/class="app-training-view">\s*<figure class="s3d-flight app-training-scene" aria-busy="true">/)
-    expect(html).toContain('aria-label="Flight HUD"')
-    expect(html).toContain(`Next: ${trainingRoute.targets[0]!.label}`)
-    for (const target of trainingRoute.targets) expect(html).toContain(target.label)
-    expect(html).toContain('Back to the mission</li>') // the HUD's Esc hint
+    expect(html).not.toContain('Hurricane')
+    expect(html).not.toContain('Wildfire')
     expect(html).toContain('aria-label="Flight control pad"')
   })
 

@@ -24,6 +24,8 @@ export interface FlightViewProps {
    * When `held_s` reaches `hold_s`, call `interact()` and add the id to `done`.
    */
   onFocus: (focus: HudFocus | null) => void
+  /** Ground under the craft, in degrees. */
+  onGround?: (lat: number, lon: number) => void
   /** The planet to fly around. Default: the one the mission's orbit goes around. */
   body?: Body
   /** Sizes the view; the default height is in flight.css. */
@@ -35,7 +37,7 @@ export interface FlightViewProps {
 const media = (q: string) => typeof window !== 'undefined' && window.matchMedia(q).matches
 
 /** Flight training: the player's own craft, flown around the planet to the route's targets, with a chase camera. */
-export function FlightView({ state, intent, scanning = false, targets, done, onFocus, body, className, reducedMotion }: FlightViewProps) {
+export function FlightView({ state, intent, scanning = false, targets, done, onFocus, onGround, body, className, reducedMotion }: FlightViewProps) {
   const host = useRef<HTMLDivElement>(null)
   const [failed, setFailed] = useState(false)
   const still = reducedMotion ?? media('(prefers-reduced-motion: reduce)')
@@ -44,8 +46,8 @@ export function FlightView({ state, intent, scanning = false, targets, done, onF
   // Keyed by value: the app hands over a new state object every sim step, and that must not restart the flight.
   const key = JSON.stringify([planet, spec.craft])
   // The frame loop reads the latest props from here, so a key press never rebuilds the scene.
-  const live = useRef({ intent, scanning, done, onFocus })
-  live.current = { intent, scanning, done, onFocus }
+  const live = useRef({ intent, scanning, done, onFocus, onGround })
+  live.current = { intent, scanning, done, onFocus, onGround }
 
   useEffect(() => {
     let scene: FlightScene | null = null
@@ -57,6 +59,7 @@ export function FlightView({ state, intent, scanning = false, targets, done, onF
         reducedMotion: still,
         input: () => live.current,
         onFocus: (focus) => live.current.onFocus(focus),
+        onGround: (lat, lon) => live.current.onGround?.(lat, lon),
         onLost: () => setFailed(true),
       })
     } catch {

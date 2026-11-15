@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { trainingRoute } from '../../../data/pilot-training'
 import type { HudFocus } from '../../flight-hud/model'
-import { chase, MAX_SPEED, nextFocus, pickTarget, R_MAX, R_MIN, SPOTS, startPose, stepPose, type Pose, type Vec3 } from './model'
+import { chase, groundLatLon, MAX_SPEED, nextFocus, pickTarget, R_MAX, R_MIN, SPOTS, startPose, stepPose, type Pose, type Vec3 } from './model'
 
 type Intent = Parameters<typeof stepPose>[1]
 const IDLE: Intent = { forward: 0, right: 0, up: 0, brake: false }
@@ -28,6 +28,14 @@ function facing(id: string): Pose {
   const pos = add(add(spot, up, 0.2), toward, -0.3)
   return { pos, heading: unit(add(toward, unit(pos), -dot(toward, unit(pos)))), vel: [0, 0, 0] }
 }
+
+describe('groundLatLon', () => {
+  it('reads the latitude and longitude under the craft', () => {
+    const under = groundLatLon(startPose().pos)
+    expect(under.lat).toBeCloseTo(12, 5)
+    expect(under.lon).toBeCloseTo(-15, 5)
+  })
+})
 
 describe('stepPose', () => {
   it('moves the craft forward while the key is held, around the planet at the same altitude, never past the speed cap', () => {
