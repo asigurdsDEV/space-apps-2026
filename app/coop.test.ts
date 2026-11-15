@@ -2,7 +2,7 @@
 
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { LocalTransport, type MessageHandler } from '../net'
-import { isNetMessage, ROLES, type Command, type Config, type NetMessage } from '../shared'
+import { canSend, isNetMessage, ROLES, rolesOf, type Command, type Config, type NetMessage, type Player } from '../shared'
 import { simCore } from '../sim'
 import { demoConfig, fixtureDatasets, goodDesign } from '../sim/testing/fixtures'
 import { createGame } from './game'
@@ -95,6 +95,10 @@ function lobbyRoles(host: { claimRole?: (role: (typeof ROLES)[number]) => void }
   seats.forEach((seat, index) => seat.claimRole?.(ROLES[index % ROLES.length]!))
 }
 
+/** The seat holding `command`'s role: with fewer than four players the roles nobody picked are shared out (decision 013). */
+const holderOf = <S extends { getSnapshot(): { players: Player[]; me: Player } }>(seats: S[], command: Command): S =>
+  seats.find((seat) => canSend(seat.getSnapshot().players, seat.getSnapshot().me.player_id, command))!
+
 /** A started room: a host called Hana and one guest per name. */
 async function startRoom(...guestNames: string[]) {
   const room = localRoom()
@@ -108,7 +112,7 @@ async function startRoom(...guestNames: string[]) {
   await settle()
   host.start!()
   await settle()
-  // The lobby gate is done. Release the seats so these tests still cover unclaimed roles.
+  // The lobby gate is done. Release the seats so these tests also cover roles shared out to nobody's pick.
   host.claimRole!(null)
   for (const guest of guests) guest.claimRole!(null)
   await settle()
@@ -137,7 +141,12 @@ describe('lobby', () => {
     host.start!()
     await settle()
     expect(host.getSnapshot().stage).toBe('lobby')
-    expect(host.getSnapshot().notice).toMatch(/role/)
+    expect(host.getSnapshot().notice).toMatch(/^Waiting for Hana and Gus to pick a role\./)
+    host.claimRole!(ROLES[0])
+    await settle()
+    host.start!()
+    expect(host.getSnapshot().stage).toBe('lobby')
+    expect(host.getSnapshot().notice).toMatch(/^Waiting for Gus to pick a role\./)
     host.claimRole!(ROLES[0])
     guest.claimRole!(ROLES[1])
     await settle()
@@ -266,20 +275,22 @@ describe('commands', () => {
     expect(guest.getSnapshot().notice).toBeNull()
   })
 
-  it('lets anyone send the commands of a role nobody holds', async () => {
-    const { game, guests } = await startRoom('Ana', 'Ben')
+  it('shares the roles nobody picked out evenly, and only their holder sends them', async () => {
+    const { game, host, guests } = await startRoom('Ana', 'Ben')
     const [ana, ben] = guests
     ana.claimRole!('science')
     await settle()
-    ana.send(set('orbit')) // mission planning: unclaimed
-    ben.send(set('comms')) // Ben has no role at all
+    // Three players: Hana holds planning + comms, Ben spacecraft, Ana science.
+    ben.send(set('bus'))
+    host.send(set('comms'))
+    ana.send(set('orbit'))
     await settle()
-    expect(game.getSnapshot().state.params).toMatchObject({ orbit: goodDesign.orbit, comms: goodDesign.comms })
+    expect(game.getSnapshot().state.params).toMatchObject({ bus: goodDesign.bus, comms: goodDesign.comms })
+    expect(ana.getSnapshot().notice).toMatch(/^Only Hana \(Mission planning\)/)
     ben.send(set('instruments')) // science is Ana's
     await settle()
     expect(game.getSnapshot().state.params.instruments).not.toBe(goodDesign.instruments)
     expect(ben.getSnapshot().notice).toMatch(/^Only Ana \(Science\)/)
-    expect(ana.getSnapshot().notice).toBeNull()
   })
 
   it('sends a launch the sim refuses back to the guest who asked', async () => {
@@ -291,13 +302,35 @@ describe('commands', () => {
     expect(guests[0].getSnapshot().notice).toBeTruthy()
   })
 
+  it('flies a crew of three to the end: four roles split 2/1/1, every command sent by its holder', async () => {
+    const { game, host, guests } = await startRoom('Ana', 'Ben')
+    const seats = [host, ...guests]
+    host.claimRole!('mission-planning')
+    guests[0].claimRole!('spacecraft')
+    guests[1].claimRole!('science')
+    await settle()
+    expect(seats.map((seat) => rolesOf(seat.getSnapshot().players, seat.getSnapshot().me.player_id))).toEqual([
+      ['mission-planning', 'comms-resources'], ['spacecraft'], ['science'],
+    ])
+    for (const command of designCommands) holderOf(seats, command).send(command)
+    await settle()
+    holderOf(seats, launch).send(launch)
+    await settle()
+    expect(game.getSnapshot().state.metrics.phase).not.toBe('design')
+    for (const seat of seats) expect(seat.getSnapshot().notice).toBeNull()
+    for (let i = 0; i < 400 && game.getSnapshot().state.status !== 'ended'; i++) game.advance(1000 * 60)
+    await settle()
+    expect(game.getSnapshot().state.status).toBe('ended')
+    for (const guest of guests) expect(guest.getSnapshot().state.status).toBe('ended')
+  })
+
   it('takes launch, speed, pause and reset from a guest', async () => {
     const { game, host, guests } = await startRoom('Gus')
     const [guest] = guests
     host.claimRole!('science')
     guest.claimRole!('mission-planning')
     await settle()
-    for (const command of designCommands) guest.send(command)
+    for (const command of designCommands) holderOf([host, guest], command).send(command)
     guest.send(launch)
     guest.send({ type: 'set_speed', payload: { multiplier: 5 } })
     guest.send({ type: 'pause', payload: {} })
@@ -371,7 +404,8 @@ describe('flight', () => {
     vi.useFakeTimers()
     const { game, host, hostWire, guests, wires } = await startRoom('Gus')
     const [guest] = guests
-    for (const command of designCommands) host.send(command)
+    for (const command of designCommands) holderOf([host, guest], command).send(command)
+    await settle()
     host.send(launch)
     await settle()
     expect(guest.getSnapshot().state.metrics.phase).not.toBe('design')

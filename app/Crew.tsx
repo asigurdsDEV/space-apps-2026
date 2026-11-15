@@ -2,7 +2,7 @@
 // and the crew list with a role picker (the top bar's crew menu). The lobby itself is ui/lobby.
 
 import { useState } from 'react'
-import { ROLES } from '../shared'
+import { ROLES, rolesOf } from '../shared'
 import { ROLE_LABELS, type Session, type SessionSnapshot } from './session'
 
 /** The session's notice, with a button to dismiss it. */
@@ -51,7 +51,7 @@ export function Crew({ session, snapshot }: { session: Session; snapshot: Sessio
               {player.player_id === me.player_id && ' (you)'}
               {player.is_host && <span className="app-tag">Host</span>}
             </span>
-            <span className="app-crew-role">{player.role ? ROLE_LABELS[player.role] : 'No role yet'}</span>
+            <span className="app-crew-role">{player.role ? rolesOf(players, player.player_id).map((role) => ROLE_LABELS[role]).join(' + ') : 'No role yet'}</span>
           </li>
         ))}
       </ul>

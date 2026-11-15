@@ -97,11 +97,12 @@ describe('co-op roles', () => {
   const sci: Player = { player_id: 'g1', name: 'Kai', role: 'science', is_host: false }
   const players = [host, sci]
 
-  it('locks slots owned by another player and leaves unclaimed roles open', () => {
+  it('locks slots owned by another player and shares out the roles nobody picked', () => {
     expect(slotAccess('instruments', players, host)).toEqual({ role: 'science', holder: sci, canEdit: false })
     expect(slotAccess('instruments', players, sci).canEdit).toBe(true)
     expect(slotAccess('orbit', players, sci).canEdit).toBe(false)
-    expect(slotAccess('bus', players, sci)).toEqual({ role: 'spacecraft', holder: null, canEdit: true })
+    expect(slotAccess('bus', players, sci)).toEqual({ role: 'spacecraft', holder: host, canEdit: false })
+    expect(slotAccess('comms', players, sci)).toEqual({ role: 'comms-resources', holder: sci, canEdit: true })
   })
 
   it('lets a solo player do everything', () => {
@@ -120,9 +121,10 @@ describe('co-op roles', () => {
     const prev = { orbit: 'leo', instruments: 'cam', bus: 'a' }
     const next = { orbit: 'sso', instruments: 'cam,mag', bus: 'b' }
     expect(changedBy(prev, next, ['orbit', 'instruments', 'bus'], players, sci, new Set())).toEqual({
-      orbit: 'Ana', instruments: 'You', bus: 'A teammate',
+      orbit: 'Ana', instruments: 'You', bus: 'Ana',
     })
-    expect(changedBy(prev, next, ['bus'], players, sci, new Set(['bus']))).toEqual({ bus: 'You' })
+    expect(changedBy(prev, next, ['bus'], [], undefined, new Set(['bus']))).toEqual({ bus: 'You' })
+    expect(changedBy(prev, next, ['bus'], [], undefined, new Set())).toEqual({ bus: 'A teammate' })
     expect(changedBy(prev, prev, ['orbit'], players, sci, new Set())).toEqual({})
   })
 })

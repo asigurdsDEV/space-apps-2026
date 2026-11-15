@@ -274,6 +274,9 @@ await check(
 
 await check('online: each player claims a different role', async () => {
   await host.getByRole('button', { name: /Mission planning/ }).click()
+  // Start gate (decision 013): the host waits, and is told for whom.
+  await host.getByText('Waiting for Gus to pick a role').waitFor()
+  must(await host.getByRole('button', { name: 'Continue to briefing' }).isDisabled(), 'the host can continue before Gus has a role')
   await guest.getByRole('button', { name: /^Science/ }).click()
   await host.getByText('Taken by Gus').waitFor()
   await guest.getByText('Taken by Hana').waitFor()
@@ -295,8 +298,8 @@ await check(
   { needed: true },
 )
 
-// Hana holds Mission planning (orbit, launch vehicle, launch), Gus holds Science (instruments).
-// Nobody holds Spacecraft (bus, power, battery) or Comms (radio).
+// Hana picked Mission planning (orbit, launch vehicle, launch), Gus picked Science (instruments).
+// The two roles nobody picked are shared out (decision 013): Spacecraft (bus, power, battery) to Hana, Comms (radio) to Gus.
 await check('roles: the guest changes the part its role owns and the host sees it', async () => {
   await pick(guest, `instruments-${WIN.instrument}`)
   await picked(host, `instruments-${WIN.instrument}`)
@@ -339,17 +342,19 @@ await check('roles: the host is refused on the guest’s part too, with a readab
   return notice.replace(/\s*×$/, '')
 })
 
-await check('roles: a part whose role nobody claimed can be changed by anyone', async () => {
-  for (const key of ['bus', 'solar', 'comms']) {
-    must(!(await locked(host, key)), `${key} is locked for the host`)
-    must(!(await locked(guest, key)), `${key} is locked for the guest`)
+await check('roles: the two roles nobody picked are shared out, one to each player', async () => {
+  for (const key of ['bus', 'solar']) {
+    must(!(await locked(host, key)), `${key} is locked for the host, who holds Spacecraft`)
+    must(await locked(guest, key), `${key} is open to the guest though Hana holds Spacecraft`)
   }
-  await pick(guest, `bus-${WIN.bus}`)
-  await picked(host, `bus-${WIN.bus}`)
-  await pick(host, `comms-${WIN.comms}`)
-  await picked(guest, `comms-${WIN.comms}`)
-  await pick(guest, `solar-${WIN.solar}`)
-  await picked(host, `solar-${WIN.solar}`)
+  must(!(await locked(guest, 'comms')), 'comms is locked for the guest, who holds Comms')
+  must(await locked(host, 'comms'), 'comms is open to the host though Gus holds Comms')
+  await pick(host, `bus-${WIN.bus}`)
+  await picked(guest, `bus-${WIN.bus}`)
+  await pick(guest, `comms-${WIN.comms}`)
+  await picked(host, `comms-${WIN.comms}`)
+  await pick(host, `solar-${WIN.solar}`)
+  await picked(guest, `solar-${WIN.solar}`)
 })
 
 await check('sync: both screens show the same design and budgets', async () => {

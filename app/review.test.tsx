@@ -5,7 +5,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { getDatasets, getScenario } from '../data'
 import { LocalTransport, type MessageHandler } from '../net'
-import { isCommand, isNetMessage, ownerRole, ROLES, type Command, type Entity, type NetMessage } from '../shared'
+import { canSend, isCommand, isNetMessage, ownerRole, ROLES, type Command, type Entity, type NetMessage, type Player } from '../shared'
 import { simCore } from '../sim'
 import { DEFAULT_SLOTS } from '../ui/builder'
 import { BASELINE, GameScreen, SCENARIOS } from './App'
@@ -74,6 +74,10 @@ function lobbyRoles(host: { claimRole?: (role: (typeof ROLES)[number]) => void }
   const seats = [host, ...guests]
   seats.forEach((seat, index) => seat.claimRole?.(ROLES[index % ROLES.length]!))
 }
+
+/** The seat holding `command`'s role: with fewer than four players the roles nobody picked are shared out (decision 013). */
+const holderOf = <S extends { getSnapshot(): { players: Player[]; me: Player } }>(seats: S[], command: Command): S =>
+  seats.find((seat) => canSend(seat.getSnapshot().players, seat.getSnapshot().me.player_id, command))!
 
 async function startRoom(...names: string[]) {
   const r = room()
@@ -175,14 +179,18 @@ describe('state messages', () => {
   it('stay small through refused launches, a late joiner, a whole flight and a reset', async () => {
     const { endpoint, sent, game, host, guests } = await startRoom('Gus')
     const [gus] = guests
-    gus.send(set('bus', 'no-such-bus'))
-    for (let i = 0; i < 12; i++) gus.send(launch)
+    const planner = holderOf([host, gus], launch)
+    const builder = holderOf([host, gus], set('bus', ''))
+    builder.send(set('bus', 'no-such-bus'))
     await settle()
-    expect(gus.getSnapshot().notice).toBeTruthy()
+    for (let i = 0; i < 12; i++) planner.send(launch)
+    await settle()
+    expect(planner.getSnapshot().notice).toBeTruthy()
     expect(game.getSnapshot().events.filter((event) => event.type === 'warning')).toHaveLength(1)
 
-    gus.send(set('bus', String(config.params.bus)))
-    gus.send(launch)
+    builder.send(set('bus', String(config.params.bus)))
+    await settle()
+    planner.send(launch)
     await settle()
     expect(game.getSnapshot().state.metrics.phase).not.toBe('design')
     expect(game.getSnapshot().events.some((event) => event.type === 'warning')).toBe(false)
@@ -259,8 +267,8 @@ describe('commands from guests', () => {
   })
 
   it('refuses design changes in flight without filling the event list', async () => {
-    const { game, guests } = await startRoom('Gus')
-    guests[0].send(launch)
+    const { game, host, guests } = await startRoom('Gus')
+    holderOf([host, ...guests], launch).send(launch)
     await settle()
     const before = game.getSnapshot().events.length
     for (let i = 0; i < 50; i++) guests[0].send(set('bus', 'cubesat-12u'))

@@ -8,7 +8,7 @@ import { realStorms } from '../data/space-weather/storms'
 import { DIFFICULTIES, PROGRAM, getDatasets, getScenario, realMissions, rowsAsObjects, scenarios, withDifficulty, type Difficulty } from '../data'
 import { LocalTransport } from '../net'
 import type { Config, NetMessage, SimEvent, SimState, Summary } from '../shared'
-import { canSend, MAX_PLAYERS, ROLES } from '../shared'
+import { canSend, MAX_PLAYERS, ROLES, rolesOf } from '../shared'
 import { catalogEntities, choicesOf, pendingDecision, simCore, whatIf } from '../sim'
 import { SoundToggle } from '../ui/audio'
 import { Briefing } from '../ui/briefing'
@@ -457,7 +457,7 @@ export function GameScreen({ session, config, onExit, roomCode, daily, skipLaunc
         {roomCode && (
           <details className="app-crew-menu">
             <summary className="game-button app-small">
-              Crew ({players.length})<span className="app-crew-mine"> · {me.role ? ROLE_LABELS[me.role] : 'No role'}</span>
+              Crew ({players.length})<span className="app-crew-mine"> · {me.role ? rolesOf(players, me.player_id).map((role) => ROLE_LABELS[role]).join(' + ') : 'No role'}</span>
             </summary>
             <div className="app-crew-panel">
               <RoomCode code={roomCode} />
@@ -749,7 +749,7 @@ function Flight({ session, config, daily, online, skipLaunch, onLaunchDone, camp
         onTryFix={tryFix}
         realMissions={REAL_MISSIONS}
         onDecide={decide}
-        canDecide={canSend(me.role, { type: 'resolve_decision', payload: { decision_id: '', option_id: '' } }, players.map((p) => p.role), console)}
+        canDecide={canSend(players, me.player_id, { type: 'resolve_decision', payload: { decision_id: '', option_id: '' } }, console)}
         // An event daily flies today's real event, not the seed's historical weather.
         spaceWeather={weather && typeof day === 'number' && !daily?.event ? weather.weatherForMissionDay(weatherStart(config, daily?.seed ?? config.seed), day) : null}
       />

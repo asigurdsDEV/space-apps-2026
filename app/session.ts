@@ -4,8 +4,9 @@
 
 import { HostRoom, type Transport } from '../net'
 import type { Command, Entity, NetMessage, Player, Role, SimEvent, SimState } from '../shared'
-import { canSend, CONTRACT_VERSION, isDesignKey, isNetMessage, ownerRole, ROLES } from '../shared'
+import { canSend, CONTRACT_VERSION, isDesignKey, isNetMessage, ownerRole, roleHolders, ROLES } from '../shared'
 import type { Game, GameSnapshot } from './game'
+import { waitingForRoles } from '../ui/lobby/model'
 
 export interface SessionSnapshot {
   readonly state: SimState
@@ -150,7 +151,7 @@ function newWarning(before: readonly SimEvent[], after: readonly SimEvent[]): st
   return null
 }
 
-/** One player, in this browser, holding no role (so `canSend` lets them send everything). No net/ involved. */
+/** One player, in this browser, picking no role (so roleHolders gives them all four). No net/ involved. */
 export function createSoloSession(game: Game, options: SoloSessionOptions = {}): Session {
   const me: Player = { player_id: SOLO_PLAYER_ID, name: options.name ?? 'You', role: null, is_host: true }
   const players = [me]
@@ -290,7 +291,7 @@ const ACTIONS: Record<Command['type'], string> = {
 /** Why `command` was refused, for the player who sent it. */
 function refusal(command: Command, players: readonly Player[], decisionConsole?: Role | null): string {
   const owner = ownerRole(command, decisionConsole)
-  const holder = players.find((p) => p.role !== null && p.role === owner)
+  const holder = owner ? roleHolders(players)[owner] : undefined
   if (!owner || !holder) return 'That command was refused.'
   return `Only ${holder.name} (${ROLE_LABELS[owner]}) can ${ACTIONS[command.type]}.`
 }
@@ -477,7 +478,7 @@ export function createHostSession(
     // An anomaly card belongs to the console the sim named for it.
     const console = game.getSnapshot().state.metrics.decision_console
     const decisionConsole = ROLES.find((role) => role === console) ?? null
-    if (!canSend(player.role, command, players.map((p) => p.role), decisionConsole)) return refusal(command, players, decisionConsole)
+    if (!canSend(players, player.player_id, command, decisionConsole)) return refusal(command, players, decisionConsole)
     const before = game.getSnapshot().events
     game.send(command)
     // A warning the sim raised in answer (a refused launch) goes back to whoever sent the command.
@@ -607,7 +608,7 @@ export function createHostSession(
       if (closed || stage !== 'lobby') return
       // Same-screen play is one seat with no role. A room with more than one person waits until each has chosen.
       if (players.length > 1 && players.some((player) => !player.role)) {
-        notice = 'Every player needs a role before the mission can start.'
+        notice = `${waitingForRoles(players)}. Every player needs a role before the mission can start.`
         refresh()
         return
       }

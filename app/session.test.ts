@@ -47,8 +47,7 @@ describe('createSoloSession', () => {
     expect(me.is_host).toBe(true)
     expect(me.role).toBeNull()
     expect(notice).toBeNull()
-    const claimed = players.map((p) => p.role)
-    for (const command of [...designCommands, launch]) expect(canSend(me.role, command, claimed)).toBe(true)
+    for (const command of [...designCommands, launch]) expect(canSend(players, me.player_id, command)).toBe(true)
   })
 
   it('mirrors the game and passes commands to it', () => {

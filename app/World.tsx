@@ -8,7 +8,7 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState, type ComponentType } from 'react'
 import { getDatasets } from '../data'
 import type { Config, SimEvent, SimState, Summary } from '../shared'
-import { canSend, ROLES } from '../shared'
+import { canSend, roleHolders, ROLES } from '../shared'
 import { choicesOf, pendingDecision, whatIf } from '../sim'
 import { savePersonalBest } from '../ui/leaderboard/storage'
 import { stars } from '../ui/mission'
@@ -270,8 +270,8 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
   if (flying) {
     const decision = pendingDecision(state)
     const console = ROLES.find((role) => role === decision?.console) ?? null
-    const may = canSend(me.role, { type: 'resolve_decision', payload: { decision_id: '', option_id: '' } }, players.map((p) => p.role), console)
-    const holder = players.find((p) => p.role === console)
+    const may = canSend(players, me.player_id, { type: 'resolve_decision', payload: { decision_id: '', option_id: '' } }, console)
+    const holder = console ? roleHolders(players)[console] : undefined
     return (
       <div ref={flightRef} className={`app-world game-theme${menuOpen ? ' is-menu-open' : ''}`} data-theme="dark">
         <SpacecraftRoom

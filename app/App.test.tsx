@@ -266,6 +266,7 @@ describe('co-op screens', () => {
     const waiting = [players[0], { ...players[1], role: null }]
     const html = room(frozen({ stage: 'lobby', me: waiting[0], players: waiting }))
     expect(html).toContain('Every player needs a role')
+    expect(html).toContain(`Waiting for ${players[1].name} to pick a role`)
     expect(html).toMatch(/<button[^>]*disabled[^>]*>Continue to briefing<\/button>/)
   })
 
@@ -293,7 +294,7 @@ describe('co-op screens', () => {
     const online = renderToStaticMarkup(
       <GameScreen session={session} config={config} onExit={() => {}} roomCode="ABC234" />,
     )
-    expect(online).toContain('Crew (2)<span class="app-crew-mine"> · Science</span>')
+    expect(online).toContain('Crew (2)<span class="app-crew-mine"> · Science + Comms and resources</span>')
     expect(online).toContain('ABC234')
     expect(online).toContain('Only Hana (Spacecraft)')
     expect(online).toContain('aria-label="Dismiss message"')
