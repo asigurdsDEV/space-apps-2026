@@ -225,7 +225,7 @@ describe('debrief', () => {
     const { state } = fly({ toEnd: true, sandbox: true })
     const report = summary(state)
     const tried: string[] = []
-    const fixes = [{ change: '3 ground stations instead of 1', score: 990, grade: 'A' }, { change: 'Add the Magnetometer', score: 970 }]
+    const fixes = [{ change: '3 ground stations instead of 1', score: 998, grade: 'A' }, { change: 'Add the Magnetometer', score: 995 }]
     const element = ResultsScreen({ summary: report, onCommand: noop, bonusGoal: 'no_data_lost', fixes, onTryFix: (f) => tried.push(f.change) })
     const html = renderToStaticMarkup(element)
     expect(html).toContain('3 stars')

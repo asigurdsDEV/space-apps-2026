@@ -526,9 +526,9 @@ function clamp01(value: number): number {
 }
 
 function grade(score: number): string {
-  if (score >= 850) return 'A'
-  if (score >= 700) return 'B'
-  if (score >= 550) return 'C'
+  if (score >= 800) return 'A'
+  if (score >= 650) return 'B'
+  if (score >= 500) return 'C'
   if (score >= 400) return 'D'
   return 'F'
 }
@@ -537,13 +537,13 @@ function grade(score: number): string {
 const NOT_IN_WHY = new Set(['science_short'])
 /** Outcomes that are a failed mission: their score stops at a C, however good the rest of the design was. */
 const FAILED = new Set<Outcome>(['science_shortfall', 'launch_failure', 'spacecraft_failure'])
-const FAILED_SCORE_CAP = 690
+const FAILED_SCORE_CAP = 640
 
 /**
  * Score and plain-language explanation for the results screen.
- * Score (0 to 1,000, arcade-sized): 700 for science against the goal, 100 for budget left over,
- * 100 for launch mass margin, 100 for the share of data that reached the ground.
- * A failed mission scores at most 690 (grade C).
+ * Score (0 to 1,000, arcade-sized): 700 for science against the goal (square root, so a near miss still scores well),
+ * 100 for budget left over and 100 for launch mass margin (full marks at 10% spare), 100 for the share of data that reached the ground.
+ * A failed mission scores at most 640 (grade C).
  */
 export function summary(state: SimState): Summary {
   const m = state.metrics
@@ -561,9 +561,9 @@ export function summary(state: SimState): Summary {
   const day = metric(m, 'mission_day')
   const planned = metric(m, 'mission_days')
 
-  const scienceShare = goal > 0 ? clamp01(science / goal) : science > 0 ? 1 : 0
-  const budgetShare = budget > 0 ? clamp01((budget - cost) / budget / 0.2) : 0
-  const massShare = massLimit > 0 ? clamp01((massLimit - mass) / massLimit / 0.2) : 0
+  const scienceShare = goal > 0 ? Math.sqrt(clamp01(science / goal)) : science > 0 ? 1 : 0
+  const budgetShare = budget > 0 ? clamp01((budget - cost) / budget / 0.1) : 0
+  const massShare = massLimit > 0 ? clamp01((massLimit - mass) / massLimit / 0.1) : 0
   const dataShare = generated > 0 ? clamp01(downlinked / generated) : outcome === 'success' ? 1 : 0
   // Nothing is scored until the mission launches.
   const rawScore =
