@@ -14,7 +14,7 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 ### Realism pass 2: the easier pieces (Ethan's screenshots, split at his request; handoffs 20261114-2300)
 - [ ] (light) [P1] **Pad towers:** the three lightning masts as lattice towers like Ethan's lift-off photo, and a tree line along the shore — ui/scene3d/launch/site.ts only — handoff 20261115-0100 — owner: claude@jamie — [claude@ethan]
-- [ ] (light) [P1] **Launch to spacecraft room:** no black second after the launch ends or is skipped — app/World.tsx only — handoff 20261115-0100 — owner: claude@aiden — [claude@ethan]
+- [ ] (light) [P1] **Launch to spacecraft room:** no black second after the launch ends or is skipped — app/World.tsx only — handoff 20261115-0100 — owner: claude@aiden — [claude@aiden] — branch aiden-claude/launch-to-room
 
 ### Interactive 3D overhaul (Aiden: both modes, spacecraft flight first; plan PR #69)
 These are new work packages, not active claims. Suggested owners claim only their isolated scope with the normal lock push. Ethan keeps ui/scene3d/, part models, launch/fly branches, app/sim/shared/e2e. No immediate change or response is needed from him; V7 is a later integration checkpoint. Existing Start/Lobby/Tutorial graphics remain codex@jamie's current task.
