@@ -1,4 +1,4 @@
-import { Box3, Mesh, Vector3, type Object3D } from 'three'
+import { Box3, Mesh, Vector3, type Material, type Object3D } from 'three'
 import { describe, expect, it } from 'vitest'
 import { createAstronaut, crewLabel, poseAstronaut } from './astronaut'
 import { advance, newMotion, pose, type MoveMode } from './motion'
@@ -40,16 +40,22 @@ describe('astronaut', () => {
 
   it('shares its shapes between crew members and stays cheap to draw', () => {
     const [a, b] = [createAstronaut('A'), createAstronaut('B')]
-    expect(meshes(a).length).toBe(32) // body 6, each leg 1 + 5, each arm 2 + 5
-    meshes(a).forEach((mesh, i) => expect(mesh.geometry).toBe(meshes(b)[i]!.geometry))
-    const triangles = meshes(a).reduce((sum, mesh) => sum + mesh.geometry.getAttribute('position').count / 3, 0)
-    expect(triangles).toBeLessThan(40_000)
+    expect(meshes(a).length).toBe(1) // one skinned suit, a draw call per material
+    const suit = meshes(a)[0]!
+    const looks = suit.material as Material[]
+    expect(looks.length).toBe(6)
+    expect(suit.geometry.groups.map((group) => group.materialIndex)).toEqual([0, 1, 2, 3, 4, 5])
+    expect(suit.geometry).toBe(meshes(b)[0]!.geometry)
+    looks.forEach((look, i) => expect(look).toBe((meshes(b)[0]!.material as Material[])[i]))
+    expect((meshes(createAstronaut('C', 2))[0]!.material as Material[])[5]).not.toBe(looks[5]) // only the leg stripes differ
+    const triangles = suit.geometry.getAttribute('position').count / 3
+    expect(triangles).toBeLessThan(30_000)
     // Feet on the floor, visor towards -Z (the way the first-person camera looks at yaw 0).
     expect(box(a).min.y).toBeGreaterThan(-0.02)
     expect(box(a).min.y).toBeLessThan(0.03)
-    const visor = meshes(a).find((mesh) => mesh.name === 'visor')!
-    visor.geometry.computeBoundingBox()
-    expect(visor.geometry.boundingBox!.max.z).toBeLessThan(0)
+    const visor = suit.geometry.groups[looks.findIndex((look) => look.name === 'visor')]!
+    const position = suit.geometry.getAttribute('position')
+    for (let i = visor.start; i < visor.start + visor.count; i++) expect(position.getZ(i)).toBeLessThan(0)
   })
 
   it('keeps its feet on the floor when walking and off it when floating', () => {

@@ -1,4 +1,4 @@
-import { Scene } from 'three'
+import { Scene, SkinnedMesh, type Material } from 'three'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { mountCrew } from './crew'
 
@@ -41,7 +41,7 @@ describe('crew in a room', () => {
     const scene = new Scene()
     const crew = mountCrew(scene)
     crew.set([member])
-    const thigh = scene.children[0]!.children[0]!.children[0]!.children.find((part) => part.children.length > 1)!
+    const thigh = scene.children[0]!.children[0]!.children[0]!.children[0]! // the body's first bone: a leg
     let widest = 0
     let jerk = 0
     for (let frame = 0; frame < 300; frame++) {
@@ -71,6 +71,22 @@ describe('crew in a room', () => {
     expect(lean(Math.PI / 2, -1, 0).x).toBeLessThan(-0.4) // facing -X, going -X: head first again
     expect(lean(0, 0, 1).x).toBeGreaterThan(0) // backwards: leans back
     expect(lean(0, 1, 0).z).toBeLessThan(-0.15) // sideways to +X: head towards +X
+  })
+
+  it('gives everyone in the room their own leg-stripe colour, and keeps it through a rename', () => {
+    const scene = new Scene()
+    const crew = mountCrew(scene)
+    const stripes = () => scene.children[0]!.children.map((body) => (body.children.find((part) => part instanceof SkinnedMesh)!.material as Material[]).at(-1)!)
+    const four = ['a', 'b', 'c', 'd'].map((player_id) => ({ ...member, player_id }))
+    crew.set(four)
+    expect(new Set(stripes()).size).toBe(4)
+    const [first, , third] = stripes()
+    crew.set([{ ...four[0]!, name: 'Renamed' }, four[2]!, four[3]!])
+    expect(stripes()).toContain(first)
+    crew.set([four[0]!, four[2]!, four[3]!, { ...member, player_id: 'e' }])
+    expect(new Set(stripes()).size).toBe(4) // the newcomer takes the colour that was freed
+    expect(stripes()).toContain(third)
+    crew.dispose()
   })
 
   it('only eases the position when the player asked for reduced motion', () => {
