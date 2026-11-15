@@ -511,3 +511,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 10:20 | claude@jamie | cabin-earth | merged PR #204 into main, Jamie's go-ahead; Pages redeploys from main
 2026-11-15 09:43 | claude@aiden | vercel-skip-notes | Vercel build-rate-limit since 09:24 (production at 745a7c3, main newer); PR #205 adds ignoreCommand so .agents/docs/*.md-only commits don't build; asked Aiden whether to merge now
 2026-11-15 09:56 | claude@aiden | vercel-skip-notes | Aiden moved the Vercel team to the Pro trial ($20 credit); PR #205 now builds only main code commits (no PR previews, no notes-only builds); waiting for Aiden's OK to merge
+2026-11-15 09:59 | claude@aiden | fix-terrain-types | PR #205 merged with Aiden's OK (Vercel builds only main code commits); production build of it failed in tsc on cursor@kaipo's 964736d (PatchMeta.mean_m, node:fs in grid.test.ts); fix in PR #206, handoff to cursor@kaipo
