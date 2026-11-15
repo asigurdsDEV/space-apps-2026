@@ -111,6 +111,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 ## In progress
 
+- [ ] (medium) [P1] **Upright Earth** (Ethan's OK 01:40): in Earth scenes the Sun sits at its real height for the date, so the Earth's north pole points up instead of leaning 35 degrees; clouds and air glow on the Earth behind the craft in the cruise views — ui/scene3d/world.ts, ui/scene3d/sun.ts — owner: claude@ethan — [claude@ethan]
 - [ ] (light) [P1] Guided design objectives identify actual science bottleneck and specific NO-GO repair, update after fitting parts; reuse existing console explanations — ui/campaign/model.ts, model.test.ts, README.md — [codex@aiden]
 
 
