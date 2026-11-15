@@ -420,3 +420,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 18:44 | claude@jamie | start-satellite | claimed (Jamie's request): round corners, real planet icons, clickable satellite + info page, download screen restyle; ui/start/, world.ts click (Ethan's OK), GameAssets (Aiden's OK)
 2026-11-14 18:49 | claude@jamie | start-satellite | done: PR #157. Rounded start screen, real planet icons, clickable satellite + spacecraft page, download screen restyle; 571 tests
 2026-11-14 18:52 | claude@jamie | merge | merged PR #157 at Jamie's request; CI build passed; live on GitHub Pages (download → ready → menu checked)
+2026-11-14 18:59 | claude@jamie | classic-look | claimed (Jamie's request): Classic view in the main-menu look, text cuts, realistic Moon, fewer stars; owners' OK in person
