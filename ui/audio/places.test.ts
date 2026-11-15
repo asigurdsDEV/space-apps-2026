@@ -116,6 +116,9 @@ describe('launch cues', () => {
     const lost = score('falcon-9', true)
     expect(lost.cues.map((c) => c.cue)).toEqual(['whoomp', 'crack'])
     expect(lost.lostAt).toBeGreaterThan(lost.timeline.stages.at(-1)!.start)
+    // The sandbox's interception: the jet roars past, fires, then the blast.
+    const shot = launchScore(rocketSpec(undefined), launchTimeline(rocketSpec(undefined), { intercepted: true }))
+    expect(shot.cues.slice(-3).map((c) => c.cue)).toEqual(['flyby', 'missile', 'crack'])
   })
 })
 
@@ -128,8 +131,8 @@ describe('cues and room details', () => {
         expect(p.gain, name).toBeGreaterThan(0)
         expect(p.freq, name).toBeGreaterThan(20)
       }
-      // The explosion rolls on through the failure shot; every other cue is short.
-      expect(cueLength(name as CueName), name).toBeLessThan(name === 'crack' ? 8 : 1.6)
+      // The explosion rolls on through the failure shot and the jet takes a few seconds to pass; every other cue is short.
+      expect(cueLength(name as CueName), name).toBeLessThan(name === 'crack' ? 8 : name === 'flyby' ? 4 : 1.6)
     }
     // The alarm is a few pulses, then quiet: it never loops.
     expect(cueLength('caution')).toBeLessThan(1.2)

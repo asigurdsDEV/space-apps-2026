@@ -8,15 +8,14 @@
   color: #f5f6f8;
   font: 1rem/1.45 var(--game-font, system-ui, sans-serif);
 }
-.s3d-intercept-canvas { position: absolute; inset: 0; }
-.s3d-intercept-top, .s3d-intercept-caption, .s3d-intercept-debrief {
+.s3d-intercept-canvas { position: absolute; inset: 0; height: 100%; min-height: 0; border-radius: 0; }
+.s3d-intercept-debrief {
   position: absolute;
   left: 12px;
   right: 12px;
   z-index: 2;
 }
-.s3d-intercept-top { top: 10px; display: flex; gap: 10px; align-items: center; }
-.s3d-intercept-banner, .s3d-intercept-shot, .s3d-intercept-debrief {
+.s3d-intercept-banner, .s3d-intercept-debrief {
   border: 1px solid rgb(255 255 255 / 0.16);
   border-radius: 14px;
   background: rgb(10 12 16 / 0.72);
@@ -29,7 +28,6 @@
   font-weight: 700;
   letter-spacing: 0.06em;
 }
-.s3d-intercept-buttons { margin-left: auto; display: flex; gap: 8px; }
 .s3d-intercept button {
   border: 1px solid rgb(255 255 255 / 0.2);
   border-radius: 999px;
@@ -39,10 +37,8 @@
   font: inherit;
   cursor: pointer;
 }
-.s3d-intercept-caption { bottom: 12px; padding: 10px 12px; }
-.s3d-intercept-caption p { margin: 0; }
 .s3d-intercept-debrief {
-  top: 64px;
+  top: 12px;
   bottom: 12px;
   overflow: auto;
   padding: 16px 18px 20px;

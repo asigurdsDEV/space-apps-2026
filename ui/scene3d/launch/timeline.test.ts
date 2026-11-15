@@ -137,4 +137,12 @@ describe('flight profile', () => {
     expect(vacuum(0)).toBe(0)
     expect(vacuum(150_000)).toBe(1)
   })
+
+  it('the sandbox interception: the rocket climbs, an F-22 shot, then the failure; it counts as a failed launch', () => {
+    const tl = launchTimeline(rocketSpec(undefined), { intercepted: true })
+    expect(tl.failed).toBe(true)
+    expect(tl.stages.slice(-2).map((s) => s.id)).toEqual(['intercept', 'failure'])
+    expect(tl.stages.find((s) => s.id === 'intercept')!.caption).toMatch(/F-22/)
+    expect(launchTimeline(rocketSpec(undefined), { failed: true }).stages.some((s) => s.id === 'intercept')).toBe(false)
+  })
 })

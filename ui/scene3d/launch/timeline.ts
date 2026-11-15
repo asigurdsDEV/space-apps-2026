@@ -7,7 +7,7 @@ export type StageId =
   | 'countdown' | 'ignition' | 'liftoff'
   | 'carry' | 'drop' | 'airstart'
   | 'pitch' | 'maxq' | 'boosters' | 'staging' | 'fairing' | 'burn' | 'deploy'
-  | 'failure'
+  | 'intercept' | 'failure'
 
 export interface LaunchStage {
   id: StageId
@@ -28,7 +28,12 @@ export interface LaunchTimeline {
   /** Screen seconds for the whole sequence. */
   duration: number
   failed: boolean
+  /** The sandbox's fictional interception: an F-22 fires on the climbing rocket (an 'intercept' shot before the failure). */
+  intercepted: boolean
 }
+
+/** The interception's moments, in screen seconds before the blast: the F-22 comes into view, roars past the camera, fires, and passes the rocket. */
+export const INTERCEPT = { enter: -8.6, buzz: -6.3, fire: -5.4, pass: -4.4 } as const
 
 /** Where in its shot each key event happens, 0 to 1. The scene and the clock both use these. */
 export const EVENT_AT = { maxq: 0.5, boosters: 0.35, staging: 0.15, fairing: 0.35, burn: 0.8, deploy: 0.3, drop: 1 / 6, failure: 0.22 } as const
@@ -38,7 +43,7 @@ interface Shot { id: StageId; seconds: number; met: [number, number]; title: str
 /** A shot that covers `span` real seconds, with the event at `at` (0 to 1) of the way through. */
 const around = (event: number, at: number, span: number): [number, number] => [event - at * span, event + (1 - at) * span]
 
-function shots(spec: RocketSpec, failed: boolean, cause?: string): Shot[] {
+function shots(spec: RocketSpec, failed: boolean, cause?: string, intercepted = false): Shot[] {
   const ev = spec.events
   const name = spec.name
   const start: Shot[] = spec.airLaunch
@@ -58,6 +63,18 @@ function shots(spec: RocketSpec, failed: boolean, cause?: string): Shot[] {
       : { id: 'pitch', seconds: 2.2, met: [14, 22], title: 'Pitch-over', caption: 'It tips over on purpose: orbit is about going sideways, fast.', detail: 'The rocket tips over on purpose. Getting to orbit is mostly about going sideways very fast, not just going up.' },
     { id: 'maxq', seconds: 2.5, met: around(ev.maxq, EVENT_AT.maxq, 8), title: 'Max-Q', caption: 'Max-Q: the moment the air pushes hardest on the rocket.', detail: 'Max-Q is when the air pushes hardest on the rocket: it is already fast and the air is still thick. After this the air thins and the ride gets easier.' },
   ]
+  if (intercepted) {
+    // Fiction, for the sandbox only: no rocket launch has ever been shot down.
+    return [...start, ...climb, {
+      id: 'intercept', seconds: 7, met: [ev.maxq + 3, ev.maxq + 10], title: 'Interception',
+      caption: 'An F-22 closes on the climbing rocket and fires a missile.',
+      detail: 'A fictional story for the sandbox: a fighter jet climbs alongside the rocket and fires a missile at it. Real launches are protected by closed airspace and range safety, and no launch has ever been shot down.',
+    }, {
+      id: 'failure', seconds: 8, met: [ev.maxq + 10, ev.maxq + 20], title: 'Rocket destroyed',
+      caption: 'The missile hits. The rocket breaks up. No one is aboard.',
+      detail: 'The missile hits and the rocket breaks up, with the spacecraft inside. This is the sandbox\'s fictional interception: it is rolled by chance and has nothing to do with your design.',
+    }]
+  }
   if (failed) {
     // The sim reports that the launch failed (outcome "launch_failure"), not when; `cause` says why when the crew launched against a NO-GO.
     const pct = Math.round(spec.reliability * 100)
@@ -85,12 +102,13 @@ function shots(spec: RocketSpec, failed: boolean, cause?: string): Shot[] {
 }
 
 /** The stages of the launch for a launch-vehicle row (any row, or none: unknown vehicles get a generic rocket). */
-export function launchTimeline(vehicle: VehicleLike | RocketSpec | undefined, options: { failed?: boolean; cause?: string } = {}): LaunchTimeline {
+export function launchTimeline(vehicle: VehicleLike | RocketSpec | undefined, options: { failed?: boolean; cause?: string; intercepted?: boolean } = {}): LaunchTimeline {
   const spec = vehicle && 'events' in vehicle ? vehicle : rocketSpec(vehicle)
-  const failed = options.failed === true
+  const intercepted = options.intercepted === true
+  const failed = options.failed === true || intercepted
   let t = 0
-  const stages = shots(spec, failed, options.cause).map(({ seconds, ...shot }): LaunchStage => ({ ...shot, start: t, end: (t += seconds) }))
-  return { stages, duration: t, failed }
+  const stages = shots(spec, failed, options.cause, intercepted).map(({ seconds, ...shot }): LaunchStage => ({ ...shot, start: t, end: (t += seconds) }))
+  return { stages, duration: t, failed, intercepted }
 }
 
 /** The stage on screen at screen time `t`. Clamps: before the start gives the first stage, after the end the last. */

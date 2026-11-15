@@ -19,7 +19,8 @@ import { AIR, CLOUD_DECK_M, flameColor, flameReach, flameShine, makeCloudDeck, m
 import { siteUnit } from './layout'
 import { buildRocket, type Nozzle } from './rocket'
 import { buildCarrier, buildPad } from './site'
-import { EVENT_AT, missionTime, stageAt, stageProgress, type LaunchTimeline, type StageId } from './timeline'
+import { buildMissile, buildRaptor, makeRibbon } from './raptor'
+import { EVENT_AT, INTERCEPT, missionTime, stageAt, stageProgress, type LaunchTimeline, type StageId } from './timeline'
 import type { RocketSpec } from './vehicles'
 
 export interface LaunchSceneOptions {
@@ -217,13 +218,63 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
   const puffs = makePuffs(160)
   const clouds = makePuffs(340, { fire: fireU, unit: siteUnit(H) })
   // A launch failure: the fireball, and the smoke trails of the burning pieces.
-  const fireball = makePuffs(FIREBALL + PIECES + 1, undefined, true)
+  const fireball = makePuffs(FIREBALL + PIECES + 2, undefined, true)
   const debris = makePuffs(SHELL + PIECES * TRAIL)
   scene.add(puffs.mesh, clouds.mesh, fireball.mesh, debris.mesh)
   /** Where the failure shot blows the vehicle up (its middle) and the way it was flying, set each frame of that shot. */
   const blastAt = new THREE.Vector3()
   const blastUp = new THREE.Vector3()
   const BLAST = EVENT_AT.failure
+
+  // The sandbox's fictional interception (raptor.ts): an F-22 climbs alongside, fires a missile, and passes the rocket.
+  const jet = timeline.intercepted ? buildRaptor() : null
+  const missile = jet ? buildMissile() : null
+  const smokeTrail = makeRibbon(180)
+  if (jet && missile) scene.add(jet.root, missile, smokeTrail.mesh)
+  const failShot = timeline.stages.find((s) => s.id === 'failure')
+  /** Screen time of the blast. */
+  const blastT = failShot ? failShot.start + BLAST * (failShot.end - failShot.start) : Infinity
+  /** The interception's yardstick: the rocket's height, but never so small that the 19 m jet fills the frame. */
+  const S = Math.max(H, 45)
+  // The jet's path in the rocket's moving frame, flown at a steady speed: from behind the camera, close past it, on
+  // toward the rocket to fire, then past the rocket's side and away up and beyond it.
+  const JET_PATH = new THREE.CatmullRomCurve3([[1.0, -0.7, 4.6], [0.35, -0.25, 2.2], [-0.1, 0, 1.3], [-0.6, 0.5, 0.45], [-2.5, 2.2, -1.5], [-6, 4.5, -4]].map(([x, y, z]) => new THREE.Vector3(x! * S, y! * S, z! * S)))
+  const JET_END = 2.2
+  const jetU = (tau: number) => clamp01((tau - INTERCEPT.enter) / (JET_END - INTERCEPT.enter))
+  const iv = { a: new THREE.Vector3(), b: new THREE.Vector3(), c: new THREE.Vector3(), m: new THREE.Matrix4(), q: new THREE.Quaternion() }
+  /** Middle of the rocket at screen time `t`: where it was while it flew, where it blew up after. */
+  const along = new THREE.Vector3()
+  const rocketMid = (t: number, out: THREE.Vector3) => {
+    const m = missionTime(timeline, Math.min(t, blastT))
+    const a = tiltAt(m)
+    return basePos(m, out).add(along.set(Math.sin(a), Math.cos(a), 0).multiplyScalar(0.5 * H))
+  }
+  /** The jet's place (in `out`) and attitude (in `q`) at `tau` seconds from the blast. */
+  const jetAt = (tau: number, out: THREE.Vector3, q?: THREE.Quaternion) => {
+    const u = jetU(tau)
+    rocketMid(blastT + tau, out).add(JET_PATH.getPointAt(u, iv.a))
+    if (q) {
+      // Nose along the climb plus its own way through the rocket's frame; top facing up-range, rolled into the pull-away.
+      const a = tiltAt(missionTime(timeline, Math.min(blastT + tau, blastT)))
+      const fwd = JET_PATH.getTangentAt(u, iv.a).multiplyScalar(0.8).add(iv.b.set(Math.sin(a), Math.cos(a), 0)).normalize()
+      const up = iv.b.set(-Math.cos(a), Math.sin(a), 0).applyAxisAngle(fwd, 0.35 * Math.sin(tau * 0.6) - 1.1 * smooth(INTERCEPT.pass, 0.5, tau))
+      q.setFromRotationMatrix(iv.m.lookAt(fwd, iv.c.set(0, 0, 0), up))
+    }
+    return out
+  }
+  const bay = new THREE.Vector3()
+  /** The camera, in the rocket's moving frame: behind the jet's run in, a little to the side and below. */
+  const EYE_REL = new THREE.Vector3(0.55 * S, -0.15 * S, 2.7 * S)
+  /** The missile `tau` seconds from the blast, from its drop off the jet to the hit, relative to the rocket's middle. */
+  const missileRel = (tau: number, out: THREE.Vector3) => {
+    if (!jet) return out.set(0, 0, 0)
+    const u = clamp01((tau - INTERCEPT.fire) / -INTERCEPT.fire)
+    jetAt(INTERCEPT.fire, out, iv.q).sub(rocketMid(blastT + INTERCEPT.fire, iv.c)).add(bay.copy(jet.bay).applyQuaternion(iv.q))
+    // It drops clear, its motor lights, and it runs in faster and faster, curving out toward the camera and back in.
+    const run = Math.pow(u, 1.8)
+    return out.multiplyScalar(1 - run).add(iv.c.set(0.3 * S, -0.2 * S, 0.12 * S).multiplyScalar(Math.sin(Math.PI * u))).addScaledVector(iv.c.set(0, -1, 0), 0.04 * S * Math.min(u * 12, 1))
+  }
+  const missileAt = (tau: number, out: THREE.Vector3) => missileRel(tau, out).add(rocketMid(blastT + tau, iv.b))
 
   const composer = new EffectComposer(renderer)
   composer.addPass(new RenderPass(scene, camera))
@@ -303,12 +354,12 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
     let boom = -1
     if (id === 'failure') {
       // It veers off course, engines still burning, and range safety blows it up.
-      const veer = smooth(0.02, BLAST, Math.min(p, BLAST))
+      const veer = timeline.intercepted ? 0 : smooth(0.02, BLAST, Math.min(p, BLAST))
       tilt += veer * veer * 0.55
       model.root.rotation.x = veer * veer * 0.3
       boom = (p - BLAST) * (stage.end - stage.start)
       const m = missionTime(timeline, stage.start + BLAST * (stage.end - stage.start))
-      const lean = tiltAt(m) + 0.55
+      const lean = tiltAt(m) + (timeline.intercepted ? 0 : 0.55)
       blastUp.set(Math.sin(lean), Math.cos(lean), 0)
       basePos(m, blastAt).addScaledVector(blastUp, 0.5 * H)
     }
@@ -510,7 +561,21 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
         fov = 38
         shake = 0.45
         break
+      case 'intercept':
       case 'failure': {
+        if (timeline.intercepted) {
+          // One continuous camera, riding with the rocket just off the jet's path: it watches the jet come up with the rocket
+          // behind it, the jet roars past the lens, it follows the missile in, and pulls back as the rocket blows up.
+          const tau = t - blastT
+          rocketMid(t, eye).add(EYE_REL)
+          rocketMid(t, target).lerp(jetAt(tau, tmp), 0.22 * (1 - smooth(INTERCEPT.fire, INTERCEPT.pass, tau)))
+          const back = smooth(0, 2.5, tau)
+          eye.lerp(tmp.copy(blastAt).add(iv.c.set(2.6 * H, -2.2 * H, 9.5 * H)), back)
+          if (tau > 0) target.copy(blastAt)
+          fov = lerp(48, 40, back)
+          shake = tau < 0 ? 0.12 + 0.9 * Math.exp(-Math.abs(tau - INTERCEPT.pass) * 2.5) : 0.25 + 2.4 * Math.exp(-tau * 1.6)
+          break
+        }
         // Follow the rocket until it blows up, then hold on the spot and back away as the cloud grows; the blast shakes the camera.
         if (boom < 0) onAxis(0.4, target)
         else target.copy(blastAt)
@@ -718,6 +783,32 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
         }
       }
       if (boom >= 0) addBlast(boom, blastAt, blastUp, H, fireball, debris)
+      if (jet && missile) {
+        const tau = t - blastT
+        jet.root.visible = (id === 'intercept' || id === 'failure') && tau > INTERCEPT.enter - 0.2 && tau < JET_END
+        if (jet.root.visible) jetAt(tau, jet.root.position, jet.root.quaternion)
+        for (const f of jet.flames) f.scale.z = 0.9 + 0.15 * Math.sin(t * 40 + f.position.x)
+        missile.visible = jet.root.visible && tau >= INTERCEPT.fire && tau < 0
+        if (missile.visible) {
+          missileAt(tau, missile.position)
+          missile.lookAt(missileAt(tau + 0.03, p3))
+          // The motor's flame, then its white smoke trail, left behind in the air and thickening as it ages.
+          if (tau > INTERCEPT.fire + 0.3) {
+            iv.a.copy(missile.position).sub(p3).setLength(2).add(missile.position)
+            fireball.add(iv.a.x, iv.a.y, iv.a.z, 1.4 + 0.3 * Math.sin(t * 50), 1, 1.4, t * 3)
+          }
+        }
+        smokeTrail.begin()
+        if (tau > INTERCEPT.fire + 0.3) {
+          for (let j = 0; j < 180; j++) {
+            const at = Math.min(tau, 0) - j * 0.03
+            if (at < INTERCEPT.fire + 0.3) break
+            const age = tau - at
+            smokeTrail.add(missileAt(at, p3), 2 + 9 * Math.sqrt(age), 0.95 * Math.exp(-age / 5) * Math.min(1, (j + 1) / 4))
+          }
+        }
+        smokeTrail.commit(camera.position)
+      }
     } else {
       // Thin gas puffs where a stage or the boosters let go; they spread fast and vanish in the vacuum.
       const burst = (s: number, f: number, n: number, radius: number) => {

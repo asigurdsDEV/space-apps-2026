@@ -2,7 +2,7 @@
 // The Web Audio graph that plays it is in engine.ts; the live player and the React hooks are in ambience.ts.
 import type { Tone } from './model'
 import { altitudeM } from '../scene3d/launch/flight'
-import { EVENT_AT, missionTime, stageAt, type LaunchTimeline, type StageId } from '../scene3d/launch/timeline'
+import { EVENT_AT, INTERCEPT, missionTime, stageAt, type LaunchTimeline, type StageId } from '../scene3d/launch/timeline'
 import type { Propellant, RocketSpec } from '../scene3d/launch/vehicles'
 
 export type Place = 'control' | 'cabin' | 'launch'
@@ -22,7 +22,7 @@ export interface Burst {
 /** A note; `hold` keeps it at full level to the end (a beep) instead of dying away (a ping). */
 export type Note = Tone & { hold?: boolean }
 export type CuePart = Note | Burst
-export type CueName = 'whoomp' | 'light' | 'thud' | 'click' | 'clunk' | 'crack' | 'relay' | 'valve' | 'caution' | 'tap' | 'tone'
+export type CueName = 'whoomp' | 'light' | 'thud' | 'click' | 'clunk' | 'crack' | 'flyby' | 'missile' | 'relay' | 'valve' | 'caution' | 'tap' | 'tone'
 
 const tone = (freq: number, at: number, dur: number, gain: number, wave: OscillatorType = 'sine', to?: number): Tone => ({ kind: 'tone', wave, freq, to, at, dur, gain })
 const burst = (filter: Burst['filter'], freq: number, at: number, dur: number, gain: number, attack = 0.002, q?: number): Burst => ({ kind: 'burst', filter, freq, q, at, dur, attack, gain })
@@ -65,6 +65,10 @@ export const CUES: Record<CueName, CuePart[]> = {
       return burst(i % 3 ? 'bandpass' : 'highpass', 900 + ((i * 1777) % 2600), at, 0.025 + 0.03 * ((i * 0.37) % 1), 0.5 * (1 - i / 32), 0.0008, 1.4)
     }),
   ],
+  // The sandbox's F-22 roars past the camera: a jet's rumble and whine swelling in, then falling away lower.
+  flyby: [burst('lowpass', 700, 0, 3.4, 2.2, 1.0), burst('bandpass', 1800, 0.5, 2.6, 1.2, 0.6, 0.7), tone(230, 0.7, 2.4, 0.06, 'sawtooth', 120), burst('lowpass', 160, 0.8, 2.5, 3, 0.2)],
+  // Its missile's motor lights: a crack, then a tearing roar that runs away.
+  missile: [burst('highpass', 1500, 0, 0.12, 0.25, 0.002), burst('bandpass', 900, 0.05, 1.5, 1.4, 0.06, 0.6), burst('lowpass', 400, 0.05, 1.2, 1.2, 0.05), tone(110, 0, 0.5, 0.12, 'sine', 60)],
   // Spacecraft room: a relay closes behind a panel.
   relay: [burst('bandpass', 3000, 0, 0.02, 0.07, 0.001), burst('bandpass', 1500, 0.012, 0.03, 0.07, 0.001), tone(150, 0, 0.03, 0.006)],
   // Spacecraft room: a valve ticks over, with a breath of gas.
@@ -164,6 +168,10 @@ export function launchScore(spec: RocketSpec, timeline: LaunchTimeline): LaunchS
     if (s.id === 'burn') score.seco = event(EVENT_AT.burn)
     if (s.id === 'deploy') score.cues.push({ t: event(EVENT_AT.deploy), cue: 'click' })
     if (s.id === 'failure') score.cues.push({ t: (score.lostAt = event(EVENT_AT.failure)), cue: 'crack' })
+  }
+  if (timeline.intercepted) {
+    score.cues.push({ t: score.lostAt + INTERCEPT.buzz - 1, cue: 'flyby' }, { t: score.lostAt + INTERCEPT.fire, cue: 'missile' })
+    score.cues.sort((a, b) => a.t - b.t)
   }
   return score
 }
