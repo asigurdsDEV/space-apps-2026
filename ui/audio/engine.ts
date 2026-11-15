@@ -33,8 +33,8 @@ function curve(f: (x: number) => number): Float32Array<ArrayBuffer> {
 }
 // Soft saturation: turns deep rumble into harmonics that small speakers can play.
 const SATURATE = curve((x) => Math.tanh(2.2 * x))
-// Crackle: only the tallest pressure peaks get through, as sharp one-sided pops, like the shock fronts in a rocket's roar.
-const POPS = curve((x) => (x > 0.6 ? Math.pow((x - 0.6) / 0.4, 1.5) : 0))
+// Crackle: each tall pressure peak snaps into a shock: an instant jump (the step at 0.35), then the top of the wave.
+const POPS = curve((x) => (x > 0.35 ? 0.25 + 0.75 * ((x - 0.35) / 0.65) : 0))
 // Safety ceiling: straight up to 0.6, then bends over and can never pass 0.86 (-1.3 dBFS).
 const CEILING = curve((x) => (Math.abs(x) < 0.6 ? x : Math.sign(x) * (0.6 + 0.29 * Math.tanh((Math.abs(x) - 0.6) / 0.29))))
 // The compressor adds make-up gain for its settings; this takes it off again, so quiet sound passes at about its own level (measured: 1.7 dB under).
@@ -159,18 +159,18 @@ type Kit = ReturnType<typeof kit>
 
 /** The spacecraft room. A station module is never silent: steady ventilation, a few faint fan tones, a pump whine. */
 function cabin(k: Kit) {
-  // Ventilation: a steady broadband whoosh, strongest in the low mids, with a little air hiss at the grilles.
-  k.chain(k.white, k.filter('lowpass', 650, 0.5), k.filter('highpass', 110), k.gain(0.0075 * k.level(650)), k.out)
-  k.chain(k.white, k.filter('bandpass', 2000, 0.7), k.filter('lowpass', 2500), k.gain(0.0042 * k.level(4000)), k.out)
-  // Fans: blade tones between 100 and 400 Hz. Their levels drift a little so they never beat in a pattern.
+  // Ventilation: a steady broadband whoosh that falls away towards the highs as duct noise does, with a little air hiss at the grilles.
+  k.chain(k.white, k.filter('lowpass', 500, 0.5), k.filter('highpass', 80), k.gain(0.0066 * k.level(500)), k.out)
+  k.chain(k.white, k.filter('bandpass', 2000, 0.7), k.filter('lowpass', 2500), k.gain(0.003 * k.level(4000)), k.out)
+  // Fans: blade tones between 100 and 400 Hz, each a few dB above what the whoosh would hide. Their levels drift a little so they never beat in a pattern.
   for (const [i, hz] of [118, 236, 331].entries()) {
-    const g = k.gain(0.0016 / (i + 1))
+    const g = k.gain(0.005)
     k.chain(k.osc('sine', hz), g, k.out)
-    k.drift(0.3, 0.0004 / (i + 1), g.gain, 0.6 + i)
+    k.drift(0.3, 0.0012, g.gain, 0.6 + i)
   }
   // Coolant pump: a thin high whine that wanders by a few cents.
   const pump = k.osc('sine', 1420)
-  k.chain(pump, k.gain(0.0005), k.out)
+  k.chain(pump, k.gain(0.002), k.out)
   k.drift(0.5, 6, pump.detune, 3.3)
 }
 
@@ -197,16 +197,17 @@ function launch(k: Kit, score: LaunchScore) {
   // The rougher band above it, falling away towards the highs as real rocket noise does. It moves less with size than the rumble.
   const mid = 250 * Math.sqrt(p / 55)
   k.chain(k.white, k.filter('bandpass', mid, 0.7), k.filter('lowpass', 2500), k.gain(0.28 * score.loudness * k.level(mid * 2.25)), roarIn)
-  // Crackle rides on the roar: the tallest pressure peaks steepen into shocks. They come irregularly, in bursts.
-  const drive = k.gain(0.3 * k.level(320))
-  const pops = k.chain(k.white, k.filter('bandpass', 160, 0.8), drive, k.shape(POPS))
-  k.drift(3, 0.05 * k.level(320), drive.gain, 0.9)
+  // Crackle rides on the roar: the tallest waves steepen into shocks, dozens a second, about as many as the roar's own peak frequency.
+  // The drive wanders, so they come in bursts and lulls like the real thing, never as a steady rattle.
+  const drive = k.gain(0.25 * k.level(4 * p))
+  const pops = k.chain(k.white, k.filter('bandpass', 2 * p, 0.8), drive, k.shape(POPS))
+  k.drift(3, 0.11 * k.level(4 * p), drive.gain, 0.9)
   const crackle = k.gain(0)
-  // Each pop is a sharp tick (the shock front) with a short thump under it.
-  const tick = k.gain(0)
-  pops.connect(tick.gain)
-  k.chain(k.white, k.filter('bandpass', 2200, 0.5), k.gain(k.level(7000)), tick, crackle, roarIn)
-  k.chain(pops, k.filter('highpass', 350), k.gain(0.5), crackle)
+  // Each shock is a jump in pressure (a pop with most of its energy in the mids), with a breath of tearing noise on it.
+  k.chain(pops, k.filter('highpass', 200), k.gain(2.4), crackle, roarIn)
+  const tear = k.gain(0)
+  pops.connect(tear.gain)
+  k.chain(k.white, k.filter('bandpass', 2200, 0.5), k.gain(0.5 * k.level(7000)), tear, crackle)
   // Distance: air soaks up the highs. Then the level, which flutters like real turbulence.
   const air = k.filter('lowpass', 9000, 0.5)
   const flutter = k.gain(1)
@@ -262,14 +263,14 @@ function launch(k: Kit, score: LaunchScore) {
   }
   k.sound.frame = (t, when) => {
     mixAt(score, t, mix)
-    to(0, 0.36 * score.loudness * mix.roar, when)
+    to(0, 0.27 * score.loudness * mix.roar, when)
     to(1, mix.cutoff, when)
     to(2, 2.6 * mix.crackle, when)
     to(3, 0.07 * score.loudness * mix.buffet, when)
     to(4, 0.05 * mix.hiss, when)
     to(5, 0.02 * mix.wind, when)
     to(6, 0.027 * mix.jet, when)
-    to(7, 0.0095 * score.loudness * mix.hum, when)
+    to(7, 0.0085 * score.loudness * mix.hum, when)
     // A jump (seek, replay, a long stall) fires nothing; ordinary frames fire the cues they pass.
     if (t < last || t - last > 0.5) next = score.cues.findIndex((c) => c.t > t)
     else for (; next >= 0 && next < score.cues.length && score.cues[next]!.t <= t; next++) k.sound.cue(score.cues[next]!.cue, when)

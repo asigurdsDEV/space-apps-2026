@@ -135,6 +135,12 @@ describe('cues and room details', () => {
     expect(CUES.caution.filter((p) => p.gain > 0.02)).toHaveLength(4)
   })
 
+  it('the break-up boom is the loudest cue, and a separation thud has a knock small speakers can play', () => {
+    const loudest = (name: CueName) => Math.max(...CUES[name].map((p) => p.gain))
+    for (const name of Object.keys(CUES) as CueName[]) if (name !== 'crack') expect(loudest('crack'), name).toBeGreaterThan(loudest(name))
+    expect(CUES.thud.some((p) => p.kind === 'burst' && p.filter === 'bandpass' && p.freq >= 300)).toBe(true)
+  })
+
   it('room details are quiet and 8 to 20 seconds apart', () => {
     expect(detailGap(0)).toBe(8)
     expect(detailGap(1)).toBe(20)

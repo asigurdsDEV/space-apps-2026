@@ -35,22 +35,22 @@ export const CUES: Record<CueName, CuePart[]> = {
   whoomp: [tone(85, 0, 0.5, 0.2, 'sine', 36), burst('lowpass', 500, 0, 0.4, 0.5, 0.03)],
   // A solid motor lights all at once: a hard bang with a deep kick under it.
   light: [burst('highpass', 900, 0, 0.09, 0.16, 0.001), burst('lowpass', 1400, 0, 0.5, 0.9, 0.002), tone(74, 0, 0.45, 0.3, 'sine', 34)],
-  // A separation in vacuum, heard only through the structure: one dull thud, no ring.
-  thud: [tone(82, 0, 0.16, 0.04, 'sine', 46), burst('lowpass', 240, 0, 0.07, 0.12, 0.004)],
+  // A separation in vacuum, heard only through the structure: one dull thud, no ring. The 400 Hz knock is what small speakers carry.
+  thud: [tone(82, 0, 0.16, 0.04, 'sine', 46), burst('lowpass', 240, 0, 0.07, 0.12, 0.004), burst('bandpass', 400, 0, 0.06, 0.2, 0.003, 1.2)],
   // The spacecraft's release springs: a small soft click through the adapter.
   click: [burst('lowpass', 900, 0, 0.03, 0.12), tone(170, 0, 0.05, 0.02)],
   // The carrier aircraft's hooks let go.
   clunk: [tone(196, 0, 0.11, 0.05, 'triangle', 150), tone(318, 0, 0.07, 0.025, 'triangle'), burst('lowpass', 900, 0, 0.05, 0.14)],
-  // The vehicle breaks up: a sharp crack, then a low boom rolling away.
-  crack: [burst('highpass', 700, 0, 0.07, 0.3, 0.001), burst('lowpass', 2500, 0, 0.16, 0.5, 0.001), tone(62, 0.05, 1.1, 0.22, 'sine', 27), burst('lowpass', 160, 0.05, 1.4, 1.2, 0.05)],
+  // The vehicle breaks up: a sharp crack, then at once a low boom as loud as the roar was, rolling away.
+  crack: [burst('highpass', 700, 0, 0.07, 0.3, 0.001), burst('lowpass', 2500, 0, 0.16, 0.5, 0.001), tone(62, 0.02, 1.4, 0.3, 'sine', 27), burst('lowpass', 700, 0.02, 1.2, 2.2, 0.03), burst('bandpass', 70, 0.02, 1.55, 6.8, 0.03, 0.6)],
   // Spacecraft room: a relay closes behind a panel.
-  relay: [burst('bandpass', 2300, 0, 0.014, 0.07, 0.001, 2), tone(150, 0, 0.03, 0.006)],
+  relay: [burst('bandpass', 3000, 0, 0.02, 0.07, 0.001), burst('bandpass', 1500, 0.012, 0.03, 0.07, 0.001), tone(150, 0, 0.03, 0.006)],
   // Spacecraft room: a valve ticks over, with a breath of gas.
   valve: [burst('bandpass', 3800, 0, 0.01, 0.07, 0.001, 3), burst('bandpass', 3800, 0.07, 0.01, 0.04, 0.001, 3), burst('highpass', 5000, 0.08, 0.14, 0.012, 0.02)],
   // Caution tone (our own design, in the style of spacecraft caution-and-warning tones): four pulses, low-high-low-high, then quiet.
-  caution: [0, 1, 2, 3].flatMap((i) => [beep(i % 2 ? 932 : 622, i * 0.26, 0.19, 0.045, 'triangle'), beep(i % 2 ? 1864 : 1244, i * 0.26, 0.19, 0.008)]),
+  caution: [0, 1, 2, 3].flatMap((i) => [beep(i % 2 ? 932 : 622, i * 0.26, 0.19, 0.08, 'triangle'), beep(i % 2 ? 1864 : 1244, i * 0.26, 0.19, 0.014)]),
   // Mission control: one soft key press. The engine plays a short irregular run of them.
-  tap: [burst('bandpass', 3100, 0, 0.012, 0.05, 0.001, 1.5), burst('lowpass', 320, 0, 0.02, 0.035, 0.001)],
+  tap: [burst('bandpass', 3100, 0, 0.02, 0.07, 0.001), burst('lowpass', 320, 0, 0.02, 0.035, 0.001)],
   // Mission control: a console acknowledges something, two soft notes.
   tone: [beep(784, 0, 0.1, 0.006), beep(988, 0.1, 0.14, 0.006)],
 }
