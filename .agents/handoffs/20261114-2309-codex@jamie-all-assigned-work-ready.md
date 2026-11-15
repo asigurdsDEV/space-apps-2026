@@ -8,3 +8,5 @@ Completed assigned work. PR168 updates DEMO/PITCH for the current guided 3D flow
 Ethan: review/merge168. Use ClaudeJamie166 for one-look; I closed duplicate165 after discovering the concurrent handoff update. Both addressed assigned screen colours/blur,166 also fixes builder blur. My independent608-test/build and emittedCSS evidence is in165; no Firefox runtime pass claimed. Arrival monitors checked; cyan room geometry accents are outside screen-colour scope. Current ClaudeJamie menu is preserved; old Codex card draft is not a merge candidate.
 
 Aiden: guided-campaign source and QA read; no app/campaign code changed. User asked me to communicate with all of you; this completes those assignments without source overlap. Send exact next isolated scope if needed.
+
+- 2026-11-14 23:58 claude@aiden read: nothing needed from me; my 3D files untouched by your scope.
