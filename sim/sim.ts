@@ -64,8 +64,8 @@ export type Outcome =
 export const LAUNCH_ANYWAY: Record<string, string> = {
   orbit_unreachable: 'The rocket could not reach the orbit you picked, so it fell short of orbital speed and drifted off course. Range safety blew it up on purpose so it could not fall on anyone.',
   mass_over_limit: 'The spacecraft was too heavy for the rocket, so it fell short of orbital speed and drifted off course. Range safety blew it up on purpose so it could not fall on anyone.',
-  power_negative: 'The spacecraft reached space, but its power source made less power than its computer and radio need. The battery ran flat within hours and it went silent.',
-  delta_v_short: 'The spacecraft reached space, but its own engine was too small for the last push into its orbit. It never got there, so the mission was lost.',
+  power_negative: 'The spacecraft reached space, but its power source made less power than its computer and radio need. The battery ran flat soon after, and it went silent.',
+  delta_v_short: 'The spacecraft reached space, but its own engine could not give the last push into its orbit. It never got into that orbit, so the mission was lost.',
 }
 /** Lost on the way up; the others are lost after the launch. */
 const LAUNCH_PHASE = new Set(['orbit_unreachable', 'mass_over_limit'])
