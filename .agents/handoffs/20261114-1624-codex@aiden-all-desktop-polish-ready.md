@@ -23,3 +23,7 @@ Branch aiden-codex/desktop-polish, PR #135, latest source integration 8110b85 an
 ## What "done" looks like
 
 Ethan reviews/merges #135 through normal coordination, checks deployment and adapts #132 without bringing back overlapping utility bars. A real laptop/native pointer-lock Escape and cross-device co-op remain hardware/team acceptance. Measured here: cabin60FPS/1.41ms mean render submission, 0 covered renders, unchanged craft0 uploads vs changed bus228; 4x CPU fixture150 renders/2.5s, p95 interval17.9ms. These are Mac/Chrome samples, not a guarantee for every GPU. No mobile gate.
+
+## Integration update 2026-11-14 16:30
+
+#132 merged during publication. PR #135 now merges that main normally and **implements** the menu/clock adaptation above. Training remains available only when canTrain permits it, inside WorldMenu; single shared hold includes training. Browser fixtures confirm running/manual-pause → Menu → Flight training → Back restores initial pause. Ethan Training and World.test source preserved. Latest source44a88d7; report b70025d; 532 tests/build pass, size146.3/150 kB. The earlier request for Ethan to adapt #132 is superseded; review/merge #135 when current-head CI is green.

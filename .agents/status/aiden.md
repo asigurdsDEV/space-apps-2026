@@ -58,16 +58,16 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 **Last updated:** 2026-11-14 16:24
 
 ### Working on right now
-First-person desktop polish complete in PR #135. No new source work claimed. Ethan remains merge coordinator; #132 training needs adaptation inside the new menu, with shared clock hold. Claude branches/section untouched.
+First-person desktop polish complete in PR #135. No new source work claimed. Ethan remains merge coordinator; merged #132 training is now integrated inside the new menu with shared clock hold. Claude branches/section untouched.
 
 ### Files / folders I'm touching (hands off)
 PR #135 app/World + WorldMenu, StoryLayer, additive App skipLaunch prop/test, app.css; ui/fps input + room-loop/tests; hangar/interior control loop changes; docs/qa/desktop-world.md. Released for integration on merge. Did not create app/World.test.tsx (Ethan #132 owns that file), edit scene3d, other owners' branches, or docs/CHALLENGE 2.md.
 
 ### Just finished
-One Menu/Escape dialog and noninteractive radio subtitle; #133 live replies preserved in that same radio. Both rooms suspend callbacks under menus/cutscenes/hidden tabs. Cabin does not rebuild unchanged craft each sim tick. Input release/focus/pointer cancellation and final bob frame fixed. Classic switch skips an already-watched launch. 3D scores saved with separate Daily keys. Full first-person regular 26/0 stars and Daily 25/0 runs; planning/radio/power module choices answered. Production default3D, menu, Classic/no-WebGL checks pass. 529 tests/typecheck/build pass, 146.0/150 kB. Local sample 60 FPS, renderer mean1.41ms; 4x CPU sample p95 interval17.9ms. Full limits in report.
+One Menu/Escape dialog and noninteractive radio subtitle; #133 live replies preserved in that same radio. Both rooms suspend callbacks under menus/cutscenes/hidden tabs. Cabin does not rebuild unchanged craft each sim tick. Input release/focus/pointer cancellation and final bob frame fixed. Classic switch skips an already-watched launch. 3D scores saved with separate Daily keys. Full first-person regular 26/0 stars and Daily 25/0 runs; planning/radio/power module choices answered. Production default3D, menu, Classic/no-WebGL checks pass. 532 tests/typecheck/build pass, 146.3/150 kB. Local sample 60 FPS, renderer mean1.41ms; 4x CPU sample p95 interval17.9ms. Full limits in report.
 
 ### Missing / I need from someone
-Ethan: merge ready #135, adapt #132 Flight training to WorldMenu (do not restore app-world-bar or removed holdClock callback); include training in shared hold condition and close menu when starting it. Physical low-end laptop/GPU, native pointer-locked Escape and cross-device co-op remain checks for the team. Actual 3D weather/leaderboard display is separate; persistence is fixed. Vercel auto-link still needs the account-owner action.
+Ethan: review/merge ready #135; the newly merged #132 conflict is resolved and training is preserved inside WorldMenu. Running/manual-pause return tested. Physical low-end laptop/GPU, native pointer-locked Escape and cross-device co-op remain checks for the team. Actual 3D weather/leaderboard display is separate; persistence is fixed. Vercel auto-link still needs the account-owner action.
 
 ### Heads up for other agents
 #124 is now merged; its defaults/preloading/resolution/culling/gauge fixes are preserved. #133 was integrated normally, maintaining Sarah's source and theme. No dependencies, model assets, sim/shared changes or mobile work. Sol remains suitable.
