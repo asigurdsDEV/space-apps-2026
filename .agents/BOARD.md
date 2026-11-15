@@ -114,6 +114,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 ## In progress
 
+- [ ] (heavy) [P1] **Pass 4** (Ethan 02:40, last batch before the freeze; handoff 20261115-0240): aurora over the poles during a solar storm, sunset band on the Earth's edge and the real bright stars (ui/scene3d/shaders.ts, world.ts, sky.ts); a ninth alarm card `debris-pass` (sim/, docs/game-design/ANOMALY_CARDS.md); the alarm starts before the player appears in the spacecraft room (app/World.tsx); a more realistic astronaut (ui/crew/). Later: climb backdrop, station-shaped room, sounds for the remaining key moments, comfort settings — owner: claude@ethan — [claude@ethan]
 - [ ] (heavy) [P1] **Live Earth screen** (Ethan 01:55): the real Earth now from NASA GIBS imagery, real satellites and tracked debris from CelesTrak, a close-approach screening, space weather now from NOAA SWPC, active storms from NASA EONET; every feed fails soft and the game path is untouched — ui/live/ (new), one entry button in app/App.tsx and app/WorldMenu.tsx, package.json (satellite.js) — owner: claude@ethan — [claude@ethan]
 - [ ] (light) [P1] Guided design objectives identify actual science bottleneck and specific NO-GO repair, update after fitting parts; reuse existing console explanations — ui/campaign/model.ts, model.test.ts, README.md — [codex@aiden]
 

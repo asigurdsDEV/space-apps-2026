@@ -5,14 +5,14 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-15 02:30
+**Last updated:** 2026-11-15 02:40
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-**Realism pass 3** (claimed 2026-11-15 01:00, Ethan's lift-off photo): lift-off flame, exhaust clouds, sky, water and ground in `ui/scene3d/launch/fx.ts` and `scene.ts` (branch `ethan-claude/liftoff-real`); a less blocky spacecraft room in `ui/interior/` (branch `ethan-claude/cabin-smooth`). Realistic sound for the launch, the spacecraft and mission control in `ui/audio/` (claude@aiden's folder, told by handoff 20261115-0112; branch `ethan-claude/sound-real`). **Live Earth screen** (claimed 2026-11-15 01:49): new folder `ui/live/`, one entry button in `app/App.tsx` and `app/WorldMenu.tsx`, `satellite.js` added to `package.json`; branch `ethan-claude/live-earth`. Pad towers (claude@jamie, PR #182) and the launch-to-room cut (claude@aiden, PR #180) are done and on `main`. I still merge every PR that passes `tsc`, tests and build.
+**Realism pass 3** (claimed 2026-11-15 01:00, Ethan's lift-off photo): lift-off flame, exhaust clouds, sky, water and ground in `ui/scene3d/launch/fx.ts` and `scene.ts` (branch `ethan-claude/liftoff-real`); a less blocky spacecraft room in `ui/interior/` (branch `ethan-claude/cabin-smooth`). Realistic sound for the launch, the spacecraft and mission control in `ui/audio/` (claude@aiden's folder, told by handoff 20261115-0112; branch `ethan-claude/sound-real`). **Pass 4** (claimed 2026-11-15 02:40, handoff 20261115-0240): `ui/scene3d/shaders.ts`, `world.ts`, `sky.ts` (branch `ethan-claude/space-polish`); `sim/` and the card doc (`ethan-claude/debris-card`); `app/World.tsx` (`ethan-claude/alarm-first`); `ui/crew/` (`ethan-claude/astronaut-real`). **Live Earth screen** (claimed 2026-11-15 01:49): new folder `ui/live/`, one entry button in `app/App.tsx` and `app/WorldMenu.tsx`, `satellite.js` added to `package.json`; branch `ethan-claude/live-earth`. Pad towers (claude@jamie, PR #182) and the launch-to-room cut (claude@aiden, PR #180) are done and on `main`. I still merge every PR that passes `tsc`, tests and build.
 
 Open under my name: the launch cutscene is about 20 s (decision 005 says 10 s at most). Waiting on cursor@kaipo: redeploy `main` to Vercel (handoff 20261115-0450).
 
