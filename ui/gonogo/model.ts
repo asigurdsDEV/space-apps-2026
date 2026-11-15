@@ -53,8 +53,52 @@ export function poll(issues: Issue[]): ConsoleCall[] {
   })
 }
 
-/** The one line a console shows: the first sentence of its worst issue. The rest goes behind ⓘ. */
+/** A short problem and a short fix per issue code (5 words each at most), for screens with room for a few words. */
+const BRIEF: Record<string, [problem: string, fix: string]> = {
+  orbit_unreachable: ['Rocket cannot reach this orbit', 'Pick a bigger rocket'],
+  mass_over_limit: ['Too heavy for the rocket', 'Cut mass or bigger rocket'],
+  mass_margin_low: ['Almost too heavy to launch', 'Trim mass or bigger rocket'],
+  delta_v_short: ['Engine too small for orbit', 'Pick a bigger-engine bus'],
+  no_station_keeping: ['Orbit will drift', 'Pick a bus with thrusters'],
+  orbit_life_short: ['Orbit ends too soon', 'Pick a longer-lived orbit'],
+  behind_schedule: ['Build takes too long', 'Pick faster-to-build parts'],
+  added_mass_over_bus: ['Bus is carrying too much', 'Remove parts or bigger bus'],
+  bus_too_small: ['Parts too big for bus', 'Pick a bigger bus'],
+  power_negative: ['Not enough power to survive', 'Pick a bigger power source'],
+  power_short: ['Not enough power', 'Pick a bigger power source'],
+  power_fades: ['Power fades over the years', 'Pick a bigger power source'],
+  battery_small: ['Battery too small for night', 'Pick a bigger battery'],
+  bus_life_short: ['Bus wears out early', 'Pick a longer-life bus'],
+  radiation_risk: ['Radiation may kill the bus', 'Tougher bus or calmer orbit'],
+  missing_instrument: ['No instrument on board', 'Add an instrument'],
+  unknown_instrument: ['Unknown instrument', 'Remove it'],
+  too_many_instruments: ['Too many instruments', 'Remove one or bigger bus'],
+  off_best_orbit: ['Instrument in the wrong orbit', 'Change orbit or instrument'],
+  science_short: ['Science goal out of reach', 'Add science, fix the downlink'],
+  link_weak: ['Radio too weak this far', 'Pick a stronger radio'],
+  downlink_short: ['More data than radio sends', 'Stronger radio or more stations'],
+  over_budget: ['Over budget', 'Pick cheaper parts'],
+}
+const SLOT_WORD: Record<string, string> = { launch_vehicle: 'rocket', orbit: 'orbit', bus: 'bus', solar: 'power source', battery: 'battery', comms: 'radio' }
+
+/** The console's worst issue in a few words: what is wrong, and what to do. Null when it has nothing to say. */
+export function brief(call: ConsoleCall): { problem: string; fix: string } | null {
+  const worst = call.reasons.find((r) => r.severity === 'error') ?? call.reasons[0]
+  if (!worst) return null
+  const known = BRIEF[worst.code]
+  if (known) return { problem: known[0], fix: known[1] }
+  const slot = /^(missing|unknown|wrong_type)_(.+)$/.exec(worst.code)
+  const word = slot && SLOT_WORD[slot[2]!]
+  if (slot && word) return slot[1] === 'missing' ? { problem: `No ${word} picked`, fix: `Pick ${word === 'orbit' ? 'an' : 'a'} ${word}` } : { problem: `Wrong ${word} picked`, fix: `Pick another ${word}` }
+  // A code this table does not know yet: the start of the sim's own sentence.
+  const words = worst.message.split(/[.!?]/)[0]!.split(/\s+/)
+  return { problem: words.slice(0, 6).join(' ') + (words.length > 6 ? '…' : ''), fix: '' }
+}
+
+/** The one line a console shows: its worst issue in a few words (`brief`), or the first sentence of the sim's message for a code `brief` does not know. The rest goes behind ⓘ. */
 export function headline(call: ConsoleCall): string {
+  const short = brief(call)
+  if (short?.fix) return `${short.problem}. ${short.fix}.`
   const first = (call.reasons.find((r) => r.severity === 'error') ?? call.reasons[0])?.message ?? ''
   return /^.*?[.!?](?=\s|$)/.exec(first)?.[0] ?? first
 }

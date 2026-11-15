@@ -114,7 +114,7 @@ export const CARDS: Card[] = [
       { id: 'a', label: 'Switch to coarse pointing', effect_text: 'Science −40% from now on. No risk.', effects: () => [COARSE] },
       {
         id: 'b',
-        label: 'Try to restart the wheel',
+        label: 'Restart the wheel',
         effect_text: "Good chance it's fixed. If not, 5 days in safe mode and coarse pointing anyway.",
         effects: (c) => [
           {
@@ -142,10 +142,10 @@ export const CARDS: Card[] = [
     console: 'comms-resources',
     when: (c) => c.ops_day <= 10 && c.fast_radio,
     options: [
-      { id: 'a', label: 'Use the backup antenna and compress data', effect_text: 'Downlink drops to a quarter. Safe.', effects: () => [BACKUP_ANTENNA] },
+      { id: 'a', label: 'Use backup antenna', effect_text: 'Downlink drops to a quarter. Safe.', effects: () => [BACKUP_ANTENNA] },
       {
         id: 'b',
-        label: 'Keep pulsing the deploy motor',
+        label: 'Keep pulsing the motor',
         effect_text: 'Small chance it pops open. If not, 3 lost days and the backup anyway.',
         effects: () => [
           {
@@ -173,7 +173,7 @@ export const CARDS: Card[] = [
     console: 'mission-planning',
     when: (c) => c.body === 'earth' && c.altitude_km < 1000,
     options: [
-      { id: 'a', label: 'Go to safe mode, edge-on to the wind', effect_text: 'Lose 2 days of science. Drag mostly avoided.', effects: () => [{ kind: 'lose_days', days: 2 }] },
+      { id: 'a', label: 'Go to safe mode', effect_text: 'Lose 2 days of science. Drag mostly avoided.', effects: () => [{ kind: 'lose_days', days: 2 }] },
       {
         id: 'b',
         label: 'Keep observing',
@@ -207,11 +207,11 @@ export const CARDS: Card[] = [
     options: [
       {
         id: 'a',
-        label: 'Wipe and reformat the storage',
+        label: 'Reformat the storage',
         effect_text: 'Lose everything not yet sent home, and 1 day.',
         effects: () => [{ kind: 'lose_stored_data' }, { kind: 'lose_days', days: 1 }],
       },
-      { id: 'b', label: 'Keep running on half the memory', effect_text: 'Keep your data, but storage is half the size from now on.', effects: () => [{ kind: 'storage_mult', x: 0.5 }] },
+      { id: 'b', label: 'Run on half memory', effect_text: 'Keep your data, but storage is half the size from now on.', effects: () => [{ kind: 'storage_mult', x: 0.5 }] },
     ],
     story: {
       mission: 'Spirit rover',
@@ -260,13 +260,13 @@ export const CARDS: Card[] = [
     options: [
       {
         id: 'a',
-        label: 'Pay for extra antenna time to search',
+        label: 'Pay for a search',
         effect_text: "Costs 3% of your budget and 6 days, but you'll find it.",
         effects: (c) => [{ kind: 'cost_usd', usd: 0.03 * c.budget_usd }, { kind: 'lose_days', days: 6 }],
       },
       {
         id: 'b',
-        label: 'Wait for it to fix itself',
+        label: 'Wait and hope',
         effect_text: 'Free, but you might lose it for good.',
         effects: (c) => [
           {
@@ -294,7 +294,7 @@ export const CARDS: Card[] = [
     console: 'spacecraft',
     when: (c) => c.body === 'earth' && c.altitude_km < 2000,
     options: [
-      { id: 'a', label: 'Pause science on every pass', effect_text: 'About 10% less science from now on.', effects: () => [{ kind: 'science_mult', x: 0.9 }] },
+      { id: 'a', label: 'Pause science each pass', effect_text: 'About 10% less science from now on.', effects: () => [{ kind: 'science_mult', x: 0.9 }] },
       {
         id: 'b',
         label: 'Keep observing through it',
@@ -325,7 +325,7 @@ export const CARDS: Card[] = [
     console: 'comms-resources',
     when: () => true,
     options: [
-      { id: 'a', label: 'Rent time on commercial ground stations', effect_text: 'Costs 2% of your budget. No data delay.', effects: (c) => [{ kind: 'cost_usd', usd: 0.02 * c.budget_usd }] },
+      { id: 'a', label: 'Rent commercial stations', effect_text: 'Costs 2% of your budget. No data delay.', effects: (c) => [{ kind: 'cost_usd', usd: 0.02 * c.budget_usd }] },
       { id: 'b', label: 'Wait it out', effect_text: 'Free, but data piles up for a week. Watch your storage.', effects: () => [{ kind: 'downlink_mult', x: 0.4, for_days: 7 }] },
     ],
     story: {
