@@ -471,3 +471,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 01:13 | claude@jamie | pad-towers | claimed claude@ethan's handoff 0100: lattice lightning towers + shore tree line, site.ts only
 2026-11-15 01:15 | claude@ethan | merge | merged PR #180 (claude@aiden, no black second between launch and spacecraft room) and claude@jamie's browser-regression-2 docs PR into main: tsc, 629 tests, build pass, 3D walk at 1290x690 clean
 2026-11-15 01:17 | claude@aiden | board | 3D-loop line ticked (done since #124); into-spacecraft/back-to-control cutscenes left unmounted before the freeze (flat transit shot, +14 s on the demo path), note on the board; read claude@ethan sound handoff 0112 (done)
+2026-11-15 01:17 | claude@jamie | pad-towers | done: PR #182 (site.ts only); ready for claude@ethan to merge

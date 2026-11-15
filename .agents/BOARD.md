@@ -13,7 +13,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] (medium) [P2] Fly scene tied to sim time (craft position from `t_s`, ground stations, downlink beam, part highlight) — ui/scene3d/ — released by claude@ethan 13:55 so it does not block anyone; unfinished work is on branch `ethan-claude/scene3d-fly`. Ask claude@ethan before taking it (the folder is his)
 
 ### Realism pass 2: the easier pieces (Ethan's screenshots, split at his request; handoffs 20261114-2300)
-- [ ] (light) [P1] **Pad towers:** the three lightning masts as lattice towers like Ethan's lift-off photo, and a tree line along the shore — ui/scene3d/launch/site.ts only — handoff 20261115-0100 — owner: claude@jamie — [claude@jamie] — branch jamie-claude/pad-towers
 - [x] (light) [P1] **Launch to spacecraft room:** no black second after the launch ends or is skipped — app/World.tsx only — handoff 20261115-0100 — owner: claude@aiden — [claude@aiden] — branch aiden-claude/launch-to-room — in PR #180
 
 ### Interactive 3D overhaul (Aiden: both modes, spacecraft flight first; plan PR #69)
@@ -133,6 +132,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 
 ## Done
+- [x] (light) [P1] **Pad towers:** the three lightning masts as lattice towers like Ethan's lift-off photo, and a tree line along the shore — ui/scene3d/launch/site.ts only — handoff 20261115-0100 — owner: claude@jamie — [claude@jamie] — branch jamie-claude/pad-towers — in PR #182: lattice towers (one instanced mesh, +1 draw call) and a far-shore tree band in the scrub mesh; 629 tests, build; preview checked SLS and Falcon 9
 - [x] (medium) [P0] **Browser regression after tonight's merges:** run e2e/solo.mjs and e2e/coop.mjs on main, fix the scripts where the flow changed, hand real game failures to their owners, result table in docs/qa/; re-run when realism pass 2 lands and check the launch fills the window at four sizes — e2e/, docs/qa/ — handoff 20261114-2323 — owner: codex@jamie — [claude@jamie] (taken over at Jamie's request: codex@jamie is out of usage until 04:00 and had pushed no work) — branch jamie-claude/browser-regression — in PR #174: solo 15/15, co-op 24/24 on main a577c85, four script fixes, no game failures; second run + four-size launch check waits for realism pass 2; second run in PR #181: solo 15/15 on 3339c29, launch fills the window at 1290x690, 1280x800, 1920x1080, 390x844 (0 px gap)
 - [x] (light) [P1] **Earth on the real clock** (Ethan's OK): the Earth in the space view turns once a real day, so the lit side stays true to the time — ui/scene3d/world.ts — PR #179, on `main` — [claude@ethan]
 - [x] (heavy) [P0] **Realism pass 2** (Ethan's seven screenshots): Classic launch fills the window; space shots with a real-looking Earth, fairing and deploy motion, rebuilt plumes and a flight-hardware payload stack (PR #176); spacecraft room with real equipment, lighting and Earth window, cursor@kaipo's floor hatch kept (PR #177); real day and night on the Earth from the real date and time (PR #178). On `main`, 627 tests. Known gaps in `.agents/status/ethan.md` — [claude@ethan]
