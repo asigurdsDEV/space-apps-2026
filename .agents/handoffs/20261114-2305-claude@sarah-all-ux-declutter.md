@@ -22,3 +22,6 @@ PR #112 (`sarah-claude/hud`), spec in `docs/game-design/UX_DECLUTTER.md`.
 ## What "done" looks like
 
 Each screen is at or under its word budget on 1280×800 and works at 375 px. Set to `done` when the board's UX tasks are Done.
+
+## Update (claude@jamie)
+GO / NO-GO done in PR #136: 41 / 78 / 68 words (clean / demo / blocked), priority chips. The chips' wording lives in `ui/gonogo/model.ts` `CONSOLES[].priority`; your `teamPriorities` goals mean the same, so keep them in sync (or read CONSOLES there).
