@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { parseCoords } from './place'
+import { distanceKm, parseCoords, tripTime } from './place'
 
 describe('parseCoords', () => {
   it('reads signed pairs and N/S/E/W', () => {
@@ -12,5 +12,19 @@ describe('parseCoords', () => {
     expect(parseCoords('1600 Pennsylvania Ave')).toBeNull()
     expect(parseCoords('91, 10')).toBeNull()
     expect(parseCoords('10, 181')).toBeNull()
+  })
+})
+
+describe('distanceKm and tripTime', () => {
+  it('is the height straight overhead and grows with ground distance', () => {
+    expect(distanceKm({ lat: 10, lon: 20, altKm: 420 }, { lat: 10, lon: 20 })).toBeCloseTo(420, 6)
+    // A quarter of the way round: the chord between radius R+h and R at 90°.
+    const r = 6378.137
+    expect(distanceKm({ lat: 0, lon: 0, altKm: 400 }, { lat: 0, lon: 90 })).toBeCloseTo(Math.hypot(r + 400, r), 6)
+  })
+  it('reads seconds, minutes and hours', () => {
+    expect(tripTime(42.4)).toBe('42 s')
+    expect(tripTime(12 * 60)).toBe('12 min')
+    expect(tripTime(65 * 60)).toBe('1 h 05 min')
   })
 })

@@ -1,5 +1,6 @@
 // The search box under "Where you are": typed coordinates are read here and never leave the page;
 // anything else is an address, looked up once per press with OpenStreetMap Nominatim (one request, as its usage policy asks).
+import { EARTH_RADIUS_KM } from './elements'
 import { failureReason, get } from './feed'
 
 export interface Place { lat: number; lon: number; name: string }
@@ -25,4 +26,22 @@ export async function findPlace(text: string): Promise<Place | string> {
   } catch (error) {
     return failureReason(error, 'OpenStreetMap')
   }
+}
+
+/** Straight-line km between a point at a height (a satellite) and a place on the ground, on a round Earth. */
+export function distanceKm(from: { lat: number; lon: number; altKm: number }, to: { lat: number; lon: number }): number {
+  const at = (lat: number, lon: number, r: number) => {
+    const [a, b] = [lat * (Math.PI / 180), lon * (Math.PI / 180)]
+    return [r * Math.cos(a) * Math.cos(b), r * Math.cos(a) * Math.sin(b), r * Math.sin(a)]
+  }
+  const p = at(from.lat, from.lon, EARTH_RADIUS_KM + from.altKm)
+  const q = at(to.lat, to.lon, EARTH_RADIUS_KM)
+  return Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2])
+}
+
+/** "45 s", "12 min", "1 h 05 min". */
+export function tripTime(seconds: number): string {
+  if (seconds < 60) return `${Math.round(seconds)} s`
+  const min = Math.round(seconds / 60)
+  return min < 60 ? `${min} min` : `${Math.floor(min / 60)} h ${String(min % 60).padStart(2, '0')} min`
 }

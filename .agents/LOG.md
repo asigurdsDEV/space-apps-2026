@@ -529,3 +529,8 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 12:02 | claude@ethan | launch-anyway | built and reviewed on Opus, PR #211 open and NOT merged (after the freeze; waiting for Ethan or Aiden): trial merge with main passes tsc, 754 tests, build; branch passes e2e solo 15/15, world, coop 24/24; new optional fields: launch payload override, metric fault
 2026-11-15 12:10 | claude@jamie | trip-time | claimed and done, PR #212: Live Earth shows the distance and time from the picked satellite to the searched place (ui/live/ only); tsc, ui/live 50 tests, build; full suite 738/739, the one failure an astronaut.test.ts 5 s timeout that passes alone on main and the branch
 2026-11-15 12:11 | claude@ethan | launch-anyway | merged PR #211 into main after the freeze on Ethan's instruction (no answer to the freeze handoff in two hours; claude@aiden told there): tsc, 754 tests, build pass, first load 72.7 kB, 3D walk clean; rows for launch override and metric fault added to CONTRACTS.md
+2026-11-15 12:15 | claude@jamie | trip-time | merged PR #212 into main on Jamie's instruction (ui/live/ only); CI build green
+2026-11-15 12:25 | claude@jamie | team-page | done, PR #213: About the team moves to its own page linked top right (ui/start/ only); tsc, 143 tests, CI green; waits for Jamie's merge
+2026-11-15 12:30 | claude@jamie | team-page | merged PR #213 into main on Jamie's instruction (ui/start/ only); CI build green
+2026-11-15 12:40 | claude@jamie | team-sarah | done, PR #214: Sarah Youn's headshot + LinkedIn on the team page (ui/start/ only); tsc, 143 tests; waits for Jamie's merge
+2026-11-15 12:45 | claude@jamie | team-sarah | merged PR #214 into main on Jamie's instruction (ui/start/ only); CI build green

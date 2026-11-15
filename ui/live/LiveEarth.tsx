@@ -4,7 +4,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import {
-  fetchDebris, findPlace, fetchImagery, parseCoords, fetchSatellites, fetchSpaceWeather, fetchStorms, IMAGERY_SATELLITE_ID, epochIso, loadOrbits, screenApproaches,
+  distanceKm, fetchDebris, findPlace, fetchImagery, parseCoords, fetchSatellites, fetchSpaceWeather, fetchStorms, IMAGERY_SATELLITE_ID, epochIso, loadOrbits, screenApproaches, tripTime,
   WINDOW_MINUTES, type Debris, type Place, type Feed, type FlareNow, type Imagery, type KpNow, type Orbits, type Satellites, type Screening, type Storm,
 } from './index'
 import { createLiveScene, type Layer, type LiveScene } from './scene'
@@ -207,6 +207,16 @@ export default function LiveEarth({ onClose }: { onClose: () => void }) {
             {found && typeof found === 'object' ? (
               <>
                 <p>Over {found.name} ({placeText(found.lat, found.lon)}).</p>
+                {sat && state && (() => {
+                  // Straight-line distance from the picked satellite now, and how long that is at its own speed.
+                  const km = distanceKm(state, found)
+                  return (
+                    <dl className="le-stats">
+                      <div><dt>From {sat.name}</dt><dd className="game-stat">{count(km)} km</dd></div>
+                      <div><dt>At its {count(Math.round(state.speedKmS * 360) * 10)} km/h</dt><dd className="game-stat">{tripTime(km / state.speedKmS)}</dd></div>
+                    </dl>
+                  )
+                })()}
                 <button type="button" className="game-button" onClick={backToSpace}>Back to space</button>
                 <p className="le-source">Close-up pictures: Esri World Imagery (Maxar, Earthstar Geographics), not taken today.{parseCoords(query) ? '' : ' Address found by OpenStreetMap Nominatim.'}</p>
               </>
