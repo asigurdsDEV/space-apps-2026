@@ -277,12 +277,18 @@ void main() {
     lit += night * city * vec3(1.0, 0.62, 0.28) * (uHasNight > 0.5 ? 0.9 : 1.4);
   }
 
-  // Thin blue rim on the day side.
   float fres = pow(1.0 - max(dot(n, v), 0.0), 3.0);
-  vec3 rim = uBody < 0.5 ? vec3(0.25, 0.5, 1.0) : uBody > 1.5 ? vec3(0.8, 0.45, 0.3) * 0.4 : vec3(0.0);
-  // The rim is a from-afar effect; just above the surface every angle is grazing, so fade it out.
-  float far = smoothstep(1.25, 2.4, length(cameraPosition));
-  lit += rim * fres * smoothstep(-0.2, 0.4, d) * mix(0.12, 0.9, far);
+  if (uBody < 0.5) {
+    // Earth's air between the ground and the eye: almost none looking straight down, a pale blue veil toward the
+    // horizon. It depends only on the angle, so it holds from the pad's altitude to a far view, at any scene scale.
+    float veil = 1.0 - exp(-0.04 * (1.0 / max(dot(n, v), 0.04) - 1.0));
+    vec3 air = mix(vec3(0.16, 0.38, 0.95), vec3(0.62, 0.8, 1.0), veil) * smoothstep(-0.2, 0.35, d);
+    lit = mix(lit, air, 0.85 * veil);
+  } else if (uBody > 1.5) {
+    // Mars: a thin dusty rim, a from-afar effect; just above the surface every angle is grazing, so fade it out.
+    float far = smoothstep(1.25, 2.4, length(cameraPosition));
+    lit += vec3(0.8, 0.45, 0.3) * 0.4 * fres * smoothstep(-0.2, 0.4, d) * mix(0.12, 0.9, far);
+  }
 
   gl_FragColor = vec4(lit, 1.0);
 }
@@ -304,13 +310,19 @@ void main() {
   float c = fbm(q + 0.6 * vec3(fbm(q + 1.7), fbm(q + 9.2), 0.0));
   // Break big patches into puffs and streaks so close-ups show cloud, not fog.
   c += 0.35 * (fbm(p * 28.0 + c * 2.0) - 0.5);
+  // Cloud cells and streets, the size you see from low orbit (tens of km): without them a close view is a flat haze.
+  float cells = fbm(p * 170.0 + c * 3.0);
+  c += 0.2 * (cells - 0.5);
   // Real cloud belts: the stormy equator (ITCZ) and mid-latitudes, clearer subtropics where deserts sit.
   float lat = abs(p.y);
   float belt = 0.07 * exp(-pow(p.y / 0.12, 2.0)) - 0.08 * exp(-pow((lat - 0.42) / 0.13, 2.0)) + 0.06 * exp(-pow((lat - 0.78) / 0.12, 2.0));
-  c = smoothstep(0.55 - belt, 0.82 - belt, c) * (1.0 - 0.6 * smoothstep(0.85, 0.95, lat));
+  float cover = smoothstep(0.55 - belt, 0.82 - belt, c) * (1.0 - 0.6 * smoothstep(0.85, 0.95, lat));
   float d = dot(normalize(vWorldN), uSun);
-  float light = 0.01 + 1.1 * smoothstep(-0.08, 0.35, d);
-  gl_FragColor = vec4(vec3(light), c * 0.8);
+  // Thick cores are bright, thin edges and the gaps between cells are grey: that relief is what reads as cloud.
+  float light = (0.01 + 1.1 * smoothstep(-0.08, 0.35, d)) * (0.72 + 0.28 * cover) * (0.86 + 0.28 * cells);
+  // Low Sun reddens the tops along the day/night line.
+  vec3 tint = mix(vec3(1.0), vec3(1.0, 0.62, 0.38), exp(-pow(d / 0.16, 2.0)));
+  gl_FragColor = vec4(light * tint, cover * 0.9);
 }
 `,
 }
@@ -340,3 +352,12 @@ void main() {
 }
 `,
 }
+
+/**
+ * For a scene that draws straight to the screen, with no OutputPass after it: the shaders above write linear light,
+ * so this adds the renderer's tone mapping and colour-space step at the end of `main`.
+ */
+export const toScreen = <S extends { fragmentShader: string }>(shader: S): S => ({
+  ...shader,
+  fragmentShader: shader.fragmentShader.replace(/\}\s*$/, '  #include <tonemapping_fragment>\n  #include <colorspace_fragment>\n}\n'),
+})
