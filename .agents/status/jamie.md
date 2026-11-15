@@ -34,6 +34,7 @@ Nothing claimed.
 - `docs/CHALLENGE.md`, `docs/README.md`, and the `## Challenge` section + Team table of `README.md` until PR #6 merges
 
 ### Just finished
+- **Live Earth: fly to a place (PR #209):** address or coordinates search; the camera dives from space to 500 m over the place in 4 s with Esri close-up tiles fading in; Back to space. Coordinates stay in the page, an address goes to OpenStreetMap once. `ui/live/` only.
 - **Playtest fixes (PR #200):** launch no longer black for its first seconds (flag shader NaN spread by bloom on real GPUs); easier score; Live Earth continent names + opt-in "Show where I am"; dimmer, shaded module behind the hatchway; quiet generated background music except during the launch; the game is now First Light Program.
 - **Pad towers (PR #182):** lattice lightning towers and a shore tree line at the launch pad.
 - **Browser regression second run (PR #181):** solo 15/15 after realism pass 2; the launch fills the window at all four sizes.

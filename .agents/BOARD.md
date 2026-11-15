@@ -114,7 +114,6 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 ## In progress
 
-- [ ] (small) [P2] **Live Earth: fly to a place** (Jamie's request): address or coordinates search, smooth dive from space to the house — ui/live/ — owner: claude@jamie — [claude@jamie]
 - [ ] (medium) [P2] **Launch anyway, fail, try again** (Ethan 09:58, after the freeze: built on a branch, NOT merged until Aiden answers handoff 20261115-1002): a NO-GO design may be launched, fails the way it really would, and a "What went wrong" screen offers Try again — sim/sim.ts (launch block), shared/, ui/hangar/, ui/gonogo/, ui/scene3d/launch/timeline.ts, app/ — owner: claude@ethan — [claude@ethan]
 - [ ] (light) [P0] Desktop acceptance at 1280x800/1920x1080, window resize + zoom100/125/150, Download failure/retry/cached reload, full-height cutscenes, legible choice/title/help; record actual outcomes — docs/qa/first-person.md — owner: cursor@caleb — covering while cursor@caleb is down, at Kaipo's request — [cursor@kaipo]
 - [ ] (light) [P1] Guided design objectives identify actual science bottleneck and specific NO-GO repair, update after fitting parts; reuse existing console explanations — ui/campaign/model.ts, model.test.ts, README.md — [codex@aiden]
@@ -140,6 +139,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 
 ## Done
+- [x] (small) [P2] **Live Earth: fly to a place**: address/coordinates search, 4 s dive from space to 500 m over Esri close-up tiles, Back to space — ui/live/ — [claude@jamie] — in PR #209
 - [x] (light) [P1] **Alarm choices on the window:** the anomaly card shows as a holographic screen on the spacecraft window instead of small panels at a module (Jamie: it looks awkward and does not pop) — ui/interior/ — Ethan OK via Jamie — [claude@jamie] — branch jamie-claude/window-alarm — PR #208, on `main`
 - [x] (light) [P1] **Guided missions board matches the main menu:** same masthead, title, glass panel, buttons and mission globes; reuses ui/start/start.css — ui/campaign/CampaignBoard.tsx, campaign.css, `GLOBES` export in ui/start/StartScreen.tsx — Jamie's request — [claude@jamie] — in PR #203, 150 tests, tsc; light theme not checked
 - [x] (heavy) [P1] **Daily mission from a live event:** the daily takes the day's event from the Live Earth feeds (geomagnetic storm, else open severe storm, else tracked debris), shows it in a "Today's event" box with source and time and a link to Live Earth, flies First Light and brings the matching alarm card first; offline it is the ordinary daily — app/dailyEvent.ts, app/DailyEventDialog.tsx, app/App.tsx, optional sim param `headline_card` — PR #201, on `main`, 730 tests, e2e/solo.mjs 15/15 — [claude@ethan]

@@ -522,3 +522,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 11:40 | claude@jamie | window-alarm | merged PR #208 into main on Jamie's instruction (ui/interior/ only); CI build green, world e2e answered alarm 1 on the window screen
 2026-11-15 11:52 | cursor@kaipo | moon-survey | on the Apollo 17 valley a player leaves the ship, crew there see each other, and the host's spot freezes once anyone is down
 2026-11-15 11:55 | claude@jamie | fly-home | claimed: Live Earth address/coordinates search with a dive from space to the place (ui/live/ only), Jamie's request
+2026-11-15 11:58 | claude@jamie | fly-home | done, PR #209: Live Earth Fly to a place (Nominatim address / typed coordinates, 4 s dive to 500 m over Esri tiles, Back to space); ui/live/ only; tsc, 735 tests, build; checked in the preview
