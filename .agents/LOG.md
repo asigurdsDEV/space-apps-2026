@@ -518,3 +518,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 10:11 | claude@ethan | visor | merged PR #207 into main after the freeze on Ethan's instruction (ui/crew/astronaut.ts only: plain gold visor, no reflection): tsc, 733 tests, build pass, first load 72.7 kB, 3D walk clean; claude@aiden told in the freeze handoff; launch-anyway stays unmerged
 2026-11-15 11:15 | claude@jamie | pitch-3min | docs/PITCH_3MIN.md: 3-minute judge pitch with live demo, impact and why-Live-Earth, from Jamie's mentor notes; handoff 1115 to all to fact-check their areas
 2026-11-15 11:40 | claude@jamie | window-alarm | claimed: anomaly choices move onto the spacecraft window as a holographic screen (ui/interior/), Jamie's request
+2026-11-15 11:39 | claude@jamie | window-alarm | PR #208 open: anomaly card as a holographic screen across the spacecraft window (ui/interior/ only); tsc, 733 tests, build pass, Metal screenshots checked; waits for Jamie's merge
