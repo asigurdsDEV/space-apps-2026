@@ -553,3 +553,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 15:06 | claude@jamie | f22-intercept | PR #219 open: sandbox interception (still 20%) now plays in the real launch scene: F-22 model, AIM-120 with smoke ribbon, flyby/missile sounds, realistic blast; old film scene removed; tsc, 819 tests, build pass, played in browser
 2026-11-15 15:07 | claude@jamie | f22-intercept | merged PR #219 into main on Jamie's instruction; CI build green
 2026-11-15 15:09 | claude@jamie | lightning | claimed: sandbox lightning-strike launch event (rain, lightning, bolt hits the rocket, explosion), 20% on its own roll band, Jamie's request
+2026-11-15 15:13 | claude@jamie | team-on-board | done, PR #220: About the team link + panel on the guided missions board; team list shared in ui/start/Team.tsx; tsc, 157 tests; waits for Jamie's merge
