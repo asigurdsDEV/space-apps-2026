@@ -14,7 +14,7 @@ import { planetMaps } from './maps'
 import { steadyResolution } from './steady'
 import { atmosphereShader, cloudShader, planetShader } from './shaders'
 import { COMPANIONS, companionPosition, type Companion } from './sky'
-import { earthOrientation, sunDirection } from './sun'
+import { earthOrientation, sunDirection, uprightSun } from './sun'
 
 /** "cruise" shows Earth → the Moon or Mars on the transfer arc; with an Earth orbit it shows "orbit". */
 export type ViewMode = 'spacecraft' | 'orbit' | 'cruise'
@@ -43,6 +43,7 @@ export interface World {
   dispose(): void
 }
 
+// The studio Sun: the Moon, Mars and the close-up are lit from here. An upright Earth moves it to its real height (applyMode).
 const SUN = new THREE.Vector3(1, 0.35, 0.55).normalize()
 const Y = new THREE.Vector3(0, 1, 0)
 const ATMOSPHERE_R = 1.06
@@ -103,7 +104,6 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
 
   // Lights only reach the spacecraft; the planet shades itself from uSun.
   const sunLight = new THREE.DirectionalLight(0xfff2e0, 2.6)
-  sunLight.position.copy(SUN).multiplyScalar(10)
   const earthshine = new THREE.DirectionalLight(0x6d90d0, 0.6)
   scene.add(sunLight, earthshine, earthshine.target, new THREE.AmbientLight(0x3a4560, 0.12))
 
@@ -124,19 +124,23 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
       depthWrite: false,
     }),
   )
-  sun.position.copy(SUN).multiplyScalar(800)
   sun.scale.setScalar(110)
   scene.add(sun)
 
-  // Real day and night (sun.ts): every Earth here is turned so the place where it is noon at `date` faces SUN, then spins on
-  // from there about its own tilted axis. The shaders light in world space, so ground, city lights, clouds and air all agree.
+  // Real day and night (sun.ts): every Earth here is turned so the place where it is noon at `date` faces the Sun, then spins on
+  // from there about its own axis. The shaders light in world space, so ground, city lights, clouds and air all agree.
   const sunXYZ = SUN.toArray()
-  const sunInMap = sunDirection(new Date(options.date ?? Date.now()))
-  const earthUpright = new THREE.Quaternion().fromArray(earthOrientation(sunInMap, sunXYZ))
+  const when = new Date(options.date ?? Date.now())
+  // An unreadable date would make the Sun NaN, and a NaN Sun sprite blacks out the whole frame through the bloom: show now instead.
+  const sunInMap = sunDirection(Number.isNaN(+when) ? new Date() : when)
+  // An Earth that is not the main body (behind the craft in cruise, in the Moon's sky) is lit by the studio Sun, so its pole leans.
+  const earthStudio = new THREE.Quaternion().fromArray(earthOrientation(sunInMap, sunXYZ))
+  const sunForUpright = new THREE.Vector3(...uprightSun(sunInMap, sunXYZ))
   const earthInSky = new THREE.Quaternion() // the same, seen from inside the tipped globe group
 
   // Planet, clouds, atmosphere.
   const uSun = { value: SUN.clone() }
+  const sunNow = uSun.value // this scene's Sun: the shaders, the light, the sprite and the shadow test all read it
   const uTime = { value: 0 }
   const uBody = { value: 0 }
   // Real NASA maps (maps/README.md), one shared set of uniforms per body; procedural until they load.
@@ -148,17 +152,10 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
     new THREE.ShaderMaterial({ ...cloudShader, uniforms: { uSun, uTime, ...bodyMaps.maps.earth }, transparent: true, depthWrite: false }),
   )
   const uAtmo = { value: new THREE.Color() }
-  const atmosphere = new THREE.Mesh(
-    new THREE.SphereGeometry(ATMOSPHERE_R, 96, 64),
-    new THREE.ShaderMaterial({
-      ...atmosphereShader,
-      uniforms: { uSun, uColor: uAtmo, uThickness: { value: Math.sqrt(1 - 1 / (ATMOSPHERE_R * ATMOSPHERE_R)) } },
-      side: THREE.BackSide,
-      blending: THREE.AdditiveBlending,
-      transparent: true,
-      depthWrite: false,
-    }),
-  )
+  const uThickness = { value: Math.sqrt(1 - 1 / (ATMOSPHERE_R * ATMOSPHERE_R)) }
+  const airMaterial = (uColor: { value: THREE.Color }) =>
+    new THREE.ShaderMaterial({ ...atmosphereShader, uniforms: { uSun, uColor, uThickness }, side: THREE.BackSide, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false })
+  const atmosphere = new THREE.Mesh(new THREE.SphereGeometry(ATMOSPHERE_R, 96, 64), airMaterial(uAtmo))
   const globe = new THREE.Group()
   globe.add(planet, clouds)
   scene.add(globe, atmosphere)
@@ -166,8 +163,10 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
   // Cruise mode: Earth behind us and the transfer arc to the destination (the globe above).
   const home = new THREE.Mesh(planet.geometry, new THREE.ShaderMaterial({ ...planetShader, uniforms: { uSun, uBody: { value: 0 }, ...bodyMaps.maps.earth } }))
   const homeAxis = new THREE.Group() // holds the real tilt; `home` spins inside it
-  homeAxis.quaternion.copy(earthUpright)
+  homeAxis.quaternion.copy(earthStudio)
   homeAxis.add(home)
+  // The same clouds and air as the main Earth: its geometry, cloud material and shader, so two more draws and nothing new to load.
+  home.add(new THREE.Mesh(clouds.geometry, clouds.material), new THREE.Mesh(atmosphere.geometry, airMaterial({ value: ATMOSPHERE.earth! })))
   const arc = new THREE.Line(
     new THREE.BufferGeometry(),
     new THREE.LineDashedMaterial({ color: 0xbcd2ff, dashSize: 0.22, gapSize: 0.12, transparent: true, opacity: 0.95, depthWrite: false }),
@@ -318,9 +317,13 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
     holder.scale.setScalar(CRAFT_SIZE[shown])
     // The close-up tips the pole toward the camera so mid-latitudes, not the polar ice, turn under the craft.
     const tip = shown === 'spacecraft' ? 1.1 : 0
-    if (spec.body === 'earth') globe.quaternion.fromArray(earthOrientation(sunInMap, sunXYZ, [0, Math.cos(tip), Math.sin(tip)]))
+    // Upright pole needs the Sun at its real height; not in the close-up, whose craft sits on top of the scene, in night when that Sun is low.
+    sunNow.copy(spec.body === 'earth' && shown === 'orbit' ? sunForUpright : SUN)
+    sunLight.position.copy(sunNow).multiplyScalar(10)
+    sun.position.copy(sunNow).multiplyScalar(800)
+    if (spec.body === 'earth') globe.quaternion.fromArray(earthOrientation(sunInMap, sunNow.toArray(), [0, Math.cos(tip), Math.sin(tip)]))
     else globe.rotation.set(tip, 0, 0)
-    earthInSky.copy(globe.quaternion).invert().multiply(earthUpright)
+    earthInSky.copy(globe.quaternion).invert().multiply(earthStudio)
     // Inclination is measured from the equator, so the orbit leans with the globe.
     orbitPivot.rotation.set(spec.inclination_rad, 0, 0)
     orbitPivot.quaternion.premultiply(globe.quaternion)
@@ -379,7 +382,7 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
     holder.position.copy(pos)
     up.copy(pos).normalize()
     // Wings face the Sun as well as they can while the instruments look straight down.
-    toSun.copy(SUN).addScaledVector(up, -SUN.dot(up))
+    toSun.copy(sunNow).addScaledVector(up, -sunNow.dot(up))
     if (toSun.lengthSq() < 1e-6) toSun.set(0, 0, 1).addScaledVector(up, -up.z)
     toSun.normalize()
     side.crossVectors(up, toSun)
@@ -387,9 +390,9 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
     earthshine.position.copy(pos).addScaledVector(up, -1)
     earthshine.target.position.copy(pos)
 
-    const along = pos.dot(SUN)
+    const along = pos.dot(sunNow)
     // The shadow test assumes the planet at the origin with the craft near it; in cruise it is in sunlight.
-    const shadow = shown !== 'cruise' && along < 0 && pos.clone().addScaledVector(SUN, -along).length() < 1
+    const shadow = shown !== 'cruise' && along < 0 && side.copy(pos).addScaledVector(sunNow, -along).length() < 1 // `side` is free again here: no new vector each frame
     sunLight.intensity = shadow ? 0 : 2.6
     earthshine.intensity = shadow ? 0.04 : spec.body === 'earth' ? 0.6 : 0.25
     marker.position.copy(pos)
