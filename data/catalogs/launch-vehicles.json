@@ -18,12 +18,14 @@
   "data": {
     "columns": ["id", "name", "provider", "payload_leo_kg", "payload_sso_kg", "payload_gto_kg", "payload_tli_kg", "cost_usd", "cost_per_kg_usd", "reliability", "description", "payload_tmi_kg", "short_label"],
     "rows": [
-      ["rideshare", "Rideshare slot", "shared launch", 0, 200, 0, 0, 300000, 6000, 0.97, "Share a big rocket with dozens of other satellites. Cheap, but you only go where the rocket goes (sun-synchronous orbit).", 0, "Rideshare slot"],
-      ["electron", "Electron", "Rocket Lab", 300, 200, 0, 30, 7500000, 0, 0.92, "A small dedicated rocket. Your own ride to low orbit, and a tiny payload can even reach the Moon.", 0, "Electron"],
-      ["pegasus-xl", "Pegasus XL", "Northrop Grumman", 450, 325, 0, 0, 40000000, 0, 0.93, "Launched from under an airplane. Flexible, but expensive for how little it carries.", 0, "Pegasus XL"],
-      ["falcon-9", "Falcon 9", "SpaceX", 17500, 13000, 5500, 5000, 70000000, 0, 0.99, "Workhorse medium-lift rocket. Reaches every orbit in this game.", 4000, "Falcon 9"],
-      ["vulcan-centaur", "Vulcan Centaur", "United Launch Alliance", 27000, 20000, 14400, 10000, 110000000, 0, 0.95, "Heavy lifter for big spacecraft headed to high orbits or the Moon.", 6500, "Vulcan Centaur"],
-      ["sls-block-1", "Space Launch System (Block 1)", "NASA", 95000, 0, 0, 27000, 2000000000, 0, 0.95, "NASA's Moon rocket. Enormous capacity and an enormous price tag.", 0, "SLS"]
+      ["rideshare", "Rideshare slot", "shared launch", 0, 200, 0, 0, 300000, 6000, 0.97, "Share a big rocket with dozens of other satellites. Cheap, but you only go where the rocket goes (sun-synchronous orbit). NASA's CubeSat Launch Initiative flies student satellites this way.", 0, "Rideshare slot"],
+      ["electron", "Electron", "Rocket Lab", 300, 200, 0, 30, 7500000, 0, 0.92, "A small dedicated rocket. Your own ride to low orbit, and a tiny payload can even reach the Moon. It sent NASA's CAPSTONE to the Moon in 2022.", 0, "Electron"],
+      ["pegasus-xl", "Pegasus XL", "Northrop Grumman", 450, 325, 0, 0, 40000000, 0, 0.93, "Launched from under an airplane. Flexible, but expensive for how little it carries. It launched NASA's NuSTAR X-ray telescope in 2012.", 0, "Pegasus XL"],
+      ["falcon-9", "Falcon 9", "SpaceX", 17500, 13000, 5500, 5000, 70000000, 0, 0.99, "Workhorse medium-lift rocket. Reaches every orbit in this game. It launched NASA's TESS planet hunter in 2018.", 4000, "Falcon 9"],
+      ["atlas-v", "Atlas V (401)", "United Launch Alliance", 9797, 7250, 4750, 2470, 109000000, 0, 0.99, "NASA's go-to rocket for science. It launched LRO to the Moon (2009) and MAVEN to Mars (2013).", 2450, "Atlas V"],
+      ["vulcan-centaur", "Vulcan Centaur", "United Launch Alliance", 27000, 20000, 14400, 10000, 110000000, 0, 0.95, "Heavy lifter for big spacecraft headed to high orbits or the Moon. Its first flight (2024) carried NASA instruments on the Peregrine Moon lander.", 6500, "Vulcan Centaur"],
+      ["falcon-heavy", "Falcon Heavy", "SpaceX", 63800, 47200, 26700, 23700, 150000000, 0, 0.98, "Three Falcon 9 cores strapped together. It launched NASA's Psyche (2023) and Europa Clipper (2024).", 16800, "Falcon Heavy"],
+      ["sls-block-1", "Space Launch System (Block 1)", "NASA", 95000, 0, 0, 27000, 2000000000, 0, 0.95, "NASA's Moon rocket. Enormous capacity and an enormous price tag. It flew Artemis I around the Moon in 2022.", 0, "SLS"]
     ]
   }
 }

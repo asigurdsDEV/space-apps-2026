@@ -10,6 +10,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js'
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { buildCraft, disposeObject } from '../craft'
 import { planetMaps } from '../maps'
+import { steadyResolution } from '../steady'
 import type { CraftSpec } from '../model'
 import { cloudShader, planetShader } from '../shaders'
 import { altitudeM, downrangeM, pitchRad, vacuum } from './flight'
@@ -58,7 +59,8 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
   const coarse = window.matchMedia('(pointer: coarse)').matches
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' })
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, coarse ? 1.5 : 2))
+  // A full-screen bloom pass at 2× fills too many pixels. 1.5 stays sharp; resize tightens it on a large window.
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, coarse ? 1.25 : 1.5))
   renderer.toneMapping = THREE.ACESFilmicToneMapping
   // Phones and still frames go without: the shadow pass draws the rocket and the pad a second time.
   const shadows = !coarse && !options.reducedMotion
@@ -78,7 +80,20 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
   sunLight.shadow.normalBias = 0.06
   sunLight.shadow.camera.near = 100
   sunLight.shadow.camera.far = 2600
-  const shade = (o: THREE.Object3D) => o.traverse((m) => { if (m instanceof THREE.Mesh) m.castShadow = m.receiveShadow = true })
+  const shadeScale = new THREE.Vector3()
+  const shade = (o: THREE.Object3D) => {
+    o.updateWorldMatrix(true, true)
+    o.traverse((m) => {
+      if (!(m instanceof THREE.Mesh)) return
+      if (!m.geometry.boundingSphere) m.geometry.computeBoundingSphere()
+      const local = m.geometry.boundingSphere?.radius ?? 1
+      m.getWorldScale(shadeScale)
+      const r = local * Math.max(shadeScale.x, shadeScale.y, shadeScale.z)
+      // Bolts and weld ticks still draw. They are smaller than a hand, so they do not recast the shadow.
+      m.castShadow = shadows && r > 0.22
+      m.receiveShadow = shadows
+    })
+  }
   const hemi = new THREE.HemisphereLight(0x8fa8de, 0x54483c, 1)
   // The flame lights the pad, the tower and the rocket's own tail.
   const flame = new THREE.PointLight(0xff8a3c, 0, 0, 0)
@@ -656,7 +671,15 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
   let onScreen = true
   let ended = false
   let last = 0
+  // Slower graphics chips get fewer pixels, not fewer frames (steady.ts).
+  let steadyCap = Infinity // resize() must not undo a cut
+  const steady = steadyResolution((ratio) => {
+    steadyCap = ratio
+    renderer.setPixelRatio(ratio)
+    composer.setPixelRatio(ratio)
+  }, renderer.getPixelRatio())
   function frame(stamp: number) {
+    steady((stamp - last) / 1000)
     // Capped so a tab switch does not skip a shot; high enough that a slow phone still runs in real time.
     const dt = Math.min((stamp - last) / 1000, 0.25)
     last = stamp
@@ -679,7 +702,10 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
   function resize() {
     const w = Math.max(container.clientWidth, 1)
     const h = Math.max(container.clientHeight, 1)
+    const ratio = Math.min(window.devicePixelRatio || 1, coarse || w > 1400 ? 1.25 : 1.5, steadyCap)
+    renderer.setPixelRatio(ratio)
     renderer.setSize(w, h, false)
+    composer.setPixelRatio(ratio)
     composer.setSize(w, h)
     camera.aspect = w / h
     draw(time)
@@ -692,6 +718,19 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
     run()
   })
   visibility.observe(container)
+  // Compile every shader and upload every mesh now. Otherwise the first frame that shows the Earth, a dropped stage
+  // or the spacecraft stalls for a tenth of a second while the graphics chip catches up (measured: 100 to 130 ms).
+  const was = new Map<THREE.Object3D, [boolean, boolean]>()
+  scene.traverse((o) => {
+    was.set(o, [o.visible, o.frustumCulled])
+    o.visible = true
+    o.frustumCulled = false
+  })
+  composer.render()
+  for (const [o, [visible, culled]] of was) {
+    o.visible = visible
+    o.frustumCulled = culled
+  }
   resize()
 
   return {

@@ -110,6 +110,13 @@ The reference win earns the bonus on Normal (tested). `mass_margin_10` isn't use
 - `orbits.solar_flux_factor`: sunlight relative to Earth (1 / distance², Mars 0.43). The sim multiplies solar power by it; an RTG is unaffected.
 - `short_label` (every catalog): the part's name in at most 3 words, for the 3D game's prompts ("E · Fit 6U CubeSat", decision 007, read by `ui/hangar/layout.ts` `shortLabel`). `data.test.ts` checks the length.
 
+**Rockets with sourced numbers** (claude@jamie, from claude@ethan's handoff 1415; the older rows stay hand-tuned):
+- `atlas-v` (401): LEO 9,797 kg, GTO 4,750 kg, US$109M, 40 of 41 401 flights fully successful ([Atlas V](https://en.wikipedia.org/wiki/Atlas_V), citing ULA). Moon 2,470 kg and Mars 2,450 kg are what it really flew: LRO 1,846 kg + LCROSS 621 kg (2009), MAVEN 2,454 kg (2013) ([MAVEN](https://en.wikipedia.org/wiki/MAVEN), [LCROSS](https://en.wikipedia.org/wiki/LCROSS)).
+- `falcon-heavy`: LEO 63,800 kg, GTO 26,700 kg, Mars 16,800 kg, US$150M expendable ([Falcon Heavy](https://en.wikipedia.org/wiki/Falcon_Heavy), citing SpaceX). **Estimate:** Moon 23,700 kg = its Mars figure × Delta IV Heavy's published Moon/Mars ratio (11,290 / 8,000); SpaceX publishes no Moon figure.
+- **Estimate:** sun-synchronous capacity for both = 0.74 × LEO, the ratio this catalog already uses for Falcon 9 and Vulcan.
+- Not added: `delta-iv-heavy` (retired 2024; also the 3D hall's rocket rack holds 8). Its figures, if wanted: LEO 28,370, GTO 14,210, Moon 11,290, Mars 8,000 kg, US$350M ([Delta IV Heavy](https://en.wikipedia.org/wiki/Delta_IV_Heavy)).
+- Every rocket's description names one NASA mission it flew: CubeSat Launch Initiative (rideshare), CAPSTONE 2022 (Electron), NuSTAR 2012 (Pegasus XL), TESS 2018 (Falcon 9), LRO 2009 + MAVEN 2013 (Atlas V), Peregrine's NASA instruments 2024 (Vulcan), Psyche 2023 + Europa Clipper 2024 (Falcon Heavy), Artemis I 2022 (SLS).
+
 ## Adding to the catalogs
 
 1. Add a row, keeping the column order. Ids are lowercase kebab-case and never renamed (CONTRACTS rule 6).

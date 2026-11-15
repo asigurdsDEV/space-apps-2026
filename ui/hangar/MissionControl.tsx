@@ -12,7 +12,8 @@ import { poll } from '../gonogo'
 import { sceneSpec } from '../scene3d/model'
 import type { Command, Player, SimState } from '../../shared'
 import { createControlRoom, type ControlRoom } from './control'
-import { interactables, obstacles, paramOf, racks, type Debrief } from './layout'
+import { interactables, obstacles, paramOf, racks, START, type Debrief } from './layout'
+import type { CrewPose } from '../crew/crew'
 
 export interface MissionControlProps {
   state: SimState
@@ -28,6 +29,10 @@ export interface MissionControlProps {
   /** No WebGL: the app shows the classic screens instead. */
   onFailed?: () => void
   className?: string
+  /** Co-op: send where this player is standing. */
+  reportPose?: (pose: { x: number; z: number; yaw: number }) => void
+  /** Co-op: the other players, so they can be drawn. */
+  subscribeCrew?: (listener: (crew: readonly CrewPose[]) => void) => () => void
 }
 
 const NO_PLAYERS: readonly Player[] = []
@@ -38,7 +43,7 @@ function lengthText(days: unknown): string {
   return days >= 330 ? `${Math.round(days / 365)} year${Math.round(days / 365) === 1 ? '' : 's'}` : `${Math.round(days)} days`
 }
 
-export function MissionControl({ state, send, players = NO_PLAYERS, me, title, debrief, enabled = true, onFailed, className }: MissionControlProps) {
+export function MissionControl({ state, send, players = NO_PLAYERS, me, title, debrief, enabled = true, onFailed, className, reportPose, subscribeCrew }: MissionControlProps) {
   const host = useRef<HTMLDivElement>(null)
   const room = useRef<ControlRoom | null>(null)
   const [failed, setFailed] = useState(false)
@@ -47,6 +52,10 @@ export function MissionControl({ state, send, players = NO_PLAYERS, me, title, d
   const coop = players.length > 1
   const who = useRef({ players, me, coop })
   who.current = { players, me, coop }
+  const poseRef = useRef(reportPose)
+  const crewRef = useRef(subscribeCrew)
+  poseRef.current = reportPose
+  crewRef.current = subscribeCrew
 
   /** Co-op only: why this player can't use it ("Sam's call"), the same rule the host enforces. */
   const blocked = (it: Interactable): string | undefined => {
@@ -59,18 +68,24 @@ export function MissionControl({ state, send, players = NO_PLAYERS, me, title, d
   }
 
   useEffect(() => {
+    let stopCrew: (() => void) | undefined
     try {
       room.current = createControlRoom(host.current!, {
         reducedMotion: media('(prefers-reduced-motion: reduce)'),
         onAim: setAimed,
         onLock: setLocked,
         blocked,
+        onPose: (pose) => poseRef.current?.(pose),
       })
+      const mine = who.current.players.findIndex((p) => p.player_id === who.current.me?.player_id)
+      if (mine > 0) room.current.fps.teleport([mine * 1.15, 0, START.pos[2]], START.yaw)
+      stopCrew = crewRef.current?.((members) => room.current?.setCrew(members))
     } catch {
       setFailed(true)
       onFailed?.()
     }
     return () => {
+      stopCrew?.()
       room.current?.dispose()
       room.current = null
     }

@@ -10,7 +10,8 @@ import type { Interactable } from '../fps/model'
 import { sceneSpec } from '../scene3d/model'
 import type { Command, Decision, SimState } from '../../shared'
 import { createCabin, type Cabin } from './control'
-import { gauges, interactables, modules, obstacles } from './layout'
+import { gauges, interactables, modules, obstacles, START } from './layout'
+import type { CrewPose } from '../crew/crew'
 
 export interface SpacecraftRoomProps {
   state: SimState
@@ -25,25 +26,45 @@ export interface SpacecraftRoomProps {
   enabled?: boolean
   onFailed?: () => void
   className?: string
+  /** Co-op: send where this player is standing. */
+  reportPose?: (pose: { x: number; z: number; yaw: number }) => void
+  /** Co-op: the other players, so they can be drawn. */
+  subscribeCrew?: (listener: (crew: readonly CrewPose[]) => void) => () => void
+  /** Which crew member this browser is (0 is the host). Spreads spawn points so bodies do not stack. */
+  seat?: number
 }
 
 const media = (q: string) => typeof window !== 'undefined' && !!window.matchMedia?.(q).matches
 
-export function SpacecraftRoom({ state, send, paused, speed, decision, decisionBlocked, enabled = true, onFailed, className }: SpacecraftRoomProps) {
+export function SpacecraftRoom({ state, send, paused, speed, decision, decisionBlocked, enabled = true, onFailed, className, reportPose, subscribeCrew, seat = 0 }: SpacecraftRoomProps) {
   const host = useRef<HTMLDivElement>(null)
   const cabin = useRef<Cabin | null>(null)
   const [failed, setFailed] = useState(false)
   const [aimed, setAimed] = useState<Interactable>()
   const [locked, setLocked] = useState(false)
 
+  const poseRef = useRef(reportPose)
+  const crewRef = useRef(subscribeCrew)
+  poseRef.current = reportPose
+  crewRef.current = subscribeCrew
+
   useEffect(() => {
+    let stopCrew: (() => void) | undefined
     try {
-      cabin.current = createCabin(host.current!, { reducedMotion: media('(prefers-reduced-motion: reduce)'), onAim: setAimed, onLock: setLocked })
+      cabin.current = createCabin(host.current!, {
+        reducedMotion: media('(prefers-reduced-motion: reduce)'),
+        onAim: setAimed,
+        onLock: setLocked,
+        onPose: (pose) => poseRef.current?.(pose),
+      })
+      if (seat > 0) cabin.current.fps.teleport([Math.min(seat, 3) * 0.7, 0, START.pos[2]], START.yaw)
+      stopCrew = crewRef.current?.((members) => cabin.current?.setCrew(members))
     } catch {
       setFailed(true)
       onFailed?.()
     }
     return () => {
+      stopCrew?.()
       cabin.current?.dispose()
       cabin.current = null
     }

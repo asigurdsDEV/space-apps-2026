@@ -29,7 +29,7 @@ export function CutsceneCanvas({ kind, body = 'moon', durationMs }: CutsceneCanv
       setFailed(true)
       return
     }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5))
     renderer.toneMapping = THREE.ACESFilmicToneMapping
     renderer.domElement.style.cssText = 'display:block;width:100%;height:100%'
     host.appendChild(renderer.domElement)
@@ -51,6 +51,8 @@ export function CutsceneCanvas({ kind, body = 'moon', durationMs }: CutsceneCanv
       const w = host.clientWidth
       const h = host.clientHeight
       if (w < 2 || h < 2) return
+      // The arrival room and the cabin walk fill the screen. Cap the buffer so a 2× display does not render twice.
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, w > 1400 ? 1.25 : 1.5))
       renderer.setSize(w, h, false)
       camera.aspect = w / h
       camera.updateProjectionMatrix()
@@ -579,6 +581,103 @@ function anomaly(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Shot {
   }
 }
 
+/** A small painted map. Shared by the walk-in bay so the shot stays a handful of simple shapes. */
+function bayPaint(w: number, h: number, draw: (ctx: CanvasRenderingContext2D) => void, repeatX = 1, repeatY = 1) {
+  const canvas = document.createElement('canvas')
+  canvas.width = w
+  canvas.height = h
+  const ctx = canvas.getContext('2d')
+  if (ctx) draw(ctx)
+  const texture = new THREE.CanvasTexture(canvas)
+  texture.colorSpace = THREE.SRGBColorSpace
+  texture.anisotropy = 8
+  texture.wrapS = texture.wrapT = THREE.RepeatWrapping
+  texture.repeat.set(repeatX, repeatY)
+  return texture
+}
+
+function paintPanels(ctx: CanvasRenderingContext2D) {
+  ctx.fillStyle = '#d7dbe3'
+  ctx.fillRect(0, 0, 256, 256)
+  ctx.strokeStyle = '#8b929e'
+  ctx.lineWidth = 3
+  for (let i = 0; i <= 256; i += 64) {
+    ctx.beginPath()
+    ctx.moveTo(i, 0)
+    ctx.lineTo(i, 256)
+    ctx.moveTo(0, i)
+    ctx.lineTo(256, i)
+    ctx.stroke()
+  }
+  ctx.fillStyle = '#66707c'
+  for (let y = 10; y < 256; y += 64) {
+    for (let x = 10; x < 256; x += 64) {
+      ctx.beginPath()
+      ctx.arc(x, y, 2.2, 0, Math.PI * 2)
+      ctx.fill()
+    }
+  }
+}
+
+function paintMli(ctx: CanvasRenderingContext2D) {
+  ctx.fillStyle = '#c8963c'
+  ctx.fillRect(0, 0, 256, 256)
+  for (let y = 0; y < 256; y += 4) {
+    const k = 0.45 + 0.55 * Math.sin(y * 0.19)
+    ctx.fillStyle = `rgba(${30 + k * 70},${16 + k * 30},0,${0.12 + 0.28 * (1 - k)})`
+    ctx.fillRect(0, y, 256, 3)
+  }
+}
+
+function paintRadiator(ctx: CanvasRenderingContext2D) {
+  ctx.fillStyle = '#12161e'
+  ctx.fillRect(0, 0, 256, 256)
+  ctx.strokeStyle = '#41506a'
+  ctx.lineWidth = 2
+  for (let y = 8; y < 256; y += 14) {
+    ctx.beginPath()
+    ctx.moveTo(0, y)
+    ctx.lineTo(256, y)
+    ctx.stroke()
+  }
+}
+
+function paintAvionics(ctx: CanvasRenderingContext2D) {
+  ctx.fillStyle = '#1b212c'
+  ctx.fillRect(0, 0, 128, 128)
+  ctx.fillStyle = '#8d96a3'
+  ctx.fillRect(16, 34, 30, 16)
+  ctx.fillRect(16, 68, 30, 16)
+  ctx.fillStyle = '#3ddc97'
+  ctx.beginPath()
+  ctx.arc(98, 42, 6, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.fillStyle = '#5c6570'
+  for (const [x, y] of [[8, 8], [114, 8], [8, 114], [114, 114]] as const) {
+    ctx.beginPath()
+    ctx.arc(x, y, 2, 0, Math.PI * 2)
+    ctx.fill()
+  }
+}
+
+function paintEarth(ctx: CanvasRenderingContext2D) {
+  ctx.fillStyle = '#1d5eae'
+  ctx.fillRect(0, 0, 256, 128)
+  ctx.fillStyle = '#6e8d46'
+  for (const [x, y, rx, ry] of [[48, 52, 34, 20], [78, 74, 16, 12], [150, 46, 38, 22], [196, 78, 20, 14]] as const) {
+    ctx.beginPath()
+    ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2)
+    ctx.fill()
+  }
+  ctx.fillStyle = 'rgba(255,255,255,0.6)'
+  ctx.beginPath()
+  ctx.ellipse(96, 34, 28, 7, 0.4, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.beginPath()
+  ctx.ellipse(176, 62, 24, 6, -0.3, 0, Math.PI * 2)
+  ctx.fill()
+}
+
 /** Hall in front of the wall, walk-in spacecraft behind the doorway. */
 function transit(scene: THREE.Scene, camera: THREE.PerspectiveCamera, entering: boolean): Shot {
   scene.background = new THREE.Color(0x070b14)
@@ -608,43 +707,98 @@ function transit(scene: THREE.Scene, camera: THREE.PerspectiveCamera, entering: 
     desk.position.set(x, 0.36, 0.4)
     scene.add(desk)
   }
-  const bay = new THREE.Mesh(new THREE.BoxGeometry(7.2, 3.4, 5.2), new THREE.MeshStandardMaterial({ color: 0x0c1018, roughness: 0.75, side: THREE.BackSide }))
+  // The bay is an uncrewed spacecraft opened up: white panels, gold insulation, boxes, a tank,
+  // reaction wheels, a radiator and a harness. Shapes stay boxes and cylinders so the shot stays light.
+  const panels = bayPaint(256, 256, paintPanels, 2, 2)
+  const bayMat = new THREE.MeshStandardMaterial({ map: panels, color: 0xffffff, roughness: 0.62, metalness: 0.16, side: THREE.BackSide })
+  const bay = new THREE.Mesh(new THREE.BoxGeometry(7.2, 3.4, 5.2), bayMat)
   bay.position.set(0, 1.7, -7.4)
   scene.add(bay)
-  const modules: THREE.Mesh[] = []
-  const moduleColors = [0xf0c14a, 0x3ecf8e, 0x4aa3ff, 0xe8eef8]
-  moduleColors.forEach((color, i) => {
-    const side = i < 2 ? -1 : 1
-    const module = new THREE.Mesh(
-      new THREE.BoxGeometry(0.18, 0.7, 0.9),
-      new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.25, metalness: 0.35, roughness: 0.45 }),
-    )
-    module.position.set(side * 2.4, 1.55, -6.6 - (i % 2) * 1.3)
-    scene.add(module)
-    modules.push(module)
-  })
-  const glass = new THREE.Mesh(
-    new THREE.CircleGeometry(0.72, 32),
-    new THREE.MeshStandardMaterial({ color: 0x163a6b, emissive: 0x2f6fd0, emissiveIntensity: 0.7, roughness: 0.2 }),
+  const mliMap = bayPaint(256, 256, paintMli, 3, 1)
+  const blanket = new THREE.Mesh(
+    new THREE.PlaneGeometry(6.4, 4.4),
+    new THREE.MeshStandardMaterial({ map: mliMap, metalness: 0.84, roughness: 0.36, side: THREE.DoubleSide }),
   )
-  glass.position.set(0, 1.7, -9.95)
-  scene.add(glass)
-  const earth = new THREE.Mesh(new THREE.SphereGeometry(0.28, 24, 16), new THREE.MeshStandardMaterial({ color: 0x3b78d0, roughness: 0.55 }))
-  earth.position.set(0.12, 1.78, -9.7)
+  blanket.rotation.x = Math.PI / 2
+  blanket.position.set(0, 3.28, -7.4)
+  scene.add(blanket)
+  const boxSide = new THREE.MeshStandardMaterial({ color: 0x232833, metalness: 0.55, roughness: 0.4 })
+  const boxFace = new THREE.MeshStandardMaterial({ map: bayPaint(128, 128, paintAvionics), metalness: 0.3, roughness: 0.5 })
+  const leftMats = [boxFace, boxSide, boxSide, boxSide, boxSide, boxSide]
+  const rightMats = [boxSide, boxFace, boxSide, boxSide, boxSide, boxSide]
+  for (const [x, y, z] of [[-3.2, 1.15, -7.1], [-3.2, 1.75, -8.2], [3.2, 1.2, -8.3]] as const) {
+    const unit = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.42, 0.7), x < 0 ? leftMats : rightMats)
+    unit.position.set(x, y, z)
+    scene.add(unit)
+  }
+  const tank = new THREE.Mesh(
+    new THREE.SphereGeometry(0.38, 24, 16),
+    new THREE.MeshStandardMaterial({ color: 0xe7e4dc, metalness: 0.25, roughness: 0.32 }),
+  )
+  tank.position.set(2.15, 0.4, -8.7)
+  const band = new THREE.Mesh(
+    new THREE.TorusGeometry(0.39, 0.025, 8, 24),
+    new THREE.MeshStandardMaterial({ color: 0x9aa3b0, metalness: 0.7, roughness: 0.3 }),
+  )
+  band.rotation.x = Math.PI / 2
+  tank.add(band)
+  scene.add(tank)
+  const wheelMat = new THREE.MeshStandardMaterial({ color: 0xc5ccd4, metalness: 0.86, roughness: 0.26 })
+  for (const [x, z] of [[2.35, -7.15], [2.7, -7.15], [2.52, -7.5]] as const) {
+    const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.08, 20), wheelMat)
+    wheel.position.set(x, 2.55, z)
+    scene.add(wheel)
+  }
+  const radiator = new THREE.Mesh(
+    new THREE.PlaneGeometry(1.5, 1.05),
+    new THREE.MeshStandardMaterial({ map: bayPaint(256, 256, paintRadiator), metalness: 0.35, roughness: 0.55, side: THREE.DoubleSide }),
+  )
+  radiator.position.set(3.35, 2.15, -6.5)
+  radiator.rotation.y = -Math.PI / 2
+  scene.add(radiator)
+  const harnessMat = new THREE.MeshStandardMaterial({ color: 0x14181f, roughness: 0.72 })
+  for (const x of [-3.2, 3.2]) {
+    const run = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.05, 3.2), harnessMat)
+    run.position.set(x, 0.18, -7.6)
+    scene.add(run)
+  }
+  const strip = new THREE.Mesh(
+    new THREE.BoxGeometry(2.2, 0.05, 0.1),
+    new THREE.MeshStandardMaterial({ color: 0xfff4e0, emissive: 0xfff4e0, emissiveIntensity: 0.8 }),
+  )
+  strip.position.set(0, 3.2, -7.2)
+  scene.add(strip)
+  const bayLight = new THREE.PointLight(0xfff3dd, 5, 9, 1.5)
+  bayLight.position.set(0, 2.9, -7.2)
+  scene.add(bayLight)
+  const frame = new THREE.Mesh(
+    new THREE.TorusGeometry(0.78, 0.04, 12, 48),
+    new THREE.MeshStandardMaterial({ color: 0xc5ccd6, metalness: 0.7, roughness: 0.3 }),
+  )
+  frame.position.set(0, 1.7, -9.9)
+  scene.add(frame)
+  const earth = new THREE.Mesh(
+    new THREE.SphereGeometry(0.52, 32, 20),
+    new THREE.MeshStandardMaterial({ map: bayPaint(256, 128, paintEarth), roughness: 0.65 }),
+  )
+  earth.position.set(0, 1.72, -9.55)
   scene.add(earth)
+  const air = new THREE.Mesh(
+    new THREE.SphereGeometry(0.56, 24, 16),
+    new THREE.MeshBasicMaterial({ color: 0x8eb8ff, transparent: true, opacity: 0.28, depthWrite: false }),
+  )
+  air.position.copy(earth.position)
+  scene.add(air)
   return {
     update(progress, _elapsed, aspect) {
       const travel = entering ? progress : 1 - progress
       const z = lerp(distance(aspect, 4.6), -6.2, travel)
-      camera.position.set(0, lerp(1.7, 1.6, travel), z)
-      camera.lookAt(0, 1.65, lerp(-4.2, -9.6, travel))
+      // End a little to the left so the window and the equipment on the right wall are both in frame.
+      camera.position.set(lerp(0, -0.7, travel), lerp(1.7, 1.55, travel), z)
+      camera.lookAt(lerp(0, 1.1, travel), 1.55, lerp(-4.2, -8.2, travel))
       screens.forEach((screen, i) => {
         const mat = screen.material as THREE.MeshStandardMaterial
         mat.emissiveIntensity = 0.3 + 0.25 * (0.5 + 0.5 * Math.sin(progress * 6 + i))
-      })
-      modules.forEach((module, i) => {
-        const mat = module.material as THREE.MeshStandardMaterial
-        mat.emissiveIntensity = 0.15 + travel * (0.2 + 0.15 * (i % 2))
       })
       earth.rotation.y = progress * 0.8
     },

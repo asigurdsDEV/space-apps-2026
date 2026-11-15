@@ -127,7 +127,7 @@ export function World({ active, config, onExit }: WorldProps) {
   }, [hold, roomCode, session])
   useEffect(() => {
     if (!flying) setLaunched(session.getSnapshot().state.t_s > 86400)
-    else if (!launched) playSound('launch')
+    else if (!launched && !classic) playSound('launch')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [flying])
 
@@ -135,7 +135,20 @@ export function World({ active, config, onExit }: WorldProps) {
     if (training && !canTrain) setTraining(false)
   }, [training, canTrain])
 
-  if (classic) return <GameScreen session={session} config={config} onExit={onExit} roomCode={roomCode} daily={daily} skipLaunch={launched} />
+  if (classic) {
+    return (
+      <GameScreen
+        session={session}
+        config={config}
+        onExit={onExit}
+        roomCode={roomCode}
+        daily={daily}
+        skipLaunch={launched}
+        onFirstPerson={() => setClassic(false)}
+        onLaunchDone={() => setLaunched(true)}
+      />
+    )
+  }
 
   const onCutscene = (playing: boolean) => {
     setCutscene(playing)
@@ -190,6 +203,9 @@ export function World({ active, config, onExit }: WorldProps) {
           decisionBlocked={may ? undefined : `${holder?.name ?? 'Another player'}'s call`}
           enabled={enabled}
           onFailed={() => setClassic(true)}
+          reportPose={session.reportPose}
+          subscribeCrew={session.subscribeCrew}
+          seat={Math.max(0, players.findIndex((p) => p.player_id === me.player_id))}
         />
         {menu}
         <StoryLayer immersive screen="flight" events={events} scenarioId={state.scenario_id} onCutscene={onCutscene} shown={['launch']} />
@@ -209,6 +225,8 @@ export function World({ active, config, onExit }: WorldProps) {
         debrief={debrief}
         enabled={enabled}
         onFailed={() => setClassic(true)}
+        reportPose={session.reportPose}
+        subscribeCrew={session.subscribeCrew}
       />
       {menu}
       <StoryLayer

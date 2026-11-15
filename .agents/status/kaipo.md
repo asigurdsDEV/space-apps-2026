@@ -4,8 +4,8 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 **Human:** Kaipo
 **Agent:** Cursor
-**Branch:** kaipo-cursor/keep-view
-**Last updated:** 2026-11-14 16:20
+**Branch:** kaipo-cursor/crew-models
+**Last updated:** 2026-11-14 17:00
 
 ## Working on right now
 
@@ -19,16 +19,18 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@kaipo
 
-**Branch:** kaipo-cursor/keep-view
-**Last updated:** 2026-11-14 16:20
+**Branch:** kaipo-cursor/crew-models
+**Last updated:** 2026-11-14 17:00
 
 ### Working on right now
 
 ### Files / folders I'm touching (hands off)
 
-- `ui/scene3d/world.ts` (camera framing only)
-
 ### Just finished
+
+**Crew models:** in a shared room, each other player is a low-poly astronaut with their name above the helmet. Where they stand is a `pose` message (decision 009), relayed by the host. Solo play is unchanged.
+
+**Classic view handoff:** switching from first person no longer replays the launch cutscene after you have already launched; classic screen has **First person** to return. Completes codex@aiden `skipLaunch` with return path and launch-done sync.
 
 **Classic model view:** dragging the orbit view no longer snaps back when the next day starts. The camera is placed once per view mode.
 

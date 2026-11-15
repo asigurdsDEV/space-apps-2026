@@ -31,6 +31,8 @@ export type NetMessage =
   | { type: 'claim_role'; payload: { role: Role | null } }
   | { type: 'command'; payload: { command: Command } }
   | { type: 'leave'; payload: Record<string, never> }
+  /** Where this player is standing. A guest omits `player_id`; the host stamps it from the connection and relays it. */
+  | { type: 'pose'; payload: { x: number; z: number; yaw: number; player_id?: string } }
   // host -> everyone
   | { type: 'roster'; payload: { players: Player[] } }
   | { type: 'state'; payload: { state: SimState; events: SimEvent[] } }
@@ -232,6 +234,17 @@ function messageOk(v: unknown): boolean {
     case 'leave':
     case 'ended':
       return isEmpty(p)
+    case 'pose':
+      return (
+        isObj(p) &&
+        isNum(p.x) &&
+        isNum(p.z) &&
+        isNum(p.yaw) &&
+        Math.abs(p.x) <= 40 &&
+        Math.abs(p.z) <= 40 &&
+        Math.abs(p.yaw) <= Math.PI + 0.01 &&
+        optional(p.player_id, (id) => isStr(id, MAX_NAME_LENGTH) && id !== '')
+      )
     case 'roster':
       return isObj(p) && isList(p.players, playerOk) && (p.players as unknown[]).length <= MAX_PLAYERS
     case 'state':

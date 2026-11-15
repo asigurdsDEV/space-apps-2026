@@ -9,9 +9,12 @@ import { roomLoop } from '../fps/room-loop'
 import { createFps, type Fps, type FpsOptions } from '../fps/controller'
 import { canvasScreen, font, partModel } from '../hangar/control'
 import { buildCraft, disposeObject } from '../scene3d/craft'
+import { planetMaps } from '../scene3d/maps'
+import { atmosphereShader, cloudShader, planetShader, toScreen } from '../scene3d/shaders'
 import type { CraftSpec } from '../scene3d/model'
 import type { Decision } from '../../shared'
 import { choiceSpots, choiceTitleAt, DASH, moduleFor, ROOM, START, WINDOW, type Gauge, type Module } from './layout'
+import { mountCrew, type CrewPose } from '../crew/crew'
 
 export interface CabinScreens {
   modules: Module[]
@@ -33,6 +36,8 @@ export interface Cabin {
   /** Off while a cutscene covers the view: nothing is drawn, so two 3D scenes never render at once. */
   setActive(on: boolean): void
   show(screens: CabinScreens): void
+  /** Other players in this cabin. Pass an empty list when they leave. */
+  setCrew(members: readonly CrewPose[]): void
   dispose(): void
 }
 
@@ -41,7 +46,90 @@ const MUTED = '#9fb0d4'
 const GOOD = '#63dbad'
 const BAD = '#ff6b5a'
 const GOLD = '#ffda8a'
-const WORLD_COLOUR: Record<string, number> = { earth: 0x2f6fd6, moon: 0x9a9a9a, mars: 0xc1502e }
+/** planetShader's uBody. */
+const WORLD_INDEX = { earth: 0, moon: 1, mars: 2 } as const
+
+function painted(w: number, h: number, draw: (ctx: CanvasRenderingContext2D) => void) {
+  const canvas = document.createElement('canvas')
+  canvas.width = w
+  canvas.height = h
+  const ctx = canvas.getContext('2d')
+  if (ctx) draw(ctx)
+  const texture = new THREE.CanvasTexture(canvas)
+  texture.colorSpace = THREE.SRGBColorSpace
+  texture.anisotropy = 8
+  return texture
+}
+
+function panelMap() {
+  const map = painted(256, 256, (ctx) => {
+    ctx.fillStyle = '#d5d8e0'
+    ctx.fillRect(0, 0, 256, 256)
+    ctx.strokeStyle = '#8a919c'
+    ctx.lineWidth = 3
+    for (let i = 0; i <= 256; i += 64) {
+      ctx.beginPath()
+      ctx.moveTo(i, 0)
+      ctx.lineTo(i, 256)
+      ctx.moveTo(0, i)
+      ctx.lineTo(256, i)
+      ctx.stroke()
+    }
+    ctx.fillStyle = '#66707c'
+    for (let y = 10; y < 256; y += 64) for (let x = 10; x < 256; x += 64) {
+      ctx.beginPath()
+      ctx.arc(x, y, 2.2, 0, Math.PI * 2)
+      ctx.fill()
+    }
+  })
+  map.wrapS = map.wrapT = THREE.RepeatWrapping
+  map.repeat.set(3, 2)
+  return map
+}
+
+function mliMap() {
+  const map = painted(256, 256, (ctx) => {
+    ctx.fillStyle = '#c8963c'
+    ctx.fillRect(0, 0, 256, 256)
+    for (let y = 0; y < 256; y += 4) {
+      const k = 0.45 + 0.55 * Math.sin(y * 0.19)
+      ctx.fillStyle = `rgba(${30 + k * 70},${16 + k * 30},0,${0.12 + 0.28 * (1 - k)})`
+      ctx.fillRect(0, y, 256, 3)
+    }
+  })
+  map.wrapS = map.wrapT = THREE.RepeatWrapping
+  map.repeat.set(4, 2)
+  return map
+}
+
+function radiatorMap() {
+  return painted(256, 256, (ctx) => {
+    ctx.fillStyle = '#12161e'
+    ctx.fillRect(0, 0, 256, 256)
+    ctx.strokeStyle = '#41506a'
+    ctx.lineWidth = 2
+    for (let y = 8; y < 256; y += 14) {
+      ctx.beginPath()
+      ctx.moveTo(0, y)
+      ctx.lineTo(256, y)
+      ctx.stroke()
+    }
+  })
+}
+
+function avionicsMap() {
+  return painted(128, 128, (ctx) => {
+    ctx.fillStyle = '#1b212c'
+    ctx.fillRect(0, 0, 128, 128)
+    ctx.fillStyle = '#8d96a3'
+    ctx.fillRect(16, 34, 30, 16)
+    ctx.fillRect(16, 68, 30, 16)
+    ctx.fillStyle = '#3ddc97'
+    ctx.beginPath()
+    ctx.arc(98, 42, 6, 0, Math.PI * 2)
+    ctx.fill()
+  })
+}
 
 function label(text: string, sub?: string, w = 512, h = 128) {
   const s = canvasScreen(w, h)
@@ -61,7 +149,8 @@ function label(text: string, sub?: string, w = 512, h = 128) {
   return s.texture
 }
 
-export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start' | 'yaw'>): Cabin {
+export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start' | 'yaw'> & { onPose?: (pose: { x: number; z: number; yaw: number }) => void }): Cabin {
+  const { onPose, ...fpsOptions } = options
   const renderer = new THREE.WebGLRenderer({ antialias: true }) // throws without WebGL; the component shows a fallback
   // 1.25× not the screen's 2×: ~60% fewer pixels to fill every frame.
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25))
@@ -89,7 +178,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   // ---- Walls, with an opening for the window in the front wall.
   const [x0, , z0] = ROOM.min
   const [x1, y1, z1] = ROOM.max
-  const wallMat = new THREE.MeshStandardMaterial({ color: 0xc9ced8, roughness: 0.75, metalness: 0.1 })
+  const wallMat = new THREE.MeshStandardMaterial({ map: panelMap(), color: 0xffffff, roughness: 0.58, metalness: 0.2 })
   const box = (w: number, h: number, d: number, x: number, y: number, z: number, mat: THREE.Material = wallMat) => {
     const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat)
     m.position.set(x, y, z)
@@ -100,7 +189,8 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   const W = x1 - x0
   const D = z1 - z0
   box(W, t, D, 0, -t / 2, 0, new THREE.MeshStandardMaterial({ color: 0x3a4152, roughness: 0.8 }))
-  box(W, t, D, 0, y1 + t / 2, 0)
+  const gold = new THREE.MeshStandardMaterial({ map: mliMap(), metalness: 0.86, roughness: 0.34 })
+  box(W, t, D, 0, y1 + t / 2, 0, gold)
   box(t, y1, D, x0 - t / 2, y1 / 2, 0)
   box(t, y1, D, x1 + t / 2, y1 / 2, 0)
   box(W, y1, t, 0, y1 / 2, z1 + t / 2)
@@ -117,6 +207,27 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
     box(w, h, 0.16, x, y, z0)
   // Handrails along the walls: it's a spacecraft.
   for (const x of [x0 + 0.08, x1 - 0.08]) box(0.05, 0.05, D - 0.6, x, 1.05, 0, frameMat)
+  // Upper walls and ceiling: what you see when a satellite bus is opened. Kept above eye height
+  // so the walk path and the module pedestals stay clear.
+  const rad = new THREE.MeshStandardMaterial({ map: radiatorMap(), metalness: 0.4, roughness: 0.5 })
+  box(0.04, 0.9, 1.4, x0 + 0.05, 2.45, 0.15, rad)
+  box(0.04, 0.9, 1.4, x1 - 0.05, 2.45, 0.15, rad)
+  const harness = new THREE.MeshStandardMaterial({ color: 0x161a22, roughness: 0.7 })
+  box(0.05, 0.05, D - 0.8, x0 + 0.1, y1 - 0.08, 0, harness)
+  box(0.05, 0.05, D - 0.8, x1 - 0.1, y1 - 0.08, 0, harness)
+  const wheelMat = new THREE.MeshStandardMaterial({ color: 0xc9d0d8, metalness: 0.88, roughness: 0.24 })
+  for (const [x, z] of [[-0.18, 0.16], [0.18, 0.16], [0, -0.16]] as const) {
+    const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.07, 20), wheelMat)
+    wheel.position.set(-1.6 + x, y1 - 0.1, 0.2 + z)
+    scene.add(wheel)
+  }
+  const face = new THREE.MeshStandardMaterial({ map: avionicsMap(), metalness: 0.35, roughness: 0.48 })
+  const shell = new THREE.MeshStandardMaterial({ color: 0x232833, metalness: 0.55, roughness: 0.4 })
+  for (const x of [-1.5, 0, 1.5]) {
+    const unit = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.32, 0.12), [shell, shell, shell, shell, shell, face])
+    unit.position.set(x, 2.5, z1 - 0.08)
+    scene.add(unit)
+  }
 
   // ---- Outside: stars, the Sun's light, the world you orbit.
   const starGeo = new THREE.BufferGeometry()
@@ -131,11 +242,32 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   const sun = new THREE.DirectionalLight(0xfff4e0, 3)
   sun.position.set(-40, 20, -30)
   scene.add(sun)
-  const worldMat = new THREE.MeshStandardMaterial({ color: WORLD_COLOUR.earth, roughness: 0.9 })
-  const world = new THREE.Mesh(new THREE.SphereGeometry(40, 64, 48), worldMat)
+  // The real planet (claude@ethan, ui/scene3d): NASA surface maps, city lights at night, clouds over Earth.
+  const uSun = { value: sun.position.clone().normalize() }
+  const uBody = { value: WORLD_INDEX.earth as number }
+  const worldMaps = planetMaps(renderer.capabilities.getMaxAnisotropy())
+  const worldMat = new THREE.ShaderMaterial({ ...toScreen(planetShader), uniforms: { uSun, uBody, ...worldMaps.maps.earth } })
+  const world = new THREE.Mesh(new THREE.SphereGeometry(40, 96, 64), worldMat)
   world.position.set(10, -38, -70)
   scene.add(world)
-  const atmosphere = new THREE.Mesh(new THREE.SphereGeometry(41.2, 64, 48), new THREE.MeshBasicMaterial({ color: 0x7fb2ff, transparent: true, opacity: 0.12, side: THREE.BackSide }))
+  const clouds = new THREE.Mesh(
+    new THREE.SphereGeometry(40.4, 96, 64),
+    new THREE.ShaderMaterial({ ...toScreen(cloudShader), uniforms: { uSun, uTime: { value: 0 } }, transparent: true, depthWrite: false }),
+  )
+  world.add(clouds)
+  // A soft glow of air around the limb, brightest on the sunlit side.
+  const uAir = { value: new THREE.Color(0.3, 0.55, 1) }
+  const atmosphere = new THREE.Mesh(
+    new THREE.SphereGeometry(41.2, 64, 48),
+    new THREE.ShaderMaterial({
+      ...toScreen(atmosphereShader),
+      uniforms: { uSun, uColor: uAir, uThickness: { value: Math.sqrt(1 - (40 / 41.2) ** 2) } },
+      side: THREE.BackSide,
+      blending: THREE.AdditiveBlending,
+      transparent: true,
+      depthWrite: false,
+    }),
+  )
   world.add(atmosphere)
 
   // ---- Dashboard: gauges, your spacecraft, the time controls.
@@ -252,7 +384,8 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
 
   // ---- Walking.
   scene.updateMatrixWorld(true)
-  const fps = createFps(renderer.domElement, camera, { ...options, start: START.pos, yaw: START.yaw })
+  const fps = createFps(renderer.domElement, camera, { ...fpsOptions, start: START.pos, yaw: START.yaw })
+  const crew = mountCrew(scene)
   const resize = () => {
     const { clientWidth: cw, clientHeight: ch } = host
     if (!cw || !ch) return
@@ -272,6 +405,8 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   let alarmKey: string | null = null
   const loop = roomLoop((now, dt) => {
     fps.update(dt)
+    onPose?.(fps.feet())
+    crew.update(dt)
     world.rotation.y = worldTurn
     craftHolder.rotation.y += dt * 0.4
     world.updateMatrixWorld(true)
@@ -295,6 +430,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
 
   return {
     fps,
+    setCrew: crew.set,
     setActive(on) {
       fps.setEnabled(on)
       loop.setActive(on)
@@ -322,8 +458,13 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
         mat.emissive.setHex(red ? 0xff3b2f : 0x63dbad)
         if (!red) mat.emissiveIntensity = 1
       }
-      worldMat.color.setHex(WORLD_COLOUR[s.body] ?? WORLD_COLOUR.earth!)
-      atmosphere.visible = s.body !== 'moon'
+      const body = s.body in WORLD_INDEX ? (s.body as keyof typeof WORLD_INDEX) : 'earth'
+      uBody.value = WORLD_INDEX[body]
+      Object.assign(worldMat.uniforms, worldMaps.maps[body])
+      clouds.visible = body === 'earth'
+      atmosphere.visible = body !== 'moon'
+      if (body === 'mars') uAir.value.setRGB(0.75, 0.45, 0.3)
+      else uAir.value.setRGB(0.3, 0.55, 1)
       worldTurn = (s.day / 365) * Math.PI * 2 * 6 // a few turns over a year: you can see it move at speed
       // Sim steps clone params; equal craft values must not rebuild GPU geometry every tick.
       const nextCraftKey = JSON.stringify(s.craft)
@@ -360,8 +501,10 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
       disposed = true
       loop.dispose()
       observer.disconnect()
+      crew.dispose()
       fps.dispose()
       disposeObject(scene)
+      worldMaps.dispose()
       envMap.dispose()
       renderer.dispose()
       renderer.domElement.remove()
