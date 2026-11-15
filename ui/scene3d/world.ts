@@ -150,17 +150,10 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
     new THREE.ShaderMaterial({ ...cloudShader, uniforms: { uSun, uTime, ...bodyMaps.maps.earth }, transparent: true, depthWrite: false }),
   )
   const uAtmo = { value: new THREE.Color() }
-  const atmosphere = new THREE.Mesh(
-    new THREE.SphereGeometry(ATMOSPHERE_R, 96, 64),
-    new THREE.ShaderMaterial({
-      ...atmosphereShader,
-      uniforms: { uSun, uColor: uAtmo, uThickness: { value: Math.sqrt(1 - 1 / (ATMOSPHERE_R * ATMOSPHERE_R)) } },
-      side: THREE.BackSide,
-      blending: THREE.AdditiveBlending,
-      transparent: true,
-      depthWrite: false,
-    }),
-  )
+  const uThickness = { value: Math.sqrt(1 - 1 / (ATMOSPHERE_R * ATMOSPHERE_R)) }
+  const airMaterial = (uColor: { value: THREE.Color }) =>
+    new THREE.ShaderMaterial({ ...atmosphereShader, uniforms: { uSun, uColor, uThickness }, side: THREE.BackSide, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false })
+  const atmosphere = new THREE.Mesh(new THREE.SphereGeometry(ATMOSPHERE_R, 96, 64), airMaterial(uAtmo))
   const globe = new THREE.Group()
   globe.add(planet, clouds)
   scene.add(globe, atmosphere)
@@ -170,6 +163,8 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
   const homeAxis = new THREE.Group() // holds the real tilt; `home` spins inside it
   homeAxis.quaternion.copy(earthStudio)
   homeAxis.add(home)
+  // The same clouds and air as the main Earth: its geometry, cloud material and shader, so two more draws and nothing new to load.
+  home.add(new THREE.Mesh(clouds.geometry, clouds.material), new THREE.Mesh(atmosphere.geometry, airMaterial({ value: ATMOSPHERE.earth! })))
   const arc = new THREE.Line(
     new THREE.BufferGeometry(),
     new THREE.LineDashedMaterial({ color: 0xbcd2ff, dashSize: 0.22, gapSize: 0.12, transparent: true, opacity: 0.95, depthWrite: false }),
