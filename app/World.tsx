@@ -14,7 +14,7 @@ import { savePersonalBest } from '../ui/leaderboard/storage'
 import { stars } from '../ui/mission'
 import { MissionControl, type Debrief } from '../ui/hangar'
 import { SpacecraftRoom } from '../ui/interior'
-import { LaunchView as SceneLaunchView } from '../ui/scene3d'
+import { LaunchGate as SceneLaunchView } from '../ui/intercept/LaunchGate'
 import { outcomeLabel } from '../ui/mission/format'
 import { GameScreen, withCards, type Active } from './App'
 import { StoryLayer } from './StoryLayer'
@@ -46,7 +46,7 @@ export interface WorldProps {
   onCampaignNext?: (id: string) => void
 }
 
-const LaunchView = SceneLaunchView as ComponentType<{ state: SimState; onDone: () => void; className?: string; failed?: boolean; cause?: string }>
+const LaunchView = SceneLaunchView as ComponentType<{ state: SimState; onDone: () => void; onDesign?: () => void; className?: string; failed?: boolean; cause?: string }>
 const Training = lazy(() => import('./Training'))
 
 export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
@@ -230,6 +230,12 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
         setLaunchCover(true)
         setLaunched(true)
         setWatched(true)
+      }}
+      onDesign={() => {
+        setLaunchCover(false)
+        setLaunched(false)
+        setWatched(false)
+        session.send({ type: 'reset', payload: {} })
       }}
     />
   )

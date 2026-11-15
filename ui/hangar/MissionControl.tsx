@@ -20,6 +20,8 @@ import { interactables, menu, MENU_RANGE, obstacles, paramOf, STAND, START, stat
 import type { CrewPose } from '../crew/crew'
 import { presetsFor } from '../../data/presets'
 import { presetSpots, presetTiles } from './presets'
+import { ReadinessPanel } from '../readiness/ReadinessPanel'
+import { isEngineeringSandbox } from '../readiness/report'
 
 export interface MissionControlProps {
   state: SimState
@@ -210,6 +212,7 @@ export function MissionControl({ state, send, players = NO_PLAYERS, me, title, g
   return (
     <div className={`mc${className ? ` ${className}` : ''}`}>
       <div ref={host} className="mc-canvas" role="application" aria-label="Mission control. W A S D to walk, arrow keys or mouse to look, E to use what you face." tabIndex={0} />
+      {isEngineeringSandbox(state.scenario_id) && !debrief && <ReadinessPanel entities={state.entities} params={state.params} />}
       {/* The wall screens are drawn on the canvas; screen readers get the same words here. */}
       <section className="mc-screens" aria-label="Mission control screens">
         <h2>{title}</h2>

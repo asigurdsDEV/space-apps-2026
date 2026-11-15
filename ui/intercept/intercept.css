@@ -1,0 +1,56 @@
+.app-world-launch.s3d-intercept, .s3d-intercept.preview-full { position: fixed; inset: 0; z-index: 20; width: 100%; height: 100dvh; min-height: 0; border-radius: 0; }
+.s3d-intercept {
+  position: relative;
+  height: min(78vh, 720px);
+  min-height: 320px;
+  overflow: hidden;
+  background: #071018;
+  color: #f5f6f8;
+  font: 1rem/1.45 var(--game-font, system-ui, sans-serif);
+}
+.s3d-intercept-canvas { position: absolute; inset: 0; }
+.s3d-intercept-top, .s3d-intercept-caption, .s3d-intercept-debrief {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  z-index: 2;
+}
+.s3d-intercept-top { top: 10px; display: flex; gap: 10px; align-items: center; }
+.s3d-intercept-banner, .s3d-intercept-shot, .s3d-intercept-debrief {
+  border: 1px solid rgb(255 255 255 / 0.16);
+  border-radius: 14px;
+  background: rgb(10 12 16 / 0.72);
+  backdrop-filter: blur(16px);
+}
+.s3d-intercept-banner {
+  margin: 0;
+  padding: 8px 12px;
+  color: #ffb4a8;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+.s3d-intercept-buttons { margin-left: auto; display: flex; gap: 8px; }
+.s3d-intercept button {
+  border: 1px solid rgb(255 255 255 / 0.2);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.08);
+  color: inherit;
+  padding: 6px 12px;
+  font: inherit;
+  cursor: pointer;
+}
+.s3d-intercept-caption { bottom: 12px; padding: 10px 12px; }
+.s3d-intercept-caption p { margin: 0; }
+.s3d-intercept-debrief {
+  top: 64px;
+  bottom: 12px;
+  overflow: auto;
+  padding: 16px 18px 20px;
+}
+.s3d-intercept-debrief h2 { margin: 0 0 4px; letter-spacing: 0.04em; }
+.s3d-intercept-kicker { margin: 0; color: #ffb4a8; font-weight: 700; }
+.s3d-intercept-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin: 12px 0; padding: 0; list-style: none; }
+.s3d-intercept-facts li { border: 1px solid rgb(255 255 255 / 0.12); border-radius: 10px; padding: 8px; }
+.s3d-intercept-facts span { display: block; font-size: 0.8rem; opacity: 0.75; }
+.s3d-intercept-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.s3d-intercept-note { font-size: 0.85rem; opacity: 0.8; }
