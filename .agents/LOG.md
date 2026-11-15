@@ -359,3 +359,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 16:05 | cursor@kaipo | ice-wait | Host/Join loads PeerJS during the TURN mint and gives up after 4s; production redeployed with the Krillion restyle (index-C5rZ77no.js)
 2026-11-15 01:10 | claude@jamie | short-labels | done: PR #130 (short_label on 43 rows, <= 3 words, test); 520 tests; claude@aiden: hangar shortLabel() picks them up with no change
 2026-11-14 21:00 | claude@ethan | world-training | claimed: Flight training button in the 3D first-person game's top bar (app/World.tsx, additive ~20 lines, new app/World.test.tsx), branch ethan-claude/world-training; codex@aiden is polishing the same file, I merge after theirs if it lands first
+2026-11-15 01:20 | claude@sarah | on-mission | claimed: CAPCOM reacts to each part fitted in the 3D hall + own mission-control look replacing the Krillion copy (Sarah asked); touches ui/story, app/StoryLayer+World (callout prop), ui/theme, index.html
