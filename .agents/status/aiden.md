@@ -54,20 +54,20 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** main (completion coordination); aiden-codex/desktop-polish (PR #135)
-**Last updated:** 2026-11-14 16:24
+**Branch:** aiden-codex/preflight-readability (on #135)
+**Last updated:** 2026-11-14 16:40
 
 ### Working on right now
-First-person desktop polish complete in PR #135. No new source work claimed. Ethan remains merge coordinator; merged #132 training is now integrated inside the new menu with shared clock hold. Claude branches/section untouched.
+Aiden asks explicit Download → real progress → Continue before first-person play; screenshot cutscene scaling + choice title overlap fixes; contextual help; concrete task split for everyone. Claim pushed before code. Astra read-only layout review confirms title/card coplanar overlap and World launch missing fullscreen class.
 
 ### Files / folders I'm touching (hands off)
-PR #135 app/World + WorldMenu, StoryLayer, additive App skipLaunch prop/test, app.css; ui/fps input + room-loop/tests; hangar/interior control loop changes; docs/qa/desktop-world.md. Released for integration on merge. Did not create app/World.test.tsx (Ethan #132 owns that file), edit scene3d, other owners' branches, or docs/CHALLENGE 2.md.
+`app/main.tsx`, new `app/GameAssets.tsx`, `app/assets-download.ts` + tests/CSS, `app/World.tsx`, `app/app.css`; `pwa/plugin.ts`, `pwa/sw-source.ts` + tests/new download manifest test; `ui/fps/Prompt.tsx`, new `help.ts` + tests, `fps.css`; `ui/hangar/MissionControl.tsx`; `ui/interior/SpacecraftRoom.tsx`, `layout.ts`, `layout.test.ts`, `control.ts`; new `docs/qa/preflight-assets.md`. Own coordination/decision note only. No scene3d/cutscene model source, sim/shared/catalog edits; no Claude section/branch or docs/CHALLENGE 2.md edits.
 
 ### Just finished
-One Menu/Escape dialog and noninteractive radio subtitle; #133 live replies preserved in that same radio. Both rooms suspend callbacks under menus/cutscenes/hidden tabs. Cabin does not rebuild unchanged craft each sim tick. Input release/focus/pointer cancellation and final bob frame fixed. Classic switch skips an already-watched launch. 3D scores saved with separate Daily keys. Full first-person regular 26/0 stars and Daily 25/0 runs; planning/radio/power module choices answered. Production default3D, menu, Classic/no-WebGL checks pass. 532 tests/typecheck/build pass, 146.3/150 kB. Local sample 60 FPS, renderer mean1.41ms; 4x CPU sample p95 interval17.9ms. Full limits in report.
+PR #135 desktop polish is green/mergeable and preserves merged #132/#133. New task will build on that published source, not edit its owner branches. Team follow-ups published as owner tasks, not false claims.
 
 ### Missing / I need from someone
-Ethan: review/merge ready #135; the newly merged #132 conflict is resolved and training is preserved inside WorldMenu. Running/manual-pause return tested. Physical low-end laptop/GPU, native pointer-locked Escape and cross-device co-op remain checks for the team. Actual 3D weather/leaderboard display is separate; persistence is fixed. Vercel auto-link still needs the account-owner action.
+Ethan merges #135 before this follow-up. Kaipo verifies public deployment/build parity and asset URLs; Caleb runs real-laptop/zoom acceptance; Sarah checks contextual science wording; Jamie catalog/demo owners continue isolated scopes. Claude Aiden is at usage limit and gets no blocking assignment.
 
 ### Heads up for other agents
-#124 is now merged; its defaults/preloading/resolution/culling/gauge fixes are preserved. #133 was integrated normally, maintaining Sarah's source and theme. No dependencies, model assets, sim/shared changes or mobile work. Sol remains suitable.
+Gate must include generated-model code chunks as well as GLBs; progress counts real completed files and preparation, no fake timer. Continue stays blocked on failure. Cached files reused. First-person help stays out of the crosshair/radio and does not add a modal. Desktop priority unchanged. Astra used for layout guidance; Sol implementation.

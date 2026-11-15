@@ -59,6 +59,14 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 - [ ] (light) [P1] **Briefing:** 3 fact chips + bonus chip, "How to win" as 3 icon rows ≤ 8 words, glossary wall → tap-to-learn chips (385 → ≤ 90 words) — ui/briefing/ — owner: claude@aiden
 - [ ] (light) [P2] **CAPCOM pop-outs auto-dismiss** after ~6 s unless hovered/focused; on results it covers the leaderboard card — ui/story/ — owner: claude@aiden
 
+### Desktop readiness follow-up (Aiden screenshots + explicit download, 2026-11-14)
+- [ ] (light) [P0] Review/merge #135 then download/readability follow-up when green; verify full launch framing for all rocket sizes at desktop aspect ratios, only change scene3d camera if fullscreen shell still clips — ui/scene3d/ + merge coordination — owner: claude@ethan
+- [ ] (light) [P1] Review contextual part/anomaly explanations for scientific accuracy and useful trade-offs; report gaps in docs/qa/context-help.md, no Codex source overlap — owner: claude@sarah
+- [ ] (light) [P1] Verify picked catalog rows have useful descriptions + <=3-word short labels for contextual help; continue currently claimed GO/NO-GO work first — data/catalogs/ — owner: claude@jamie
+- [ ] (light) [P1] Update demo/onboarding narration for Download → Continue → first-person WASD/E flow; keep co-op transport checks in own scope — docs/DEMO.md + PITCH.md — owner: codex@jamie
+- [ ] (light) [P0] Verify same build on Pages/Vercel, all download-manifest resources return 200 under each base path; repeat live cross-device join after deployment — deployment verification only, do not edit Codex cache/gate — owner: cursor@kaipo
+- [ ] (light) [P0] Desktop acceptance at 1280x800/1920x1080, window resize + zoom100/125/150, Download failure/retry/cached reload, full-height cutscenes, legible choice/title/help; record actual outcomes on real laptop — docs/qa/first-person.md — owner: cursor@caleb
+
 ## Missing / needed
 - Vercel site kimchispacemission.vercel.app does not update on push (still old bundle after PR #129); needs claude@aiden to approve the Vercel GitHub app or cursor@kaipo to redeploy — [found by claude@sarah]
 
@@ -104,6 +112,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
+- [ ] (medium) [P0] Download game files with real progress + explicit Continue before first-person play; fix screenshot launch height/anomaly title intersections and add contextual inspection help — app/main + GameAssets/assets-download + World/app.css; pwa/plugin + sw-source/tests; ui/fps Prompt/help/CSS; ui/hangar MissionControl; ui/interior SpacecraftRoom/layout/control/tests; docs/qa/preflight-assets.md — [codex@aiden]
 - [ ] (medium) [P1] **Start: mission cards** instead of the dropdown (art + one line + budget/goal chips), difficulty as a segmented control, helper sentences cut (350 → ≤ 120 words); fixes the repeated (Easy)/(Hard) list — ui/start/ — owner: codex@jamie — [codex@jamie]
 - [ ] (medium) [P1] **Stable frame rate in the 3D scenes I own:** measure, then fix the space view, spacecraft parts, launch cutscene and flight training (pixel-ratio cap, no per-frame allocation, stop rendering when hidden, lighter shadows); builds on codex@aiden's PR #135, does not touch ui/fps, ui/hangar, ui/interior — ui/scene3d/, app/Training.tsx — owner: claude@ethan — [claude@ethan] — branch ethan-claude/scene3d-perf
 - [ ] (medium) [P1] Cutscenes "into the walk-in spacecraft" (after launch) and "back to mission control" (after the ending), ≤ 10 s, Skip + reduced motion as now; QA plan for the 3D loop, run on the Sun 02:00 build — ui/cutscenes/, docs/qa/ — owner: cursor@caleb — [cursor@caleb] — scenes and plan in PR #115 (`EnterCraftScene` 8 s, `ReturnControlScene` 6 s, `docs/qa/first-person.md`). The Sunday 02:00 run is not done. Mount handoff to claude@aiden.
