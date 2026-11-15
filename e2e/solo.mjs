@@ -11,7 +11,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const BASE = process.env.E2E_URL ?? 'http://localhost:5173'
+const BASE = process.env.E2E_URL ?? 'http://localhost:5173/?world=classic' // the 2D screens; the default game is the 3D world
 const SHOTS = process.env.E2E_SHOTS ?? join(tmpdir(), 'e2e-solo')
 const WON = 'Mission success' // ui/mission/format.ts, outcome "success"
 
@@ -59,7 +59,8 @@ async function openBuilder(page, at, config, level) {
   await page.locator('.ss-root').getByLabel('Difficulty').selectOption(level)
   await page.getByRole('button', { name: 'Start mission' }).click()
   at('read the briefing and press Start designing')
-  const title = await page.locator('.bf-title').innerText()
+  // textContent, not innerText: the theme may show titles in capitals, and that is styling, not content.
+  const title = (await page.locator('.bf-title').textContent()) ?? ''
   if (!title.includes(config.title)) throw new Error(`the briefing is for "${title}", not "${config.title}"`)
   await page.getByRole('button', { name: 'Start designing' }).click()
   await page.locator('.mb').waitFor()
@@ -150,7 +151,7 @@ async function fly(page, at, config) {
   // 60× is 60 mission days a second. Three times that, plus half a minute, before giving up.
   const days = config.duration_s / config.dt_s
   await toResults(page, 30_000 + (days / 60) * 3000)
-  const outcome = (await page.locator('.mv-results .mv-title').innerText()).trim()
+  const outcome = ((await page.locator('.mv-results .mv-title').textContent()) ?? '').trim()
   const score = (await page.locator('.mv-results .mv-score').innerText()).replace(/\s+/g, ' ').trim()
   const why = (await page.locator('.mv-why li').allInnerTexts()).join(' ')
   return { outcome, score, why }

@@ -11,7 +11,7 @@
 import { createRequire } from 'node:module'
 
 const { chromium } = createRequire(import.meta.url)(process.env.PW_CORE || 'playwright-core')
-const URL_ = process.env.E2E_URL || 'http://localhost:5173/'
+const URL_ = process.env.E2E_URL || 'http://localhost:5173/?world=classic' // the 2D screens; the default game is the 3D world
 const SHOTS = process.env.E2E_SHOTS
 const BROKER = 'https://0.peerjs.com/peerjs/id' // PeerJS's default broker, which app/room.ts uses
 

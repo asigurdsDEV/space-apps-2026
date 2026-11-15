@@ -25,7 +25,7 @@ A full run takes about three minutes.
 | Variable | Default | What it is |
 |---|---|---|
 | `PW_CORE` | `playwright-core` from the repo's `node_modules` | Folder of a playwright-core install |
-| `E2E_URL` | `http://localhost:5173` | Where the game is served |
+| `E2E_URL` | `http://localhost:5173/?world=classic` | Where the game is served. Both scripts drive the classic 2D screens; the first-person 3D world (the default since PR #124) is not covered |
 | `E2E_SHOTS` | `e2e-solo` in the system temp folder | Where screenshots of failed cases go |
 
 ## When you add a scenario
