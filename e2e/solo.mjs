@@ -53,10 +53,13 @@ const scenario = (id) => scenarios.find((s) => s.scenario_id === id)
 async function openBuilder(page, at, config, level) {
   at('open the Start screen')
   await page.goto(BASE)
+  // The start menu is four steps: Start, your name, the mission, the difficulty.
+  await page.getByRole('button', { name: 'Start', exact: true }).click()
   await page.getByLabel('Your name').fill('E2E')
+  await page.getByRole('button', { name: 'Next' }).click()
   at(`pick ${config.scenario_id} at ${level} and press Start mission`)
-  await page.locator('.ss-root').getByLabel('Mission scenario').selectOption(config.scenario_id)
-  await page.locator('.ss-root').getByLabel('Difficulty').selectOption(level)
+  await page.locator(`.ss-root [data-scenario="${config.scenario_id}"]`).click()
+  await page.getByRole('group', { name: 'Difficulty' }).getByRole('button', { name: new RegExp(`^${level}`, 'i') }).click()
   await page.getByRole('button', { name: 'Start mission' }).click()
   at('read the briefing and press Start designing')
   // textContent, not innerText: the theme may show titles in capitals, and that is styling, not content.
@@ -229,12 +232,19 @@ try {
   const levels = await run(browser, 'start screen', async (page, at) => {
     at('open the Start screen')
     await page.goto(BASE)
-    // Inside the Start screen: the one-screen strip under it has a Difficulty picker of its own.
-    const values = (label) => page.locator('.ss-root').getByLabel(label).locator('option').evaluateAll((options) => options.map((option) => option.value))
-    const offered = await values('Mission scenario')
+    await page.getByRole('button', { name: 'Start', exact: true }).click()
+    await page.getByLabel('Your name').fill('E2E')
+    await page.getByRole('button', { name: 'Next' }).click()
+    at('read the missions the Start screen offers')
+    await page.locator('.ss-root [data-scenario]').first().waitFor() // the step fades in
+    const offered = await page.locator('.ss-root [data-scenario]').evaluateAll((buttons) => buttons.map((button) => button.dataset.scenario))
     const missing = scenarios.map((s) => s.scenario_id).filter((id) => !offered.includes(id))
     if (missing.length) throw new Error(`data/scenarios has ${missing.join(', ')}, but the Start screen does not offer it`)
-    const found = await values('Difficulty')
+    at('pick the first mission and read the difficulties')
+    await page.locator('.ss-root [data-scenario]').first().click()
+    await page.getByRole('group', { name: 'Difficulty' }).getByRole('button').first().waitFor()
+    // Each difficulty is a button named after its level (Easy, Normal, Hard).
+    const found = await page.getByRole('group', { name: 'Difficulty' }).getByRole('button').evaluateAll((buttons) => buttons.map((button) => button.textContent.trim().toLowerCase()))
     if (!found.length) throw new Error('the Start screen offers no difficulty')
     return found
   })

@@ -33,8 +33,8 @@ export function foilRelief(s: number, seed = 11): Float32Array {
   const k = s / 256
   const layer = (n: number, slope: number, step: number) =>
     Array.from({ length: n }, () => [rnd() * s, rnd() * s, (rnd() - 0.5) * 2 * slope, (rnd() - 0.5) * 2 * slope, (rnd() - 0.5) * step * k] as const)
-  const layers = [layer(14, 0.32, 3), layer(120, 0.24, 1.5)]
-  const wrap = (d: number) => d - s * Math.round(d / s)
+  // Flat number arrays and a plain loop: this runs nine million times at start-up, and tuples made it 180 ms.
+  const layers = [layer(14, 0.32, 3), layer(120, 0.24, 1.5)].map((facets) => Float64Array.from(facets.flat()))
   const h = new Float32Array(s * s)
   for (let y = 0; y < s; y++) for (let x = 0; x < s; x++) {
     // Creases in foil are never ruler-straight: the tile is bent a little before the facets are looked up.
@@ -44,13 +44,15 @@ export function foilRelief(s: number, seed = 11): Float32Array {
     for (const facets of layers) {
       let best = Infinity
       let on = 0
-      for (const [fx, fy, gx, gy, lift] of facets) {
-        const dx = wrap(px - fx)
-        const dy = wrap(py - fy)
+      for (let i = 0; i < facets.length; i += 5) {
+        let dx = px - facets[i]!
+        dx -= s * Math.round(dx / s)
+        let dy = py - facets[i + 1]!
+        dy -= s * Math.round(dy / s)
         const d = dx * dx + dy * dy
         if (d < best) {
           best = d
-          on = lift + gx * dx + gy * dy
+          on = facets[i + 4]! + facets[i + 2]! * dx + facets[i + 3]! * dy
         }
       }
       v += on

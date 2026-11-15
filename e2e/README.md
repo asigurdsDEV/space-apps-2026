@@ -30,4 +30,4 @@ A full run takes about three minutes.
 
 ## When you add a scenario
 
-Add its winning design to `WINS` in `solo.mjs`. Start from the one in `tests/playthrough.test.ts`, but that test flies without anomaly cards: the design here must still win after the cards, each answered with its first option. Until then its cases fail and say so. New difficulties are picked up from the Start screen by themselves.
+Add its winning design to `WINS` in `solo.mjs`. Start from the one in `tests/playthrough.test.ts`, but that test flies without anomaly cards: the design here must still win after the cards, each answered with its first option. Until then its cases fail and say so. New difficulties are picked up from the Start screen by themselves. The start menu has four steps (Start, your name, the mission, the difficulty); `openBuilder` in `solo.mjs` walks them.
