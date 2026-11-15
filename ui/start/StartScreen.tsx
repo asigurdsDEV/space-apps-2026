@@ -15,6 +15,7 @@ import aidenPhoto from './team/aiden.jpg?url'
 import ethanPhoto from './team/ethan.jpg?url'
 import jamiePhoto from './team/jamie.jpg?url'
 import kaipoPhoto from './team/kaipo.jpg?url'
+import sarahPhoto from './team/sarah.jpg?url'
 import { readName, rememberName } from './name'
 import '../learn/learn.css'
 import type { DailyMission, DailyMissionRequest } from './daily'
@@ -62,7 +63,7 @@ const TEAM: { name: string; photo?: string; linkedin?: string }[] = [
   { name: 'Ethan Liu', photo: ethanPhoto, linkedin: 'https://www.linkedin.com/in/ethan-liu-999a4b336/' },
   { name: 'Jamie Huh', photo: jamiePhoto, linkedin: 'https://www.linkedin.com/in/jamie-huh-0b87a5302/' },
   { name: 'Kaipo Ojas', photo: kaipoPhoto, linkedin: 'https://www.linkedin.com/in/kaipo-ojas-995376319/' },
-  { name: 'Sarah Youn' },
+  { name: 'Sarah Youn', photo: sarahPhoto, linkedin: 'https://www.linkedin.com/in/sarahsyoun/' },
 ]
 const FADE_MS = 700 // each way; matches .ss-stage's transition in start.css
 const usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
