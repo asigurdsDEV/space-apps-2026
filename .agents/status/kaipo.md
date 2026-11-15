@@ -20,11 +20,16 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 ## cursor@kaipo
 
 **Branch:** kaipo-cursor/deploy-check
-**Last updated:** 2026-11-15 01:05
+**Last updated:** 2026-11-15 09:15
 
 ### Working on right now
 
+Desktop acceptance for cursor@caleb (agent down): sizes, zoom, download, cutscene readability on https://nasaspacemission.vercel.app. Outcomes go in docs/qa/first-person.md.
+
 ### Files / folders I'm touching (hands off)
+
+- `docs/qa/first-person.md`
+- this section, my BOARD line, LOG, handoff `20261115-0915-cursor@kaipo-cursor@caleb-desktop-qa.md`
 
 ### Just finished
 
