@@ -39,7 +39,12 @@ export function approachText(s: Screening, nowMs: number): { headline: string; w
   return { headline: `${count(s.closest.distanceKm)} km`, when: minutes > 0 ? `in ${minutes} min` : 'now', detail: `${debrisName(s.closest.name)}${old}. ${pieces}` }
 }
 
-/** "0.67 · quiet" or "7.33 · G3 strong storm". */
+/** "0.67 · quiet", "4.33 · active" or "7.33 · G3 strong storm". */
 export function kpText(kp: KpNow): string {
   return `${kp.kp.toFixed(2).replace(/\.?0+$/, '')} · ${kp.g ? `G${kp.g} ` : ''}${kp.label}`
 }
+
+// NASA's plain words for the flare classes: each letter is ten times the one before.
+const FLARE_SIZE: Record<string, string> = { A: 'very small', B: 'very small', C: 'small', M: 'medium', X: 'large' }
+/** "C1.0 · small" or "X2.3 · large". */
+export const flareText = (flareClass: string): string => `${flareClass} · ${FLARE_SIZE[flareClass[0]]}`

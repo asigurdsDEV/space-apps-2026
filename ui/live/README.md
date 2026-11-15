@@ -23,7 +23,7 @@ How it behaves:
 
 - **Opens at once** with the bundled Earth; each layer appears when its feed answers and the picture fades in over 1.2 s. The globe's place and size depend only on the window, so nothing jumps as the panels fill.
 - **The Sun is fixed in the scene** at today's real height over the equator and the globe turns under it on the real clock, north up. The view drifts once round in ten minutes until the player touches it.
-- **Picking** a satellite (the list, or a click on its dot) names it, draws its orbit and glides the view to it; a storm's button glides to the storm. The view leans a little toward the Sun so a thing over the night side is seen against the lit edge.
+- **Picking** a satellite (the list, or a click on its dot) names it, draws its orbit and glides the view to it; a storm's button glides to the storm. The view leans toward the Sun (most for a low satellite, less for a storm or a high satellite, which must stay in the picture) so a thing over the night side is seen beside daylight, not on a black disc. A name near the right edge sits to the left of its dot.
 - **Every item says where and when it is from.** A feed that fails says so in its own item and the rest carry on; with no connection the screen says "Live data needs a connection." and shows the bundled Earth.
 - **The close-approach minutes count down** on the device clock, and the screening runs again once the pass it found is a minute behind.
 - **Reduced motion:** no drift, no glide (the view jumps to what was picked), no fade.

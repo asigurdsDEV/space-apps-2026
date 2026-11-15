@@ -14,7 +14,7 @@ export interface KpNow {
   /** NOAA geomagnetic storm level, 0 (no storm) to 5. */
   g: 0 | 1 | 2 | 3 | 4 | 5
   /** NOAA's word for that level. */
-  label: 'quiet' | 'minor storm' | 'moderate storm' | 'strong storm' | 'severe storm' | 'extreme storm'
+  label: 'quiet' | 'unsettled' | 'active' | 'minor storm' | 'moderate storm' | 'strong storm' | 'severe storm' | 'extreme storm'
   /** ISO UTC start of the three-hour window the value covers. */
   from: string
 }
@@ -47,7 +47,8 @@ export function parseKp(body: unknown): KpNow {
   const kp = last?.Kp
   if (!last || !isTime(last.time_tag) || typeof kp !== 'number' || !(kp >= 0 && kp <= 9)) throw new Error('no Kp reading')
   const g = stormLevel(kp)
-  return { kp, g, label: G_LABELS[g], from: new Date(utc(last.time_tag)).toISOString() }
+  // Below storm level NOAA calls Kp under 3 quiet, 3 unsettled and 4 active.
+  return { kp, g, label: g || kp < 3 ? G_LABELS[g] : kp < 4 ? 'unsettled' : 'active', from: new Date(utc(last.time_tag)).toISOString() }
 }
 
 const FLARE_CLASS = /^[ABCMX]\d+(\.\d+)?$/

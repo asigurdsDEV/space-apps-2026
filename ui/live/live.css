@@ -38,6 +38,9 @@ dialog.le {
   color: var(--game-warning);
 }
 .le-tag--picked { color: var(--game-text); font-size: 0.8125rem; }
+/* To the left of its dot (scene.ts), where the right side would cut the name off. */
+.le-tag--flip { margin-left: 0; translate: calc(-100% - 15px); }
+.le-tag--flip.le-tag--picked::before { left: auto; right: -26px; }
 /* The ring round the picked satellite's dot. */
 .le-tag--picked::before {
   content: "";

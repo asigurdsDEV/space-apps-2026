@@ -8,7 +8,7 @@ import {
   WINDOW_MINUTES, type Debris, type Feed, type FlareNow, type Imagery, type KpNow, type Orbits, type Satellites, type Screening, type Storm,
 } from './index'
 import { createLiveScene, type Layer, type LiveScene } from './scene'
-import { approachText, count, dayText, kpText, placeText, timeText, whenText } from './text'
+import { approachText, count, dayText, flareText, kpText, placeText, timeText, whenText } from './text'
 import './live.css'
 
 /** A CelesTrak feed and, once satellite.js has it, the orbits. `orbits: null` means positions could not be worked out. */
@@ -203,12 +203,12 @@ export default function LiveEarth({ onClose }: { onClose: () => void }) {
             <h2 className="game-eyebrow">Space weather now</h2>
             <dl className="le-stats">
               <div>
-                <dt>Kp index</dt>
+                <dt>Kp index (0 to 9)</dt>
                 <dd className="game-stat">{!weather ? '…' : weather.kp.ok ? kpText(weather.kp.data) : 'unavailable'}</dd>
               </div>
               <div>
                 <dt>Latest solar flare</dt>
-                <dd className="game-stat">{!weather ? '…' : weather.flare.ok ? weather.flare.data.flareClass : 'unavailable'}</dd>
+                <dd className="game-stat">{!weather ? '…' : weather.flare.ok ? flareText(weather.flare.data.flareClass) : 'unavailable'}</dd>
               </div>
             </dl>
             <p>A storm like the ones in your mission would read Kp 7 or more.</p>

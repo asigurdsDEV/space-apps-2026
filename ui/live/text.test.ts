@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Screening } from './screening'
-import { approachText, count, dayText, debrisName, kpText, placeText, timeText, whenText } from './text'
+import { approachText, count, dayText, debrisName, flareText, kpText, placeText, timeText, whenText } from './text'
 
 const screening = (over: Partial<Screening>): Screening => ({
   closest: { name: 'COSMOS 2251 DEB', id: 34427, index: 3, distanceKm: 117.46, at: '2026-11-15T11:16:00.000Z', inMinutes: 63.6, elementsAgeDays: 0.8 },
@@ -59,5 +59,12 @@ describe('Live Earth wording', () => {
     expect(kpText({ kp: 0.67, g: 0, label: 'quiet', from: '' })).toBe('0.67 · quiet')
     expect(kpText({ kp: 7.33, g: 3, label: 'strong storm', from: '' })).toBe('7.33 · G3 strong storm')
     expect(kpText({ kp: 5, g: 1, label: 'minor storm', from: '' })).toBe('5 · G1 minor storm')
+  })
+
+  it('says how big a flare class is', () => {
+    expect(flareText('C1.0')).toBe('C1.0 · small')
+    expect(flareText('B5.4')).toBe('B5.4 · very small')
+    expect(flareText('M5.1')).toBe('M5.1 · medium')
+    expect(flareText('X2.3')).toBe('X2.3 · large')
   })
 })

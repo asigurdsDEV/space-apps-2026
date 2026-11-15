@@ -48,6 +48,9 @@ describe('space weather', () => {
   it('reads the newest Kp and turns it into the NOAA storm level', () => {
     expect(parseKp(kp)).toEqual({ kp: 0.67, g: 0, label: 'quiet', from: '2026-11-15T06:00:00.000Z' })
     expect(parseKp([{ time_tag: '2024-05-11T00:00:00', Kp: 9 }])).toMatchObject({ g: 5, label: 'extreme storm' })
+    // Below storm level, NOAA's own words: not every Kp under 5 is quiet.
+    expect(parseKp([{ time_tag: '2024-05-11T00:00:00', Kp: 3.33 }])).toMatchObject({ g: 0, label: 'unsettled' })
+    expect(parseKp([{ time_tag: '2024-05-11T00:00:00', Kp: 4.67 }])).toMatchObject({ g: 0, label: 'active' })
     expect([4.67, 5, 5.67, 6, 7, 7.33, 8, 8.67, 9].map(stormLevel)).toEqual([0, 1, 1, 2, 3, 3, 4, 4, 5])
   })
 

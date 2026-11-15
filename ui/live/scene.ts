@@ -66,7 +66,7 @@ function glyph(edge: boolean, ring = false): THREE.CanvasTexture {
   return new THREE.CanvasTexture(canvas)
 }
 
-interface Tag { el: HTMLElement; at: THREE.Vector3; x: number; y: number; shown: boolean }
+interface Tag { el: HTMLElement; at: THREE.Vector3; x: number; y: number; shown: boolean; width: number; flipped: boolean }
 
 /** Throws when the browser cannot give a WebGL context. */
 export function createLiveScene(container: HTMLElement, options: LiveSceneOptions): LiveScene {
@@ -140,7 +140,7 @@ export function createLiveScene(container: HTMLElement, options: LiveSceneOption
   const ringAt = new Float32Array(RING_POINTS * 3)
   const ringGeometry = new THREE.BufferGeometry()
   ringGeometry.setAttribute('position', new THREE.BufferAttribute(ringAt, 3))
-  const ring = new THREE.Line(ringGeometry, new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5, depthWrite: false, toneMapped: false }))
+  const ring = new THREE.Line(ringGeometry, new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.8, depthWrite: false, toneMapped: false }))
   ring.frustumCulled = false
   ring.visible = false
   earth.add(ring)
@@ -153,7 +153,7 @@ export function createLiveScene(container: HTMLElement, options: LiveSceneOption
     el.textContent = text
     el.style.visibility = 'hidden'
     tagLayer.appendChild(el)
-    return { el, at: new THREE.Vector3(), x: NaN, y: NaN, shown: false }
+    return { el, at: new THREE.Vector3(), x: NaN, y: NaN, shown: false, width: el.offsetWidth, flipped: false }
   }
   const pickedTag = tag('le-tag le-tag--picked', '')
   let stormTags: Tag[] = []
@@ -172,9 +172,9 @@ export function createLiveScene(container: HTMLElement, options: LiveSceneOption
   let gliding = false
   let home = 3.6
   const v = new THREE.Vector3()
-  function lookFrom(local: THREE.Vector3, distance: number): void {
-    // Lean toward the Sun so something over the night side is still seen against the lit edge.
-    goal.copy(local).normalize().applyQuaternion(earth.quaternion).addScaledVector(SUN, 0.35).normalize()
+  function lookFrom(local: THREE.Vector3, distance: number, lean: number): void {
+    // Lean toward the Sun so something over the night side is seen beside daylight, not on a black disc.
+    goal.copy(local).normalize().applyQuaternion(earth.quaternion).addScaledVector(SUN, lean).normalize()
     goalDistance = distance
     gliding = !options.reducedMotion
     if (!gliding) camera.position.copy(goal).multiplyScalar(distance)
@@ -197,11 +197,13 @@ export function createLiveScene(container: HTMLElement, options: LiveSceneOption
 
   let width = 1
   let height = 1
+  let freeRight = 1
   function resize(): void {
     const full = container.getBoundingClientRect()
     const area = options.free.getBoundingClientRect()
     width = Math.max(1, full.width)
     height = Math.max(1, full.height)
+    freeRight = area.right - full.left
     renderer.setSize(width, height, false)
     camera.aspect = width / height
     // Centre the globe in the free area, and stand far enough back that it fills 84 % of that area's short side.
@@ -266,6 +268,12 @@ export function createLiveScene(container: HTMLElement, options: LiveSceneOption
     if (x === t.x && y === t.y) return
     t.x = x
     t.y = y
+    // A name that would run under a panel or off the screen sits to the left of its dot.
+    const flipped = x + 15 + t.width > freeRight
+    if (flipped !== t.flipped) {
+      t.flipped = flipped
+      t.el.classList.toggle('le-tag--flip', flipped)
+    }
     t.el.style.transform = `translate(${x}px, ${y}px)`
   }
 
@@ -378,15 +386,17 @@ export function createLiveScene(container: HTMLElement, options: LiveSceneOption
       if (!satellites) return
       picked = index
       pickedTag.el.textContent = name
+      pickedTag.width = pickedTag.el.offsetWidth
       moveCloud(satellites)
       drawRing()
       local.fromArray(satellites.at, index * 3)
-      // A high satellite (GOES is 6.6 Earth radii out) needs the view pulled back to be in it.
-      if (local.lengthSq() > 0) lookFrom(local, home * Math.max(1, local.length() / 1.7))
+      // A high satellite (GOES is 6.6 Earth radii out) needs the view pulled back to be in it, and less lean to stay in it.
+      const far = Math.max(1, local.length() / 1.7)
+      if (local.lengthSq() > 0) lookFrom(local, home * far, 0.95 / far)
     },
     lookAt(lat, lon) {
       const c = Math.cos(lat * RAD)
-      lookFrom(local.set(c * Math.cos(lon * RAD), Math.sin(lat * RAD), -c * Math.sin(lon * RAD)), home)
+      lookFrom(local.set(c * Math.cos(lon * RAD), Math.sin(lat * RAD), -c * Math.sin(lon * RAD)), home, 0.7)
     },
     show(layer, on) {
       shown[layer] = on
