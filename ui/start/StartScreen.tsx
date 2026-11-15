@@ -1,16 +1,25 @@
 import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import type { Config } from '../../shared'
-import { PROGRAM, type Difficulty } from '../../data'
+import { catalogs, PROGRAM, type Difficulty } from '../../data'
+import { catalogEntities } from '../../sim/parts'
 import { SpaceView } from '../scene3d'
 import { Diagram, type Step } from './Diagram'
+import { spacecraftRows } from './spacecraft'
+import earthDay from '../scene3d/maps/earth-day.jpg?url'
+import earthNight from '../scene3d/maps/earth-night.jpg?url'
+import earthClouds from '../scene3d/maps/earth-clouds.jpg?url'
+import moonMap from '../scene3d/maps/moon.jpg?url'
+import marsMap from '../scene3d/maps/mars.jpg?url'
 import { readName, rememberName } from './name'
 import '../learn/learn.css'
 import type { DailyMission, DailyMissionRequest } from './daily'
 import { startRequest, type StartMode, type StartRequest } from './model'
 import './start.css'
 
-/** `entities` is optional: with it, the 3D background shows the mission's own planet and spacecraft. */
-export type StartScenario = Pick<Config, 'scenario_id' | 'title' | 'params'> & Partial<Pick<Config, 'entities'>>
+export type StartScenario = Pick<Config, 'scenario_id' | 'title' | 'params'>
+
+/** Every catalog part, so the background and the spacecraft page can show a mission's starting design (configs carry none). */
+const PARTS = catalogEntities(catalogs)
 
 export interface StartScreenProps {
   scenarios: readonly StartScenario[]
@@ -33,7 +42,14 @@ const modes: { mode: StartMode; title: string; detail: string }[] = [
 ]
 const LEVELS = ['easy', 'normal', 'hard'] as const
 const STEPS: Step[] = ['menu', 'setup', 'mission', 'difficulty']
-const HEADINGS: Record<Step, string> = { menu: 'GO / NO-GO', setup: 'Mission setup', mission: 'Choose your mission', difficulty: 'Choose difficulty' }
+const HEADINGS: Record<Step, string> = { menu: 'GO / NO-GO', setup: 'Mission setup', mission: 'Choose your mission', difficulty: 'Choose difficulty', satellite: 'The spacecraft' }
+/** Each mission's icon is a small globe painted with the real NASA map of where it goes (ui/scene3d/maps). */
+const GLOBES: Record<string, string> = {
+  demo: `url(${earthClouds}), url(${earthDay})`,
+  moon: `url(${moonMap})`,
+  mars: `url(${marsMap})`,
+  sandbox: `url(${earthClouds}), url(${earthNight})`,
+}
 const FADE_MS = 700 // each way; matches .ss-stage's transition in start.css
 const usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
 /** A positive number, else undefined (the sandbox has no budget or goal to show). */
@@ -54,8 +70,13 @@ export function StartScreen({ scenarios, onStart, scenarioPreview, dailyMission,
   const [code, setCode] = useState('')
   const [validation, setValidation] = useState<string | null>(null)
   const heading = useRef<HTMLHeadingElement>(null)
+  // The 3D view reads its click handler once, so it calls through this ref to today's state.
+  const openSpacecraft = useRef(() => {})
+  openSpacecraft.current = () => { if (step === 'menu') go('satellite') }
   const moved = useRef(false)
   const scenario = scenarios.find(item => item.scenario_id === scenarioId) ?? ordered[0]
+  // The background (and the spacecraft page) always show First Light's craft over Earth, whatever mission is picked.
+  const shown = scenarios.find(item => item.scenario_id === 'demo') ?? ordered[0]
   const at = (item: StartScenario, level: Difficulty) => (scenarioPreview ? scenarioPreview(item.scenario_id, level) : level === 'normal' ? item : undefined)
   const preview = scenario && at(scenario, difficulty)
   const budget = amount(preview?.params.budget_usd)
@@ -107,10 +128,11 @@ export function StartScreen({ scenarios, onStart, scenarioPreview, dailyMission,
     ...(goal === undefined ? [] : [{ label: 'Science goal', value: `${goal} points`, share: share('target_science_score', goal) }]),
   ]
   const stepNumber = STEPS.indexOf(step)
+  const parts = step === 'satellite' && shown ? spacecraftRows(shown.params, PARTS) : []
 
   return (
     <main className="ss-root">
-      {scenario?.entities && <SpaceView className="ss-bg" state={{ entities: scenario.entities, params: scenario.params }} mode="orbit" showCaption={false} backdrop />}
+      {shown && <SpaceView className="ss-bg" state={{ entities: PARTS, params: shown.params }} mode="orbit" showCaption={false} backdrop onCraftClick={() => openSpacecraft.current()} />}
       {/* Inter Tight, a free stand-in for Ferrari Sans; without the network the system sans is used. React hoists it into <head>. */}
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500&display=swap" precedence="default" />
       <div className="ss-masthead"><span className="ss-brand"><span aria-hidden="true">✦</span> GO / NO-GO</span><span>Space Mission Design Game</span><span className="ss-edition">NASA Space Apps · 2026</span></div>
@@ -125,12 +147,13 @@ export function StartScreen({ scenarios, onStart, scenarioPreview, dailyMission,
         </div>
         <fieldset className="ss-panel" disabled={busy || fading}>
           {step !== 'menu' && <>
-            <p className="ss-panel-kicker">Step {stepNumber} of {joining ? 1 : 3}</p>
+            <p className="ss-panel-kicker">{step === 'satellite' ? `${shown?.title.split(':')[0] ?? 'Mission'} · starting design` : `Step ${stepNumber} of ${joining ? 1 : 3}`}</p>
             <h1 className="ss-step-title" ref={heading} tabIndex={-1}>{HEADINGS[step]}</h1>
           </>}
 
           {step === 'menu' && <>
             <button className="ss-primary" type="button" onClick={() => go('setup')}>Start</button>
+            {shown && <button className="ss-link" type="button" onClick={() => go('satellite')}>About the spacecraft <span aria-hidden="true">→</span></button>}
             {dailyMission && dailyScenario && onDailyMission && <section className="ss-daily" aria-labelledby={`${id}-daily`}>
               <h2 id={`${id}-daily`}><span aria-hidden="true">✦</span> Daily mission</h2>
               <p className="ss-hint"><time dateTime={dailyMission.date}>{dailyMission.date}</time> (UTC) · {dailyScenario.title}</p>
@@ -168,7 +191,7 @@ export function StartScreen({ scenarios, onStart, scenarioPreview, dailyMission,
               const target = amount(normal?.params.target_science_score)
               return <button type="button" key={item.scenario_id} data-scenario={item.scenario_id} aria-pressed={scenario?.scenario_id === item.scenario_id}
                 onClick={() => { setScenarioId(item.scenario_id); go('difficulty') }}>
-                <span className={`ss-world ss-world-${item.scenario_id}`} aria-hidden="true" />
+                <span className={`ss-world ss-world-${item.scenario_id}`} style={GLOBES[item.scenario_id] ? { backgroundImage: GLOBES[item.scenario_id] } : undefined} aria-hidden="true" />
                 <span><small>0{index + 1}</small><strong>{title}</strong>{rest.length > 0 && <em>{rest.join(':').trim()}</em>}</span>
                 <span className="ss-chips">{cost !== undefined && <span>{usd.format(cost)}</span>}{target !== undefined && <span>{target} points</span>}</span>
               </button>
@@ -188,9 +211,16 @@ export function StartScreen({ scenarios, onStart, scenarioPreview, dailyMission,
             <p className="ss-hint">{typeof scenario?.params.objective_text === 'string' ? scenario.params.objective_text : 'Read the briefing before you build.'}</p>
           </>}
 
+          {step === 'satellite' && <>
+            <p className="ss-hint ss-lead">The spacecraft circling the Earth behind this page, as First Light starts. You pick every part yourself when you design.</p>
+            {parts.length ? <dl className="ss-parts">
+              {parts.map(part => <div key={`${part.label}-${part.name}`}><dt>{part.label}</dt><dd><strong>{part.name}</strong>{part.detail && <span>{part.detail}</span>}</dd></div>)}
+            </dl> : <p className="ss-hint">This mission starts with no parts picked.</p>}
+          </>}
+
           {message && <p className="ss-error" role="alert">{message}</p>}
           {step !== 'menu' && <div className="ss-nav">
-            <button className="ss-back" type="button" onClick={() => go(STEPS[stepNumber - 1]!)}>Back</button>
+            <button className="ss-back" type="button" onClick={() => go(step === 'satellite' ? 'menu' : STEPS[stepNumber - 1]!)}>{step === 'satellite' ? 'Back to menu' : 'Back'}</button>
             {step === 'setup' && <button className="ss-primary" type="submit">{joining ? (busy ? 'Connecting…' : 'Join room') : 'Next'}</button>}
             {step === 'difficulty' && <button className="ss-primary" type="submit" disabled={!scenario}>{busy ? 'Connecting…' : mode === 'host' ? 'Create room' : 'Start mission'}</button>}
           </div>}
