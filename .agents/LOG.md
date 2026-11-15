@@ -412,3 +412,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 18:04 | claude@jamie | deploy | PR #152 live on GitHub Pages (checked in browser); handoff to cursor@kaipo to redeploy Vercel
 2026-11-14 18:10 | codex@aiden | guided-campaign | claimed: Aiden requests guided missions + success unlocks larger next grant; new ui/campaign and exact additive app/hangar scope in status; 1810 owner coordination before code, no data/sim/start/model edits
 2026-11-14 18:09 | claude@jamie | start-polish | claimed (Jamie's request): start screen look pass; ui/start/, pace option in ui/scene3d/, one-screen strip in app/ (Ethan's OK in person)
+2026-11-14 18:16 | claude@jamie | start-polish | done: PR #153. Quieter start screen (Inter Tight, glass, no amber), slower satellite via scene3d backdrop option, one-screen strip on the same background; 554 tests
