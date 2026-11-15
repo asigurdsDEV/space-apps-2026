@@ -1,7 +1,7 @@
 // A crew member for co-op: our own extravehicular suit, in the style of the white suits worn on spacewalks. Soft
 // fabric arms and legs gathered at the shoulders, elbows, knees and ankles; a hard upper torso with a chest control
 // unit; a life-support backpack; metal waist, neck, arm and wrist rings; gloves with fingers; boots; and a helmet with
-// a clear bubble under a gold sun visor. Drawn in code, so it needs no model file and works offline.
+// a clear bubble under a plain gold sun visor (no reflection). Drawn in code, so it needs no model file and works offline.
 // The whole suit is one shape shared by every astronaut, skinned to nine bones (body, and an upper and a lower bone
 // for each arm and leg), so the fabric bends at the joints. One draw call per material: 6 an astronaut, plus the
 // name above the helmet. `poseAstronaut` turns the bones; the angles come from `./motion`.
@@ -73,44 +73,6 @@ function materials(): Looks {
     cloth.wrapS = cloth.wrapT = THREE.RepeatWrapping
     cloth.anisotropy = 4
   }
-  // What the gold visor mirrors: black sky, the bright curved edge of the Earth with its thin blue air, and the Sun.
-  const sky = drawn(1024, 512, (g, w, h) => {
-    g.fillStyle = '#010206'
-    g.fillRect(0, 0, w, h)
-    const horizon = h * 0.47
-    const earth = g.createLinearGradient(0, horizon, 0, h)
-    earth.addColorStop(0, '#eef6ff')
-    earth.addColorStop(0.04, '#8cc0f6')
-    earth.addColorStop(0.5, '#5590dc')
-    earth.addColorStop(1, '#2c5fae')
-    g.fillStyle = earth
-    g.fillRect(0, horizon, w, h - horizon)
-    for (let i = 0; i < 110; i++) {
-      const x = rnd() * w, y = horizon + 8 + rnd() ** 1.6 * (h - horizon), r = 20 + rnd() * 70
-      g.fillStyle = `rgba(255, 255, 255, ${0.25 + rnd() * 0.4})`
-      for (const dx of [-w, 0, w]) {
-        g.beginPath()
-        g.ellipse(x + dx, y, r, r * (0.12 + rnd() * 0.16), 0, 0, TAU)
-        g.fill()
-      }
-    }
-    const air = g.createLinearGradient(0, horizon - h * 0.045, 0, horizon)
-    air.addColorStop(0, 'rgba(70, 140, 255, 0)')
-    air.addColorStop(1, 'rgba(200, 230, 255, 1)')
-    g.fillStyle = air
-    g.fillRect(0, horizon - h * 0.045, w, h * 0.045)
-    const sun = g.createRadialGradient(w * 0.17, h * 0.27, 0, w * 0.17, h * 0.27, 70)
-    sun.addColorStop(0, 'rgba(255, 255, 255, 1)')
-    sun.addColorStop(0.18, 'rgba(255, 255, 255, 1)')
-    sun.addColorStop(0.4, 'rgba(255, 244, 220, 0.25)')
-    sun.addColorStop(1, 'rgba(255, 244, 220, 0)')
-    g.fillStyle = sun
-    g.fillRect(w * 0.17 - 70, h * 0.27 - 70, 140, 140)
-  })
-  if (sky) {
-    sky.mapping = THREE.EquirectangularReflectionMapping
-    sky.colorSpace = THREE.SRGBColorSpace
-  }
   const named = (name: string, material: THREE.MeshStandardMaterial) => Object.assign(material, { name })
   // Both rooms are lit low and tone-mapped, and there true white cloth came out mid-grey (150 of 255). So the white
   // parts give back more light than they get, as a camera exposed for the suit would show them.
@@ -121,9 +83,9 @@ function materials(): Looks {
       fabric: named('fabric', new THREE.MeshStandardMaterial({ color: bright, vertexColors: true, ...woven })),
       hard: named('hard', new THREE.MeshStandardMaterial({ color: bright, vertexColors: true, roughness: 0.45 })),
       metal: named('metal', new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.32, metalness: 0.85 })),
-      // A little of its own bronze, so the half that mirrors black sky still reads as gold.
-      visor: named('visor', new THREE.MeshStandardMaterial({ color: 0xf2b655, roughness: 0.06, metalness: 1, envMap: sky, envMapIntensity: 1.2, emissive: 0x241503 })),
-      glass: named('glass', new THREE.MeshStandardMaterial({ color: 0xcfdde2, roughness: 0.05, transparent: true, opacity: 0.3, depthWrite: false, envMap: sky, envMapIntensity: 0.8 })),
+      // No mirror: Ethan asked for a plain gold visor. envMapIntensity 0 also keeps the room's own reflections off it.
+      visor: named('visor', new THREE.MeshStandardMaterial({ color: 0xd9a441, roughness: 0.42, metalness: 0.35, envMapIntensity: 0, emissive: 0x3a2606 })),
+      glass: named('glass', new THREE.MeshStandardMaterial({ color: 0xcfdde2, roughness: 0.05, transparent: true, opacity: 0.3, depthWrite: false, envMapIntensity: 0 })),
     },
     stripes: STRIPES.map((hex) => named('stripe', new THREE.MeshStandardMaterial({ color: new THREE.Color(hex).multiply(bright), ...woven }))),
   }
