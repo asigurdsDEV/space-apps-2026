@@ -35,9 +35,20 @@ export interface StoryLayerProps {
   shown?: readonly string[]
   /** First-person radio subtitle, with no menu/button over the scene. */
   immersive?: boolean
+  /** CAPCOM's live reply to the last design choice; wins over the beat line. */
+  callout?: { key: string; text: string } | null
 }
 
-export function StoryLayer({ screen, events = NO_EVENTS, scenarioId, onCutscene, shown, immersive = false }: StoryLayerProps) {
+const CALLOUT_MS = 5000
+
+export function StoryLayer({ screen, events = NO_EVENTS, scenarioId, onCutscene, shown, immersive = false, callout }: StoryLayerProps) {
+  const [calloutClosed, setCalloutClosed] = useState<string | null>(null)
+  const calloutKey = callout?.key ?? null
+  useEffect(() => {
+    if (!calloutKey) return
+    const timer = setTimeout(() => setCalloutClosed(calloutKey), CALLOUT_MS)
+    return () => clearTimeout(timer)
+  }, [calloutKey])
   /** Beats whose cutscene has played on this screen. */
   const [played, setPlayed] = useState<string[]>([])
   /** The beat whose line was closed (or timed out). */
@@ -70,11 +81,13 @@ export function StoryLayer({ screen, events = NO_EVENTS, scenarioId, onCutscene,
       </Cutscene>
     )
   }
-  if (closed === key) return null
+  const live = callout && calloutClosed !== callout.key ? callout : null
+  if (!live && closed === key) return null
   if (immersive) return (
-    <aside className="app-world-radio" role="status" aria-live="polite" aria-label="CAPCOM">
-      <span>CAPCOM</span><p>{LINES[beat.line]}</p>
+    <aside key={live?.key ?? key} className="app-world-radio" role="status" aria-live="polite" aria-label="CAPCOM">
+      <span>CAPCOM</span><p>{live?.text ?? LINES[beat.line]}</p>
     </aside>
   )
+  if (live) return <CapcomPopout key={live.key} text={live.text} onClose={() => setCalloutClosed(live.key)} />
   return <CapcomPopout key={key} line={beat.line} onClose={() => setClosed(key)} />
 }

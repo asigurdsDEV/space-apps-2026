@@ -4,8 +4,8 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 **Human:** Kaipo
 **Agent:** Cursor
-**Branch:** kaipo-cursor/ice-wait
-**Last updated:** 2026-11-14 16:05
+**Branch:** kaipo-cursor/keep-view
+**Last updated:** 2026-11-14 16:20
 
 ## Working on right now
 
@@ -19,14 +19,18 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@kaipo
 
-**Branch:** kaipo-cursor/ice-wait
-**Last updated:** 2026-11-14 16:05
+**Branch:** kaipo-cursor/keep-view
+**Last updated:** 2026-11-14 16:20
 
 ### Working on right now
 
 ### Files / folders I'm touching (hands off)
 
+- `ui/scene3d/world.ts` (camera framing only)
+
 ### Just finished
+
+**Classic model view:** dragging the orbit view no longer snaps back when the next day starts. The camera is placed once per view mode.
 
 **Room open:** Host and Join download PeerJS while `/api/ice` is in flight, and stop waiting after 4 seconds. A fast TURN mint is still used. A hung mint falls back to PeerJS's own servers.
 

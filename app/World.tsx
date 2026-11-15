@@ -19,6 +19,7 @@ import { LaunchView as SceneLaunchView } from '../ui/scene3d'
 import { outcomeLabel } from '../ui/mission/format'
 import { GameScreen, withCards, type Active } from './App'
 import { StoryLayer } from './StoryLayer'
+import { fitCallout } from '../ui/story'
 import { useSession } from './useSession'
 import { hasWebGL } from './Walk'
 import { WorldMenu } from './WorldMenu'
@@ -58,6 +59,16 @@ export function World({ active, config, onExit }: WorldProps) {
   const [classic, setClassic] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [cutscene, setCutscene] = useState(false)
+  // CAPCOM answers every design choice in the hall (ui/story fitCallout).
+  const [callout, setCallout] = useState<{ key: string; text: string } | null>(null)
+  const before = useRef(state)
+  useEffect(() => {
+    const prev = before.current
+    before.current = state
+    if (prev === state || state.metrics.phase !== 'design' || prev.metrics.phase !== 'design') return
+    const text = fitCallout(prev, state)
+    if (text) setCallout({ key: `${state.tick}:${text}`, text })
+  }, [state])
   /** The arrival cutscene has played: CAPCOM moves on from the mission call to the design. */
   const [arrived, setArrived] = useState(false)
   const phase = state.metrics.phase
@@ -196,6 +207,7 @@ export function World({ active, config, onExit }: WorldProps) {
         events={ended ? events : undefined}
         scenarioId={state.scenario_id}
         onCutscene={onCutscene}
+        callout={ended ? null : callout}
       />
     </div>
   )

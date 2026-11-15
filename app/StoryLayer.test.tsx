@@ -25,6 +25,15 @@ describe('StoryLayer', () => {
     expect(html).not.toContain('<button')
   })
 
+  it('keeps live part feedback in the same first-person radio without a second pop-out', () => {
+    const html = renderToStaticMarkup(<StoryLayer immersive screen="design" scenarioId="demo"
+      callout={{ key: 'fit-1', text: 'Copy, Flight. Magnetometer added.' }} />)
+    expect(html).toContain('app-world-radio')
+    expect(html).toContain('Magnetometer added')
+    expect(html).not.toContain('st-pop')
+    expect(html).not.toContain('<button')
+  })
+
   it('plays the ending when the mission ends', () => {
     const end: SimEvent = { type: 'scenario_ended', tick: 1, t_s: 1, payload: { reason: 'x', summary: { outcome: 'success' } as Summary } }
     expect(renderToStaticMarkup(<StoryLayer screen="flight" events={[end]} scenarioId="demo" />)).toContain(LINES['ending-success'])

@@ -1,20 +1,21 @@
 /* Mission run view + results screen. Every class starts with .mv so nothing leaks into other screens. */
 
 .mv-root {
-  /* Krillion-style arcade palette, same as ui/theme */
-  --mv-bg: #070d1a;
-  --mv-card: #0d1830;
-  --mv-line: #3d6e8f;
-  --mv-text: #e8f1ff;
-  --mv-muted: #8fa3c4;
-  --mv-info: #4de3ff;
-  --mv-good: #63e6be;
-  --mv-warn: #ffd166;
-  --mv-bad: #ff6b6b;
+  /* GO / NO-GO mission-control palette, same as ui/theme */
+  --mv-bg: #0a0f1c;
+  --mv-card: #111a2e;
+  --mv-line: #4a6c9b;
+  --mv-text: #eef3ff;
+  --mv-muted: #9eb0cf;
+  --mv-info: #5fd4ff;
+  --mv-good: #5ee0a8;
+  --mv-warn: #ffd479;
+  --mv-bad: #ff7a7a;
+  --mv-amber: #ffb547;
   --mv-earth: #3b7dd8;
   --mv-moon: #b9bccb;
   --mv-mars: #c8643b;
-  --mv-display: "VT323", ui-monospace, SFMono-Regular, Consolas, monospace;
+  --mv-display: "Rajdhani", "Segoe UI", system-ui, sans-serif;
 
   background: var(--mv-bg);
   color: var(--mv-text);
@@ -763,20 +764,21 @@
   }
 }
 
-/* ---------- Krillion-style arcade layer ---------- */
+/* ---------- GO / NO-GO console layer ---------- */
 .mv :is(h2, h3, button, summary, .mv-grade, .mv-score, .mv-day, .mv-phase--current, .mv-gauge strong, .mv-decision__badge, .mv-weather) {
   font-family: var(--mv-display);
   letter-spacing: 0.08em;
 }
-.mv h2 { text-transform: uppercase; font-size: 2rem; letter-spacing: 0.12em; }
+.mv h2 { text-transform: uppercase; font-size: 2rem; letter-spacing: 0.08em; font-weight: 700; }
 .mv h3 { font-size: 1.15rem; letter-spacing: 0.18em; }
 .mv button { text-transform: uppercase; font-size: 1.15rem; border-width: 2px; }
 .mv button.mv-primary {
-  background: var(--mv-card);
-  color: var(--mv-text);
-  border: 3px solid var(--mv-info);
-  box-shadow: 0 0 0 3px var(--mv-bg), 0 0 0 5px rgb(77 227 255 / 0.35);
-  letter-spacing: 0.2em;
+  background: var(--mv-amber);
+  color: #1a1206;
+  border: 0;
+  clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+  font-weight: 700;
+  letter-spacing: 0.14em;
 }
 .mv-card, .mv-more, .mv-results__head, .mv-decision, .mv-stage { border-width: 2px; }
 .mv-gauge strong { font-size: 1.25rem; }

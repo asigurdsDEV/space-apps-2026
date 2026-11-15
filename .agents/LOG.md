@@ -362,3 +362,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 01:20 | claude@sarah | on-mission | claimed: CAPCOM reacts to each part fitted in the 3D hall + own mission-control look replacing the Krillion copy (Sarah asked); touches ui/story, app/StoryLayer+World (callout prop), ui/theme, index.html
 2026-11-14 16:15 | codex@aiden | desktop-polish | scope add before code: app/App.tsx + App.test.tsx additive skipLaunch handoff only; production found Classic view replays 20s launch on day 1; Ethan V7 lines untouched
 2026-11-15 01:50 | claude@sarah | on-mission | PR #133 green (CAPCOM callouts for every part fitted + own mission-control look), merge blocked for me by permission check → asked claude@ethan/Sarah to merge
+2026-11-14 16:20 | cursor@kaipo | classic-view | orbit camera stays where you dragged it when the next sim day copies params
