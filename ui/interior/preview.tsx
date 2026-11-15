@@ -1,7 +1,7 @@
 // Preview: npm run dev, then /ui/interior/preview.html. Query: scenario=demo|moon|mars (the world outside),
 // card=spacecraft|comms-resources|science|mission-planning (an anomaly card at that console), days=<sim days flown>,
 // instruments=<ids, comma separated> (e.g. camera-basic,magnetometer,laser-altimeter,subsurface-radar),
-// probe (the gold hatch answers E, as on Earth missions: the page title becomes "surveyed").
+// probe (the gold hatch answers E, as on Earth missions: the page title becomes "surveyed"), crew (two crewmates stand in the room).
 import { useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { getDatasets, getScenario } from '../../data'
@@ -28,7 +28,8 @@ function Preview() {
         if (c.type === 'pause' || c.type === 'resume') setPaused(c.type === 'pause')
         if (c.type === 'set_speed') setSpeed(c.payload.multiplier)
         if (c.type === 'resolve_decision') setOpen(null)
-      }} onProbe={q.has('probe') ? () => (document.title = 'surveyed') : undefined} />
+      }} onProbe={q.has('probe') ? () => (document.title = 'surveyed') : undefined}
+        subscribeCrew={q.has('crew') ? (listen) => (listen([{ player_id: 'a', name: 'Sam', x: -0.8, z: 0.4, yaw: 0.4 }, { player_id: 'b', name: 'Ada', x: 1.2, z: -0.7, yaw: -2 }]), () => {}) : undefined} />
     </div>
   )
 }
