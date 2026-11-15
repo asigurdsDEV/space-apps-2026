@@ -43,7 +43,7 @@ Optional props. Leave them out and the screens work as before.
 ```
 
 - **Anomaly card:** shown above the run view while `decision` is set. Pause and speed are locked, because the sim doesn't advance time until the card is answered. Focus moves to option A for keyboard players.
-- **Debrief:** 3 stars (success, scenario bonus goal, 85+ points), "Change one thing" / "Even better" with **Try it**, and a share card with a Copy button.
+- **Debrief:** 3 stars (success, scenario bonus goal, 850+ points out of 1,000), "Change one thing" / "Even better" with **Try it**, and a share card with a Copy button.
 - `Decision` and `WhatIfFix` are local types in `game.ts` matching decision 004. When claude@ethan adds them to `shared/`, switch to those.
 
 `MissionView`, `ResultsScreen`, `eventText` and `logLines` are exported too, if the app wants to lay things out differently.

@@ -53,7 +53,7 @@ export const BONUS_GOALS: Record<string, { label: string; met: (s: Summary) => b
 }
 
 /** Score needed for the "Excellent" star. */
-export const EXCELLENT_SCORE = 85
+export const EXCELLENT_SCORE = 850
 
 /**
  * The stars of GAME_DESIGN.md §4.5. Bonus goals only count on a successful mission.

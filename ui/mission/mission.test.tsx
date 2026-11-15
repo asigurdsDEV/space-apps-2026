@@ -169,7 +169,7 @@ const card: Decision = {
 }
 
 describe('stars', () => {
-  const base = { outcome: 'success', score: 90, data_generated_gb: 100, data_lost_gb: 0, budget_usd: 100, cost_usd: 70, mass_kg: 95, mass_limit_kg: 100 }
+  const base = { outcome: 'success', score: 900, data_generated_gb: 100, data_lost_gb: 0, budget_usd: 100, cost_usd: 70, mass_kg: 95, mass_limit_kg: 100 }
 
   it('awards success, the scenario bonus goal and excellent', () => {
     expect(stars(base, 'no_data_lost').map((s) => s.earned)).toEqual([true, true, true])
@@ -178,9 +178,9 @@ describe('stars', () => {
   })
 
   it('gives no bonus star on a failed mission or an unknown goal', () => {
-    expect(stars({ ...base, outcome: 'science_shortfall', score: 60 }, 'no_data_lost').map((s) => s.earned)).toEqual([false, false, false])
+    expect(stars({ ...base, outcome: 'science_shortfall', score: 600 }, 'no_data_lost').map((s) => s.earned)).toEqual([false, false, false])
     // No known goal: no nameless bonus star (playtest finding), just success + excellent.
-    expect(stars(base, 'made_up').map((s) => s.label)).toEqual(['Mission success', 'Excellent (85+ points)'])
+    expect(stars(base, 'made_up').map((s) => s.label)).toEqual(['Mission success', 'Excellent (850+ points)'])
     expect(stars(base).length).toBe(2)
   })
 })
@@ -225,7 +225,7 @@ describe('debrief', () => {
     const { state } = fly({ toEnd: true, sandbox: true })
     const report = summary(state)
     const tried: string[] = []
-    const fixes = [{ change: '3 ground stations instead of 1', score: 99, grade: 'A' }, { change: 'Add the Magnetometer', score: 97 }]
+    const fixes = [{ change: '3 ground stations instead of 1', score: 990, grade: 'A' }, { change: 'Add the Magnetometer', score: 970 }]
     const element = ResultsScreen({ summary: report, onCommand: noop, bonusGoal: 'no_data_lost', fixes, onTryFix: (f) => tried.push(f.change) })
     const html = renderToStaticMarkup(element)
     expect(html).toContain('3 stars')

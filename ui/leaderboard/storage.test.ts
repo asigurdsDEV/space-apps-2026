@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { savePersonalBest } from './storage'
 
 const records = new Map<string, string>()
-const key = (scenario: string) => `space-apps-2026:best:v1:${encodeURIComponent(scenario)}`
+const key = (scenario: string) => `space-apps-2026:best:v2:${encodeURIComponent(scenario)}`
 
 beforeEach(() => {
   records.clear()

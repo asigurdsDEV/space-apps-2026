@@ -69,7 +69,7 @@ export function ResultsScreen({ summary, onCommand, title, bonusGoal, fixes, onT
         <div className="mv-results__title">
           <h2 className="mv-title">{outcomeLabel(outcome)}</h2>
           <p className="mv-score">
-            <strong>{Math.round(score)}</strong> / 100
+            <strong>{Math.round(score)}</strong> / 1000
             {days > 0 && <span className="mv-muted"> · {Math.floor(days)} days flown</span>}
           </p>
           <ul className="mv-stars" aria-label={`${starList.filter((s) => s.earned).length} of ${starList.length} stars`}>
