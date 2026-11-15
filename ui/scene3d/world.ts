@@ -130,7 +130,9 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
   // Real day and night (sun.ts): every Earth here is turned so the place where it is noon at `date` faces the Sun, then spins on
   // from there about its own axis. The shaders light in world space, so ground, city lights, clouds and air all agree.
   const sunXYZ = SUN.toArray()
-  const sunInMap = sunDirection(new Date(options.date ?? Date.now()))
+  const when = new Date(options.date ?? Date.now())
+  // An unreadable date would make the Sun NaN, and a NaN Sun sprite blacks out the whole frame through the bloom: show now instead.
+  const sunInMap = sunDirection(Number.isNaN(+when) ? new Date() : when)
   // An Earth that is not the main body (behind the craft in cruise, in the Moon's sky) is lit by the studio Sun, so its pole leans.
   const earthStudio = new THREE.Quaternion().fromArray(earthOrientation(sunInMap, sunXYZ))
   const sunForUpright = new THREE.Vector3(...uprightSun(sunInMap, sunXYZ))
@@ -390,7 +392,7 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
 
     const along = pos.dot(sunNow)
     // The shadow test assumes the planet at the origin with the craft near it; in cruise it is in sunlight.
-    const shadow = shown !== 'cruise' && along < 0 && pos.clone().addScaledVector(sunNow, -along).length() < 1
+    const shadow = shown !== 'cruise' && along < 0 && side.copy(pos).addScaledVector(sunNow, -along).length() < 1 // `side` is free again here: no new vector each frame
     sunLight.intensity = shadow ? 0 : 2.6
     earthshine.intensity = shadow ? 0.04 : spec.body === 'earth' ? 0.6 : 0.25
     marker.position.copy(pos)
