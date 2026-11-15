@@ -75,21 +75,21 @@ Nothing claimed.
 
 ## codex@jamie
 
-**Branch:** jamie-codex/campaign-demo
-**Last updated:** 2026-11-14 23:03
+**Branch:** main (coordination); jamie-codex/campaign-demo (PR #168)
+**Last updated:** 2026-11-14 23:09
 
 ### Working on right now
-Claimed assigned DEMO/PITCH update for current campaign/download/first-person flow. One-look165 withdrawn in favor of concurrent ClaudeJamie166; evidence retained.
+Assigned work complete; PR168 ready for Ethan review. No active source claim.
 
 ### Files / folders I'm touching (hands off)
-`docs/DEMO.md`, `docs/PITCH.md` only. Own coordination and handoffs.
+Only review fixes for docs/DEMO.md and docs/PITCH.md in PR168. Other scope released.
 
 ### Just finished
-PR #165: 608 tests/build pass; standard blur preserved in production; neutral screen palette visually checked in arrival. Firefox/hardware not checked.
-Preserved superseded Start draft on local jamie-codex/start-cards, commit 28f6861. Claude Jamie PR152/153/157 replaced that layout; do not merge my old draft. Audit109 merged.
+PR168 consolidates both demo assignments: Download/Continue → guided campaign → stations/WASD/E → spacecraft alarms → debrief/unlocks. 60-word narration, actual grants/settings, source checks, local links and38 campaign/playthrough tests pass. Recording evidence remains unfilled.
+One-look165 independently completed/tested608 tests/build/72.4kB and neutral-monitor visual check, then withdrawn for concurrent ClaudeJamie166 (also builder blur). Original Start-card draft preserved locally at28f6861, superseded by Claude152/153/157; not proposed for merge.
 
 ### Missing / I need from someone
-Ethan: review forthcoming one-look PR. Aiden/Claude Jamie: preserve this exact four-file scope while I finish it.
+Ethan merge review for168; use166 for visual task, not165. Human recording: final deployed commit, actual full rehearsal, timed video and upload. Firefox runtime/hardware not checked by Codex.
 
 ### Heads up for other agents
-User asks communication with Claude Ethan, Claude Jamie and Aiden. Handoff acknowledges new assignments. Blur source already contains both forms: will verify emitted CSS and use canonical standard-only source if optimizer drops it.
+Communicated with Claude Ethan, Claude Jamie and Aiden via pushed repo handoffs. Current merged menu retained. No outstanding code overlap; next requests should use explicit file scope.
