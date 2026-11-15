@@ -179,6 +179,7 @@ Decision 002: online co-op for up to 4 players, host-authoritative. The types ar
 | `claim_role` | `{ "role": Role \| null }` | guest → host | take a free role, or `null` to give yours up |
 | `command` | `{ "command": Command }` | guest → host | a sim Command; the host checks the sender's role first |
 | `leave` | `{}` | guest → host | leaving; the role becomes free |
+| `pose` | `{ "x": number, "z": number, "yaw": number, "player_id"?: string }` | anyone → the others | where that player is standing in the walkable room (metres, yaw radians). A guest omits `player_id`. The host stamps it from the connection and relays the pose. It does not change the sim. |
 | `roster` | `{ "players": Player[] }` | host → all | sent whenever anyone joins, leaves or changes role |
 | `state` | `{ "state": SimState, "events": SimEvent[] }` | host → all | sent after every step |
 | `rejected` | `{ "player_id": string, "reason": string, "command"?: Command }` | host → all | a join, role claim or command was refused; only that player shows it |

@@ -14,6 +14,7 @@ import { atmosphereShader, cloudShader, planetShader, toScreen } from '../scene3
 import type { CraftSpec } from '../scene3d/model'
 import type { Decision } from '../../shared'
 import { choiceSpots, DASH, moduleFor, ROOM, START, WINDOW, type Gauge, type Module } from './layout'
+import { mountCrew, type CrewPose } from '../crew/crew'
 
 export interface CabinScreens {
   modules: Module[]
@@ -35,6 +36,8 @@ export interface Cabin {
   /** Off while a cutscene covers the view: nothing is drawn, so two 3D scenes never render at once. */
   setActive(on: boolean): void
   show(screens: CabinScreens): void
+  /** Other players in this cabin. Pass an empty list when they leave. */
+  setCrew(members: readonly CrewPose[]): void
   dispose(): void
 }
 
@@ -146,7 +149,8 @@ function label(text: string, sub?: string, w = 512, h = 128) {
   return s.texture
 }
 
-export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start' | 'yaw'>): Cabin {
+export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start' | 'yaw'> & { onPose?: (pose: { x: number; z: number; yaw: number }) => void }): Cabin {
+  const { onPose, ...fpsOptions } = options
   const renderer = new THREE.WebGLRenderer({ antialias: true }) // throws without WebGL; the component shows a fallback
   // 1.25× not the screen's 2×: ~60% fewer pixels to fill every frame.
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25))
@@ -380,7 +384,8 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
 
   // ---- Walking.
   scene.updateMatrixWorld(true)
-  const fps = createFps(renderer.domElement, camera, { ...options, start: START.pos, yaw: START.yaw })
+  const fps = createFps(renderer.domElement, camera, { ...fpsOptions, start: START.pos, yaw: START.yaw })
+  const crew = mountCrew(scene)
   const resize = () => {
     const { clientWidth: cw, clientHeight: ch } = host
     if (!cw || !ch) return
@@ -400,6 +405,8 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   let alarmKey: string | null = null
   const loop = roomLoop((now, dt) => {
     fps.update(dt)
+    onPose?.(fps.feet())
+    crew.update(dt)
     world.rotation.y = worldTurn
     craftHolder.rotation.y += dt * 0.4
     world.updateMatrixWorld(true)
@@ -423,6 +430,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
 
   return {
     fps,
+    setCrew: crew.set,
     setActive(on) {
       fps.setEnabled(on)
       loop.setActive(on)
@@ -493,6 +501,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
       disposed = true
       loop.dispose()
       observer.disconnect()
+      crew.dispose()
       fps.dispose()
       disposeObject(scene)
       worldMaps.dispose()

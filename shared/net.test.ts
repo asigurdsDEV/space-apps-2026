@@ -69,6 +69,8 @@ describe('runtime validators', () => {
     { type: 'rejected', payload: { player_id: 'p2', reason: 'No.', command: set('bus') } },
     { type: 'rejected', payload: { player_id: 'p2', reason: 'Room is full' } },
     { type: 'ended', payload: {} },
+    { type: 'pose', payload: { x: 1.5, z: -2, yaw: 0.4 } },
+    { type: 'pose', payload: { x: 0, z: 0, yaw: 0, player_id: 'host' } },
   ]
 
   it('accepts every well-formed message, before and after a JSON round trip', () => {
@@ -120,6 +122,9 @@ describe('runtime validators', () => {
       { type: 'rejected', payload: { player_id: 'p2' } },
       { type: 'rejected', payload: { player_id: 'p2', reason: 'No.', command: { type: 'nope' } } },
       { type: 'ended', payload: null },
+      { type: 'pose', payload: { x: 1, z: 0 } },
+      { type: 'pose', payload: { x: 100, z: 0, yaw: 0 } },
+      { type: 'pose', payload: { x: 0, z: 0, yaw: 0, player_id: '' } },
     ]
     for (const message of bad) expect(isNetMessage(message), JSON.stringify(message)).toBe(false)
     expect(isNetMessage(hostile)).toBe(false)
