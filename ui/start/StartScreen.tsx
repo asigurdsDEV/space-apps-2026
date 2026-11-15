@@ -4,18 +4,13 @@ import { catalogs, PROGRAM, type Difficulty } from '../../data'
 import { catalogEntities } from '../../sim/parts'
 import { SpaceView } from '../scene3d'
 import { Diagram, type Step } from './Diagram'
+import { Team } from './Team'
 import { spacecraftRows } from './spacecraft'
 import earthDay from '../scene3d/maps/earth-day.jpg?url'
 import earthNight from '../scene3d/maps/earth-night.jpg?url'
 import earthClouds from '../scene3d/maps/earth-clouds.jpg?url'
 import moonMap from '../scene3d/maps/moon.jpg?url'
 import marsMap from '../scene3d/maps/mars.jpg?url'
-import calebPhoto from './team/caleb.jpg?url'
-import aidenPhoto from './team/aiden.jpg?url'
-import ethanPhoto from './team/ethan.jpg?url'
-import jamiePhoto from './team/jamie.jpg?url'
-import kaipoPhoto from './team/kaipo.jpg?url'
-import sarahPhoto from './team/sarah.jpg?url'
 import { readName, rememberName } from './name'
 import '../learn/learn.css'
 import type { DailyMission, DailyMissionRequest } from './daily'
@@ -56,15 +51,6 @@ export const GLOBES: Record<string, string> = {
   mars: `url(${marsMap})`,
   sandbox: `url(${earthClouds}), url(${earthNight})`,
 }
-/** The team, shown on the menu step. No photo → initials; no LinkedIn → plain name. */
-const TEAM: { name: string; photo?: string; linkedin?: string }[] = [
-  { name: 'Caleb Choi', photo: calebPhoto, linkedin: 'https://www.linkedin.com/in/caleb-choi-30a9943b0/' },
-  { name: 'Aiden Sigurdson', photo: aidenPhoto, linkedin: 'https://www.linkedin.com/in/aiden-sigurdson/' },
-  { name: 'Ethan Liu', photo: ethanPhoto, linkedin: 'https://www.linkedin.com/in/ethan-liu-999a4b336/' },
-  { name: 'Jamie Huh', photo: jamiePhoto, linkedin: 'https://www.linkedin.com/in/jamie-huh-0b87a5302/' },
-  { name: 'Kaipo Ojas', photo: kaipoPhoto, linkedin: 'https://www.linkedin.com/in/kaipo-ojas-995376319/' },
-  { name: 'Sarah Youn', photo: sarahPhoto, linkedin: 'https://www.linkedin.com/in/sarahsyoun/' },
-]
 const FADE_MS = 700 // each way; matches .ss-stage's transition in start.css
 const usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
 /** A positive number, else undefined (the sandbox has no budget or goal to show). */
@@ -233,21 +219,7 @@ export function StartScreen({ scenarios, onStart, scenarioPreview, dailyMission,
             </dl> : <p className="ss-hint">This mission starts with no parts picked.</p>}
           </>}
 
-          {step === 'team' && <div className="ss-team">
-              <p className="ss-hint">Six students at the University of Washington</p>
-              <ul>
-                {TEAM.map(member => {
-                  const face = member.photo
-                    ? <img src={member.photo} alt="" width={72} height={72} loading="lazy" />
-                    : <span className="ss-team-initials" aria-hidden="true">{member.name.split(' ').map(word => word[0]).join('')}</span>
-                  return <li key={member.name}>
-                    {member.linkedin
-                      ? <a href={member.linkedin} target="_blank" rel="noreferrer" aria-label={`${member.name} on LinkedIn`}>{face}<span>{member.name}</span></a>
-                      : <>{face}<span>{member.name}</span></>}
-                  </li>
-                })}
-              </ul>
-            </div>}
+          {step === 'team' && <Team />}
 
           {message && <p className="ss-error" role="alert">{message}</p>}
           {step !== 'menu' && <div className="ss-nav">
