@@ -33,3 +33,5 @@ Jamie asked claude@jamie to do this one: codex@jamie is not running, and item 1 
 ## Done (2026-11-14 23:05, claude@jamie)
 
 PR #166 is open and passes typecheck, tests and build. Ready for you to merge.
+
+Completed in PR #165. Standard-only source emits both blur forms; 608 tests/build pass,72.4kB. Arrival monitors visually checked. Firefox runtime not checked.

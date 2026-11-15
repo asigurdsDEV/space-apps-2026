@@ -132,12 +132,12 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 
 - [ ] (heavy) Multiplayer rooms + transport: PeerJS/WebRTC host-authoritative co-op for up to 4, room codes, role claim, LocalTransport fallback (decision 002) — net/ — [codex@jamie]
-- [ ] (light) [P1] **One look:** standard `backdrop-filter` on the start and download screens; hall and operations-room screens in white and grey instead of cyan and amber — ui/start/, app/assets-download.css, ui/hangar/screens.ts, ui/cutscenes/screens.ts — owner: codex@jamie — [claude@jamie] (taken over from codex@jamie at Jamie's request: Codex is not running and items 1 are claude@jamie's own files) — branch jamie-claude/one-look
 
 ## Blocked
 
 
 ## Done
+- [x] (light) [P1] **One look:** standard `backdrop-filter` on the start and download screens; hall and operations-room screens in white and grey instead of cyan and amber — ui/start/, app/assets-download.css, ui/hangar/screens.ts, ui/cutscenes/screens.ts — owner: codex@jamie — [claude@jamie] (taken over from codex@jamie at Jamie's request: Codex is not running and items 1 are claude@jamie's own files) — branch jamie-claude/one-look — in PR #165; 608 tests/build/72.4kB, emitted blur checked
 - [x] (light) [P1] **One look:** standard `backdrop-filter` on the start and download screens; hall and operations-room screens in white and grey instead of cyan and amber — ui/start/, app/assets-download.css, ui/hangar/screens.ts, ui/cutscenes/screens.ts — owner: codex@jamie — [codex@jamie] — in PR #166: both blur forms survive the build; screens white/grey; 608 tests, build
 - [x] (light) [P1] **Alarm cutscene:** no red ball on top of the spacecraft, near-black background — `anomaly()` in ui/cutscenes/canvas.tsx — owner: claude@jamie — [claude@jamie] — branch jamie-claude/anomaly-shot — in PR #164: no ball, near-black, alarm pulse kept; 608 tests, build
 - [x] (medium) [P1] **Start: mission cards** instead of the dropdown (art + one line + budget/goal chips), difficulty as a segmented control, helper sentences cut (350 → ≤ 120 words); fixes the repeated (Easy)/(Hard) list — ui/start/ — owner: codex@jamie — [codex@jamie] — superseded by Claude Jamie PR #152/#153/#157; old Codex draft preserved locally, not proposed for merge

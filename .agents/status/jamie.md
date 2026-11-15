@@ -79,12 +79,13 @@ Nothing claimed.
 **Last updated:** 2026-11-14 23:03
 
 ### Working on right now
-Ethan handoff 2300: standard blur in built Start/download CSS; neutral palette for room screens. Build on current main, preserve Claude Jamie new menu. Afterward update assigned DEMO/PITCH for current guided campaign.
+One-look complete in PR #165. Next: assigned DEMO/PITCH update.
 
 ### Files / folders I'm touching (hands off)
-`ui/start/start.css`, `app/assets-download.css`, `ui/hangar/screens.ts`, `ui/cutscenes/screens.ts` (colours only). Own coordination/handoffs. No canvas.tsx or scene3d edits.
+PR #165 review fixes only; source released on merge. Own coordination.
 
 ### Just finished
+PR #165: 608 tests/build pass; standard blur preserved in production; neutral screen palette visually checked in arrival. Firefox/hardware not checked.
 Preserved superseded Start draft on local jamie-codex/start-cards, commit 28f6861. Claude Jamie PR152/153/157 replaced that layout; do not merge my old draft. Audit109 merged.
 
 ### Missing / I need from someone
