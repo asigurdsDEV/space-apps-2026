@@ -3,9 +3,10 @@ import { useEffect, useState } from 'react'
 import * as THREE from 'three'
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js'
 import { buildCraft, disposeObject } from '../scene3d/craft'
-import { sceneSpec } from '../scene3d/model'
+import { sceneSpec, type CraftSpec } from '../scene3d/model'
 import { planetMaps } from '../scene3d/maps'
-import { cloudShader, planetShader } from '../scene3d/shaders'
+import { atmosphereShader, cloudShader, planetShader, toScreen } from '../scene3d/shaders'
+import { sunDirection } from '../scene3d/sun'
 import { arrival } from './room'
 import { CUTSCENE_SCENE_MS, shotProgress, type CutsceneCanvasProps, type CutsceneSceneId } from './timing'
 
@@ -13,7 +14,7 @@ export type { CutsceneCanvasProps }
 
 const reducedMotion = () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-export function CutsceneCanvas({ kind, body = 'moon', durationMs }: CutsceneCanvasProps) {
+export function CutsceneCanvas({ kind, body = 'moon', durationMs, craft }: CutsceneCanvasProps) {
   const [host, setHost] = useState<HTMLDivElement | null>(null)
   const [failed, setFailed] = useState(false)
   const duration = durationMs ?? CUTSCENE_SCENE_MS[kind]
@@ -45,7 +46,7 @@ export function CutsceneCanvas({ kind, body = 'moon', durationMs }: CutsceneCanv
     pmrem.dispose()
     const camera = new THREE.PerspectiveCamera(42, 1, 0.05, 100)
     const reduced = reducedMotion()
-    const shot = makeShot(kind, body, scene, camera)
+    const shot = makeShot(kind, body, scene, camera, craft)
     let frame = 0
     let stopped = false
     const started = performance.now()
@@ -102,13 +103,13 @@ function distance(aspect: number, desktop: number) {
   return aspect < 0.9 ? desktop * 1.45 : desktop
 }
 
-function makeShot(kind: CutsceneSceneId, body: 'moon' | 'mars', scene: THREE.Scene, camera: THREE.PerspectiveCamera): Shot {
+function makeShot(kind: CutsceneSceneId, body: 'moon' | 'mars', scene: THREE.Scene, camera: THREE.PerspectiveCamera, craft?: CraftSpec): Shot {
   if (kind === 'arrival') return arrival(scene, camera)
-  if (kind === 'orbit') return orbit(scene, camera, body)
-  if (kind === 'anomaly') return anomaly(scene, camera)
+  if (kind === 'orbit') return orbit(scene, camera, body, craft)
+  if (kind === 'anomaly') return anomaly(scene, camera, craft)
   if (kind === 'enter-craft') return transit(scene, camera, true)
   if (kind === 'return-control') return transit(scene, camera, false)
-  return ending(scene, camera, kind === 'ending-success')
+  return ending(scene, camera, kind === 'ending-success', craft)
 }
 
 function lights(scene: THREE.Scene, sun = 0xfff2e0, fill = 0x6d90d0) {
@@ -138,8 +139,9 @@ function stars(scene: THREE.Scene, count = 280) {
   scene.add(new THREE.Points(geo, new THREE.PointsMaterial({ color: 0xdfe7ff, size: 0.035, sizeAttenuation: true })))
 }
 
-function craftMesh() {
-  const craft = buildCraft(sceneSpec({ entities: [], params: {} }).craft)
+/** The player's own spacecraft when the story layer passes it, else the default small craft. */
+function craftMesh(spec?: CraftSpec) {
+  const craft = buildCraft(spec ?? sceneSpec({ entities: [], params: {} }).craft)
   craft.scale.setScalar(0.45)
   return craft
 }
@@ -154,23 +156,38 @@ function ease(t: number) {
   return u * u * (3 - 2 * u)
 }
 
-function orbit(scene: THREE.Scene, camera: THREE.PerspectiveCamera, body: 'moon' | 'mars'): Shot {
+function orbit(scene: THREE.Scene, camera: THREE.PerspectiveCamera, body: 'moon' | 'mars', spec?: CraftSpec): Shot {
   scene.background = new THREE.Color(0x000002)
   lights(scene)
   stars(scene)
-  const color = body === 'mars' ? 0xb5522a : 0xc8c4bc
-  const planet = new THREE.Mesh(new THREE.SphereGeometry(1.25, 48, 32), new THREE.MeshStandardMaterial({ color, roughness: 0.85 }))
+  // The real Moon or Mars (NASA maps and elevation, ui/scene3d/maps) through the same shader as the space view,
+  // lit from the side so the day/night line and its relief show. Procedural until the maps load.
+  const R = 1.25
+  const uSun = { value: new THREE.Vector3(1, 0.35, 0.55).normalize() }
+  const maps = planetMaps()
+  const planet = new THREE.Mesh(
+    new THREE.SphereGeometry(R, 96, 64),
+    new THREE.ShaderMaterial({ ...toScreen(planetShader), uniforms: { uSun, uBody: { value: body === 'moon' ? 1 : 2 }, ...maps.maps[body] } }),
+  )
   planet.position.set(-0.7, -0.15, -0.4)
   scene.add(planet)
   if (body === 'mars') {
+    // Mars's thin dusty air, as in the space view (world.ts: 6% above the ground).
     const air = new THREE.Mesh(
-      new THREE.SphereGeometry(1.38, 32, 24),
-      new THREE.MeshBasicMaterial({ color: 0xc46a45, transparent: true, opacity: 0.18, depthWrite: false }),
+      new THREE.SphereGeometry(R * 1.06, 64, 48),
+      new THREE.ShaderMaterial({
+        ...toScreen(atmosphereShader),
+        uniforms: { uSun, uColor: { value: new THREE.Color(0.4, 0.23, 0.14) }, uThickness: { value: Math.sqrt(1 - 1 / (1.06 * 1.06)) } },
+        side: THREE.BackSide,
+        blending: THREE.AdditiveBlending,
+        transparent: true,
+        depthWrite: false,
+      }),
     )
     air.position.copy(planet.position)
     scene.add(air)
   }
-  const craft = craftMesh()
+  const craft = craftMesh(spec)
   scene.add(craft)
   return {
     update(progress, _elapsed, aspect) {
@@ -181,16 +198,18 @@ function orbit(scene: THREE.Scene, camera: THREE.PerspectiveCamera, body: 'moon'
       camera.position.set(lerp(0.2, 0.8, e), 1.15, distance(aspect, 4.3))
       camera.lookAt(lerp(1.2, 0.4, e), 0.2, 0)
     },
-    dispose() {},
+    dispose() {
+      maps.dispose()
+    },
   }
 }
 
-function anomaly(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Shot {
+function anomaly(scene: THREE.Scene, camera: THREE.PerspectiveCamera, spec?: CraftSpec): Shot {
   // Near-black like the other shots; the pulsing red light alone says "alarm" (no floating lamp).
   scene.background = new THREE.Color(0x000002)
   lights(scene, 0xffe4e8, 0xff4455)
   stars(scene, 160)
-  const craft = craftMesh()
+  const craft = craftMesh(spec)
   craft.scale.setScalar(0.95)
   craft.rotation.y = 0.7
   scene.add(craft)
@@ -435,29 +454,35 @@ function transit(scene: THREE.Scene, camera: THREE.PerspectiveCamera, entering: 
   }
 }
 
-function ending(scene: THREE.Scene, camera: THREE.PerspectiveCamera, success: boolean): Shot {
+function ending(scene: THREE.Scene, camera: THREE.PerspectiveCamera, success: boolean, spec?: CraftSpec): Shot {
   scene.background = new THREE.Color(0x000002)
   lights(scene)
   stars(scene, 200)
   // The real Earth (NASA day, night and cloud maps, ui/scene3d/maps); procedural until they load.
-  const sun = new THREE.Vector3(-0.6, 1.2, 2.6).normalize() // mostly day towards the camera; night and its city lights on the side facing the spacecraft
-  const uSun = { value: sun }
+  // Real sunlight: the Sun's direction right now in the map's own frame (ui/scene3d/sun.ts), turned with the globe each
+  // frame, so the lit side is where it is daytime now. The globe starts turned so that side faces the camera,
+  // with the night side and its city lights toward the spacecraft, as before.
+  const mapSun = new THREE.Vector3(...sunDirection(new Date()))
+  const uSun = { value: new THREE.Vector3() }
+  const TILT = 0.41 // the axis tilt
+  const tilted = mapSun.clone().applyAxisAngle(new THREE.Vector3(0, 0, 1), TILT)
+  const facing = Math.atan2(-0.6, 2.6) - Math.atan2(tilted.x, tilted.z) // turn about y that points the day side there
   const uTime = { value: 0 }
   const maps = planetMaps()
   const earth = new THREE.Group()
   earth.add(
     new THREE.Mesh(
       new THREE.SphereGeometry(0.85, 96, 64),
-      new THREE.ShaderMaterial({ ...planetShader, uniforms: { uSun, uBody: { value: 0 }, ...maps.maps.earth } }),
+      new THREE.ShaderMaterial({ ...toScreen(planetShader), uniforms: { uSun, uBody: { value: 0 }, ...maps.maps.earth } }),
     ),
     new THREE.Mesh(
       new THREE.SphereGeometry(0.86, 96, 64),
-      new THREE.ShaderMaterial({ ...cloudShader, uniforms: { uSun, uTime, ...maps.maps.earth }, transparent: true, depthWrite: false }),
+      new THREE.ShaderMaterial({ ...toScreen(cloudShader), uniforms: { uSun, uTime, ...maps.maps.earth }, transparent: true, depthWrite: false }),
     ),
   )
-  earth.rotation.z = 0.41 // the axis tilt
+  earth.rotation.z = TILT
   scene.add(earth)
-  const craft = craftMesh()
+  const craft = craftMesh(spec)
   scene.add(craft)
   // The signal: one thin white line from the spacecraft to the ground. It reaches home, or fades out on the way.
   const SEGMENTS = 48
@@ -472,7 +497,8 @@ function ending(scene: THREE.Scene, camera: THREE.PerspectiveCamera, success: bo
       const spread = aspect < 0.9 ? 0.55 : 1
       earth.position.set(-1.7 * spread, -0.1, 0)
       craft.position.set(1.7 * spread, 0.15, 0.2)
-      earth.rotation.y = 1.2 + progress * 0.5
+      earth.rotation.y = facing + progress * 0.5
+      uSun.value.copy(mapSun).applyEuler(earth.rotation)
       uTime.value = elapsed / 1000
       const points = signalGeo.getAttribute('position') as THREE.BufferAttribute
       for (let i = 0; i <= SEGMENTS; i++) {
