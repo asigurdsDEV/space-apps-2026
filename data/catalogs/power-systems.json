@@ -17,13 +17,13 @@
     "columns": ["id", "name", "type", "mass_kg", "cost_usd", "power_w", "capacity_wh", "degradation_per_year", "min_bus_class", "description", "build_months", "short_label"],
     "rows": [
       ["solar-body-panels", "Body-mounted solar cells", "solar", 0.3, 30000, 7, 0, 0.03, "cubesat", "Solar cells glued to the outside of a CubeSat. Light and cheap, not much power.", 2, "Body solar cells"],
-      ["solar-deployable-small", "Small deployable solar wings", "solar", 1, 150000, 30, 0, 0.03, "cubesat", "Fold-out panels that unfold after launch.", 3, "Small solar wings"],
+      ["solar-deployable-small", "Small deployable solar wings", "solar", 1, 150000, 30, 0, 0.03, "cubesat", "Fold-out wings that open after launch. About four times the power of body-mounted cells for a little more mass.", 3, "Small solar wings"],
       ["solar-deployable-large", "Large deployable solar wings", "solar", 2, 400000, 80, 0, 0.03, "cubesat", "The biggest wings a CubeSat can carry. Heavier, but lots more power.", 4, "Large solar wings"],
-      ["solar-array-medium", "Medium solar array", "solar", 25, 3000000, 1000, 0, 0.025, "smallsat", "A pair of big solar wings.", 12, "Medium solar array"],
-      ["solar-array-large", "Large solar array", "solar", 120, 15000000, 6000, 0, 0.02, "medium", "Huge panels, like the ones on big communication satellites.", 18, "Large solar array"],
+      ["solar-array-medium", "Medium solar array", "solar", 25, 3000000, 1000, 0, 0.025, "smallsat", "A pair of big solar wings: 1,000 W near Earth and the Moon, but under half that at Mars.", 12, "Medium solar array"],
+      ["solar-array-large", "Large solar array", "solar", 120, 15000000, 6000, 0, 0.02, "medium", "Huge panels, like those on big communication satellites. Enough power for a Mars orbiter, where sunlight is weak.", 18, "Large solar array"],
       ["rtg", "Radioisotope power system (MMRTG)", "rtg", 45, 100000000, 110, 0, 0.04, "medium", "Turns heat from decaying plutonium into electricity. Works in the dark, but very expensive.", 40, "Nuclear RTG"],
       ["battery-small", "Small battery pack", "battery", 0.3, 20000, 0, 40, 0, "cubesat", "Keeps a CubeSat running while it's in Earth's shadow.", 2, "Small battery"],
-      ["battery-medium", "Medium battery", "battery", 8, 500000, 0, 1200, 0, "smallsat", "Enough to carry a small satellite through eclipse.", 6, "Medium battery"],
+      ["battery-medium", "Medium battery", "battery", 8, 500000, 0, 1200, 0, "smallsat", "Carries a small or medium satellite and its instruments through each pass in the shadow.", 6, "Medium battery"],
       ["battery-large", "Large battery", "battery", 40, 2000000, 0, 6000, 0, "medium", "For big spacecraft with power-hungry instruments.", 9, "Large battery"]
     ]
   }
