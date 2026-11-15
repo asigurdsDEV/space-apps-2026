@@ -273,14 +273,25 @@ export function buildPad(height: number, footprint: number, bellDrop: number, sk
   flag.position.set(cornerX - flagW * 0.72, armY - flagW * 0.05, towerW / 2)
   group.add(flag)
 
-  // Three lightning masts, taller than the rocket: steel below, a white fibreglass top, and wires strung between them.
+  // Three lightning towers, taller than the rocket, as at Kennedy's pad 39B: a wide steel lattice for the lower 80%,
+  // a slim white fibreglass mast on top, and wires strung between the tips. The three lattices share one instanced mesh.
   const mastH = towerH * 1.3
-  const mastLow = new THREE.CylinderGeometry(height * 0.006, height * 0.011, mastH * 0.72, 8)
-  const mastTop = new THREE.CylinderGeometry(height * 0.003, height * 0.006, mastH * 0.28, 8)
-  for (const [x, z] of site.masts) {
-    add(mastLow, steel, x, mastH * 0.36, z)
-    add(mastTop, white, x, mastH * 0.86, z)
-  }
+  const latticeH = mastH * 0.8
+  const one = lattice(Math.max(height * 0.05, 1.4), latticeH, steel)
+  const masts = new THREE.InstancedMesh(one.geometry, steel, one.count * site.masts.length)
+  const place = new THREE.Matrix4()
+  const part = new THREE.Matrix4()
+  site.masts.forEach(([x, z], k) => {
+    place.makeTranslation(x, 0, z)
+    for (let i = 0; i < one.count; i++) {
+      one.getMatrixAt(i, part)
+      masts.setMatrixAt(k * one.count + i, part.premultiply(place))
+    }
+  })
+  masts.instanceMatrix.needsUpdate = true
+  group.add(masts)
+  const mastTop = new THREE.CylinderGeometry(height * 0.003, height * 0.007, mastH - latticeH, 8)
+  for (const [x, z] of site.masts) add(mastTop, white, x, (latticeH + mastH) / 2, z)
   const wire: number[] = []
   const span = (ax: number, ay: number, az: number, bx: number, by: number, bz: number, sag: number) => {
     const droop = Math.hypot(bx - ax, by - ay, bz - az) * sag
@@ -336,30 +347,41 @@ export function buildPad(height: number, footprint: number, bellDrop: number, sk
 
   // ---- Backdrop.
   const backdrop = new THREE.Group()
-  // Clumps of scrub on the sand between the apron and the water.
+  // Clumps of scrub on the sand between the apron and the water, and along the shore a dense band of darker, taller
+  // trees and scrub (the green line between the pad and the water in lift-off photos). One instanced mesh for both.
   const clear: [number, number, number][] = [
     ...site.spheres.map(([x, z, r]): [number, number, number] => [x, z, r * 2.2]),
     ...site.sheds.map(([x, z, w]): [number, number, number] => [x, z, w * 0.75]),
     [wx, wz, ball * 2],
   ]
-  const scrub = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 1), new THREE.MeshStandardMaterial({ roughness: 1, flatShading: true }), 170)
+  const SCRUB = 170
+  const TREES = 300
+  const scrub = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 1), new THREE.MeshStandardMaterial({ roughness: 1, flatShading: true }), SCRUB + TREES)
   const m = new THREE.Matrix4()
   const where = new THREE.Vector3()
   const size = new THREE.Vector3()
   const turn = new THREE.Quaternion()
   const leaf = new THREE.Color()
   let n = 0
-  for (let i = 0; i < 1400 && n < 170; i++) {
+  let inland = 0
+  let shore = 0
+  for (let i = 0; i < 6000 && n < SCRUB + TREES; i++) {
     const x = (hash(i) * 11 - 6) * unit
     const z = (0.9 - hash(i + 0.5) * 3.4) * unit
     const land = -waterDepth(x, z, unit) - shoreWobble(x, z, unit)
     const onApron = (x / unit) ** 4 + (z / (0.8 * unit)) ** 4 < 1.25
     const onWay = x < 0 && Math.abs(z) < 0.32 * unit
     if (land < 0.02 * unit || land > 0.75 * unit || onApron || onWay || clear.some(([cx, cz, r]) => Math.hypot(x - cx, z - cz) < r)) continue
-    const s = unit * (0.012 + 0.02 * hash(i + 0.2))
-    size.set(s * (0.9 + 0.9 * hash(i + 0.3)), s * (0.55 + 0.3 * hash(i + 0.4)), s * (0.9 + 0.9 * hash(i + 0.6)))
+    // Only the far shore, behind the pad (the camera is on +z): in front of it the band would hide the engines.
+    const isShore = land < 0.16 * unit && z < -0.4 * unit
+    if (isShore ? shore >= TREES : inland >= SCRUB) continue
+    if (isShore) shore++
+    else inland++
+    const s = unit * (isShore ? 0.016 + 0.016 * hash(i + 0.2) : 0.012 + 0.02 * hash(i + 0.2))
+    size.set(s * (0.9 + 0.9 * hash(i + 0.3)), s * (isShore ? 0.9 + 0.6 * hash(i + 0.4) : 0.55 + 0.3 * hash(i + 0.4)), s * (0.9 + 0.9 * hash(i + 0.6)))
     scrub.setMatrixAt(n, m.compose(where.set(x, size.y * 0.35, z), turn.setFromAxisAngle(UP, hash(i + 0.7) * 6.28), size))
-    scrub.setColorAt(n, leaf.setRGB(0.07 + 0.05 * hash(i + 0.8), 0.11 + 0.06 * hash(i + 0.9), 0.05))
+    const dim = isShore ? 0.7 : 1
+    scrub.setColorAt(n, leaf.setRGB((0.07 + 0.05 * hash(i + 0.8)) * dim, (0.11 + 0.06 * hash(i + 0.9)) * dim, 0.05 * dim))
     n++
   }
   scrub.count = n
