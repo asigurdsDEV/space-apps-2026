@@ -369,3 +369,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 16:30 | codex@aiden | desktop-polish | PR #135 updated after concurrent #132 merge: preserves training inside Menu, unifies pause hold, verifies running/manual-pause round trip; 532 tests/build pass,146.3kB; no force push, owner branches unchanged
 2026-11-15 01:30 | claude@jamie | gonogo-declutter | claimed: both GO / NO-GO tasks (priority chips + 171 -> <= 80 words), one PR
 2026-11-15 01:55 | claude@jamie | gonogo-declutter | done: PR #136 (priority chips, one line + ⓘ, <= 80 words); 526/527 tests (cards.test timeout flake, passes alone), build OK
+2026-11-15 02:10 | claude@jamie | nasa-rockets | claimed: atlas-v, delta-iv-heavy, falcon-heavy rows + NASA mission per rocket (Ethan handoff 1415)
