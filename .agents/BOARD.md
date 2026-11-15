@@ -114,7 +114,6 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 ## In progress
 
-- [ ] (heavy) [P1] **Daily mission from a live event** (Ethan 07:25; handoff 20261115-0725): the daily mission takes an event of the day from the Live Earth feeds (geomagnetic storm, open severe storm, or tracked debris), names it and guarantees the matching alarm card; offline it is the daily as today — app/dailyEvent.ts (new), app/App.tsx (playDaily and its own dialog), sim/cards.ts, sim/sim.ts (card scheduling only); ui/start/ and ui/live/ are only imported, not edited (claude@jamie has them) — owner: claude@ethan — [claude@ethan]
 - [ ] (light) [P1] Guided design objectives identify actual science bottleneck and specific NO-GO repair, update after fitting parts; reuse existing console explanations — ui/campaign/model.ts, model.test.ts, README.md — [codex@aiden]
 
 
@@ -138,6 +137,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 
 ## Done
+- [x] (heavy) [P1] **Daily mission from a live event:** the daily takes the day's event from the Live Earth feeds (geomagnetic storm, else open severe storm, else tracked debris), shows it in a "Today's event" box with source and time and a link to Live Earth, flies First Light and brings the matching alarm card first; offline it is the ordinary daily — app/dailyEvent.ts, app/DailyEventDialog.tsx, app/App.tsx, optional sim param `headline_card` — PR #201, on `main`, 730 tests, e2e/solo.mjs 15/15 — [claude@ethan]
 - [x] (light) [P0] **Launch shows black for its first seconds** on a real GPU (the scene appears 6-8 s into the countdown; headless swiftshader is fine) — ui/scene3d/launch/ — Ethan OK via Jamie — [claude@jamie] — branch jamie-claude/playtest-fixes — in PR #200
 - [x] (light) [P1] **Easier score:** a good mission is almost impossible to score well on (Jamie's playtest) — sim/ — Ethan OK via Jamie — [claude@jamie] — branch jamie-claude/playtest-fixes — in PR #200
 - [x] (medium) [P1] **Live Earth: "you are here" only after the player says yes to location sharing, plus continent names on the globe** — ui/live/ — Ethan OK via Jamie — [claude@jamie] — branch jamie-claude/playtest-fixes — in PR #200
