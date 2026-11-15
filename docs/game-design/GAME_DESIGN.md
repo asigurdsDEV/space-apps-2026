@@ -178,7 +178,7 @@ The tips, glossary links (cursor@kaipo's `ui/learn/`) and the poll's spoken reas
 
 ## 5. Scoring, in one place
 
-- **Score 0–100 and grade A–F:** unchanged, from the sim's `summary()` (70 science, 10 budget left, 10 mass margin, 10 data delivered).
+- **Score 0–1,000 and grade A–F:** from the sim's `summary()` (700 science, 100 budget left, 100 mass margin, 100 data delivered; ×10 from 0–100 at Jamie's request, 2026-11-15).
 - **Stars 0–3:** on top of the score (§4.5). Stars drive progression. The score drives leaderboards.
 - **Team bonus star:** co-op only (§4.7).
 - Nothing in the UI recomputes the score. Stars are derived from `summary` + the scenario's bonus goal, in one pure helper (`ui/mission/stars.ts`).

@@ -526,10 +526,10 @@ function clamp01(value: number): number {
 }
 
 function grade(score: number): string {
-  if (score >= 85) return 'A'
-  if (score >= 70) return 'B'
-  if (score >= 55) return 'C'
-  if (score >= 40) return 'D'
+  if (score >= 850) return 'A'
+  if (score >= 700) return 'B'
+  if (score >= 550) return 'C'
+  if (score >= 400) return 'D'
   return 'F'
 }
 
@@ -537,13 +537,13 @@ function grade(score: number): string {
 const NOT_IN_WHY = new Set(['science_short'])
 /** Outcomes that are a failed mission: their score stops at a C, however good the rest of the design was. */
 const FAILED = new Set<Outcome>(['science_shortfall', 'launch_failure', 'spacecraft_failure'])
-const FAILED_SCORE_CAP = 69
+const FAILED_SCORE_CAP = 690
 
 /**
  * Score and plain-language explanation for the results screen.
- * Score (0 to 100): 70 for science against the goal, 10 for budget left over,
- * 10 for launch mass margin, 10 for the share of data that reached the ground.
- * A failed mission scores at most 69 (grade C).
+ * Score (0 to 1,000, arcade-sized): 700 for science against the goal, 100 for budget left over,
+ * 100 for launch mass margin, 100 for the share of data that reached the ground.
+ * A failed mission scores at most 690 (grade C).
  */
 export function summary(state: SimState): Summary {
   const m = state.metrics
@@ -567,7 +567,7 @@ export function summary(state: SimState): Summary {
   const dataShare = generated > 0 ? clamp01(downlinked / generated) : outcome === 'success' ? 1 : 0
   // Nothing is scored until the mission launches.
   const rawScore =
-    outcome === 'in_design' ? 0 : Math.round(70 * scienceShare + 10 * budgetShare + 10 * massShare + 10 * dataShare)
+    outcome === 'in_design' ? 0 : Math.round(700 * scienceShare + 100 * budgetShare + 100 * massShare + 100 * dataShare)
   const score = FAILED.has(outcome) ? Math.min(rawScore, FAILED_SCORE_CAP) : rawScore
   // Only a bus failure ends a successful mission before its planned end.
   const cutShort = outcome === 'success' && day < metric(m, 'lifetime_days') - 1e-6

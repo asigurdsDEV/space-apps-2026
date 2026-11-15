@@ -41,9 +41,10 @@ export function savePersonalBest(scenarioId: string, score: number, design: Para
   if (dailySeed !== undefined && (!Number.isSafeInteger(dailySeed) || dailySeed < 0)) return { best: null, stored: false }
   let best: PersonalBest = { score, design: { ...design } }
   if (stars !== undefined) best.stars = stars
+  // v2: scores are out of 1,000; v1 records (out of 100) are left alone and no longer read.
   const key = dailySeed === undefined
-    ? `space-apps-2026:best:v1:${encodeURIComponent(scenarioId)}`
-    : `space-apps-2026:daily-best:v1:${encodeURIComponent(scenarioId)}:${dailySeed}`
+    ? `space-apps-2026:best:v2:${encodeURIComponent(scenarioId)}`
+    : `space-apps-2026:daily-best:v2:${encodeURIComponent(scenarioId)}:${dailySeed}`
   try {
     const storage = globalThis.localStorage
     const raw = storage.getItem(key)
