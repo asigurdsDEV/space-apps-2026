@@ -1,5 +1,7 @@
 // Preview: npm run dev, then /ui/interior/preview.html. Query: scenario=demo|moon|mars (the world outside),
-// card=spacecraft|comms-resources|science|mission-planning (an anomaly card at that console), days=<sim days flown>.
+// card=spacecraft|comms-resources|science|mission-planning (an anomaly card at that console), days=<sim days flown>,
+// instruments=<ids, comma separated> (e.g. camera-basic,magnetometer,laser-altimeter,subsurface-radar),
+// probe (the gold hatch answers E, as on Earth missions: the page title becomes "surveyed"), crew (two crewmates stand in the room).
 import { useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { getDatasets, getScenario } from '../../data'
@@ -9,7 +11,8 @@ import '../theme/theme.css'
 import { SpacecraftRoom } from './index'
 
 const q = new URLSearchParams(location.search)
-const config = getScenario(q.get('scenario') ?? 'demo')!
+const scenario = getScenario(q.get('scenario') ?? 'demo')!
+const config = { ...scenario, params: { ...scenario.params, instruments: q.get('instruments') ?? scenario.params.instruments } }
 let flown = step(init(config, getDatasets(config.datasets)), [{ type: 'launch', payload: {} }], 1).state
 for (let i = 0; i < Number(q.get('days') ?? 4) * 24; i++) flown = step(flown, [], 3600).state
 const card = CARDS.find((c) => c.console === q.get('card'))
@@ -25,7 +28,8 @@ function Preview() {
         if (c.type === 'pause' || c.type === 'resume') setPaused(c.type === 'pause')
         if (c.type === 'set_speed') setSpeed(c.payload.multiplier)
         if (c.type === 'resolve_decision') setOpen(null)
-      }} />
+      }} onProbe={q.has('probe') ? () => (document.title = 'surveyed') : undefined}
+        subscribeCrew={q.has('crew') ? (listen) => (listen([{ player_id: 'a', name: 'Sam', x: -0.8, z: 0.4, yaw: 0.4 }, { player_id: 'b', name: 'Ada', x: 1.2, z: -0.7, yaw: -2 }]), () => {}) : undefined} />
     </div>
   )
 }

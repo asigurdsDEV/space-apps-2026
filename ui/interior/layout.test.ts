@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { getDatasets, getScenario } from '../../data'
 import { catalogEntities } from '../../sim'
 import type { Command, Decision } from '../../shared'
-import { choiceSpots, choiceTitleAt, DASH, dialAngle, gauges, interactables, modules, obstacles, ROOM, SPEEDS, WINDOW } from './layout'
+import { choiceSpots, choiceTitleAt, DASH, dialAngle, gauges, interactables, modules, obstacles, ROOM, section, SPEEDS, WINDOW } from './layout'
 
 const config = getScenario('demo')!
 const state = { entities: catalogEntities(getDatasets(config.datasets)), params: { ...config.params, instruments: 'camera-basic,magnetometer' } as typeof config.params }
@@ -98,6 +98,20 @@ describe('walk-in spacecraft layout', () => {
     expect(WINDOW.x + WINDOW.w / 2).toBeLessThan(ROOM.max[0])
     expect(WINDOW.y - WINDOW.h / 2).toBeGreaterThan(DASH.top)
     expect(WINDOW.y + WINDOW.h / 2).toBeLessThan(ROOM.max[1])
+  })
+
+  it('the drawn cross-section keeps the walls where the player bumps into them and clears the window frame', () => {
+    const half = section()
+    for (const [x, y] of half) {
+      expect(x).toBeLessThanOrEqual(ROOM.max[0])
+      if (y > 0.16 && y < 2.3) expect(x).toBe(ROOM.max[0]) // the straight wall is the obstacle's face
+    }
+    for (let i = 1; i < half.length; i++) expect(half[i]![1]).toBeGreaterThanOrEqual(half[i - 1]![1]) // no overhangs
+    expect(half[0]).toEqual([ROOM.max[0] - 0.16, 0])
+    expect(half.at(-1)![0]).toBe(0)
+    // Over the window and its 0.19 m frame the ceiling is above the frame's top edge.
+    const frame = 0.19
+    for (const [x, y] of half) if (y > 2.6 && x < WINDOW.w / 2 + frame) expect(y).toBeGreaterThan(WINDOW.y + WINDOW.h / 2 + frame)
   })
 
   it('gauges are numbers, clamped, and flag lost data', () => {

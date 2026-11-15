@@ -20,6 +20,34 @@ export const HATCH: Vec3 = [-1.6, 0.04, 1.15]
 export const WINDOW = { x: 0, y: 2, w: 5.6, h: 1.8 }
 export const DASH = { z: -2.15, w: 4.4, depth: 0.6, top: 0.95 }
 export const SPEEDS = [1, 5, 20, 60] as const
+/** The stand-off corner between a side wall and the ceiling (right side, [x, y] from the wall end to the ceiling end): it carries the lights and cables. */
+export const STANDOFF = { from: [ROOM.max[0] - 0.087, 2.503], to: [ROOM.max[0] - 0.622, 3.016] } as const
+
+/**
+ * The module's cross-section, right half, deck to crown ([x, y] metres; the left half mirrors it): a cove at the deck,
+ * the straight wall the racks stand on (where the player's wall is), the stand-off corner, and an arched ceiling.
+ */
+export function section(steps = 8): [number, number][] {
+  const x = ROOM.max[0]
+  const top = ROOM.max[1]
+  const pts: [number, number][] = [[x - 0.16, 0]]
+  /** A quadratic curve from the last point round corner `k` to `b`. */
+  const round = (k: readonly [number, number], b: readonly [number, number]) => {
+    const a = pts.at(-1)!
+    for (let i = 1; i <= steps; i++) {
+      const t = i / steps
+      const s = 1 - t
+      pts.push([s * s * a[0] + 2 * s * t * k[0] + t * t * b[0], s * s * a[1] + 2 * s * t * k[1] + t * t * b[1]])
+    }
+  }
+  round([x, 0], [x, 0.16])
+  pts.push([x, 2.3])
+  round([x, 2.42], STANDOFF.from)
+  pts.push([...STANDOFF.to])
+  round([x - 0.73, top - 0.08], [x - 0.88, top - 0.04])
+  round([x * 0.46, top + 0.3], [0, top + 0.3])
+  return pts
+}
 /** Where the speed switch points, radians clockwise from straight ahead: its stops fan evenly across the top of its dial. */
 export const dialAngle = (speed: number) => (Math.max(0, SPEEDS.indexOf(speed as (typeof SPEEDS)[number])) - (SPEEDS.length - 1) / 2) * 0.7
 
