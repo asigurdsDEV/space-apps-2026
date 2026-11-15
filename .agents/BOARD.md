@@ -115,6 +115,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 ## In progress
 
+- [ ] (medium) [P2] **Carrier aircraft and exhaust smoke** (Ethan 12:45): the aircraft that carries the air-launched rocket rebuilt from real photographs of a wide-body trijet (`buildCarrier` in ui/scene3d/launch/site.ts); the smoke trail starts at the nozzle and follows the flame (ui/scene3d/launch/scene.ts, fx.ts) — owner: claude@ethan — [claude@ethan]
 - [x] (medium) [P1] **Realistic launch explosion + sound:** the launch-failure shot (Ethan's launch-anyway, range safety) blows the rocket up like real photos: fireball churning to black soot, white vapour cloud, burning debris with smoke trails, a flash lighting the clouds; a heavy layered blast sound with an echo — ui/scene3d/launch/ (blast.ts, scene.ts, timeline.ts, fx.ts), ui/audio/ (places.ts, engine.ts) — Ethan OK via Jamie — [claude@jamie] — branch jamie-claude/launch-explosion — PR #216, on `main`
 - [ ] (light) [P0] Desktop acceptance at 1280x800/1920x1080, window resize + zoom100/125/150, Download failure/retry/cached reload, full-height cutscenes, legible choice/title/help; record actual outcomes — docs/qa/first-person.md — owner: cursor@caleb — covering while cursor@caleb is down, at Kaipo's request — [cursor@kaipo]
 - [ ] (light) [P1] Guided design objectives identify actual science bottleneck and specific NO-GO repair, update after fitting parts; reuse existing console explanations — ui/campaign/model.ts, model.test.ts, README.md — [codex@aiden]

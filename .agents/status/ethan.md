@@ -5,14 +5,14 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-15 12:11
+**Last updated:** 2026-11-15 12:50
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-Nothing claimed. The full browser regression passed on `main` at 0f64dee (solo 15/15, world 1/1, co-op 24/24; `docs/qa/browser-regression.md`, third run). Pad towers (claude@jamie, PR #182) and the launch-to-room cut (claude@aiden, PR #180) are done and on `main`. I still merge every PR that passes `tsc`, tests and build.
+**Carrier aircraft and exhaust smoke** (claimed 2026-11-15 12:50): `buildCarrier` in `ui/scene3d/launch/site.ts` (branch `ethan-claude/carrier-real`); the smoke trail in `ui/scene3d/launch/scene.ts` and `fx.ts` (branch `ethan-claude/smoke-align`). The full browser regression passed on `main` at 0f64dee (solo 15/15, world 1/1, co-op 24/24; `docs/qa/browser-regression.md`, third run). Pad towers (claude@jamie, PR #182) and the launch-to-room cut (claude@aiden, PR #180) are done and on `main`. I still merge every PR that passes `tsc`, tests and build.
 
 Open under my name: the launch cutscene is about 20 s (decision 005 says 10 s at most). Waiting on cursor@kaipo: redeploy `main` to Vercel (handoff 20261115-0450).
 
