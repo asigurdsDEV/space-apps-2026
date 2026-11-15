@@ -129,6 +129,7 @@ export function MissionControl({ state, send, players = NO_PLAYERS, me, title, d
     const r = room.current
     if (!r) return
     const m = state.metrics
+    const scene = sceneSpec(state)
     r.show({
       title,
       numbers: [
@@ -140,7 +141,11 @@ export function MissionControl({ state, send, players = NO_PLAYERS, me, title, d
       calls,
       stations: stationList,
       menu: openMenu,
-      craft: sceneSpec(state).craft,
+      craft: scene.craft,
+      metrics: m,
+      orbit: scene,
+      objective: typeof state.params.objective_text === 'string' ? state.params.objective_text : undefined,
+      launchUtc: typeof state.params.start_utc === 'string' ? state.params.start_utc : undefined,
       debrief: debrief && { grade: debrief.grade, score: debrief.score, outcome: debrief.outcome, fix: debrief.fix?.change },
     })
     const launchBlocked = calls.some((c) => c.call === 'no-go') ? 'A console says NO-GO' : undefined

@@ -1,26 +1,24 @@
 // Mission control you play in, in three.js (decision 007). Primitives and canvas textures only:
-// no model files, works offline. layout.ts says where things stand; this draws them and redraws the
-// screens (call wall, gauges, console desks) and the holograms (stations, their menus, the floating craft)
-// when the game state changes.
+// no model files, works offline. layout.ts says where things stand; decor.ts builds the hall and its desks;
+// this hangs the screens (video wall, side walls, desk monitors: screens.ts paints them) and the holograms
+// (stations, their menus, the floating craft), and redraws each when the game state behind it changes.
 
 import * as THREE from 'three'
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js'
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { roomLoop } from '../fps/room-loop'
 import { createFps, type Fps, type FpsOptions } from '../fps/controller'
 import type { Bar } from '../builder/model'
-import { formatValue } from '../builder/model'
-import { brief, type ConsoleCall } from '../gonogo'
+import type { ConsoleCall } from '../gonogo'
 import { buildCraft, disposeObject } from '../scene3d/craft'
-import { busSize, type CraftSpec } from '../scene3d/model'
+import { busSize, type Body, type CraftSpec, type SceneSpec } from '../scene3d/model'
 import { buildBus, buildPart, busKey, modelKey, SLOT, type Mount } from '../scene3d/parts'
 import { fuse } from '../scene3d/parts/kit'
 import { buildRocket } from '../scene3d/launch/rocket'
 import { rocketSpec } from '../scene3d/launch/vehicles'
-import type { Entity } from '../../shared'
-import { CALL_WALL, CRAFT_Y, DESK_XS, DESK_Z, GAUGES, HOLO_Y, LAUNCH, PEDESTAL, ROOM, START, STAND, shortLabel, type Debrief, type Menu, type MenuCard, type Station } from './layout'
-import { gridTexture } from './world'
-import { addMissionControlDecor, ceilingMaterial, wallMaterial } from './decor'
+import type { Entity, Metrics } from '../../shared'
+import { CALL_WALL, CRAFT_Y, GAUGES, HOLO_Y, LAUNCH, PEDESTAL, ROOM, SIDE_WALL, START, STAND, TRACK_WALL, shortLabel, type Debrief, type Menu, type MenuCard, type Station } from './layout'
+import { addMissionControlDecor } from './decor'
+import { CALL_GRID, GOOD, MAP_URL, TILE_GRID, drawCalls, drawDesign, drawMargins, drawMission, drawPlan, drawTiles, drawTrack, face, wrap, type TrackScreen } from './screens'
 import { mountCrew, type CrewPose } from '../crew/crew'
 
 export interface RoomScreens {
@@ -33,6 +31,12 @@ export interface RoomScreens {
   /** The open station's menu of hologram cards, if one is open. */
   menu?: Menu
   craft: CraftSpec | null
+  /** The sim's numbers for this design, and the chosen orbit: the wall screens and desk monitors are drawn from them. */
+  metrics: Metrics
+  orbit: Pick<SceneSpec, 'body' | 'altitude_m' | 'inclination_rad' | 'period_s'>
+  /** What the mission asks for, in a sentence or two, and the day it launches (ISO). */
+  objective?: string
+  launchUtc?: string
   debrief?: Pick<Debrief, 'grade' | 'score' | 'outcome'> & { fix?: string }
 }
 
@@ -44,14 +48,6 @@ export interface ControlRoom {
   setCrew(members: readonly CrewPose[]): void
   dispose(): void
 }
-
-const BG = '#0b1020'
-const TEXT = '#edf1fa'
-const MUTED = '#9fb0d4'
-const GOOD = '#63dbad'
-const WARN = '#ffd166'
-const BAD = '#ff6b5a'
-const GOLD = '#ffda8a'
 
 /** A canvas you draw on once per change; the texture follows. */
 export function canvasScreen(w: number, h: number) {
@@ -66,22 +62,6 @@ export function canvasScreen(w: number, h: number) {
 }
 
 export const font = (px: number, weight = 600) => `${weight} ${Math.round(px)}px system-ui, sans-serif`
-
-/** Words that fit `max` px wide, on at most `lines` lines. */
-function wrap(g: CanvasRenderingContext2D, text: string, max: number, lines: number): string[] {
-  const out: string[] = []
-  let line = ''
-  for (const word of text.split(/\s+/)) {
-    const next = line ? `${line} ${word}` : word
-    if (g.measureText(next).width > max && line) {
-      out.push(line)
-      line = word
-      if (out.length === lines) break
-    } else line = next
-  }
-  if (out.length < lines && line) out.push(line)
-  return out
-}
 
 /** The box a part model fits on its shelf, metres: wide and shallow, so long solar wings still read. */
 const SHELF_W = 0.62
@@ -119,8 +99,8 @@ export function partModel(part: Entity): THREE.Object3D | null {
   }
 }
 
-/** Hologram text: the start menu's face (ui/start/start.css); the system sans until it has loaded, or offline. */
-const holoFont = (px: number, weight = 500) => `${weight} ${Math.round(px)}px "Inter Tight", system-ui, sans-serif`
+/** Hologram text: the start menu's face, as on the wall screens (screens.ts). */
+const holoFont = (px: number, weight = 500) => face(px, weight)
 
 const HOLO_VERTEX = `
   varying vec3 vN; varying vec3 vW; varying vec2 vUv;
@@ -243,9 +223,6 @@ function hologramModel(part: Entity): THREE.Object3D | null {
   }
 }
 
-const callColour = (c: ConsoleCall) => (c.call === 'go' ? GOOD : c.call === 'no-go' ? BAD : WARN)
-const callWord = (c: ConsoleCall) => (c.call === 'go' ? 'GO' : c.call === 'no-go' ? 'NO-GO' : 'GO?')
-
 export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, 'start' | 'yaw'> & { onPose?: (pose: { x: number; z: number; yaw: number }) => void }): ControlRoom {
   const { onPose, ...fpsOptions } = options
   const renderer = new THREE.WebGLRenderer({ antialias: true }) // throws without WebGL; the component shows a fallback
@@ -269,59 +246,41 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
   pmrem.dispose()
   scene.add(new THREE.HemisphereLight(0x9fb4e8, 0x10131c, 0.5))
 
-  // ---- The room.
-  const [x0, , z0] = ROOM.min
-  const [x1, y1, z1] = ROOM.max
-  const w = x1 - x0
-  const d = z1 - z0
-  const cx = (x0 + x1) / 2
-  const cz = (z0 + z1) / 2
-  const floorTex = gridTexture()
-  floorTex.repeat.set(w / 2, d / 2)
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.6, metalness: 0.2 }))
-  floor.rotation.x = -Math.PI / 2
-  floor.position.set(cx, 0, cz)
-  const wallMat = wallMaterial() // acoustic panels (decor.ts)
-  const plane = (pw: number, ph: number, pos: [number, number, number], rotY: number, mat: THREE.Material = wallMat) => {
-    const m = new THREE.Mesh(new THREE.PlaneGeometry(pw, ph), mat)
-    m.position.set(...pos)
-    m.rotation.y = rotY
-    scene.add(m)
-    return m
-  }
-  scene.add(floor)
-  plane(w, y1, [cx, y1 / 2, z0], 0)
-  plane(w, y1, [cx, y1 / 2, z1], Math.PI)
-  plane(d, y1, [x0, y1 / 2, cz], Math.PI / 2)
-  plane(d, y1, [x1, y1 / 2, cz], -Math.PI / 2)
-  const ceilingMat = ceilingMaterial()
-  ceilingMat.emissive.setHex(0x06080d) // its recessed lights are turned right down
-  ceilingMat.color.setHex(0x4a5266)
-  const ceiling = plane(w, d, [cx, y1, cz], 0, ceilingMat)
-  ceiling.rotation.x = Math.PI / 2
-  // Flight Control Room + clean-room dressing: static, not interactable or collidable (decor.ts).
-  addMissionControlDecor(scene)
-  // Teal edge lights where the walls meet the floor, and dim strips overhead: one mesh each.
-  const edge = (bw: number, bd: number, x: number, y: number, z: number) => new THREE.BoxGeometry(bw, 0.03, bd).translate(x, y, z)
-  scene.add(new THREE.Mesh(
-    fuse([edge(w, 0.05, cx, 0.05, z0 + 0.04), edge(w, 0.05, cx, 0.05, z1 - 0.04), edge(0.05, d, x0 + 0.04, 0.05, cz), edge(0.05, d, x1 - 0.04, 0.05, cz)]),
-    new THREE.MeshBasicMaterial({ color: 0x25c2c4, toneMapped: false }),
-  ))
-  const strips: THREE.BufferGeometry[] = []
-  for (let z = z0 + 2; z < z1; z += 4) strips.push(edge(w - 4, 0.08, cx, y1 - 0.05, z))
-  scene.add(new THREE.Mesh(fuse(strips), new THREE.MeshBasicMaterial({ color: 0x3d5f78, toneMapped: false })))
-  // Few lights, no shadows: one each side over the stations, one over the desks, two on the craft (below).
+  // ---- The room: carpet, wood walls, ceiling, screen frames and the operator desks (decor.ts). The desk monitors share two canvases.
+  const [, , z0] = ROOM.min
+  const [x1] = ROOM.max
+  const tileScreen = canvasScreen(TILE_GRID.cols * TILE_GRID.w, TILE_GRID.rows * TILE_GRID.h)
+  const callScreen = canvasScreen(CALL_GRID.cols * CALL_GRID.w, CALL_GRID.rows * CALL_GRID.h)
+  addMissionControlDecor(scene, { tiles: tileScreen.texture, calls: callScreen.texture })
+  // Few lights, no shadows: one each side over the stations and the side desks, one over the front desk, two on the craft (below).
   for (const [x, z, power] of [[-6, -1, 7], [6, -1, 7], [0, -9.5, 12]] as const) {
     const light = new THREE.PointLight(0xa9c6ff, power, 13, 2)
     light.position.set(x, 3.6, z)
     scene.add(light)
   }
 
-  // ---- Call wall, gauges.
-  const wallScreen = canvasScreen(1280, 640)
-  plane(CALL_WALL.w, CALL_WALL.h, [CALL_WALL.x, CALL_WALL.y, z0 + 0.02], 0, new THREE.MeshBasicMaterial({ map: wallScreen.texture, toneMapped: false }))
-  const gaugeScreen = canvasScreen(1040, 580)
-  plane(GAUGES.w, GAUGES.h, [GAUGES.x, GAUGES.y, z0 + 0.02], 0, new THREE.MeshBasicMaterial({ map: gaugeScreen.texture, toneMapped: false }))
+  // ---- The video wall (mission call, ground track, margins) and one screen on each side wall (design, flight plan).
+  const hang = (cw: number, ch: number, rect: { w: number; h: number }, pos: [number, number, number], rotY: number) => {
+    const screen = canvasScreen(cw, ch)
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(rect.w, rect.h), new THREE.MeshBasicMaterial({ map: screen.texture, toneMapped: false }))
+    mesh.position.set(...pos)
+    mesh.rotation.y = rotY
+    scene.add(mesh)
+    return screen
+  }
+  const missionScreen = hang(1536, 768, CALL_WALL, [CALL_WALL.x, CALL_WALL.y, z0 + 0.085], 0)
+  const trackScreen = hang(1536, 768, TRACK_WALL, [TRACK_WALL.x, TRACK_WALL.y, z0 + 0.085], 0)
+  const marginScreen = hang(1536, 768, GAUGES, [GAUGES.x, GAUGES.y, z0 + 0.085], 0)
+  const designScreen = hang(1280, 640, SIDE_WALL, [-x1 + 0.085, SIDE_WALL.y, SIDE_WALL.z], Math.PI / 2)
+  const planScreen = hang(1280, 640, SIDE_WALL, [x1 - 0.085, SIDE_WALL.y, SIDE_WALL.z], -Math.PI / 2)
+  /** A screen is painted again only when what it shows (`key`) has changed. */
+  const painted = new Map<object, string>()
+  const paint = (screen: ReturnType<typeof canvasScreen>, key: string, draw: (g: CanvasRenderingContext2D) => void) => {
+    if (painted.get(screen) === key) return
+    painted.set(screen, key)
+    draw(screen.g)
+    screen.draw()
+  }
 
   // ---- Holograms: one clock for every shader, one material per look.
   const still = !!fpsOptions.reducedMotion
@@ -350,22 +309,6 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
   }
   let craftKey = ''
 
-  // ---- Console desks (one per GO / NO-GO console).
-  const deskMat = new THREE.MeshStandardMaterial({ color: 0x2a3142, roughness: 0.6 })
-  const deskStandIns: THREE.Mesh[] = []
-  const desks = DESK_XS.map((x) => {
-    const desk = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.8, 0.8), deskMat)
-    desk.position.set(x, 0.4, DESK_Z)
-    deskStandIns.push(desk)
-    const screen = canvasScreen(512, 400)
-    const panel = new THREE.Mesh(new THREE.PlaneGeometry(1.25, 0.98), new THREE.MeshBasicMaterial({ map: screen.texture, toneMapped: false }))
-    // Above the desk like a wall monitor, so a desk model's own screen never covers it.
-    panel.position.set(x, 1.72, DESK_Z - 0.45)
-    panel.rotation.x = -0.1
-    scene.add(desk, panel)
-    return screen
-  })
-
   // ---- Launch button on its pedestal.
   const pedestal = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.35, 0.95, 24), metal)
   pedestal.position.set(LAUNCH[0], 0.475, LAUNCH[2])
@@ -374,26 +317,7 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
   button.position.set(LAUNCH[0], 1.0, LAUNCH[2])
   scene.add(pedestal, button)
 
-  // cursor@kaipo's console desk (public/visual-assets/world/, in the offline cache) replaces the stand-in
-  // desks once it loads (the launch button stays the glowing red one: easier to spot); if they don't, the stand-ins stay. Models face −Z: turn them to the room.
   let disposed = false
-  const loader = new GLTFLoader()
-  const prop = (file: string, place: (model: THREE.Object3D) => void) =>
-    loader.load(`${import.meta.env.BASE_URL}visual-assets/world/${file}`, (gltf) => {
-      if (disposed) return disposeObject(gltf.scene)
-      place(gltf.scene)
-      scene.updateMatrixWorld(true)
-      dirty = true
-    }, undefined, () => {})
-  prop('console-desk.glb', (model) => {
-    DESK_XS.forEach((x, i) => {
-      const desk = i === 0 ? model : model.clone()
-      desk.position.set(x, 0, DESK_Z + 0.1)
-      desk.rotation.y = Math.PI
-      scene.add(desk)
-      deskStandIns[i]!.visible = false
-    })
-  })
 
   // ---- Hologram stations: pedestals built when the station list changes, a hologram when what is fitted changes.
   const stationGroup = new THREE.Group()
@@ -652,124 +576,54 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
 
   let lastShown: RoomScreens | undefined
   // Hologram text is drawn in the start menu's font once it is there (it is not when offline: the system sans stays).
-  document.fonts?.load(holoFont(32)).then((faces) => {
-    if (disposed || !faces.length) return
+  document.fonts && Promise.all([400, 500].map((weight) => document.fonts.load(holoFont(32, weight)))).then((faces) => {
+    if (disposed || !faces.some((f) => f.length)) return
     fontTick++
     if (lastShown) api.show(lastShown)
   }, () => {})
 
-  const drawWall = (s: RoomScreens) => {
-    const { g } = wallScreen
-    g.fillStyle = '#0a1430'
-    g.fillRect(0, 0, 1280, 640)
-    g.textAlign = 'center'
-    g.textBaseline = 'middle'
-    if (s.debrief) {
-      const r = s.debrief
-      g.fillStyle = GOLD
-      g.font = font(64, 700)
-      g.fillText('DEBRIEF', 640, 80)
-      g.fillStyle = r.grade === 'F' ? BAD : r.grade === 'A' || r.grade === 'B' ? GOOD : WARN
-      g.font = font(260, 800)
-      g.fillText(r.grade, 640, 290)
-      g.fillStyle = TEXT
-      g.font = font(54, 600)
-      g.fillText(`${r.outcome} · ${Math.round(r.score)} points`, 640, 470, 1200)
-      if (r.fix) {
-        g.fillStyle = MUTED
-        g.font = font(42, 500)
-        g.fillText(`Try at the stand: ${r.fix}`, 640, 560, 1200)
-      }
-    } else {
-      g.fillStyle = GOLD
-      g.font = font(40, 700)
-      g.fillText('MISSION CALL', 640, 64)
-      g.fillStyle = TEXT
-      g.font = font(70, 700)
-      wrap(g, s.title, 1180, 2).forEach((line, i) => g.fillText(line, 640, 160 + i * 80, 1200))
-      s.numbers.forEach(([label, value], i) => {
-        const x = 640 + (i - (s.numbers.length - 1) / 2) * 400
-        g.fillStyle = TEXT
-        g.font = font(96, 800)
-        g.fillText(value, x, 420, 380)
-        g.fillStyle = MUTED
-        g.font = font(40, 500)
-        g.fillText(label, x, 510, 380)
-      })
+  // ---- The ground-track screen's map: the real surface of the body the chosen orbit circles (ui/scene3d/maps), loaded when that body is first needed.
+  let mapBody: Body | undefined
+  let mapImage: HTMLImageElement | undefined
+  /** Bumped when a map arrives, so the screens that show it are painted again. */
+  let mapTick = 0
+  const useMap = (body: Body) => {
+    if (body === mapBody) return
+    mapBody = body
+    mapImage = undefined
+    const image = new Image()
+    image.onload = () => {
+      if (disposed || mapBody !== body) return
+      mapImage = image
+      mapTick++
+      if (lastShown) api.show(lastShown)
     }
-    wallScreen.draw()
+    image.src = MAP_URL[body]
   }
 
-  const drawGauges = (bars: Bar[]) => {
-    const { g } = gaugeScreen
-    g.fillStyle = BG
-    g.fillRect(0, 0, 1040, 580)
-    g.textBaseline = 'middle'
-    const rows = bars.slice(0, 7)
-    const h = 560 / Math.max(rows.length, 1)
-    rows.forEach((b, i) => {
-      const y = 10 + h * i + h / 2
-      g.textAlign = 'left'
-      g.fillStyle = TEXT
-      g.font = font(34, 600)
-      g.fillText(b.label, 24, y - 16, 360)
-      g.fillStyle = MUTED
-      g.font = font(28, 500)
-      g.fillText(`${formatValue(b.used, b.unit)} / ${formatValue(b.limit, b.unit)}`, 24, y + 20, 360)
-      const bx = 400
-      const bw = 610
-      g.fillStyle = '#1f2840'
-      g.fillRect(bx, y - 16, bw, 32)
-      g.fillStyle = b.bad ? BAD : GOOD
-      g.fillRect(bx, y - 16, bw * Math.max(0, Math.min(1, b.ratio)), 32)
-      if (b.bad) {
-        g.textAlign = 'right'
-        g.fillStyle = BAD
-        g.font = font(30, 800)
-        g.fillText(b.goal ? 'SHORT' : 'OVER', bx + bw - 8, y + 1)
-      }
-    })
-    gaugeScreen.draw()
+  /** Every screen in the room, each painted again only if its own numbers changed. */
+  const paintScreens = (s: RoomScreens) => {
+    const fittedIn = (key: string) => {
+      const station = s.stations.find((st) => st.key === key)
+      return station?.parts.find((p) => p.id === station.picked[0])
+    }
+    const orbit = fittedIn('orbit')
+    const rocket = fittedIn('launch_vehicle')
+    const number = (v: unknown) => (typeof v === 'number' ? v : undefined)
+    const track: TrackScreen = { ...s.orbit, name: orbit && shortLabel(orbit), eclipse: number(orbit?.props.eclipse_fraction), contact_s: number(orbit?.props.contact_s_per_day) }
+    useMap(s.orbit.body)
+    const launch = s.launchUtc?.slice(0, 10)
+    const calls = s.calls.map((c) => [c.call, c.reasons.map((r) => r.code)])
+    const fit = s.stations.map((st) => [st.key, st.picked])
+    const metrics = JSON.stringify(s.metrics)
+    paint(missionScreen, JSON.stringify([fontTick, s.title, s.objective, s.numbers, calls, launch, s.debrief]), (g) => drawMission(g, { title: s.title, objective: s.objective, numbers: s.numbers, calls: s.calls, launch, debrief: s.debrief }))
+    paint(trackScreen, JSON.stringify([fontTick, mapTick, track]), (g) => drawTrack(g, track, mapImage))
+    paint(marginScreen, JSON.stringify([fontTick, s.bars]), (g) => drawMargins(g, s.bars))
+    paint(designScreen, JSON.stringify([fontTick, fit, s.metrics.cost_usd, s.metrics.budget_usd]), (g) => drawDesign(g, s.stations, s.metrics))
+    paint(planScreen, JSON.stringify([fontTick, s.launchUtc, rocket?.id]) + metrics, (g) => drawPlan(g, s.metrics, s.launchUtc, rocket && shortLabel(rocket)))
+    paint(tileScreen, JSON.stringify([fontTick, mapTick, fit, s.bars, s.numbers, track]) + metrics, (g) => drawTiles(g, { stations: s.stations, bars: s.bars, metrics: s.metrics, numbers: s.numbers, track }, mapImage))
+    paint(callScreen, JSON.stringify([fontTick, calls]), (g) => drawCalls(g, s.calls))
   }
-
-  const drawDesks = (calls: ConsoleCall[]) =>
-    calls.slice(0, 4).forEach((c, i) => {
-      const screen = desks[i]!
-      const { g } = screen
-      g.fillStyle = '#0d1424'
-      g.fillRect(0, 0, 512, 400)
-      g.textAlign = 'center'
-      g.textBaseline = 'middle'
-      g.fillStyle = MUTED
-      g.font = font(38, 700)
-      g.fillText(c.label.toUpperCase(), 256, 50, 480)
-      g.fillStyle = callColour(c)
-      g.font = font(96, 800)
-      g.fillText(callWord(c), 256, 150, 480)
-      // A few words you can read from across the hall: what is wrong, then what to do. The sim's full sentence
-      // would not fit here (it was cut off mid-line).
-      const short = brief(c)
-      if (!short) {
-        g.fillStyle = TEXT
-        g.font = font(34, 500)
-        g.fillText('All checks good.', 256, 250, 480)
-      } else {
-        g.fillStyle = callColour(c)
-        g.font = font(40, 700)
-        const problem = wrap(g, short.problem, 470, 2)
-        problem.forEach((line, j) => g.fillText(line, 256, 238 + j * 46, 490))
-        g.fillStyle = TEXT
-        g.font = font(32, 500)
-        const fixAt = 238 + problem.length * 46 + 12
-        wrap(g, short.fix, 470, 2).forEach((line, j) => g.fillText(line, 256, fixAt + j * 38, 490))
-        if (c.reasons.length > 1) {
-          g.fillStyle = MUTED
-          g.font = font(24, 600)
-          g.fillText(`+${c.reasons.length - 1} more`, 256, 380, 480)
-        }
-      }
-      screen.draw()
-    })
 
   // ---- Walking.
   scene.updateMatrixWorld(true)
@@ -845,9 +699,7 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
         }
       }
       buttonMat.emissiveIntensity = s.debrief ? 0.15 : 0.6
-      drawWall(s)
-      drawGauges(s.bars)
-      drawDesks(s.calls)
+      paintScreens(s)
       scene.updateMatrixWorld(true) // stations or the craft may have been rebuilt
       dirty = true
     },

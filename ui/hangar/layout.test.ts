@@ -3,7 +3,7 @@ import { getDatasets, getScenario } from '../../data'
 import { catalogEntities } from '../../sim'
 import { aimAt, lookDir, step } from '../fps/model'
 import type { Command } from '../../shared'
-import { DESK_Z, interactables, LAUNCH, menu, MENU_RANGE, obstacles, ROOM, shortLabel, STAND, START, stations } from './layout'
+import { DESK, DESK_ROWS, DESK_XS, DESK_Z, deskPoint, interactables, LAUNCH, menu, MENU_RANGE, obstacles, ROOM, shortLabel, STAND, START, stations } from './layout'
 
 const config = getScenario('demo')!
 const state = { entities: catalogEntities(getDatasets(config.datasets)), params: config.params }
@@ -38,17 +38,57 @@ describe('mission control layout', () => {
     })
   })
 
-  it('pedestals, the craft emitter, the desks and the launch button do not overlap, and none blocks the start', () => {
-    const boxes = obstacles(list).slice(4) // without the outer walls
-    for (let i = 0; i < boxes.length; i++)
-      for (let j = i + 1; j < boxes.length; j++) {
-        const a = boxes[i]!
-        const b = boxes[j]!
-        // 0.7 m between any two: room for the player (0.6 m wide) to walk through.
-        const overlap = a.min[0] - 0.7 < b.max[0] && a.max[0] + 0.7 > b.min[0] && a.min[2] - 0.7 < b.max[2] && a.max[2] + 0.7 > b.min[2]
-        expect(overlap && !(i >= 2 && i <= 5 && j >= 2 && j <= 5), `${i} too close to ${j}`).toBe(false) // desks stand in a row, as before
-      }
+  it('pedestals, the craft emitter, the launch button and the desks leave room to walk between them, and none blocks the start', () => {
+    const all = obstacles(list).slice(4) // without the outer walls
+    const fixed = all.slice(0, 2 + list.length) // emitter, launch button, pedestals
+    const desks = all.slice(2 + list.length) // desk pieces and chairs: these stand together in rows
+    expect(desks.length).toBeGreaterThan(DESK_ROWS.length * 3)
+    // 0.7 m between any two: room for the player (0.6 m wide) to walk through.
+    const close = (a: (typeof all)[number], b: (typeof all)[number]) => a.min[0] - 0.7 < b.max[0] && a.max[0] + 0.7 > b.min[0] && a.min[2] - 0.7 < b.max[2] && a.max[2] + 0.7 > b.min[2]
+    fixed.forEach((a, i) => {
+      fixed.slice(i + 1).forEach((b, j) => expect(close(a, b), `${i} too close to ${i + 1 + j}`).toBe(false))
+      desks.forEach((b, j) => expect(close(a, b), `${i} too close to desk piece ${j}`).toBe(false))
+    })
+    for (const o of desks) {
+      expect(o.min[0]).toBeGreaterThanOrEqual(ROOM.min[0])
+      expect(o.max[0]).toBeLessThanOrEqual(ROOM.max[0])
+      expect(o.min[2]).toBeGreaterThan(ROOM.min[2] + 1) // clear of the video wall
+    }
     expect(step(START.pos, 0, { forward: 1, right: 0 }, 0.05, 3.2, obstacles(list))[2]).toBeLessThan(START.pos[2])
+  })
+
+  it('the way from the start to the launch button and up to each GO / NO-GO monitor is open', () => {
+    const walls = obstacles(list)
+    const walk = (from: [number, number, number], to: [number, number]) => {
+      let pos = from
+      for (let k = 0; k < 600 && Math.hypot(pos[0] - to[0], pos[2] - to[1]) > 0.1; k++) pos = step(pos, Math.atan2(pos[0] - to[0], pos[2] - to[1]), { forward: 1, right: 0 }, 0.05, 3.2, walls)
+      return pos
+    }
+    // Round the craft on the left, then to the launch button, then along the front desk.
+    let pos = walk(START.pos, [-2.6, 1.5])
+    pos = walk(pos, [-2.6, -5.6])
+    pos = walk(pos, [LAUNCH[0], LAUNCH[2] + 0.9])
+    expect(Math.hypot(pos[0] - LAUNCH[0], pos[2] - (LAUNCH[2] + 0.9))).toBeLessThan(0.2)
+    const front = DESK_ROWS[0]!
+    for (const s of DESK_XS) {
+      const spot = deskPoint(front, s, DESK.front + 0.45)
+      // Straight in from the aisle behind the chairs, as a player would.
+      pos = walk(pos, [spot.x, LAUNCH[2] + 0.9])
+      pos = walk(pos, [spot.x, spot.z])
+      expect(Math.hypot(pos[0] - spot.x, pos[2] - spot.z), `monitor at ${s}`).toBeLessThan(0.2)
+    }
+  })
+
+  it('a desk curves round its operators: its ends are nearer to them than its middle', () => {
+    for (const row of DESK_ROWS) {
+      expect(deskPoint(row, 0).x).toBeCloseTo(row.x)
+      expect(deskPoint(row, 0).z).toBeCloseTo(row.z)
+      const end = deskPoint(row, row.len / 2)
+      expect(end.z).toBeGreaterThan(row.z)
+      expect(end.x).toBeCloseTo(-deskPoint(row, -row.len / 2).x + 2 * row.x)
+      // A chair stands on the operators' side.
+      for (const s of row.chairs) expect(deskPoint(row, s, DESK.chair).z).toBeGreaterThan(deskPoint(row, s).z)
+    }
   })
 
   it('a menu has one card per part the builder offers, each in its own spot, inside the room and in reach', () => {

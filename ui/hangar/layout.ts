@@ -1,14 +1,14 @@
 // Mission control you play in (decision 007): where everything stands and what E does on it.
 // Pure: no three.js, so it is cheap to test. control.ts draws it; MissionControl.tsx wires it up.
 //
-// The room, seen from above (x right, z towards you; you start at the bottom facing the call wall):
+// The room, seen from above (x right, z towards you; you start at the bottom facing the video wall):
 //
-//   z=-12            [ MISSION CALL WALL ]   [ gauges ]
-//   z=-8.5             desk desk desk desk
+//   z=-12     [ MISSION CALL ][ GROUND TRACK ][ MARGINS ]        the video wall; DESIGN and FLIGHT PLAN
+//   z=-8.5   =desk=  ====== front row: GO / NO-GO ======  =desk=    hang on the side walls beside it
 //   z=-6.5       o       (launch button)                  o = hologram station, one per slot, on a
-//   z=-3      o        ( floating craft )        o            horseshoe around the craft; the centre
-//               o                              o              line stays clear, so from the start you
-//   z=1.4            o                    o                   see the craft, the launch button, the wall
+//   z=-3     =desk=   o   ( floating craft )   o   =desk=     horseshoe around the craft; the centre
+//            =desk=     o                    o     =desk=     line stays clear, so from the start you
+//   z=1.4    =desk=        o              o        =desk=     see the craft, the launch button, the wall
 //   z=4.5               you start here
 
 import { DEFAULT_SLOTS, columnLabel, formatValue, parseIds, slotColumns, slotParts, toggleId, unitOf, type Slot } from '../builder/model'
@@ -22,11 +22,34 @@ export const STAND: Vec3 = [0, 0, -3]
 /** How high the middle of the floating craft is. */
 export const CRAFT_Y = 2.3
 export const LAUNCH: Vec3 = [0, 1.05, -6.5]
-/** High on the back wall, so the console screens in front of it never cover its numbers. */
-export const CALL_WALL = { x: 0, y: 3.3, w: 6, h: 3 }
-export const GAUGES = { x: 6.6, y: 2.4, w: 5.2, h: 2.9 }
+/** The video wall at the front, left to right: the mission call, the chosen orbit's ground track, the margins. */
+export const CALL_WALL = { x: -6.35, y: 3.3, w: 6.2, h: 3.1 }
+export const TRACK_WALL = { x: 0, y: 3.3, w: 6.2, h: 3.1 }
+export const GAUGES = { x: 6.35, y: 3.3, w: 6.2, h: 3.1 }
+/** One screen on each side wall beside the video wall: the design on the left, the flight plan on the right. */
+export const SIDE_WALL = { z: -7, y: 3.2, w: 5.4, h: 2.7 }
 export const DESK_Z = -8.5
+/** Where the four GO / NO-GO monitors stand along the front desk, metres from its middle. */
 export const DESK_XS = [-2.4, -0.8, 0.8, 2.4] as const
+
+/**
+ * A long, gently curved operator desk. Operators sit on its +z side and face the video wall; it curves
+ * round them with radius `r`. `chairs` are metres along the desk from its middle.
+ */
+export interface DeskRow { x: number; z: number; len: number; r: number; chairs: readonly number[] }
+/** A desk's cross-section, metres from its centre line (+ towards the operators), and where a chair stands. */
+export const DESK = { back: -0.5, front: 0.47, top: 0.76, chair: 0.9 }
+/** The front row with the GO / NO-GO monitors, then four rows down each side wall, clear of the stations. */
+export const DESK_ROWS: readonly DeskRow[] = [
+  { x: 0, z: DESK_Z, len: 9.4, r: 13, chairs: [-3.45, -1.6, 1.6, 3.45] },
+  ...[-7.8, -4.6, -1.4, 1.8].flatMap((z) => [-7.5, 7.5].map((x): DeskRow => ({ x, z, len: 3.3, r: 7, chairs: [-0.8, 0.8] }))),
+]
+
+/** A spot on a desk: `s` metres along it from the middle, `d` metres from its centre line towards the operators. `yaw` faces the operators. */
+export function deskPoint(row: DeskRow, s: number, d = 0): { x: number; z: number; yaw: number } {
+  const a = s / row.r
+  return { x: row.x + (row.r - d) * Math.sin(a), z: row.z + row.r - (row.r - d) * Math.cos(a), yaw: -a }
+}
 
 /** The horseshoe of stations around the craft: its radius, and the angle between neighbours. It opens towards the desks and the launch button. */
 const RING = 4.6
@@ -139,7 +162,22 @@ export function menu(station: Station, from: readonly [number, number], state: P
   return { key: station.key, cards }
 }
 
-/** Walls, the station pedestals, the craft's emitter, the desks and the launch pedestal. */
+/** What a desk row and its chairs block: the desk in short straight pieces along its curve, one box per chair. */
+function deskObstacles(row: DeskRow): Obstacle[] {
+  const pieces = Math.ceil(row.len / 1.2)
+  const out: Obstacle[] = []
+  for (let i = 0; i < pieces; i++) {
+    const ends = [i, i + 1].flatMap((k) => [DESK.back, DESK.front].map((d) => deskPoint(row, (k / pieces - 0.5) * row.len, d)))
+    out.push({ min: [Math.min(...ends.map((p) => p.x)), 0, Math.min(...ends.map((p) => p.z))], max: [Math.max(...ends.map((p) => p.x)), DESK.top, Math.max(...ends.map((p) => p.z))] })
+  }
+  for (const s of row.chairs) {
+    const { x, z } = deskPoint(row, s, DESK.chair)
+    out.push({ min: [x - 0.27, 0, z - 0.27], max: [x + 0.27, 1.2, z + 0.27] })
+  }
+  return out
+}
+
+/** Walls, the craft's emitter, the launch pedestal, the station pedestals, then the desks and their chairs. */
 export function obstacles(stationList: readonly Station[]): Obstacle[] {
   const [x0, , z0] = ROOM.min
   const [x1, , z1] = ROOM.max
@@ -153,8 +191,8 @@ export function obstacles(stationList: readonly Station[]): Obstacle[] {
     // The beam under the craft: you walk round it, not through the spacecraft.
     box([STAND[0] - 1.1, 0, STAND[2] - 1.1], [STAND[0] + 1.1, 0.6, STAND[2] + 1.1]),
     box([LAUNCH[0] - 0.35, 0, LAUNCH[2] - 0.35], [LAUNCH[0] + 0.35, 1, LAUNCH[2] + 0.35]),
-    ...DESK_XS.map((x) => box([x - 0.7, 0, DESK_Z - 0.4], [x + 0.7, 0.8, DESK_Z + 0.4])),
     ...stationList.map((s) => box([s.at[0] - PEDESTAL.r, 0, s.at[2] - PEDESTAL.r], [s.at[0] + PEDESTAL.r, PEDESTAL.h, s.at[2] + PEDESTAL.r])),
+    ...DESK_ROWS.flatMap(deskObstacles),
   ]
 }
 
