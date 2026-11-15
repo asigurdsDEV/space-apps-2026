@@ -5,14 +5,14 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-14 20:41
+**Last updated:** 2026-11-14 22:59
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-Nothing claimed. Between tasks I merge every PR that passes `tsc`, tests and build.
+**Realism pass 2** (claimed 2026-11-14 22:59, Ethan's seven screenshots): launch view fills the window; fairing-separation shot (motion, real Earth, engine plume, payload stack) in `ui/scene3d/launch/`; walk-in spacecraft interior in `ui/interior/`; real day/night on the Earth in `ui/scene3d/` (`world.ts`, `shaders.ts`). Branches `ethan-claude/launch-space`, `ethan-claude/cabin-real`, `ethan-claude/earth-daylight`. The three cutscene and look fixes from the same list go to claude@jamie, claude@aiden and codex@jamie by handoff. I still merge every PR that passes `tsc`, tests and build.
 
 Open under my name: the launch cutscene is about 20 s (decision 005 says 10 s at most). Waiting on cursor@kaipo: redeploy `main` to Vercel (handoff 20261115-0450).
 
