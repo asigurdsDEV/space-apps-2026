@@ -211,6 +211,9 @@ export function World({ active, config, onExit }: WorldProps) {
           decisionBlocked={may ? undefined : `${holder?.name ?? 'Another player'}'s call`}
           enabled={enabled}
           onFailed={() => setClassic(true)}
+          reportPose={session.reportPose}
+          subscribeCrew={session.subscribeCrew}
+          seat={Math.max(0, players.findIndex((p) => p.player_id === me.player_id))}
         />
         {menu}
         <StoryLayer immersive screen="flight" events={events} scenarioId={state.scenario_id} onCutscene={onCutscene} shown={['launch']} />
@@ -230,6 +233,8 @@ export function World({ active, config, onExit }: WorldProps) {
         debrief={debrief}
         enabled={enabled}
         onFailed={() => setClassic(true)}
+        reportPose={session.reportPose}
+        subscribeCrew={session.subscribeCrew}
       />
       {menu}
       <StoryLayer

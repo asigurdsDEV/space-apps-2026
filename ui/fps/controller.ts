@@ -32,6 +32,8 @@ export interface Fps {
   /** Off during cutscenes and pop-outs: drops held keys and mouse look. */
   setEnabled(on: boolean): void
   readonly aimed: Interactable | undefined
+  /** Feet on the floor, and which way they face (the same yaw as the camera). */
+  feet(): { x: number; z: number; yaw: number }
   dispose(): void
 }
 
@@ -219,6 +221,9 @@ export function createFps(element: HTMLElement, camera: PerspectiveCamera, optio
     },
     get aimed() {
       return aimed
+    },
+    feet() {
+      return { x: pos[0], z: pos[2], yaw }
     },
     dispose() {
       removeEventListener('keydown', onKeyDown)

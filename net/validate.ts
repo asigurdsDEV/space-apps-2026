@@ -48,6 +48,7 @@ export function isNetMessage(v: unknown): v is NetMessage {
     case 'claim_role': return role(p.role)
     case 'command': return isCommand(p.command)
     case 'leave': case 'ended': return Object.keys(p).length === 0
+    case 'pose': return finite(p.x) && finite(p.z) && finite(p.yaw) && Math.abs(p.x) <= 40 && Math.abs(p.z) <= 40 && Math.abs(p.yaw) <= Math.PI + 0.01 && (p.player_id === undefined || (text(p.player_id) && p.player_id.length > 0 && p.player_id.length <= 80))
     case 'roster': return Array.isArray(p.players) && p.players.length <= 4 && p.players.every(x => record(x) && text(x.player_id) && text(x.name) && role(x.role) && typeof x.is_host === 'boolean')
     case 'state': return state(p.state) && Array.isArray(p.events) && p.events.every(event)
     case 'rejected': return text(p.player_id) && text(p.reason) && (p.command === undefined || isCommand(p.command))

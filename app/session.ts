@@ -40,6 +40,39 @@ export interface Session {
   start?(): void
   /** Stop timers and connections. The session must not be used afterwards. */
   close(): void
+  /** Tell the rest of the crew where you are standing. Solo ignores it. */
+  reportPose(pose: { x: number; z: number; yaw: number }): void
+  /** The other players, where they last stood. Called at once with the current list. */
+  subscribeCrew(listener: (crew: readonly CrewPose[]) => void): () => void
+}
+
+/** One other player, on the floor of the room you share. */
+export interface CrewPose {
+  player_id: string
+  name: string
+  x: number
+  z: number
+  yaw: number
+}
+
+function wrapYaw(yaw: number): number {
+  if (!Number.isFinite(yaw)) return 0
+  let y = yaw % (Math.PI * 2)
+  if (y > Math.PI) y -= Math.PI * 2
+  if (y < -Math.PI) y += Math.PI * 2
+  return y
+}
+
+function clampPose(pose: { x: number; z: number; yaw: number }): { x: number; z: number; yaw: number } {
+  const n = (v: number, lim: number) => Math.max(-lim, Math.min(lim, Number.isFinite(v) ? v : 0))
+  return { x: n(pose.x, 40), z: n(pose.z, 40), yaw: wrapYaw(pose.yaw) }
+}
+
+const POSE_MS = 100
+
+function poseMoved(prev: { x: number; z: number; yaw: number } | undefined, next: { x: number; z: number; yaw: number }): boolean {
+  if (!prev) return true
+  return Math.hypot(next.x - prev.x, next.z - prev.z) >= 0.04 || Math.abs(next.yaw - prev.yaw) >= 0.04
 }
 
 export interface SoloSessionOptions {
@@ -132,6 +165,11 @@ export function createSoloSession(game: Game, options: SoloSessionOptions = {}):
       stopDriving?.()
       stopListening()
       listeners.clear()
+    },
+    reportPose() {},
+    subscribeCrew(listener) {
+      listener([])
+      return () => {}
     },
   }
 }
@@ -240,6 +278,11 @@ export function createHostSession(
   const baseline = options.baseline
   const baselineJson = new Map(baseline?.map((entity) => [entity.id, JSON.stringify(entity)]))
   let closed = false
+  const poses = new Map<string, { x: number; z: number; yaw: number }>()
+  const poseAt = new Map<string, number>()
+  const crewListeners = new Set<(crew: readonly CrewPose[]) => void>()
+  let ownPose: { x: number; z: number; yaw: number } | undefined
+  let ownPoseAt = 0
 
   function build(): SessionSnapshot {
     return { ...game.getSnapshot(), players, me: players[0], notice, stage }
@@ -318,9 +361,25 @@ export function createHostSession(
     else timer ??= setTimeout(sendState, wait)
   }
 
+  function crewList(): CrewPose[] {
+    const out: CrewPose[] = []
+    for (const [id, pose] of poses) {
+      const player = players.find((p) => p.player_id === id)
+      if (player && id !== hostId) out.push({ player_id: id, name: player.name, ...pose })
+    }
+    return out
+  }
+
+  function notifyCrew(): void {
+    const crew = crewList()
+    for (const listener of [...crewListeners]) listener(crew)
+  }
+
   function rosterChanged(): void {
     players = room.players
+    for (const id of [...poses.keys()]) if (!players.some((p) => p.player_id === id)) poses.delete(id)
     broadcast({ type: 'roster', payload: { players } })
+    notifyCrew()
     refresh()
   }
 
@@ -380,6 +439,17 @@ export function createHostSession(
       case 'leave':
         room.leave(from)
         return rosterChanged()
+      case 'pose': {
+        if (!players.some((p) => p.player_id === from)) return
+        const now = Date.now()
+        if (now - (poseAt.get(from) ?? 0) < 50) return
+        const pose = clampPose(message.payload)
+        poseAt.set(from, now)
+        poses.set(from, pose)
+        broadcast({ type: 'pose', payload: { ...pose, player_id: from } })
+        notifyCrew()
+        return
+      }
       // roster, state, rejected and ended only go from the host to guests: ignored here.
     }
   })
@@ -397,6 +467,8 @@ export function createHostSession(
     if (closed || (status !== 'error' && status !== 'closed')) return
     for (const player of players) if (!player.is_host) room.leave(player.player_id)
     players = room.players
+    poses.clear()
+    notifyCrew()
     setSticky(`The online room was lost (${error?.message ?? 'connection closed'}). You can keep playing on this device.`)
   })
 
@@ -446,8 +518,25 @@ export function createHostSession(
       stopPlayers?.()
       stopStatus?.()
       listeners.clear()
+      crewListeners.clear()
       // After the current task, so a LocalTransport still delivers `ended`.
       queueMicrotask(() => transport.close())
+    },
+    reportPose(raw) {
+      if (closed) return
+      const pose = clampPose(raw)
+      const now = Date.now()
+      if (!poseMoved(ownPose, pose) || (ownPose && now - ownPoseAt < POSE_MS)) return
+      ownPose = pose
+      ownPoseAt = now
+      broadcast({ type: 'pose', payload: { ...pose, player_id: hostId } })
+    },
+    subscribeCrew(listener) {
+      crewListeners.add(listener)
+      listener(crewList())
+      return () => {
+        crewListeners.delete(listener)
+      }
     },
   }
 }
@@ -495,9 +584,27 @@ export function createGuestSession(transport: SessionTransport, name: string, op
   let notice: string | null = null
   let snapshot = build()
   let closed = false
+  const poses = new Map<string, { x: number; z: number; yaw: number }>()
+  const crewListeners = new Set<(crew: readonly CrewPose[]) => void>()
+  let ownPose: { x: number; z: number; yaw: number } | undefined
+  let ownPoseAt = 0
 
   function build(): SessionSnapshot {
     return { state, events, paused, speed, players, me, notice, stage }
+  }
+
+  function crewList(): CrewPose[] {
+    const out: CrewPose[] = []
+    for (const [id, pose] of poses) {
+      const player = players.find((p) => p.player_id === id)
+      if (player && id !== myId) out.push({ player_id: id, name: player.name, ...pose })
+    }
+    return out
+  }
+
+  function notifyCrew(): void {
+    const crew = crewList()
+    for (const listener of [...crewListeners]) listener(crew)
   }
 
   function refresh(): void {
@@ -528,7 +635,16 @@ export function createGuestSession(transport: SessionTransport, name: string, op
           me = found
           joined = true
         }
+        for (const id of [...poses.keys()]) if (!players.some((p) => p.player_id === id)) poses.delete(id)
+        notifyCrew()
         break
+      }
+      case 'pose': {
+        const id = message.payload.player_id
+        if (!id || id === myId || !players.some((p) => p.player_id === id)) return
+        poses.set(id, clampPose(message.payload))
+        notifyCrew()
+        return
       }
       case 'state': {
         if (!joined) return
@@ -616,8 +732,25 @@ export function createGuestSession(transport: SessionTransport, name: string, op
       stopMessages()
       stopStatus?.()
       listeners.clear()
+      crewListeners.clear()
       // After the current task, so a LocalTransport still delivers `leave`.
       queueMicrotask(() => transport.close())
+    },
+    reportPose(raw) {
+      if (closed || stage === 'closed') return
+      const pose = clampPose(raw)
+      const now = Date.now()
+      if (!poseMoved(ownPose, pose) || (ownPose && now - ownPoseAt < POSE_MS)) return
+      ownPose = pose
+      ownPoseAt = now
+      post({ type: 'pose', payload: pose })
+    },
+    subscribeCrew(listener) {
+      crewListeners.add(listener)
+      listener(crewList())
+      return () => {
+        crewListeners.delete(listener)
+      }
     },
   }
 }
