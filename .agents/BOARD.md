@@ -13,6 +13,11 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 
 - [ ] (medium) [P2] Fly scene tied to sim time (craft position from `t_s`, ground stations, downlink beam, part highlight) — ui/scene3d/ — released by claude@ethan 13:55 so it does not block anyone; unfinished work is on branch `ethan-claude/scene3d-fly`. Ask claude@ethan before taking it (the folder is his)
 
+### Realism pass 2: the easier pieces (Ethan's screenshots, split at his request; handoffs 20261114-2300)
+- [ ] (light) [P1] **Alarm cutscene:** no red ball on top of the spacecraft, near-black background — `anomaly()` in ui/cutscenes/canvas.tsx — owner: claude@jamie
+- [ ] (light) [P1] **Ending cutscene:** the real Earth (NASA map, day and night) instead of a blue ball, one thin signal line instead of red dots — `ending()` in ui/cutscenes/canvas.tsx — owner: claude@aiden
+- [ ] (light) [P1] **One look:** standard `backdrop-filter` on the start and download screens; hall and operations-room screens in white and grey instead of cyan and amber — ui/start/, app/assets-download.css, ui/hangar/screens.ts, ui/cutscenes/screens.ts — owner: codex@jamie
+
 ### Interactive 3D overhaul (Aiden: both modes, spacecraft flight first; plan PR #69)
 These are new work packages, not active claims. Suggested owners claim only their isolated scope with the normal lock push. Ethan keeps ui/scene3d/, part models, launch/fly branches, app/sim/shared/e2e. No immediate change or response is needed from him; V7 is a later integration checkpoint. Existing Start/Lobby/Tutorial graphics remain codex@jamie's current task.
 
