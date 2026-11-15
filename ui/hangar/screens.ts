@@ -17,14 +17,14 @@ type G = CanvasRenderingContext2D
 /** The real surface map of each body (ui/scene3d/maps), for the ground-track screen. */
 export const MAP_URL: Record<Body, string> = { earth: earthDay, moon, mars }
 
-const INK = '#050a12'
-export const TEXT = '#eef3fa'
-const MUTED = '#9aabc4'
-const LINE = 'rgba(170,205,235,0.16)'
-const TEAL = '#4fe0d8'
-export const GOOD = '#63dbad'
-const WARN = '#ffd166'
-const BAD = '#ff6b5a'
+const INK = '#07090c'
+export const TEXT = '#f5f6f8'
+const MUTED = '#a0a3a8'
+const LINE = 'rgba(245,246,248,0.16)'
+const ACCENT = '#ffffff'
+export const GOOD = '#f5f6f8'
+const WARN = '#a0a3a8'
+const BAD = '#ff7a7a'
 
 /** The start menu's face (ui/start/start.css); the system sans until it has loaded, or offline. */
 export const face = (px: number, weight = 400) => `${weight} ${Math.round(px)}px "Inter Tight", system-ui, sans-serif`
@@ -64,7 +64,7 @@ function caps(g: G, words: string, x: number, y: number, px: number, colour = MU
 
 function backdrop(g: G, w: number, h: number) {
   const fill = g.createLinearGradient(0, 0, 0, h)
-  fill.addColorStop(0, '#081120')
+  fill.addColorStop(0, '#101216')
   fill.addColorStop(1, INK)
   g.fillStyle = fill
   g.fillRect(0, 0, w, h)
@@ -79,9 +79,9 @@ const rule = (g: G, x: number, y: number, w: number) => {
 /** The top of a wall screen: its name, a note on the right, a hairline. `k` scales it for smaller canvases. */
 function header(g: G, w: number, title: string, note = '', k = 1) {
   const pad = 64 * k
-  g.fillStyle = TEAL
+  g.fillStyle = ACCENT
   g.fillRect(pad, 40 * k, 12 * k, 12 * k)
-  caps(g, title, pad + 30 * k, 47 * k, 30 * k, TEAL)
+  caps(g, title, pad + 30 * k, 47 * k, 30 * k, ACCENT)
   if (note) caps(g, note, w - pad, 47 * k, 26 * k, MUTED, 'right')
   rule(g, pad, 84 * k, w - pad * 2)
 }
@@ -95,7 +95,7 @@ const spanText = (days: number) => (days >= 700 ? `${(days / 365).toFixed(1).rep
 /** A thin bar: how much of a limit is used, or how much of a goal is met. Over the limit, the limit mark moves left and the bar runs past it. */
 function meter(g: G, b: Bar, x: number, y: number, w: number, h: number) {
   const scale = Math.max(1, Number.isFinite(b.ratio) ? b.ratio : 1)
-  g.fillStyle = 'rgba(190,215,240,0.12)'
+  g.fillStyle = 'rgba(245,246,248,0.12)'
   g.fillRect(x, y, w, h)
   g.fillStyle = b.bad ? BAD : GOOD
   g.fillRect(x, y, w * Math.max(0, Math.min(1, (Number.isFinite(b.ratio) ? b.ratio : 1) / scale)), h)
@@ -178,11 +178,11 @@ const TRACK_LON0 = -38
 function drawTrackOn(g: G, s: TrackScreen, map: CanvasImageSource | undefined, x: number, y: number, w: number, h: number, weight: number) {
   if (map) g.drawImage(map, x, y, w, h)
   // Dimmed, so the track and the room's holograms stay the brightest things in view.
-  g.fillStyle = map ? 'rgba(3,9,20,0.5)' : '#07101e'
+  g.fillStyle = map ? 'rgba(7,9,12,0.5)' : '#101216'
   g.fillRect(x, y, w, h)
   const px = (lon: number) => x + ((lon + 180) / 360) * w
   const py = (lat: number) => y + ((90 - lat) / 180) * h
-  g.fillStyle = 'rgba(170,215,255,0.13)'
+  g.fillStyle = 'rgba(245,246,248,0.13)'
   for (let lon = -150; lon <= 150; lon += 30) g.fillRect(px(lon), y, 1, h)
   for (let lat = -60; lat <= 60; lat += 30) g.fillRect(x, py(lat), w, lat === 0 ? 2 : 1)
   const day = BODY_DAY_S[s.body]
@@ -197,7 +197,7 @@ function drawTrackOn(g: G, s: TrackScreen, map: CanvasImageSource | undefined, x
   for (let rev = 0; rev < revs; rev++) {
     const alpha = 0.35 + 0.65 * ((rev + 1) / revs)
     for (const line of trackLines(points.slice(rev * steps, (rev + 1) * steps + 1))) {
-      for (const [colour, width] of [[`rgba(2,8,16,${0.55 * alpha})`, weight * 2.4], [`rgba(120,240,232,${alpha})`, weight]] as const) {
+      for (const [colour, width] of [[`rgba(7,9,12,${0.55 * alpha})`, weight * 2.4], [`rgba(245,246,248,${alpha})`, weight]] as const) {
         g.strokeStyle = colour
         g.lineWidth = width
         g.beginPath()
@@ -225,16 +225,16 @@ export function drawTrack(g: G, s: TrackScreen, map?: CanvasImageSource) {
   g.textBaseline = 'middle'
   drawTrackOn(g, s, map, 0, 0, W, H, 5)
   const top = g.createLinearGradient(0, 0, 0, 150)
-  top.addColorStop(0, 'rgba(3,8,16,0.9)')
-  top.addColorStop(1, 'rgba(3,8,16,0)')
+  top.addColorStop(0, 'rgba(7,9,12,0.9)')
+  top.addColorStop(1, 'rgba(7,9,12,0)')
   g.fillStyle = top
   g.fillRect(0, 0, W, 150)
-  g.fillStyle = TEAL
+  g.fillStyle = ACCENT
   g.fillRect(64, 40, 12, 12)
-  caps(g, 'Ground track', 94, 47, 30, TEAL)
+  caps(g, 'Ground track', 94, 47, 30, ACCENT)
   caps(g, `Over ${BODY_NAMES[s.body]}`, W - 64, 47, 26, TEXT, 'right')
   if (s.name) text(g, s.name, 64, 108, 58, TEXT, 'left', W - 128, 500)
-  g.fillStyle = 'rgba(3,8,16,0.82)'
+  g.fillStyle = 'rgba(7,9,12,0.82)'
   g.fillRect(0, H - 128, W, 128)
   const turns = 360 / westShift(s.period_s, BODY_DAY_S[s.body])
   const facts: [string, string][] = [
@@ -307,7 +307,7 @@ export function drawPlan(g: G, metrics: Metrics, launchUtc: string | undefined, 
   const total = plan.phases.reduce((sum, p) => sum + p.days, 0) || 1
   const least = 190
   const spare = W - P * 2 - least * plan.phases.length
-  const colours: Record<string, string> = { Build: '#7d8ea8', Cruise: WARN, Science: TEAL }
+  const colours: Record<string, string> = { Build: '#6c7078', Cruise: WARN, Science: ACCENT }
   let x = P
   plan.phases.forEach((p, i) => {
     const w = least + (spare * p.days) / total
@@ -356,7 +356,7 @@ export function drawCalls(g: G, calls: ConsoleCall[]) {
   calls.slice(0, 4).forEach((c, i) => {
     const x = (i % cols) * w
     const y = Math.floor(i / cols) * h
-    g.fillStyle = '#070d18'
+    g.fillStyle = '#101216'
     g.fillRect(x, y, w, h)
     g.fillStyle = callColour(c)
     g.fillRect(x, y, w, 8)
@@ -402,11 +402,11 @@ export function drawTiles(g: G, s: DeskScreens, map?: CanvasImageSource) {
     g.beginPath()
     g.rect(x, y, w, h)
     g.clip()
-    g.fillStyle = '#060c16'
+    g.fillStyle = '#101216'
     g.fillRect(x, y, w, h)
-    g.fillStyle = TEAL
+    g.fillStyle = ACCENT
     g.fillRect(x + 18, y + 20, 7, 7)
-    caps(g, title, x + 34, y + 24, 15, TEAL, 'left', w - 52)
+    caps(g, title, x + 34, y + 24, 15, ACCENT, 'left', w - 52)
     body(x, y)
     g.restore()
   }

@@ -85,14 +85,14 @@ export type Facts = ReturnType<typeof missionFacts>
 // ---- Drawing. Every screen is laid out on 960 × 540 and scaled to its canvas.
 type Ctx = CanvasRenderingContext2D
 const FONT = '"Inter Tight", system-ui, sans-serif'
-const BG = '#050a12'
-const INK = '#e8f2f7'
-const DIM = '#8299aa'
-const LINE = 'rgba(130,200,220,0.2)'
-const TEAL = '#3fe0d0'
-const GO = '#4be3a4'
-const WARN = '#ffc857'
-const NO = '#ff6b78'
+const BG = '#07090c'
+const INK = '#f5f6f8'
+const DIM = '#a0a3a8'
+const LINE = 'rgba(245,246,248,0.2)'
+const ACCENT = '#ffffff'
+const GO = '#f5f6f8'
+const WARN = '#a0a3a8'
+const NO = '#ff7a7a'
 /** The map on the ground-track screen, in 960 × 540 screen units. */
 const MAP = { y: 48, h: 480 }
 /** The marker runs this much faster than the orbit, so a few seconds of cutscene show it move. */
@@ -132,7 +132,7 @@ function header(g: Ctx, title: string, right: string) {
   g.fillStyle = BG
   g.fillRect(0, 0, 960, 540)
   g.textBaseline = 'middle'
-  g.fillStyle = TEAL
+  g.fillStyle = ACCENT
   g.fillRect(24, 15, 4, 20)
   g.letterSpacing = '2px'
   text(g, title, 40, 26, 20, INK, 500)
@@ -158,27 +158,27 @@ function chip(g: Ctx, label: string, right: number, y: number, color: string, fi
 function track(g: Ctx, f: Facts, map?: CanvasImageSource) {
   const o = f.orbit
   header(g, 'GROUND TRACK', `${f.name}  ·  ${o.name}  ·  ${o.altitude_m / 1000} km  ·  ${(o.inclination_rad * DEG).toFixed(1)}°  ·  ${(o.period_s / 60).toFixed(1)} min`)
-  g.fillStyle = '#071a2c'
+  g.fillStyle = '#101216'
   g.fillRect(0, MAP.y, 960, MAP.h)
   if (map) {
     g.drawImage(map, 0, MAP.y, 960, MAP.h)
-    g.fillStyle = 'rgba(3,10,22,0.42)' // dim the photo so the track and grid read on top of it
+    g.fillStyle = 'rgba(7,9,12,0.42)' // dim the photo so the track and grid read on top of it
     g.fillRect(0, MAP.y, 960, MAP.h)
   }
   const px = (lon: number) => ((lon + 180) / 360) * 960
   const py = (lat: number) => MAP.y + ((90 - lat) / 180) * MAP.h
   for (let d = -180; d <= 180; d += 30) {
-    g.fillStyle = d === 0 ? 'rgba(160,230,240,0.34)' : 'rgba(160,230,240,0.14)'
+    g.fillStyle = d === 0 ? 'rgba(245,246,248,0.34)' : 'rgba(245,246,248,0.14)'
     g.fillRect(px(d), MAP.y, 1, MAP.h)
     if (Math.abs(d) <= 90) g.fillRect(0, py(d), 960, 1)
-    if (d > -180 && d < 180) text(g, `${Math.abs(d)}°${d < 0 ? 'W' : d > 0 ? 'E' : ''}`, px(d) + 4, MAP.y + MAP.h - 10, 11, 'rgba(220,240,250,0.6)')
+    if (d > -180 && d < 180) text(g, `${Math.abs(d)}°${d < 0 ? 'W' : d > 0 ? 'E' : ''}`, px(d) + 4, MAP.y + MAP.h - 10, 11, 'rgba(245,246,248,0.6)')
   }
   // The orbit before, this one and the two after: each pass crosses the equator further west.
   const p = { lat: 0, lon: 0 }
   g.lineWidth = 2.5
   g.lineJoin = 'round'
   for (let n = -1; n <= 2; n++) {
-    g.strokeStyle = n === 0 ? WARN : n < 0 ? 'rgba(255,200,87,0.35)' : 'rgba(255,200,87,0.7)'
+    g.strokeStyle = n === 0 ? WARN : n < 0 ? 'rgba(245,246,248,0.35)' : 'rgba(245,246,248,0.7)'
     g.setLineDash(n > 0 ? [7, 7] : [])
     g.beginPath()
     let last = 0
@@ -193,7 +193,7 @@ function track(g: Ctx, f: Facts, map?: CanvasImageSource) {
   }
   g.setLineDash([])
   const shift = (360 * o.period_s) / 86400
-  g.fillStyle = 'rgba(5,10,18,0.78)'
+  g.fillStyle = 'rgba(7,9,12,0.78)'
   g.fillRect(16, MAP.y + 14, 318, 62)
   g.fillStyle = WARN
   g.fillRect(30, MAP.y + 33, 30, 3)
@@ -231,7 +231,7 @@ function clock(g: Ctx, f: Facts, t: number) {
   ]
   tiles.forEach(([label, value], i) => {
     text(g, label, 60 + i * 215, 366, 15, DIM, 500)
-    if (i === 0) cells(g, value, 60, 412, 34, 17, TEAL, 400)
+    if (i === 0) cells(g, value, 60, 412, 34, 17, ACCENT, 400)
     else text(g, value, 60 + i * 215, 412, 34)
   })
   text(g, 'SHIFT 1  ·  FLIGHT DIRECTOR ON CONSOLE', 60, 486, 17, DIM, 500)
@@ -254,9 +254,9 @@ function goNoGo(g: Ctx, f: Facts) {
     g.fillRect(40, y + 46, 880, 1)
   })
   const y = 96 + f.calls.length * 92
-  text(g, 'FLIGHT', 40, y - 14, 34, TEAL, 500)
+  text(g, 'FLIGHT', 40, y - 14, 34, ACCENT, 500)
   text(g, 'The flight director makes the launch call', 40, y + 22, 18, DIM)
-  chip(g, 'YOUR CALL', 920, y, TEAL, false)
+  chip(g, 'YOUR CALL', 920, y, ACCENT, false)
 }
 
 function status(g: Ctx, f: Facts) {
@@ -271,7 +271,7 @@ function status(g: Ctx, f: Facts) {
     text(g, row.slot.toUpperCase(), 70, y, 16, DIM, 500)
     g.letterSpacing = '0px'
     text(g, row.part, 250, y, 28)
-    text(g, row.figure, 920, y, 22, TEAL, 400, 'right')
+    text(g, row.figure, 920, y, 22, ACCENT, 400, 'right')
     g.fillStyle = LINE
     g.fillRect(40, y + 33, 880, 1)
   })
@@ -297,7 +297,7 @@ function budgets(g: Ctx, f: Facts) {
     text(g, label, 40, y - 12, 17, DIM, 500)
     g.letterSpacing = '0px'
     text(g, value, 920, y - 12, 24, bad ? WARN : INK, 400, 'right')
-    g.fillStyle = 'rgba(130,200,220,0.14)'
+    g.fillStyle = 'rgba(245,246,248,0.14)'
     g.fillRect(40, y + 14, 880, 10)
     g.fillStyle = bad ? WARN : GO
     g.fillRect(40, y + 14, 880 * Math.min(1, limit > 0 ? used / limit : 0), 10)
@@ -323,7 +323,7 @@ function telemetry(g: Ctx, f: Facts) {
     ['SOLAR ARRAY', `${f.solar_w} W`, 'in sunlight', 0, f.solar_w * 1.2, (i) => (dark((i / N) * 2) ? 0 : f.solar_w), WARN],
     ['BATTERY', `${f.budgets.battery_wh} Wh`, `dips ${(f.budgets.battery_wh - Math.min(...charge)).toFixed(1)} Wh a night`, 0, f.budgets.battery_wh * 1.2, (i) => charge[i]!, GO],
     // The camera is on for its duty cycle, in daylight, once an orbit.
-    ['LOAD', `${load} W`, `${f.flight.base_load_w} W with camera off`, 0, load * 1.4, (i) => (((i / N) * 2) % 1 < f.duty ? load : f.flight.base_load_w), TEAL],
+    ['LOAD', `${load} W`, `${f.flight.base_load_w} W with camera off`, 0, load * 1.4, (i) => (((i / N) * 2) % 1 < f.duty ? load : f.flight.base_load_w), ACCENT],
   ]
   plots.forEach(([label, value, note, lo, hi, at, color], r) => {
     const top = 70 + r * 148
@@ -333,9 +333,9 @@ function telemetry(g: Ctx, f: Facts) {
     g.letterSpacing = '0px'
     text(g, value, 40, top + 54, 38, INK, 300)
     text(g, note, 40, top + 92, 14, DIM)
-    g.fillStyle = 'rgba(130,200,220,0.05)'
+    g.fillStyle = 'rgba(245,246,248,0.05)'
     g.fillRect(x0, top, w, h)
-    g.fillStyle = 'rgba(20,40,70,0.9)'
+    g.fillStyle = 'rgba(16,18,22,0.9)'
     for (let n = 0; n < 2; n++) g.fillRect(x0 + ((n + 1 - eclipse) / 2) * w, top, (eclipse / 2) * w, h)
     g.fillStyle = LINE
     g.fillRect(x0, top + h, w, 1)
@@ -381,13 +381,13 @@ function program(g: Ctx, f: Facts, globes: Record<string, CanvasImageSource | un
   header(g, 'MISSION PROGRAM', `${f.program.length} missions  ·  finish one to unlock the next`)
   f.program.forEach((m, i) => {
     const x = 28 + i * 304
-    g.strokeStyle = i === 0 ? TEAL : LINE
+    g.strokeStyle = i === 0 ? ACCENT : LINE
     g.lineWidth = i === 0 ? 2 : 1
     g.strokeRect(x, 66, 296, 454)
     const globe = globes[m.body]
     if (globe) g.drawImage(globe, x + 20, 84, 120, 120)
-    text(g, `0${i + 1}`, x + 276, 102, 34, i === 0 ? TEAL : DIM, 300, 'right')
-    text(g, i === 0 ? 'ON CONSOLE' : 'LOCKED', x + 276, 136, 13, i === 0 ? TEAL : DIM, 500, 'right')
+    text(g, `0${i + 1}`, x + 276, 102, 34, i === 0 ? ACCENT : DIM, 300, 'right')
+    text(g, i === 0 ? 'ON CONSOLE' : 'LOCKED', x + 276, 136, 13, i === 0 ? ACCENT : DIM, 500, 'right')
     text(g, m.title, x + 20, 240, 30, INK, 500)
     const y = wrap(g, m.about, x + 20, 276, 256, 16, DIM, 2)
     text(g, m.orbit, x + 20, y + 14, 18)
@@ -402,7 +402,7 @@ function program(g: Ctx, f: Facts, globes: Record<string, CanvasImageSource | un
 function rules(g: Ctx, f: Facts) {
   header(g, 'FLIGHT RULES', f.name)
   g.letterSpacing = '1.5px'
-  text(g, 'OBJECTIVE', 40, 84, 15, TEAL, 500)
+  text(g, 'OBJECTIVE', 40, 84, 15, ACCENT, 500)
   g.letterSpacing = '0px'
   const y = wrap(g, f.objective, 40, 118, 880, 23, INK, 4) + 14
   g.fillStyle = LINE
