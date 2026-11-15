@@ -1,5 +1,5 @@
-// Shader effects for the launch: dawn sky, ground, cloud deck, engine plumes and smoke puffs.
-// Everything is procedural (no texture files). Colors are linear; OutputPass tone-maps.
+// Shader effects for the launch: sky, ground, cloud deck, engine plumes, smoke puffs and the Earth from low orbit.
+// Everything is procedural (no texture files) except the Earth, which reads the NASA maps. Colors are linear; OutputPass tone-maps.
 import * as THREE from 'three'
 import type { MapUniforms } from '../maps'
 import { ASSEMBLY, COAST_GLSL, CRAWLER_TURN } from './layout'
@@ -410,7 +410,7 @@ void main() {
     a = pow(facing, 1.4) * pow(1.0 - vAlong, 1.3) * uBody;
     // Vacuum: a wide bluish-white fan, brightest in a small zone behind the bell, then thinning out fast as it spreads.
     vec3 fan = mix(vec3(0.3, 0.46, 1.0), vec3(0.62, 0.76, 1.0), pow(facing, 3.0)) + 0.05 * uCore;
-    float thin = pow(facing, 1.6) * (0.016 + 0.2 / (1.0 + 0.12 * vRadii * vRadii)) * pow(1.0 - vAlong, 1.5) * smoothstep(0.0, 0.8, vRadii);
+    float thin = pow(facing, 1.6) * (0.016 + 0.17 / (1.0 + 0.12 * vRadii * vRadii)) * pow(1.0 - vAlong, 1.5) * smoothstep(0.0, 0.8, vRadii);
     col = mix(col, fan, uVacuum);
     a = mix(a, thin, uVacuum);
   } else if (vLayer < 1.5) {
@@ -419,7 +419,7 @@ void main() {
     a = pow(facing, 2.4) * pow(1.0 - vAlong, 1.1) * (0.5 + 0.8 * uBody) * (1.0 - 0.4 * uDiamonds);
     // Vacuum: a short blue-white knot at the exit of the bell.
     col = mix(col, vec3(1.5, 1.9, 2.8) + 0.25 * uCore, uVacuum);
-    a = mix(a, pow(facing, 2.0) * exp(-vRadii * 1.1) * 0.7, uVacuum);
+    a = mix(a, pow(facing, 2.0) * exp(-vRadii * 1.6) * 0.6, uVacuum);
   } else {
     // One engine's jet. Shock diamonds: bright knots where the air squeezes it, closer and dimmer down the jet, gone in thin air.
     float knots = pow(max(sin(vAlong * 44.0 * (1.0 + 0.35 * vAlong) - 0.5), 0.0), 4.0) * (1.0 - smoothstep(0.08, 0.7, vAlong)) * uDiamonds * air;
@@ -741,7 +741,8 @@ void main() {
   float ice = smoothstep(0.35, 0.6, min(m.r, min(m.g, m.b)));
   float water = smoothstep(-w, w, c) * (1.0 - ice);
   // Land: the map's colour, mottled by fields, forest and bare ground. Sea: deep blue, turquoise shallows along the coast.
-  vec3 land = m * (0.9 + 0.75 * rough) * mix(vec3(1.0), vec3(0.86, 0.97, 0.8), smoothstep(0.45, 0.7, grain) * (1.0 - ice));
+  // The map's forests are darker than they look from orbit next to the sea; deserts and ice are already bright.
+  vec3 land = m * (1.9 - min(dot(m, vec3(0.3, 0.6, 0.1)), 1.0)) * (0.8 + 0.5 * rough) * mix(vec3(1.0), vec3(0.86, 0.97, 0.8), smoothstep(0.45, 0.7, grain) * (1.0 - ice));
   float shallow = 1.0 - smoothstep(0.1, 0.75, blue);
   vec3 sea = mix(vec3(0.002, 0.012, 0.045) * (0.8 + 0.4 * rough), vec3(0.02, 0.2, 0.24), 0.65 * shallow * shallow);
   vec3 col = mix(land, sea, water);
