@@ -455,10 +455,10 @@ void main() {
     // in the middle, the edge colour outside, cooling to the tail colour where it breaks up into ragged tongues.
     float tongues = noise2(vec2(vAlong * 9.0 - uTime * 13.0, vAround * 2.0 + uSeed * 13.0));
     float fine = noise2(vec2(vAlong * 38.0 - uTime * 29.0, vAround * 7.0 + uSeed * 7.0));
-    // A solid motor's flame is white-hot across most of its width and length; only its rim and last tongues show
-    // colour. A liquid engine's keeps more of its own colour.
+    // A solid motor's flame is white-hot down its middle, with a yellow rim and last tongues. A liquid engine's
+    // keeps more of its own colour.
     float hot = facing * (1.0 - 0.5 * vAlong * vAlong);
-    col = mix(mix(uEdge, uTail, smoothstep(0.45, 0.95, vAlong)) * (0.7 + 0.3 * facing), uCore * (1.0 + 0.5 * hot * uSolid), smoothstep(mix(0.4, 0.28, uSolid), mix(0.9, 0.8, uSolid), hot));
+    col = mix(mix(uEdge, uTail, smoothstep(0.45, 0.95, vAlong)) * (0.7 + 0.3 * facing), uCore * (1.0 + 0.5 * hot * uSolid), smoothstep(mix(0.4, 0.45, uSolid), mix(0.9, 0.97, uSolid), hot));
     rim = 0.35 + 0.65 * smoothstep(0.1, 0.5, facing);
     a = smoothstep(0.0, 0.25, facing) * (1.0 - smoothstep(0.65, 1.0, vAlong + (tongues - 0.5) * 0.5)) * uBody * (0.7 + 0.5 * tongues) * (0.85 + 0.3 * fine);
     // High up, a thin spindle: white-yellow where it leaves the engines, orange further down, dull red at its tip.
@@ -655,13 +655,15 @@ void main() {
   float sun = clamp(dot(n, uSunView) * 0.75 + 0.25, 0.0, 1.0);
   // The look of self-shadow: the creases are dark, and so are the underside of each puff and the foot of the whole bank.
   float height = dot(up, vAt) + cameraPosition.y;
-  float open = (0.5 + 0.5 * smoothstep(0.05, 0.55, m.x)) * (0.6 + 0.4 * smoothstep(0.0, 0.35 * uUnit, height)) * (0.72 + 0.28 * smoothstep(-0.7, 0.4, dot(vUv, up.xy)));
+  float crease = 0.5 + 0.5 * smoothstep(0.05, 0.55, m.x);
+  float open = crease * (0.6 + 0.4 * smoothstep(0.0, 0.35 * uUnit, height)) * (0.72 + 0.28 * smoothstep(-0.7, 0.4, dot(vUv, up.xy)));
   vec3 col = (uLit * sun * sun + uShade * (0.6 + 0.4 * dot(n, up))) * open;
   vec3 toFire = (viewMatrix * vec4(uFire.xyz, 1.0)).xyz - vAt - vec3(0.0, 0.0, h * vHalf);
   float d2 = dot(toFire, toFire);
   // The fire's glow dies away fast: the cloud beside the flame is orange, the far end of the bank is not.
   float glow = 1.0 / (1.0 + d2 / (0.25 * uUnit * uUnit));
-  col += vec3(5.5, 2.3, 0.65) * uFire.w * (0.3 + 0.7 * max(dot(n, toFire) * inversesqrt(d2), 0.0)) * glow * glow;
+  // The fire's light does not reach into the creases either, so the cloud beside the flame keeps its relief.
+  col += vec3(5.5, 2.3, 0.65) * uFire.w * (0.3 + 0.7 * max(dot(n, toFire) * inversesqrt(max(d2, 1e-4)), 0.0)) * glow * glow * crease * crease;
   col += vec3(3.0, 1.1, 0.25) * vData.y * dome;
   // Where the bank lies on the ground it thins out, instead of ending in a ruled line.
   gl_FragColor = vec4(col, a * smoothstep(0.0, 0.03 * uUnit, height));
