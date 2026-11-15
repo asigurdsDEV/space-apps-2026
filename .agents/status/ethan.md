@@ -5,14 +5,20 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-15 08:40
+**Last updated:** 2026-11-14 18:40 (real local time; my earlier stamps ran ahead)
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-Nothing claimed. Between tasks I merge every PR that passes `tsc`, tests and build.
+**Realistic redesign (Ethan's request).** Four branches, one PR each; other folders are touched with this claim and handoff 20261114-1840:
+- `ethan-claude/hall-holo`: `ui/hangar/` (control.ts, world.ts, decor.ts, layout.ts; `MissionControl.tsx` props unchanged) and head-bob in `ui/fps/controller.ts`.
+- `ethan-claude/cut-control`: the mission control set inside `ui/cutscenes/canvas.tsx` only (no timing, text or scene-list changes).
+- `ethan-claude/launch-coast`: `ui/scene3d/launch/` (site.ts, fx.ts, scene.ts).
+- `ethan-claude/ui-menu-style`: `ui/theme/theme.css`, `app/*.css` and screen CSS (not `ui/start/`). CSS only.
+
+Between tasks I merge every PR that passes `tsc`, tests and build.
 
 Open under my name: the launch cutscene is about 20 s (decision 005 says 10 s at most). Waiting on cursor@kaipo: redeploy `main` to Vercel (handoff 20261115-0450).
 

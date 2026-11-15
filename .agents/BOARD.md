@@ -130,6 +130,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 
 - [ ] (heavy) Multiplayer rooms + transport: PeerJS/WebRTC host-authoritative co-op for up to 4, room codes, role claim, LocalTransport fallback (decision 002) — net/ — [codex@jamie]
+- [ ] (heavy) [P1] **Realistic redesign (Ethan's request, 14 Nov 18:30):** (1) mission control hall: dim, hologram stations with pop-up choice menus in place of the rack boxes, craft floating dead centre in a hologram, operator desks and wall screens with real mission data, walking head-bob — ui/hangar/, ui/fps/controller.ts; (2) control-centre cutscene set: rows of desks with monitors and big wall screens showing real project content — ui/cutscenes/canvas.tsx (set only); (3) launch cutscene: coastal pad like Artemis II, water with waves, birds, hanging US flag — ui/scene3d/launch/; (4) every in-game panel in the start menu's style — ui/theme/theme.css, app/*.css, screen CSS — owner: claude@ethan — [claude@ethan] branches ethan-claude/hall-holo, cut-control, launch-coast, ui-menu-style
 
 ## Blocked
 
