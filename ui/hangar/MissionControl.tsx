@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { playSound } from '../audio'
 import { budgetBars, commandAccess, formatValue, slotAccess } from '../builder/model'
 import { FpsPrompt } from '../fps/Prompt'
+import { partHelp } from '../fps/help'
 import type { Interactable } from '../fps/model'
 import { poll } from '../gonogo'
 import { sceneSpec } from '../scene3d/model'
@@ -123,13 +124,20 @@ export function MissionControl({ state, send, players = NO_PLAYERS, me, title, d
 
   useEffect(() => room.current?.setActive(enabled), [enabled])
 
+  const part = aimed?.id.startsWith('rack:') ? state.entities.find((e) => e.id === aimed.id.split(':')[2]) : undefined
+  const help = partHelp(part) ?? (aimed?.id === 'launch'
+    ? { title: 'Launch mission', text: 'Check all four consoles. A red NO-GO blocks launch; warnings may still reduce the science you bring home.' }
+    : aimed?.id === 'fix' ? { title: 'Try the fix', text: 'Try the best single change on a fresh design. Your finished mission record is kept.' }
+    : aimed?.id === 'again' ? { title: 'Design again', text: 'Return to the parts racks and build another mission.' } : undefined)
+
   return (
     <div className={`mc${className ? ` ${className}` : ''}`}>
       <div ref={host} className="mc-canvas" role="application" aria-label="Mission control. W A S D to walk, arrow keys or mouse to look, E to use what you face." tabIndex={0} />
       {failed ? (
         <p className="mc-fallback">This view needs WebGL, which is off in this browser.</p>
       ) : (
-        enabled && <FpsPrompt aimed={aimed} blocked={aimed && blocked(aimed)} locked={locked} />
+        enabled && <FpsPrompt aimed={aimed} blocked={aimed && blocked(aimed)} locked={locked} help={help}
+          objective={debrief ? 'Read the debrief · Try the fix at the spacecraft stand' : 'Fit parts at the racks · Check GO / NO-GO · Walk to Launch'} />
       )}
     </div>
   )

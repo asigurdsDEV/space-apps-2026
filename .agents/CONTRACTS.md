@@ -240,3 +240,7 @@ How the game's ideas fit the shapes above. Nothing here is a new shape.
 - Which coordinate `frame` the mission view uses (2D orbit diagram, Earth-centered, lat/lon map). The first person building the mission view decides and adds it here.
 - Which concrete NASA datasets we load. Each one gets listed in `docs/` with its source and license.
 - Answered by decision 002: the sim runs in the browser only, so Commands and SimState are passed as plain objects with no WebSocket.
+
+## Game preparation manifest (decision 010)
+
+The build emits `game-assets.json` beside `index.html`: `{ "version": string, "files": string[] }`. `files` is the deduplicated built/public static inventory, relative to the deployed base; generated-model code chunks count as assets. `version` is the same version used by `smdg-<version>` and the generated worker. Source maps, API routes and external services are excluded. App startup validates same-origin/base URLs and the current hashed entry before consuming it. Continue requires completed file responses plus room/module preparation; failed downloads allow retry. Cache persistence is best effort. This adds no sim/net state or commands.

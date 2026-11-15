@@ -13,7 +13,7 @@ import { planetMaps } from '../scene3d/maps'
 import { atmosphereShader, cloudShader, planetShader, toScreen } from '../scene3d/shaders'
 import type { CraftSpec } from '../scene3d/model'
 import type { Decision } from '../../shared'
-import { choiceSpots, DASH, moduleFor, ROOM, START, WINDOW, type Gauge, type Module } from './layout'
+import { choiceSpots, choiceTitleAt, DASH, moduleFor, ROOM, START, WINDOW, type Gauge, type Module } from './layout'
 import { mountCrew, type CrewPose } from '../crew/crew'
 
 export interface CabinScreens {
@@ -360,8 +360,8 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
       btn.rotation.y = rot
       choiceGroup.add(btn)
     })
-    // The card's title, clear above the choices (a card is 0.42 tall: at the old fixed height the cards hid it).
-    const mid = spots.reduce((a, s) => [a[0] + s.at[0] / spots.length, a[1], a[2] + s.at[2] / spots.length], [0, (spots[0]?.at[1] ?? 1.25) + 0.37, 0])
+    // The card's title over the choices.
+    const mid = choiceTitleAt(spots)
     const title = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 0.2), new THREE.MeshBasicMaterial({ map: label(decision.title.toUpperCase(), undefined, 768, 140), toneMapped: false }))
     title.position.set(mid[0], mid[1], mid[2])
     title.rotation.y = rot

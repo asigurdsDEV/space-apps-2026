@@ -1,7 +1,7 @@
-// The only words the first-person view shows on its own (decision 007): a dot in the middle,
-// "E · <what it does>" when you face something, and how to start looking around.
+// First-person controls and contextual inspection help (decisions 007 and 010).
 
 import type { Interactable } from './model'
+import type { InspectionHelp } from './help'
 
 export interface FpsPromptProps {
   aimed?: Interactable
@@ -11,12 +11,14 @@ export interface FpsPromptProps {
   locked: boolean
   /** A touch screen: the E button is on screen, so no key name. */
   touch?: boolean
+  help?: InspectionHelp
+  objective?: string
 }
 
-export function FpsPrompt({ aimed, blocked, locked, touch }: FpsPromptProps) {
+export function FpsPrompt({ aimed, blocked, locked, touch, help, objective }: FpsPromptProps) {
   const why = aimed?.disabled ?? blocked
   return (
-    <div className="fps-overlay" aria-hidden={!aimed && locked}>
+    <div className="fps-overlay">
       <span className={`fps-dot${aimed ? ' fps-dot--on' : ''}`} />
       <p className="fps-prompt" aria-live="polite">
         {aimed ? (
@@ -29,12 +31,14 @@ export function FpsPrompt({ aimed, blocked, locked, touch }: FpsPromptProps) {
           )
         ) : null}
       </p>
+      {help && <aside className="fps-help" role="note" aria-label="What this does"><strong>{help.title}</strong><p>{help.text}</p></aside>}
       {!locked && !touch && (
         <p className="fps-hint">
           Click to look around · <kbd>W</kbd>
           <kbd>A</kbd>
           <kbd>S</kbd>
           <kbd>D</kbd> walk · <kbd>E</kbd> use
+          {objective && <span className="fps-objective">{objective}</span>}
         </p>
       )}
     </div>

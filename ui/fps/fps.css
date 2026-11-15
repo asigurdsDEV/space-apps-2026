@@ -28,7 +28,7 @@
 }
 .fps-prompt {
   position: absolute;
-  top: calc(50% + 28px);
+  bottom: 16px;
   margin: 0;
   padding: 4px 12px;
   border-radius: 8px;
@@ -65,3 +65,21 @@
   font-size: 0.85em;
   text-align: center;
 }
+.fps-objective { display: block; margin-top: 4px; color: #b5c2df; font-size: 0.8rem; }
+.fps-help {
+  position: absolute;
+  right: 20px;
+  bottom: 64px;
+  width: min(340px, calc((100% - 60px) / 2));
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border-right: 3px solid var(--game-accent, #ffb547);
+  background: rgb(4 9 20 / 0.94);
+  color: #edf1fa;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+.fps-help strong { display: block; color: var(--game-accent, #ffb547); }
+.fps-help p { margin: 5px 0 0; }
+.app-world .app-world-radio { bottom: 64px; max-width: min(440px, calc((100% - 60px) / 2)); }
+@media (max-height: 500px) { .fps-help { padding: 8px 12px; font-size: 0.75rem; line-height: 1.35; } }

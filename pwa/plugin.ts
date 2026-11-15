@@ -25,7 +25,9 @@ export function offline(publicFiles: string[]): Plugin {
     },
     generateBundle(_options, bundle) {
       const files = [...new Set([...Object.keys(bundle), 'index.html', ...publicFiles])].filter((f) => !f.endsWith('.map')).sort()
-      this.emitFile({ type: 'asset', fileName: 'sw.js', source: serviceWorkerSource(files, versionOf(files)) })
+      const version = versionOf(files)
+      this.emitFile({ type: 'asset', fileName: 'game-assets.json', source: JSON.stringify({ version, files }) })
+      this.emitFile({ type: 'asset', fileName: 'sw.js', source: serviceWorkerSource([...files, 'game-assets.json'], version) })
     },
   }
 }

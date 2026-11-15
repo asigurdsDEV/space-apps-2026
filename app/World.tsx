@@ -27,16 +27,6 @@ import { WorldMenu } from './WorldMenu'
 /** First-person 3D, unless the address says `?world=classic` or the browser can't draw it. */
 export const WORLD_3D = typeof location !== 'undefined' && new URLSearchParams(location.search).get('world') !== 'classic' && hasWebGL()
 
-// Fetch the two 3D rooms (and three.js) while the player is still on the Start screen, so the game
-// opens without a wait. Idle time only: the Start screen itself is never slowed down.
-if (WORLD_3D) {
-  const idle = (globalThis as { requestIdleCallback?: (cb: () => void) => void }).requestIdleCallback ?? ((cb: () => void) => setTimeout(cb, 1500))
-  idle(() => {
-    void import('../ui/hangar/MissionControl').catch(() => {})
-    void import('../ui/interior/SpacecraftRoom').catch(() => {})
-  })
-}
-
 function finalSummary(events: readonly SimEvent[]): Summary | undefined {
   for (let i = events.length - 1; i >= 0; i--) {
     const e = events[i]!
@@ -51,7 +41,7 @@ export interface WorldProps {
   onExit: () => void
 }
 
-const LaunchView = SceneLaunchView as ComponentType<{ state: SimState; onDone: () => void }>
+const LaunchView = SceneLaunchView as ComponentType<{ state: SimState; onDone: () => void; className?: string }>
 const Training = lazy(() => import('./Training'))
 
 export function World({ active, config, onExit }: WorldProps) {
@@ -176,6 +166,7 @@ export function World({ active, config, onExit }: WorldProps) {
   if (flying && !launched) {
     return (
       <LaunchView
+        className="app-world-launch"
         state={state}
         onDone={() => {
           setLaunched(true)
