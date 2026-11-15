@@ -13,7 +13,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** jamie-claude/sunlight-column (PR #108 open); jamie-claude/real-planet-maps (PR #102 merged); jamie-claude/moon-mars-shaders (PR #89 merged); jamie-claude/pilot-training (PR #73 merged); jamie-claude/card-counts (PR #67 open); jamie-claude/gonogo-sound (PR #61 open); jamie-claude/real-missions (PR #50 open); jamie-claude/bonus-goal (PR #41 open); jamie-claude/hard-mode (PR #36 open); jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
 
 ### Working on right now
-Nothing claimed. Rocket presets in PR #215, waiting for Jamie's merge.
+Nothing claimed.
 
 ### Files / folders I'm touching (hands off)
 - `data/presets.ts`, `data/presets.test.ts`, `ui/hangar/presets.ts` + tests, `drawPresets` in `ui/hangar/screens.ts`, the preset screen in `ui/hangar/control.ts`, 8 lines in `ui/hangar/MissionControl.tsx` until PR #215 merges
@@ -35,7 +35,7 @@ Nothing claimed. Rocket presets in PR #215, waiting for Jamie's merge.
 - `docs/CHALLENGE.md`, `docs/README.md`, and the `## Challenge` section + Team table of `README.md` until PR #6 merges
 
 ### Just finished
-- **Rocket preset wall (PR #215):** a back-wall panel in Mission Control, one ready-made design per rocket for each scenario it can fly. Press E to load it. Shows name + rocket only. GO and a successful flight at every difficulty (test). In co-op, each press loads your own consoles' slots.
+- **Rocket preset wall (PR #215, merged):** a back-wall panel in Mission Control, one ready-made design per rocket for each scenario it can fly. Press E to load it. Shows name + rocket only. GO and a successful flight at every difficulty (test). In co-op, each press loads your own consoles' slots.
 - **About the team page (PR #213, merged):** link in the top-right masthead opens its own page; no longer in the menu panel. `ui/start/` only.
 - **Live Earth trip time (PR #212):** after Fly to a place, the distance from the picked satellite to the place and the time at its speed. `ui/live/` only.
 - **About the team (PR #210, merged):** team section on the start menu under the daily mission: 6 round headshots (Sarah initials, no LinkedIn), names link to LinkedIn, "Six students at the University of Washington". `ui/start/` only.
