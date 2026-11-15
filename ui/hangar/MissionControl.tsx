@@ -11,7 +11,7 @@ import { budgetBars, commandAccess, formatValue, slotAccess } from '../builder/m
 import { FpsPrompt } from '../fps/Prompt'
 import { partHelp } from '../fps/help'
 import type { Interactable } from '../fps/model'
-import { poll } from '../gonogo'
+import { launchAnywayQuestion, poll } from '../gonogo'
 import { consoleLine } from '../mission/walls'
 import { sceneSpec } from '../scene3d/model'
 import type { Command, Player, SimState } from '../../shared'
@@ -68,6 +68,9 @@ export function MissionControl({ state, send, players = NO_PLAYERS, me, title, g
   useRisingSound(state.issues.filter((i) => i.code.includes('over')).length, 'no-go')
   /** The station whose menu is open, and where the player stood when they opened it (the cards face that spot). */
   const [open, setOpen] = useState<{ key: string; from: [number, number] } | null>(null)
+  /** "PLAN says NO-GO: … Launch anyway?" while the player is being asked. */
+  const [asking, setAsking] = useState<string | null>(null)
+  const askDialog = useRef<HTMLDialogElement>(null)
   const coop = players.length > 1
   const who = useRef({ players, me, coop })
   who.current = { players, me, coop }
@@ -117,6 +120,7 @@ export function MissionControl({ state, send, players = NO_PLAYERS, me, title, g
 
   const stationList = useMemo(() => stations(state), [state.entities, state.params])
   const calls = useMemo(() => poll(state.issues), [state.issues])
+  const question = useMemo(() => launchAnywayQuestion(state.issues), [state.issues])
   const walls = useMemo(() => obstacles(stationList), [stationList])
   const openStation = debrief ? undefined : stationList.find((s) => s.key === open?.key)
   const openMenu = useMemo(() => (openStation && open ? menu(openStation, open.from, state) : undefined), [openStation, open, state.entities, state.params])
@@ -161,17 +165,35 @@ export function MissionControl({ state, send, players = NO_PLAYERS, me, title, g
       debrief: debrief && { grade: debrief.grade, score: debrief.score, outcome: debrief.outcome, fix: debrief.fix?.change },
     })
     const launchBlocked = calls.some((c) => c.call === 'no-go') ? 'A console says NO-GO' : undefined
-    r.fps.setPlace(interactables(stationList, { send: (c) => sendWithSound.current(c), launchBlocked, debrief, menu: openMenu, armed, toggle }), walls)
+    const launchAnyway = question ? () => setAsking(question) : undefined
+    r.fps.setPlace(interactables(stationList, { send: (c) => sendWithSound.current(c), launchBlocked, launchAnyway, debrief, menu: openMenu, armed, toggle }), walls)
     // Dev builds only: QA reads the stations and the open menu from the console (`__hall()`), next to `__fps`.
     if (import.meta.env.DEV) Object.assign(window, { __hall: () => ({ centre: [STAND[0], STAND[2]], stations: stationList.map((s) => ({ key: s.key, at: s.at, picked: s.picked })), open: openMenu?.key ?? null, cards: (openMenu?.cards ?? []).map((c) => ({ id: c.id, at: c.at, picked: c.picked })), params: state.params }) })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state, stationList, calls, walls, title, debrief, openMenu, armed])
+  }, [state, stationList, calls, question, walls, title, debrief, openMenu, armed])
 
-  useEffect(() => room.current?.setActive(enabled), [enabled])
+  useEffect(() => room.current?.setActive(enabled && !asking), [enabled, asking])
+  useEffect(() => {
+    const el = askDialog.current
+    if (!el) return
+    if (asking && !el.open) {
+      document.exitPointerLock?.()
+      el.showModal()
+    } else if (!asking && el.open) {
+      el.close()
+      host.current?.focus()
+    }
+  }, [asking])
+  const answer = (launch: boolean) => {
+    if (launch) sendWithSound.current({ type: 'launch', payload: { override: true } })
+    setAsking(null)
+  }
 
   const part = aimed?.id.startsWith('rack:') ? state.entities.find((e) => e.id === aimed.id.split(':')[2]) : undefined
   const aimedStation = aimed?.id.startsWith('station:') ? stationList.find((s) => `station:${s.key}` === aimed.id) : undefined
   const help = partHelp(part) ?? (aimedStation ? { title: aimedStation.slot.label, text: 'Open the menu to see the parts on offer.' }
+    : aimed?.id === 'launch' && question && !debrief
+    ? { title: 'Launch anyway', text: `${question.replace(' Launch anyway?', '')} You can still launch, but the mission will be lost.` }
     : aimed?.id === 'launch'
     ? { title: 'Launch mission', text: 'Check all four consoles. A red NO-GO blocks launch; warnings may still reduce the science you bring home.' }
     : aimed?.id === 'fix' ? { title: 'Try the fix', text: 'Try the best single change on a fresh design. Your finished mission record is kept.' }
@@ -187,6 +209,14 @@ export function MissionControl({ state, send, players = NO_PLAYERS, me, title, g
         <ul aria-label="GO / NO-GO">{calls.map((c) => <li key={c.id}>{c.label}: {consoleLine(state.issues, c.id)}</li>)}</ul>
         {debrief && <p>Debrief: grade {debrief.grade}, {debrief.outcome}, {debrief.score} points.{debrief.fix && ` One change that would have helped: ${debrief.fix.change}.`}</p>}
       </section>
+      {/* The Mission menu's look (app/app.css). Its own Esc handling, so Esc closes this and not the menu behind it. */}
+      <dialog ref={askDialog} className="game-theme app-world-menu" data-theme="dark" aria-label="Launch anyway"
+        onCancel={(e) => { e.preventDefault(); answer(false) }}
+        onKeyDown={(e) => { if (e.key === 'Escape') { e.preventDefault(); answer(false) } }}>
+        <p role="alert">{asking}</p>
+        <button type="button" className="game-button" autoFocus onClick={() => answer(false)}>Back</button>
+        <button type="button" className="game-button" onClick={() => answer(true)}>Launch anyway</button>
+      </dialog>
       {failed ? (
         <p className="mc-fallback">This view needs WebGL, which is off in this browser.</p>
       ) : (

@@ -164,6 +164,19 @@ describe('mission control layout', () => {
     expect(items.find((it) => it.id === 'launch')!.disabled).toBe('A console is NO-GO')
   })
 
+  it('a NO-GO the crew may overrule leaves the launch button usable, and it asks instead of launching', () => {
+    const sent: unknown[] = []
+    let asked = 0
+    const items = interactables(list, { send: (c) => sent.push(c), launchBlocked: 'A console says NO-GO', launchAnyway: () => asked++ })
+    const launch = items.find((it) => it.id === 'launch')!
+    expect([launch.label, launch.disabled]).toEqual(['Launch anyway', undefined])
+    launch.use()
+    expect([asked, sent]).toEqual([1, []])
+    // Without a NO-GO the question is never asked.
+    interactables(list, { send: (c) => sent.push(c), launchAnyway: () => asked++ }).find((it) => it.id === 'launch')!.use()
+    expect([asked, sent]).toEqual([1, [{ type: 'launch', payload: {} }]])
+  })
+
   it('a card shows at most two of the numbers the builder shows, and the price', () => {
     const rocket = list.find((s) => s.key === 'launch_vehicle')!
     const card = menu(rocket, before(rocket), state).cards.find((c) => c.part.id === 'electron')!

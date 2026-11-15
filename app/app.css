@@ -418,3 +418,10 @@ h1.app-bar-title {
 .app-page:has(> main > .s3d-launch) { display: flex; flex-direction: column; height: 100dvh; }
 .app-page > main:has(> .s3d-launch) { flex: 1; min-height: 0; }
 .app-page > main > .s3d-launch { height: 100%; min-height: 0; border-radius: 0; }
+/* "What went wrong" after a Launch anyway (app/WhatWentWrong.tsx): the Mission menu's look, room for a few sentences. */
+.app-wrong { width: min(480px, calc(100vw - 48px)); }
+.app-wrong h2 { margin: 16px 0 0; font-size: 1.05rem; }
+.app-wrong p { margin: 8px 0 0; line-height: 1.5; }
+/* Classic builder: "Launch anyway" right under the builder's Launch column. */
+.app-anyway { display: flex; justify-content: flex-end; padding: 0 24px; }
+.app-anyway .gng-anyway { width: min(380px, 100%); justify-content: flex-end; }

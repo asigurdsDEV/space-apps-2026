@@ -9,6 +9,7 @@ import type {
   Config,
   Dataset,
   Entity,
+  Issue,
   Metrics,
   Params,
   SimEvent,
@@ -55,6 +56,27 @@ export type Outcome =
   | 'science_shortfall'
   | 'launch_failure'
   | 'spacecraft_failure'
+
+/**
+ * The NO-GO problems a crew may launch anyway (`launch` with `override: true`), in the order they strike
+ * in flight, each with what then happens (the debrief's `why`). Any other error means nothing could launch.
+ */
+export const LAUNCH_ANYWAY: Record<string, string> = {
+  orbit_unreachable: 'The rocket could not reach the orbit you picked, so it fell short of orbital speed and drifted off course. Range safety blew it up on purpose so it could not fall on anyone.',
+  mass_over_limit: 'The spacecraft was too heavy for the rocket, so it fell short of orbital speed and drifted off course. Range safety blew it up on purpose so it could not fall on anyone.',
+  power_negative: 'The spacecraft reached space, but its power source made less power than its computer and radio need. The battery ran flat within hours and it went silent.',
+  delta_v_short: 'The spacecraft reached space, but its own engine was too small for the last push into its orbit. It never got there, so the mission was lost.',
+}
+/** Lost on the way up; the others are lost after the launch. */
+const LAUNCH_PHASE = new Set(['orbit_unreachable', 'mass_over_limit'])
+
+/** The problem that decides how a launch-anyway ends: the first of LAUNCH_ANYWAY present. '' when there is no error, or one that blocks any launch. */
+export function launchAnywayFault(issues: readonly Issue[]): string {
+  const codes = issues.filter((issue) => issue.severity === 'error').map((issue) => issue.code)
+  const order = Object.keys(LAUNCH_ANYWAY)
+  if (codes.length === 0 || codes.some((code) => !order.includes(code))) return ''
+  return order.find((code) => codes.includes(code))!
+}
 
 function metric(metrics: Metrics, key: string): number {
   const value = metrics[key]
@@ -135,6 +157,8 @@ export function step(state: SimState, commands: Command[], dt_s: number): StepRe
   let decisionId = str(state.metrics, 'decision_id')
   let decisionCard = str(state.metrics, 'decision_card')
   let endReason = str(state.metrics, 'end_reason')
+  /** Set by a launch-anyway (a LAUNCH_ANYWAY code): what lost the mission. */
+  let fault = str(state.metrics, 'fault')
   /** Money the cards cost on top of the plan; the summary adds it to the mission cost. */
   let cardCost = metric(state.metrics, 'card_cost_usd')
   let resolve: { decision_id?: unknown; option_id?: unknown } | undefined
@@ -162,6 +186,7 @@ export function step(state: SimState, commands: Command[], dt_s: number): StepRe
 
   // ---- Commands, in order, before anything else happens this step.
   let launchRequested = false
+  let override = false
   const isBattery = batteryCheck(entities)
   for (const command of commands) {
     // Commands come from guests over net/: a malformed one is skipped, never thrown on.
@@ -173,8 +198,10 @@ export function step(state: SimState, commands: Command[], dt_s: number): StepRe
       if (phase !== 'design' || launchRequested) warn(`The design is locked after launch, so "${key}" was not changed.`)
       else if (!applyParam(params, key, payload?.value, isBattery)) warn(`"${key}" was not changed: the value sent is not text, a number or true/false.`)
     } else if (command.type === 'launch') {
-      if (phase === 'design') launchRequested = true
-      else warn('The mission has already launched.')
+      if (phase === 'design') {
+        launchRequested = true
+        override = (command.payload as { override?: unknown } | undefined)?.override === true
+      } else warn('The mission has already launched.')
     } else if (command.type === 'resolve_decision') {
       resolve = command.payload ?? {}
     }
@@ -214,14 +241,17 @@ export function step(state: SimState, commands: Command[], dt_s: number): StepRe
     }
 
     if (launchRequested) {
-      if (!report.ready) {
+      const anyway = override && !report.ready ? launchAnywayFault(report.issues) : ''
+      if (!report.ready && !anyway) {
         const blockers = report.issues.filter((issue) => issue.severity === 'error')
         warn(`Not ready to launch. Fix ${blockers.length === 1 ? 'this problem' : `these ${blockers.length} problems`} first: ${blockers.map((issue) => issue.message).join(' ')}`)
       } else {
         const roll = nextRandom(rng)
         rng = roll.state
         spent = budgets.build_cost_usd + budgets.launch_cost_usd
-        if (randomFailures && roll.value >= budgets.launch_reliability) {
+        const blown = LAUNCH_PHASE.has(anyway)
+        if (blown || (randomFailures && roll.value >= budgets.launch_reliability)) {
+          if (blown) fault = anyway
           outcome = 'launch_failure'
           changePhase('ended')
         } else {
@@ -250,6 +280,7 @@ export function step(state: SimState, commands: Command[], dt_s: number): StepRe
           entities = [body, spacecraft, ...entities.filter((e) => e.id !== bodyId && e.id !== SPACECRAFT_ID)]
           events.push({ type: 'entity_added', tick, t_s: t, payload: { entity: body } })
           events.push({ type: 'entity_added', tick, t_s: t, payload: { entity: spacecraft } })
+          fault = anyway
           outcome = 'in_flight'
           changePhase('cruise')
         }
@@ -326,6 +357,12 @@ export function step(state: SimState, commands: Command[], dt_s: number): StepRe
     let remaining = dt_s > 0 ? dt_s : 0
     // While a card waits for its answer, time stands still (like the design phase).
     while (phase !== 'ended' && !decisionId) {
+      // Launched anyway: with too little power it dies at once; with too small an engine, when the burn into orbit is due.
+      if (fault && t >= (fault === 'delta_v_short' ? cruiseEnd : 0) - EPSILON_S) {
+        outcome = 'spacecraft_failure'
+        changePhase('ended')
+        break
+      }
       if (phase === 'cruise') {
         if (t >= cruiseEnd - EPSILON_S) {
           changePhase('operations')
@@ -485,6 +522,7 @@ export function step(state: SimState, commands: Command[], dt_s: number): StepRe
     data_lost_gb: lost,
     cost_spent_usd: spent,
     ...budgets,
+    ...(fault ? { fault } : {}),
     ...(cardsOn
       ? {
           card_days: cardDays.join(','),
@@ -580,7 +618,10 @@ export function summary(state: SimState): Summary {
   const why: string[] = []
   const points = (value: number) => value.toLocaleString('en-US', { maximumFractionDigits: value < 100 ? 1 : 0 })
   const gb = (value: number) => (value < 1 ? `${Math.round(value * 1000)} MB` : `${value.toLocaleString('en-US', { maximumFractionDigits: 1 })} GB`)
-  if (outcome === 'success') {
+  const fault = LAUNCH_ANYWAY[str(m, 'fault')]
+  if (fault && (outcome === 'launch_failure' || outcome === 'spacecraft_failure')) {
+    why.push(fault)
+  } else if (outcome === 'success') {
     why.push(goal > 0 ? `Mission success: you returned ${points(science)} science points and needed ${points(goal)}.` : `Mission complete: you returned ${points(science)} science points.`)
     if (cutShort) why.push(`The spacecraft failed on day ${Math.floor(day)} of ${Math.round(planned)}, but it had already returned the science it needed.`)
   } else if (outcome === 'science_shortfall') {

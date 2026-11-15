@@ -19,3 +19,7 @@
 .gng-verdict { flex-basis: 100%; margin: 0; }
 @media (prefers-reduced-motion: no-preference) { .gng-console { transition: border-color 0.2s, opacity 0.2s; } }
 .gng-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* "Launch anyway" (LaunchAnyway.tsx): plainly secondary, never the button's look. */
+.gng-anyway { display: flex; flex-wrap: wrap; gap: var(--game-space-2, 8px); align-items: center; margin-top: var(--game-space-3, 12px); }
+.gng-anyway p { flex-basis: 100%; margin: 0; color: var(--game-danger, #c62828); }
+.gng-anyway-start { opacity: 0.85; font-size: 0.85rem; }

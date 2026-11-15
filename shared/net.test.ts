@@ -136,6 +136,17 @@ describe('runtime validators', () => {
     expect(isCommand(hostile)).toBe(false)
   })
 
+  it('lets a launch carry the one optional override, owned by the same role', () => {
+    const anyway: Command = { type: 'launch', payload: { override: true } }
+    expect(isCommand(anyway)).toBe(true)
+    expect(isCommand(JSON.parse(JSON.stringify(anyway)))).toBe(true)
+    expect(isCommand({ type: 'launch', payload: { override: 'yes' } })).toBe(false)
+    expect(isCommand({ type: 'launch', payload: { override: true, now: true } })).toBe(false)
+    expect(isCommand({ type: 'pause', payload: { override: true } })).toBe(false)
+    expect(ownerRole(anyway)).toBe('mission-planning')
+    expect(canSend('science', anyway, ROLES)).toBe(false)
+  })
+
   it('checks a bare Command the same way', () => {
     expect(isCommand(launch)).toBe(true)
     expect(isCommand(set('bus'))).toBe(true)

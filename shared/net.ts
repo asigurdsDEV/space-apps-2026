@@ -130,8 +130,9 @@ function commandOk(v: unknown): boolean {
     case 'pause':
     case 'resume':
     case 'reset':
-    case 'launch':
       return isEmpty(p)
+    case 'launch':
+      return isEmpty(p) || (isObj(p) && Object.keys(p).length === 1 && p.override === true)
     case 'set_speed':
       return isObj(p) && isNum(p.multiplier)
     case 'set_param':

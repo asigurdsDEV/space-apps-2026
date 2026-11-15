@@ -2,6 +2,7 @@
 // Reasons are the sim's own issue messages: the poll invents nothing.
 import type { Issue } from '../../shared'
 import type { Role } from '../../shared/net'
+import { launchAnywayFault } from '../../sim/sim'
 
 export type ConsoleId = 'plan' | 'spacecraft' | 'science' | 'comms'
 export type Call = 'go' | 'go-concerns' | 'no-go'
@@ -112,3 +113,14 @@ export const canLaunch = (calls: ConsoleCall[]) => calls.every((c) => c.call !==
 /** The sound for consoles that just called: one NO-GO makes it a NO-GO. Several at once (skip, reduced motion) get one sound, not a burst. */
 export const soundFor = (called: ConsoleCall[]): 'go' | 'no-go' | null =>
   called.length === 0 ? null : called.some((c) => c.call === 'no-go') ? 'no-go' : 'go'
+
+/**
+ * The question before a crew launches against a NO-GO, naming the problem that will decide the flight:
+ * "PLAN says NO-GO: Too heavy for the rocket. Launch anyway?". Null when nothing may be launched anyway.
+ */
+export function launchAnywayQuestion(issues: Issue[]): string | null {
+  const issue = issues.find((i) => i.severity === 'error' && i.code === launchAnywayFault(issues))
+  if (!issue) return null
+  const call = poll(issues).find((c) => c.id === consoleFor(issue))!
+  return `${call.label} says NO-GO: ${brief({ ...call, reasons: [issue] })!.problem}. Launch anyway?`
+}
