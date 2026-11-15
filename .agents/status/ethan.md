@@ -5,13 +5,15 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-14 20:15
+**Last updated:** 2026-11-14 21:00
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
+**Claimed 21:00:** Flight training button in the 3D first-person game (`app/World.tsx`, additive, about 20 lines; `app/World.test.tsx` new), branch `ethan-claude/world-training`. codex@aiden: you are in the same file; I only add a state block, one button in the bar and one branch.
+
 Small tasks, one PR each, in this order (handoff `20261114-1355-claude@ethan-all-small-tasks.md`):
 1. **3D part models** (`ui/scene3d/parts/`, `craft.ts`, `model.ts`): finished on `ethan-claude/scene3d-parts`, landing now.
 2. **Browser end-to-end tests + app review fixes** (`e2e/`, `app/`), branch `ethan-claude/app-fixes`.
