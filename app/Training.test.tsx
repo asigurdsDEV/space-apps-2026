@@ -40,6 +40,32 @@ describe('flight training', () => {
     expect(html).toContain('Only the host can move the landing spot')
     expect(html).not.toContain('s3d-flight')
     expect(html).not.toContain('Flight control pad')
+    expect(html).not.toContain('Walk Taurus-Littrow')
+  })
+
+  it('keeps a moon guest off the valley until the host has placed it', () => {
+    const moon = {
+      ...state,
+      entities: [...state.entities.filter((entity) => entity.id !== 'earth'), { id: 'moon', kind: 'body', name: 'Moon', props: {} }],
+    }
+    const html = renderToStaticMarkup(
+      <Training
+        state={moon}
+        onClose={() => {}}
+        survey={{
+          host: false,
+          seat: 1,
+          report() {},
+          subscribe(listener) {
+            listener({ lat: 0, lon: 0, placed: false, landed: false }, [])
+            return () => {}
+          },
+        }}
+      />,
+    )
+    expect(html).toContain('Only the host can choose the lunar landing spot')
+    expect(html).not.toContain('Walk Taurus-Littrow')
+    expect(html).not.toContain('Flight control pad')
   })
 
   it('reads the player’s part ids from the design', () => {

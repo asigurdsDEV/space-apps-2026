@@ -60,7 +60,7 @@ export interface SurveyReport {
   lon: number
 }
 
-/** The landing spot the host is flying. `landed` is true once the host is on the ground. */
+/** The landing spot the host chose. `landed` is true while anyone is on the ground, so the spot stays put. */
 export interface SurveySpot {
   lat: number
   lon: number
@@ -107,8 +107,8 @@ function clampSurvey(raw: SurveyReport): SurveyReport {
   lon = ((((lon + 180) % 360) + 360) % 360) - 180
   return {
     down: raw.down === true,
-    x: n(raw.x, 80),
-    z: n(raw.z, 80),
+    x: n(raw.x, 12000),
+    z: n(raw.z, 12000),
     yaw: wrapYaw(raw.yaw),
     lat: n(raw.lat, 90),
     lon,
@@ -541,6 +541,7 @@ export function createHostSession(
         // A guest cannot move the landing spot. Only their body on the patch is kept.
         if (down) surveyAt.set(from, body)
         else surveyAt.delete(from)
+        spot = { ...spot, landed: surveyAt.size > 0 }
         broadcast({
           type: 'survey',
           payload: { down, x: body.x, z: body.z, yaw: body.yaw, lat: spot.lat, lon: spot.lon, placed: spot.placed, player_id: from },
@@ -656,10 +657,13 @@ export function createHostSession(
       if (!surveyChanged(ownSurvey, next)) return
       ownSurvey = next
       ownSurveyAt = now
-      spot = { lat: next.lat, lon: next.lon, placed: true, landed: next.down }
+      const occupiedBefore = surveyAt.size > 0
       if (next.down) surveyAt.set(hostId, next)
       else surveyAt.delete(hostId)
-      broadcast({ type: 'survey', payload: { ...next, placed: true, player_id: hostId } })
+      // The first person down freezes the spot. Later reports can still move a body, not the landing.
+      if (!spot.placed || !occupiedBefore) spot = { lat: next.lat, lon: next.lon, placed: true, landed: surveyAt.size > 0 }
+      else spot = { ...spot, landed: surveyAt.size > 0 }
+      broadcast({ type: 'survey', payload: { ...next, lat: spot.lat, lon: spot.lon, placed: true, player_id: hostId } })
       notifyCrew()
       notifySurvey()
     },

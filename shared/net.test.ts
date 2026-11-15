@@ -128,7 +128,7 @@ describe('runtime validators', () => {
       { type: 'pose', payload: { x: 100, z: 0, yaw: 0 } },
       { type: 'pose', payload: { x: 0, z: 0, yaw: 0, player_id: '' } },
       { type: 'survey', payload: { down: true, x: 0, z: 0, yaw: 0, lat: 0, lon: 0 } },
-      { type: 'survey', payload: { down: true, x: 90, z: 0, yaw: 0, lat: 0, lon: 0, placed: true } },
+      { type: 'survey', payload: { down: true, x: 13000, z: 0, yaw: 0, lat: 0, lon: 0, placed: true } },
       { type: 'survey', payload: { down: true, x: 0, z: 0, yaw: 0, lat: 120, lon: 0, placed: true } },
     ]
     for (const message of bad) expect(isNetMessage(message), JSON.stringify(message)).toBe(false)

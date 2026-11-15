@@ -41,9 +41,10 @@ function yawDelta(from: number, to: number): number {
   return d
 }
 
-/** `float` is for microgravity (the spacecraft); the default is walking under gravity. */
-export function mountCrew(scene: THREE.Scene, options: { float?: boolean } = {}): CrewView {
+/** `float` is for microgravity (the spacecraft); the default is walking under gravity. `ground` lifts each body onto uneven terrain. */
+export function mountCrew(scene: THREE.Scene, options: { float?: boolean; ground?: (x: number, z: number) => number } = {}): CrewView {
   const mode: MoveMode = options.float ? 'float' : 'walk'
+  const ground = options.ground
   const animate = !(typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches)
   const group = new THREE.Group()
   scene.add(group)
@@ -104,7 +105,7 @@ export function mountCrew(scene: THREE.Scene, options: { float?: boolean } = {})
         body.x += dx * k
         body.z += dz * k
         body.yaw += dy * k
-        body.obj.position.set(body.x, 0, body.z)
+        body.obj.position.set(body.x, ground ? ground(body.x, body.z) : 0, body.z)
         body.obj.rotation.y = body.yaw
         if (animate && step > 0) {
           // Speed in the body's own frame: it faces -Z turned by yaw.

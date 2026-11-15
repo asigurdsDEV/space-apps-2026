@@ -6,6 +6,20 @@ import type { Obstacle } from '../fps/model'
 /** Mean lunar radius used by SLDEM2015, metres. */
 export const MOON_RADIUS_M = 1_737_400
 
+/** Apollo 17 landing site and the SLDEM crop around it (`public/terrain/moon/apollo17/meta.json`). */
+export const TAURUS_LITTROW = { lat: 20.1908, lon: 30.77168 }
+export const APOLLO17_BOX: PatchBox = {
+  south: 19.94140625,
+  north: 20.44140625,
+  west: 30.521484375,
+  east: 31.021484375,
+}
+
+/** True when a lat/lon falls inside the walkable lunar valley. */
+export function insidePatch(lat: number, lon: number, box: PatchBox = APOLLO17_BOX): boolean {
+  return lat >= box.south && lat <= box.north && lon >= box.west && lon <= box.east
+}
+
 export interface PatchBox {
   south: number
   north: number

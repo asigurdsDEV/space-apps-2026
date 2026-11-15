@@ -10,6 +10,7 @@ import { PilotInput, type PilotIntent } from '../ui/pilot-input'
 import type { CrewPose } from '../ui/crew/crew'
 import { isEarthScenario } from '../ui/probe/nasa'
 import { FlightView } from '../ui/scene3d'
+import { insidePatch, TAURUS_LITTROW } from '../ui/terrain/grid'
 import type { SurveyBody, SurveyReport, SurveySpot } from './session'
 
 const ProbeExplorer = lazy(() => import('../ui/probe/ProbeExplorer'))
@@ -61,7 +62,9 @@ const EMPTY_SPOT: SurveySpot = { lat: 0, lon: 0, placed: false, landed: false }
 export default function Training({ state, onClose, survey, startOnSurface = false }: TrainingProps) {
   const root = useRef<HTMLElement>(null)
   const where = useRef<HTMLElement>(null)
-  const ground = useRef({ lat: 0, lon: 0 })
+  const earth = isEarthScenario(state.entities)
+  const moon = bodyOf(state) === 'moon'
+  const ground = useRef(moon ? { ...TAURUS_LITTROW } : { lat: 0, lon: 0 })
   const link = useRef(survey)
   link.current = survey
   const [intent, setIntent] = useState(IDLE)
@@ -69,11 +72,12 @@ export default function Training({ state, onClose, survey, startOnSurface = fals
   const [spot, setSpot] = useState<SurveySpot>(EMPTY_SPOT)
   const [crew, setCrew] = useState<readonly CrewPose[]>([])
   const spotNow = useRef(spot)
+  const crewNow = useRef(crew)
   spotNow.current = spot
-  const earth = isEarthScenario(state.entities)
-  const moon = bodyOf(state) === 'moon'
+  crewNow.current = crew
   const guest = !!survey && !survey.host
-  const [onMoon, setOnMoon] = useState(startOnSurface)
+  // The host's hatch opens the valley. A guest waits until that spot exists.
+  const [onMoon, setOnMoon] = useState(startOnSurface && moon && !guest)
 
   const focusPad = () => root.current?.querySelector<HTMLElement>('.pi-pad')?.focus({ preventScroll: true })
   const close = useRef(onClose)
@@ -90,6 +94,25 @@ export default function Training({ state, onClose, survey, startOnSurface = fals
     const here = ground.current
     link.current?.report({ down: false, x: 0, z: 0, yaw: 0, lat: here.lat, lon: here.lon })
   }, [])
+  const locked = () => {
+    const here = spotNow.current
+    return here.placed && (here.landed || crewNow.current.length > 0)
+  }
+  const descendMoon = () => {
+    if (guest) {
+      const here = spotNow.current
+      if (!here.placed) return
+      ground.current = { lat: here.lat, lon: here.lon }
+    } else if (locked()) {
+      const here = spotNow.current
+      ground.current = { lat: here.lat, lon: here.lon }
+    } else if (!insidePatch(ground.current.lat, ground.current.lon)) {
+      ground.current = { ...TAURUS_LITTROW }
+    }
+    setOnMoon(true)
+  }
+  const descendMoonRef = useRef(descendMoon)
+  descendMoonRef.current = descendMoon
   useEffect(() => {
     if (drop || onMoon) return
     root.current?.scrollIntoView()
@@ -99,7 +122,7 @@ export default function Training({ state, onClose, survey, startOnSurface = fals
       if (event.code !== 'KeyQ' || event.repeat) return
       if (moon) {
         event.preventDefault()
-        setOnMoon(true)
+        descendMoonRef.current()
         return
       }
       if (!earth) return
@@ -112,30 +135,47 @@ export default function Training({ state, onClose, survey, startOnSurface = fals
         return
       }
       event.preventDefault()
+      if (locked()) {
+        const here = spotNow.current
+        ground.current = { lat: here.lat, lon: here.lon }
+        setDrop({ lat: here.lat, lon: here.lon })
+        return
+      }
       setDrop({ ...ground.current })
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [drop, earth, guest, moon, onMoon])
-  // Once the host is actually on the ground, guests already down move to that spot.
+  // A guest who already chose the hatch follows once the host has a spot.
   useEffect(() => {
-    if (!guest || !drop || !spot.landed) return
-    if (drop.lat === spot.lat && drop.lon === spot.lon) return
-    setDrop({ lat: spot.lat, lon: spot.lon })
-  }, [guest, drop, spot.landed, spot.lat, spot.lon])
+    if (!startOnSurface || !guest || !moon || onMoon || !spot.placed) return
+    ground.current = { lat: spot.lat, lon: spot.lon }
+    setOnMoon(true)
+  }, [startOnSurface, guest, moon, onMoon, spot.placed, spot.lat, spot.lon])
   // Leave the ship as soon as they drop, before the ground has loaded.
   useEffect(() => {
-    if (!drop) return
+    if (!drop && !onMoon) return
     const seat = Math.min(link.current?.seat ?? 0, 3)
-    link.current?.report({ down: true, x: seat * 1.6, z: 4, yaw: 0, lat: drop.lat, lon: drop.lon })
-  }, [drop])
+    const here = onMoon ? ground.current : drop!
+    link.current?.report({ down: true, x: seat * 1.6, z: 4, yaw: 0, lat: here.lat, lon: here.lon })
+  }, [drop, onMoon])
 
   if (onMoon) {
     return (
       <Suspense fallback={<p className="app-training-loading" aria-busy="true">Loading the ground…</p>}>
         <LunarExplorer
           leaveLabel={startOnSurface ? 'Return to the ship' : 'Back to orbit'}
-          onClose={() => (startOnSurface ? close.current() : setOnMoon(false))}
+          lat={ground.current.lat}
+          lon={ground.current.lon}
+          seat={survey?.seat ?? 0}
+          crew={crew}
+          onMove={(pose) => link.current?.report({ ...pose, down: true, lat: ground.current.lat, lon: ground.current.lon })}
+          onClose={() => {
+            const here = ground.current
+            link.current?.report({ down: false, x: 0, z: 0, yaw: 0, lat: here.lat, lon: here.lon })
+            if (startOnSurface) close.current()
+            else setOnMoon(false)
+          }}
         />
       </Suspense>
     )
@@ -164,12 +204,16 @@ export default function Training({ state, onClose, survey, startOnSurface = fals
             <h2 id="app-training-title">Survey the planet</h2>
             <p className="game-muted">
               {spot.placed
-                ? `The host's landing spot is ${spot.lat.toFixed(2)}°, ${spot.lon.toFixed(2)}°. Press Q to float down there. Only the host can move the spot.`
-                : 'Only the host can move the landing spot. This waits until they fly to one.'}
+                ? moon
+                  ? `The host's landing spot is ${spot.lat.toFixed(2)}°, ${spot.lon.toFixed(2)}°. Press Q to walk there. Only the host can move the spot${spot.landed ? ', and it stays put while someone is on the ground' : ''}.`
+                  : `The host's landing spot is ${spot.lat.toFixed(2)}°, ${spot.lon.toFixed(2)}°. Press Q to float down there. Only the host can move the spot.`
+                : moon
+                  ? 'Only the host can choose the lunar landing spot. This waits until they open Taurus-Littrow.'
+                  : 'Only the host can move the landing spot. This waits until they fly to one.'}
             </p>
           </div>
-          {moon && (
-            <button type="button" className="game-button app-small" onClick={() => setOnMoon(true)}>
+          {moon && spot.placed && (
+            <button type="button" className="game-button app-small" onClick={descendMoon}>
               Walk Taurus-Littrow
             </button>
           )}
@@ -180,6 +224,7 @@ export default function Training({ state, onClose, survey, startOnSurface = fals
       </section>
     )
   }
+  const spotHeld = spot.placed && (spot.landed || crew.length > 0)
 
   return (
     <section ref={root} className="app-training" aria-labelledby="app-training-title">
@@ -188,12 +233,16 @@ export default function Training({ state, onClose, survey, startOnSurface = fals
           <h2 id="app-training-title">Survey the planet</h2>
           <p className="game-muted">
             {survey
-              ? 'You choose the landing spot for the crew. Fly, then press Q. Anyone who follows floats there with you, and their suit leaves the ship.'
+              ? spotHeld
+                ? 'Someone is on the ground, so the landing spot stays where it is. You can still go down to them.'
+                : moon
+                  ? 'You choose the landing spot. Fly over Taurus-Littrow, or open the valley. Once anyone is down, the spot stays put and their suit leaves the ship.'
+                  : 'You choose the landing spot for the crew. Fly, then press Q. Anyone who follows floats there with you, and their suit leaves the ship.'
               : 'Practice only: nothing here changes your mission or your score. Fly to a place, then press Q to float above that ground.'}
           </p>
         </div>
         {moon && (
-          <button type="button" className="game-button app-small" onClick={() => setOnMoon(true)}>
+          <button type="button" className="game-button app-small" onClick={descendMoon}>
             Walk Taurus-Littrow
           </button>
         )}
@@ -211,8 +260,10 @@ export default function Training({ state, onClose, survey, startOnSurface = fals
           done={[]}
           onFocus={() => {}}
           onGround={(lat, lon) => {
-            ground.current = { lat, lon }
             if (where.current) where.current.textContent = `${lat.toFixed(2)}°, ${lon.toFixed(2)}°`
+            if (locked()) return
+            if (moon && !insidePatch(lat, lon)) return
+            ground.current = { lat, lon }
             link.current?.report({ down: false, x: 0, z: 0, yaw: 0, lat, lon })
           }}
         />

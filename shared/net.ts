@@ -36,7 +36,8 @@ export type NetMessage =
   /**
    * Surface survey. `down` means this player is on the ground, so the ship hides them.
    * `lat`/`lon` are the landing spot. Only the host's values are kept; a guest's are ignored.
-   * `x`/`z`/`yaw` are where they float on that patch. It does not change the sim.
+   * `x`/`z`/`yaw` are metres on that patch (up to 12 km, so the lunar valley fits). It does not change the sim.
+   * While anyone is down, the host keeps the landing spot where it was.
    */
   | { type: 'survey'; payload: { down: boolean; x: number; z: number; yaw: number; lat: number; lon: number; placed: boolean; player_id?: string } }
   // host -> everyone
@@ -261,8 +262,8 @@ function messageOk(v: unknown): boolean {
         isNum(p.yaw) &&
         isNum(p.lat) &&
         isNum(p.lon) &&
-        Math.abs(p.x) <= 80 &&
-        Math.abs(p.z) <= 80 &&
+        Math.abs(p.x) <= 12000 &&
+        Math.abs(p.z) <= 12000 &&
         Math.abs(p.yaw) <= Math.PI + 0.01 &&
         Math.abs(p.lat) <= 90 &&
         Math.abs(p.lon) <= 180 &&
