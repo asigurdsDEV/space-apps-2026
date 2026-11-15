@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import type { Issue } from '../../shared'
-import { canLaunch, consoleFor, poll, soundFor } from './model'
+import { canLaunch, consoleFor, hasMore, headline, poll, soundFor } from './model'
 
 const issue = (code: string, severity: Issue['severity'], resource = 'design'): Issue => ({ code, severity, resource, message: code })
 
@@ -42,5 +42,22 @@ describe('GO / NO-GO poll', () => {
     expect(soundFor(call('go-concerns'))).toBe('go') // concerns still say GO
     expect(soundFor(call('no-go'))).toBe('no-go')
     expect(soundFor(calls)).toBe('no-go') // skip: all at once, any NO-GO wins
+  })
+
+  it('shows one short line per console: the first sentence of its worst issue, the rest behind ⓘ', () => {
+    const msg = (code: string, severity: Issue['severity'], message: string): Issue => ({ code, severity, resource: 'power', message })
+    const [, spacecraft] = poll([
+      msg('battery_small', 'warning', 'The battery is small.'),
+      msg('power_negative', 'error', 'The bus needs 450 W, but the array gives 266.6 W. Pick a bigger power source.'),
+    ])
+    expect(headline(spacecraft)).toBe('The bus needs 450 W, but the array gives 266.6 W.')
+    expect(hasMore(spacecraft)).toBe(true)
+    const [plan] = poll([])
+    expect(headline(plan)).toBe('')
+    expect(hasMore(plan)).toBe(false)
+  })
+
+  it('gives every console a short priority (GAME_DESIGN §4.7)', () => {
+    for (const c of poll([])) expect(c.priority.split(' ').length).toBeLessThanOrEqual(5)
   })
 })

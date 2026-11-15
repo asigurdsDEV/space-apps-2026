@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Issue } from '../../shared'
 import { playSound } from '../audio'
-import { canLaunch, poll, soundFor, type Call } from './model'
+import { canLaunch, hasMore, headline, poll, soundFor, type Call } from './model'
 import './gonogo.css'
 
 export interface GoNoGoPollProps {
@@ -47,7 +47,7 @@ export function GoNoGoPoll({ issues, onLaunch, onBack, stepMs = 700 }: GoNoGoPol
     <section className="gng game-panel" aria-labelledby="gng-title">
       <p className="game-eyebrow">Flight director</p>
       <h2 id="gng-title">GO / NO-GO poll</h2>
-      <p className="game-muted">Every console must be GO before launch. Each one checks part of your design.</p>
+      <p className="game-muted">Every console must be GO to launch.</p>
 
       <ol className="gng-consoles">
         {calls.map((c, i) => {
@@ -55,15 +55,23 @@ export function GoNoGoPoll({ issues, onLaunch, onBack, stepMs = 700 }: GoNoGoPol
           return (
             <li key={c.id} className={`gng-console gng-${visible ? c.call : 'waiting'}`} aria-live="polite">
               <span className="gng-name">{c.label}</span>
+              <span className="gng-priority">
+                <span className="gng-sr">Priority: </span>★ {c.priority}
+              </span>
               <strong className="gng-call">{visible ? CALL_TEXT[c.call] : 'Standing by…'}</strong>
-              {visible && c.reasons.length > 0 && (
-                <ul className="gng-reasons">
-                  {c.reasons.map((r) => (
-                    <li key={r.code}>{r.message}</li>
-                  ))}
-                </ul>
+              {visible && c.reasons.length > 0 && <p className="gng-line">{headline(c)}</p>}
+              {visible && hasMore(c) && (
+                <details className="gng-more">
+                  <summary>
+                    ⓘ<span className="gng-sr"> All of {c.label}'s concerns</span>
+                  </summary>
+                  <ul>
+                    {c.reasons.map((r) => (
+                      <li key={r.code}>{r.message}</li>
+                    ))}
+                  </ul>
+                </details>
               )}
-              {visible && c.call === 'go' && <p className="gng-reasons">All checks good.</p>}
             </li>
           )
         })}
@@ -84,10 +92,10 @@ export function GoNoGoPoll({ issues, onLaunch, onBack, stepMs = 700 }: GoNoGoPol
           </button>
           <p className="gng-verdict" role="status">
             {!go
-              ? `Launch is on hold: ${blockers.join(', ')} ${blockers.length > 1 ? 'are' : 'is'} NO-GO.`
+              ? `On hold: ${blockers.join(', ')} ${blockers.length > 1 ? 'are' : 'is'} NO-GO.`
               : calls.every((c) => c.call === 'go')
-                ? 'All consoles GO. You are clear for launch.'
-                : 'No console is NO-GO, so you are clear for launch. Read the concerns first.'}
+                ? 'All GO. Clear for launch.'
+                : 'Clear for launch. Check the concerns.'}
           </p>
         </div>
       )}
