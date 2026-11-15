@@ -745,10 +745,10 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
     for (let row = 0; row < 2; row++) for (let col = 0; col < 10; col++) put(guns, rounded(0.05, 0.016, 0.05, 0.006), (col - 4.5) * 0.07, 0.018, (row - 0.5) * 0.08, to)
   }
   // Your spacecraft, a desk model on a turned stand.
-  const stand = new THREE.Matrix4().setPosition(0.5, 0, DASH.z + 0.12)
-  put(metals, new THREE.CylinderGeometry(0.15, 0.17, 0.09, 48), 0, 0.955, 0, stand)
-  put(darks, new THREE.CylinderGeometry(0.12, 0.12, 0.012, 48), 0, 1.003, 0, stand)
-  put(metals, new THREE.CylinderGeometry(0.007, 0.007, 0.26, 10), 0, 1.13, 0, stand)
+  const stand = onShelf(0.5, 0.105) // its base lies on the sloped shelf; level, the shelf swallowed its back half
+  put(metals, new THREE.CylinderGeometry(0.12, 0.14, 0.05, 48), 0, 0.025, 0, stand)
+  put(darks, new THREE.CylinderGeometry(0.1, 0.1, 0.012, 48), 0, 0.053, 0, stand)
+  put(metals, new THREE.CylinderGeometry(0.007, 0.007, 0.26, 10), 0.5, 1.13, DASH.z + 0.12)
   const craftHolder = new THREE.Group()
   craftHolder.position.set(0.5, 1.28, DASH.z + 0.12)
   scene.add(craftHolder)
@@ -966,7 +966,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
         if (storageScreen) drawStorage(storageScreen, latest.storage)
       }
     }
-    const pulse = alarm ? 0.5 + 0.5 * Math.sin(now / 160) : 0
+    const pulse = alarm ? (options.reducedMotion ? 0.7 : 0.5 + 0.5 * Math.sin(now / 160)) : 0 // reduced motion: a steady red light
     alarmLight.intensity = 14 * pulse
     beaconMat.emissiveIntensity = 4 * pulse
     // The room dims under an alarm; the window lets in more light the higher the Sun stands over the ground below.
