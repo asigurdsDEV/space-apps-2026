@@ -1,7 +1,7 @@
 import { lazy, Suspense, useState } from 'react'
 import type { SimState } from '../../shared'
 import { LaunchView, type LaunchViewProps } from '../scene3d'
-import { interceptOverride, isSandboxScenario, lightningOverride, lightningStruck, openInterception } from './event'
+import { interceptionTriggered, interceptOverride, isSandboxScenario, lightningOverride, lightningStruck } from './event'
 
 const InterceptView = lazy(() => import('./InterceptView').then((m) => ({ default: m.InterceptView })))
 
@@ -19,18 +19,23 @@ export interface LaunchGateProps extends LaunchViewProps {
 export function LaunchGate({ onDesign, ...props }: LaunchGateProps) {
   const scenario = 'scenario_id' in props.state ? String((props.state as Pick<SimState, 'scenario_id'>).scenario_id) : ''
   const sandbox = isSandboxScenario(scenario)
-  const [run] = useState(() => {
-    if (!sandbox || props.failed) return openInterception(1, 0.2, false)
-    const forced = interceptOverride()
-    if (forced !== undefined) return openInterception(1, 0.2, forced)
-    return openInterception((Math.random() * 0x7fffffff) | 0)
+  // One roll per launch: the interception below 20%, the lightning strike in the next 20%. ?intercept= and ?lightning=
+  // force either on (the other is then off) or off (the other still rolls).
+  const [event] = useState((): 'intercept' | 'lightning' | null => {
+    if (!sandbox || props.failed) return null
+    const intercept = interceptOverride()
+    const lightning = lightningOverride()
+    if (intercept) return 'intercept'
+    if (lightning) return 'lightning'
+    const seed = (Math.random() * 0x7fffffff) | 0
+    if (intercept !== false && interceptionTriggered(seed)) return 'intercept'
+    if (lightning !== false && lightningStruck(seed)) return 'lightning'
+    return null
   })
-  // Same roll, the band above the interception's; forced on or off by ?lightning=.
-  const [struck] = useState(() => sandbox && !props.failed && !run.triggered && (lightningOverride() ?? lightningStruck(run.seed)))
-  if (sandbox && (run.triggered || struck) && !props.failed) {
+  if (event && !props.failed) {
     return (
       <Suspense fallback={<p className="s3d-intercept-banner">Loading the launch…</p>}>
-        <InterceptView event={struck ? 'lightning' : 'intercept'} state={props.state} onDone={props.onDone} onDesign={onDesign} reducedMotion={props.reducedMotion} className={props.className} />
+        <InterceptView event={event} state={props.state} onDone={props.onDone} onDesign={onDesign} reducedMotion={props.reducedMotion} className={props.className} />
       </Suspense>
     )
   }
