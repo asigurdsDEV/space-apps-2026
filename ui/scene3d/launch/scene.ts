@@ -14,7 +14,7 @@ import { steadyResolution } from '../steady'
 import type { CraftSpec } from '../model'
 import { makeBirds } from './birds'
 import { altitudeM, downrangeM, pitchRad, vacuum } from './flight'
-import { flameColor, makeCloudDeck, makeEarthBelow, makeGlow, makeGround, makePlume, makePuffs, makeSky, makeSpaceSky, makeStars, smokiness, type Plume } from './fx'
+import { flameColor, flameReach, makeCloudDeck, makeEarthBelow, makeGlow, makeGround, makePlume, makePuffs, makeSky, makeSpaceSky, makeStars, smokiness, type Plume } from './fx'
 import { siteUnit } from './layout'
 import { buildRocket, type Nozzle } from './rocket'
 import { buildCarrier, buildPad } from './site'
@@ -211,13 +211,16 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
   spaceU.uAltitude.value = 150_000
   const envHigh = mirrored(makeSpaceSky(spaceU, EARTH_R), 0x3d6aa8)
 
-  const puffs = makePuffs(360)
-  scene.add(puffs.mesh)
+  // Thin vapour (boil-off, frost, the fog at Max-Q, gas at separation) and the dense clouds of smoke and steam.
+  const puffs = makePuffs(120)
+  const clouds = makePuffs(340, { fire: fireU, unit: siteUnit(H) })
+  scene.add(puffs.mesh, clouds.mesh)
 
   const composer = new EffectComposer(renderer)
   composer.addPass(new RenderPass(scene, camera))
   // The threshold sits above sunlit white paint, so only flames, hot throats and the Sun bloom.
-  composer.addPass(new UnrealBloomPass(new THREE.Vector2(256, 256), 0.45, 0.5, 1.5))
+  const bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), 0.45, 0.5, 1.5)
+  composer.addPass(bloom)
   composer.addPass(new OutputPass())
 
   // ---- Timeline bookkeeping: when each event happens on screen, and when its shot ends.
@@ -390,10 +393,14 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
       flame.distance = 0
       flame.intensity = thrust * 1.1 * (1 - 0.6 * thin) * (space ? 0.35 : 1)
     }
-    fireU.value.set(flame.position.x, flame.position.y, flame.position.z, flame.intensity)
+    // What the ground, the water and the clouds see glowing is the lower part of the flame, down to where it hits the pad.
+    fireU.value.set(flame.position.x, space || air ? flame.position.y : Math.max(flame.position.y - 0.5 * H, 0.1 * H), flame.position.z, flame.intensity)
 
     // ---- Light.
     const sun = space ? SUN_SPACE : SUN_GROUND
+    // A camera stops down for the fire: the sky deepens and the flame keeps its colour.
+    renderer.toneMappingExposure = space ? 1 : 1 - 0.22 * thrust * (1 - thin)
+    bloom.strength = space ? 0.45 : 0.45 - 0.27 * thrust * (1 - thin)
     if (space) {
       sunLight.color.set(0xfff4e6)
       sunLight.intensity = 3
@@ -427,16 +434,22 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
         break
       case 'ignition':
         onAxis(0.12, target)
-        eye.set(0.3 * H + 2 * W, standoff * 0.6 + 0.02 * H, 0.42 * H + 3 * W)
+        // South of the pad, clear of the clouds the flame trench throws out to the east and west.
+        eye.set(0.1 * H + W, standoff * 0.6 + 0.02 * H, 0.5 * H + 3 * W)
         fov = 44
         shake = smooth(0.1, 0.6, p)
         break
-      case 'liftoff':
-        onAxis(0.4, target)
-        eye.set(0.3 * H, standoff + 0.05 * H + 0.3 * altitude, 2.1 * H)
-        fov = 40
+      case 'liftoff': {
+        // The long lens across the inlet again, zooming out as the rocket climbs: the vehicle fills the top of the
+        // frame, a rocket's length of flame hangs under it, and the pad's clouds roll out along the bottom.
+        const low = Math.max(model.root.position.y - 1.1 * H, 0) - 0.04 * H
+        const top = model.root.position.y + 1.12 * H
+        target.set(0, (low + top) / 2, 0)
+        eye.set(0.6 * H, standoff + 0.12 * H, 2.95 * H)
+        fov = (2 * Math.atan((top - low) / 1.38 / eye.distanceTo(target)) * 180) / Math.PI
         shake = 1 - 0.7 * p
         break
+      }
       case 'carry':
         onAxis(0.5, target).y += 3
         eye.copy(target).add(tmp.set(46 - 12 * p, -11, 78))
@@ -590,6 +603,7 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
 
     // ---- Smoke.
     puffs.begin()
+    clouds.begin()
     const R = spec.s1.radius
     if (!space) {
       if (pad && met < 0.5) {
@@ -625,17 +639,18 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
       }
       const ignition = shotStart.get('ignition')
       if (pad && ignition !== undefined) {
-        // Pad smoke: the flame trench throws it out both sides, then it billows and drifts.
+        // Pad clouds: the flame trench throws steam and smoke out of both ends. It rolls out along the ground,
+        // piles up as high as half the rocket by the time the tower is cleared, and hangs there.
         const s = t - ignition
-        for (let i = 0; i < 90; i++) {
-          const age = s - 0.25 - (i / 90) * 5.5
+        for (let i = 0; i < 220; i++) {
+          const age = s - 0.2 - hash(i + 0.4) * 4.2
           if (age <= 0) continue
           const dir = i % 2 === 0 ? 1 : -1
-          const reach = pad.mount * 0.8 + H * (0.5 + 1.6 * hash(i)) * (1 - Math.exp(-age * 0.7))
-          const spread = (hash(i + 0.5) - 0.5) * H * 0.9 * (1 - Math.exp(-age * 0.5))
-          const lift = H * (0.03 + 0.1 * hash(i + 0.25) * age * 0.5)
-          const size = H * (0.16 + 0.22 * Math.pow(age, 0.6)) * (0.7 + 0.6 * hash(i + 0.75))
-          puffs.add(dir * reach, lift + size * 0.25, spread, size, 0.75 * Math.min(age * 3, 1) * clamp01(1 - age / 14), Math.exp(-age * 2.5) * 0.5, hash(i + 0.1))
+          const out = 1 - Math.exp(-age * 0.8)
+          const size = H * (0.08 + 0.16 * Math.pow(age, 0.55)) * (0.6 + 0.8 * hash(i + 0.75))
+          // Some of it piles up in towers: puffs come in groups of eight that share how high they climb.
+          const lift = H * 0.45 * hash(i + 0.25) ** 2 * (0.4 + 0.9 * hash((i >> 3) + 0.6)) * (1 - Math.exp(-age * 0.45))
+          clouds.add(dir * (pad.mount * 0.9 + H * (0.15 + 1.5 * hash(i)) * out), size * 0.28 + lift, (hash(i + 0.5) - 0.5) * H * (0.2 + 0.9 * (1 - Math.exp(-age * 0.35))), size, Math.min(age * 4, 1) * clamp01((14 - age) / 5), Math.exp(-age * 2.5) * 0.5, hash(i + 0.1))
         }
       }
       if (thrust > 0 || id === 'failure' || met > 0) {
@@ -646,7 +661,8 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
         const trail = Math.max(smokiness(n1.propellant), nb && sB <= 0 ? smokiness(nb.propellant) : 0)
         const head = id === 'failure' ? Math.min(met, missionTime(timeline, stage.start + 0.16 * (stage.end - stage.start))) : met
         if (head > from) {
-          const s0 = pathS(head) - H * 0.55
+          // The smoke starts where the flame ends: on the pad that is under the ground, so the flame stands clear.
+          const s0 = pathS(head) - H * 0.55 * Math.max(0.85 * flameReach(n1.propellant), nb && sB <= 0 ? 0.95 * flameReach(nb.propellant) : 0)
           const first = Math.floor(s0 / gap)
           const floor = pathS(from)
           for (let j = 0; j < 70; j++) {
@@ -658,7 +674,7 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
             const size = W * (3 + 4.5 * Math.sqrt(age)) * (0.8 + 0.4 * hash(first - j))
             p3.x += (hash(first - j + 0.3) - 0.5) * size * 0.5
             p3.z += (hash(first - j + 0.6) - 0.5) * size * 0.5
-            puffs.add(p3.x, p3.y, p3.z, size, trail * Math.min(1, j / 3 + 0.2) * (1 - j / 70) * lerp(1, 0.55, thin), Math.exp(-age * 5) * 0.6, hash(first - j + 0.9))
+            clouds.add(p3.x, p3.y, p3.z, size, trail * Math.min(1, j / 3 + 0.2) * (1 - j / 70) * lerp(1, 0.55, thin), Math.exp(-age * 5) * 0.6, hash(first - j + 0.9))
           }
         }
       }
@@ -670,7 +686,7 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
           const b = hash(i + 0.5) * 2 - 1
           const r = H * (0.25 + 1.3 * hash(i + 0.2)) * (1 - Math.exp(-s * 1.2))
           const flat = Math.sqrt(1 - b * b)
-          puffs.add(p3.x + Math.cos(a) * flat * r, p3.y + H * 0.4 + b * r - s * H * 0.12, p3.z + Math.sin(a) * flat * r, H * (0.3 + 0.35 * Math.sqrt(s)), 0.8 * Math.min(s * 5, 1), Math.exp(-s * 1.6), hash(i + 0.7))
+          clouds.add(p3.x + Math.cos(a) * flat * r, p3.y + H * 0.4 + b * r - s * H * 0.12, p3.z + Math.sin(a) * flat * r, H * (0.3 + 0.35 * Math.sqrt(s)), 0.8 * Math.min(s * 5, 1), Math.exp(-s * 1.6), hash(i + 0.7))
         }
       }
     } else {
@@ -691,6 +707,7 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
     }
     sunView.copy(sun).transformDirection(camera.matrixWorldInverse)
     puffs.commit(sunView, 1, space)
+    clouds.commit(sunView, 1, space, camera.matrixWorldInverse)
 
     composer.render()
     options.onFrame?.(t)

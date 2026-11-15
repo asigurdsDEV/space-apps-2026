@@ -34,15 +34,21 @@ uniform float uSpace;
 uniform float uTime;
 vec3 skyColor(vec3 d) {
   float toSun = max(dot(normalize(d.xz + 1e-5), normalize(uSun.xz)), 0.0);
-  vec3 zenith = mix(lin(vec3(0.16, 0.27, 0.52)), vec3(0.0005, 0.001, 0.004), uSpace);
-  vec3 mid = mix(lin(vec3(0.45, 0.60, 0.84)), lin(vec3(0.10, 0.20, 0.50)), uSpace);
-  vec3 horizon = mix(lin(vec3(0.80, 0.80, 0.84)), lin(vec3(1.0, 0.60, 0.30)), pow(toSun, 3.0));
+  // A hazy morning: soft blue overhead, paling to a milky blue-grey at the horizon, a little cream toward the Sun.
+  vec3 zenith = mix(lin(vec3(0.24, 0.38, 0.64)), vec3(0.0005, 0.001, 0.004), uSpace);
+  vec3 mid = mix(lin(vec3(0.49, 0.62, 0.80)), lin(vec3(0.10, 0.20, 0.50)), uSpace);
+  vec3 horizon = mix(lin(vec3(0.73, 0.78, 0.83)), lin(vec3(0.97, 0.78, 0.58)), pow(toSun, 3.0) * 0.7);
   float h = max(d.y, 0.0);
-  vec3 col = mix(horizon, mid, smoothstep(0.0, mix(0.26, 0.10, uSpace), h));
-  col = mix(col, zenith, smoothstep(0.08, mix(0.8, 0.3, uSpace), h));
+  vec3 col = mix(horizon, mid, smoothstep(0.0, mix(0.32, 0.10, uSpace), h));
+  col = mix(col, zenith, smoothstep(0.10, mix(0.85, 0.3, uSpace), h));
   float s = max(dot(d, uSun), 0.0);
   col += vec3(1.0, 0.5, 0.2) * (pow(s, 12.0) * 0.35 + pow(s, 90.0) * 0.9);
   return col;
+}
+// How much of a view that many meters long is haze: thick near the ground on a still morning, thin from high up.
+float hazeOver(float dist) {
+  float k = mix(mix(0.00016, 0.00004, smoothstep(30.0, 600.0, cameraPosition.y)), 0.000012, smoothstep(2000.0, 20000.0, cameraPosition.y));
+  return 1.0 - exp(-dist * k);
 }
 `
 
@@ -158,47 +164,59 @@ void main() {
   vec3 toFlame = uFlame.xyz - vWorld;
   col += col * vec3(2.4, 1.1, 0.35) * uFlame.w / (1.0 + dot(toFlame, toFlame) / (0.03 * U * U));
 
-  // ---- Water. Trains of waves, each with its own heading, length and speed, bent a little by noise so the crests
-  // are not ruler-straight. The short ones fade with distance, where they would only shimmer.
+  // ---- Water on a still morning: mostly a mirror of the sky. Trains of low ripples, each with its own heading,
+  // length and speed, bent a little by noise so the crests are not ruler-straight. The breeze ruffles it in long
+  // patches and leaves glassy slicks between them. The short ripples fade with distance, where they would only shimmer.
   float inlet = step(1.0, p.y / U);
   float jit = mid * 14.0 + local * 3.0 + 5.0 * noise2(p * 0.045);
   float f1 = 1.0 - smoothstep(30.0, 220.0, dist);
   float f2 = 1.0 - smoothstep(100.0, 800.0, dist);
   float f3 = (1.0 - smoothstep(400.0, 3500.0, dist)) * (1.0 - 0.6 * inlet);
   float f4 = (1.0 - smoothstep(2500.0, 14000.0, dist)) * (1.0 - 0.8 * inlet);
+  // The current: the inlet drains east to the sea, the sea sets toward the beach.
+  vec2 drift = mix(vec2(-0.3, 0.5), vec2(1.0, 0.08), inlet) * uTime;
+  float ruffle = smoothstep(0.35, 0.7, fbm2((p - drift * 0.6) * vec2(0.5, 2.2) / U + 11.0));
+  // The sheltered inlet is far calmer than the open sea.
+  float calm = mix(0.7, 0.3, inlet) * (0.35 + 0.65 * ruffle);
   // The long trains come in groups, one strong where the other is weak, so the two never weave an even lattice.
   float ph4 = dot(p, vec2(-0.78, 0.62)) * 0.2 - uTime * 1.4 + jit * 0.6;
   vec2 slope = vec2(0.94, 0.34) * 0.03 * f1 * cos(dot(p, vec2(0.94, 0.34)) * 3.7 - uTime * 6.0 + jit * 2.3)
     + vec2(0.57, -0.82) * 0.03 * f2 * cos(dot(p, vec2(0.57, -0.82)) * 1.46 - uTime * 3.8 + jit * 1.7)
     + vec2(-0.3, 0.954) * 0.045 * f3 * (0.4 + 1.2 * local) * cos(dot(p, vec2(-0.3, 0.954)) * 0.57 - uTime * 2.4 + jit)
     + vec2(-0.78, 0.62) * 0.04 * f4 * (1.6 - 1.2 * local) * cos(ph4);
-  // Wind ripples carried along by the current: the inlet drains east to the sea, the sea sets toward the beach.
-  vec2 drift = mix(vec2(-0.3, 0.5), vec2(1.0, 0.08), inlet) * uTime;
+  // Wind ripples carried along by the current.
   vec2 w1 = p * 0.9 - drift * 1.2;
   vec2 w2 = p * 0.21 - drift * 0.5;
   slope += (vec2(noise2(w1), noise2(w1 + 40.0)) - 0.5) * 0.08 * f1 + (vec2(noise2(w2), noise2(w2 + 17.0)) - 0.5) * 0.06 * f2;
+  slope *= calm;
   vec3 n = normalize(vec3(slope.x, 1.0, slope.y));
   // Far off, the many small waves the shader no longer draws still tip the mirror up: the sea reflects higher,
   // bluer sky than the horizon behind it, and shows more of its own colour.
   float distant = smoothstep(150.0, 4000.0, dist);
   vec3 refl = reflect(-v, n);
-  refl.y = abs(refl.y) + 0.1 + 0.25 * distant;
+  refl.y = abs(refl.y) + 0.03 + 0.07 * ruffle + 0.25 * distant;
   refl = normalize(refl);
   float fresnel = (0.03 + 0.97 * pow(1.0 - max(dot(n, v), 0.0), 5.0)) * mix(1.0, 0.6, distant);
-  // Sand shows through at the edge, then turquoise shallows, deep blue a few hundred meters out.
+  // Sand shows through at the edge, then green-grey shallows, slate blue a few hundred meters out.
   // The marsh ponds lie inland of the waterline, where shore is negative: they get a depth of their own.
   float depth = max(shore, pond * 80.0);
-  vec3 deep = mix(lin(vec3(0.16, 0.42, 0.45)), lin(vec3(0.05, 0.19, 0.34)), smoothstep(0.0, 6.0 * U + 300.0, depth));
+  vec3 deep = mix(lin(vec3(0.20, 0.38, 0.40)), lin(vec3(0.07, 0.18, 0.29)), smoothstep(0.0, 6.0 * U + 300.0, depth));
   vec3 body = mix(sandCol * 0.6, deep, smoothstep(0.0, 0.12 * U + 2.0, depth)) * light;
   // Wave faces turned to the Sun are brighter. From the air the mirror is weak, so this is what shows the swell.
   body *= 1.0 + 2.5 * dot(slope, uSun.xz);
-  // Slow streaks on the inlet's surface show which way it flows.
-  body *= 1.0 + 0.3 * inlet * (noise2(vec2(p.x * 1.5 - uTime * 2.5, p.y * 12.0) / U) - 0.5);
-  vec3 water = mix(body, skyColor(refl), fresnel);
-  // Sun glitter, and the fire's reflection broken up by the ripples.
+  vec3 mirror = skyColor(refl);
+  // The bank ahead stands a little above the water, so close under it the mirror shows the dark scrub, not the sky.
+  vec2 ahead = normalize(refl.xz + 1e-5);
+  float base = coast(p, U);
+  float closing = (base - coast(p + ahead * 0.05 * U, U)) / (0.05 * U);
+  float bank = step(0.05, closing) * (1.0 - smoothstep(0.5, 1.6, refl.y / max(length(refl.xz), 1e-3) * base / max(closing, 0.05) / (0.05 * U)));
+  mirror = mix(mirror, lin(vec3(0.20, 0.23, 0.16)) * light, 0.75 * bank * step(0.0, base));
+  vec3 water = mix(body, mirror, fresnel);
+  // Sun glitter, and the fire's reflection: a tall streak under the flame, broken up by the ripples.
   water += vec3(1.0, 0.6, 0.3) * (pow(max(dot(refl, uSun), 0.0), 220.0) * 6.0 + pow(max(dot(refl, uSun), 0.0), 24.0) * 0.25);
   float along = dot(toFlame, refl);
   vec3 off = toFlame - refl * along;
+  off.y *= 0.35;
   water += vec3(2.4, 1.0, 0.3) * uFlame.w * exp(-dot(off, off) / (0.05 * U * U + 0.004 * along * along)) * step(0.0, along);
   // Foam: a thin line lapping the banks, and rows of surf rolling up the sea beach.
   float lap = (1.0 - smoothstep(0.0, 0.035 * U + 0.6 + (0.02 * U + 0.4) * sin(uTime * 1.3 + local * 40.0), shore));
@@ -209,9 +227,8 @@ void main() {
   // Only along the coast: the ponds are still, and inland of the waterline, where shore is below zero.
   water = mix(water, vec3(0.92) * light, clamp(foam, 0.0, 1.0) * step(-0.02 * U - 1.0, shore));
   col = mix(col, water, sea);
-  // Haze toward the horizon; thinner when looking down from high up.
-  float haze = 1.0 - exp(-dist * mix(0.00004, 0.000012, smoothstep(2000.0, 20000.0, cameraPosition.y)));
-  col = mix(col, skyColor(vec3(-v.x, 0.0, -v.z)), haze);
+  // Haze toward the horizon: the far shore and the sea's edge melt into the sky.
+  col = mix(col, skyColor(vec3(-v.x, 0.0, -v.z)), hazeOver(dist));
   gl_FragColor = vec4(col, 1.0);
 }
 `,
@@ -252,8 +269,7 @@ void main() {
   vec3 v = toCam / dist;
   vec3 light = vec3(1.0, 0.72, 0.5) * 1.5 * max(dot(normalize(vN), uSun), 0.0) + lin(vec3(0.42, 0.52, 0.72)) * (0.55 + 0.2 * vN.y);
   vec3 col = lin(vColor) * light;
-  float haze = 1.0 - exp(-dist * mix(0.00004, 0.000012, smoothstep(2000.0, 20000.0, cameraPosition.y)));
-  gl_FragColor = vec4(mix(col, skyColor(vec3(-v.x, 0.0, -v.z)), haze), 1.0);
+  gl_FragColor = vec4(mix(col, skyColor(vec3(-v.x, 0.0, -v.z)), hazeOver(dist)), 1.0);
 }
 `,
   })
@@ -304,15 +320,20 @@ void main() {
 
 // `body`: how solid the flame looks. Kerosene and solid motors burn sooty and opaque; hydrogen and methane flames are
 // thin enough to see the shock diamonds through. `smoke`: how much of a trail is left behind.
-const PLUME_COLORS: Record<Propellant, { core: [number, number, number]; edge: [number, number, number]; diamonds: number; length: number; body: number; smoke: number }> = {
-  kerolox: { core: [3.4, 2.5, 1.3], edge: [1.9, 0.6, 0.1], diamonds: 0.7, length: 1, body: 0.9, smoke: 0.6 },
-  methalox: { core: [2.2, 2.0, 3.0], edge: [0.9, 0.5, 1.5], diamonds: 1, length: 0.9, body: 0.5, smoke: 0.35 },
-  hydrolox: { core: [1.5, 1.9, 2.8], edge: [0.3, 0.45, 1.0], diamonds: 1, length: 0.7, body: 0.35, smoke: 0.22 },
-  solid: { core: [4.6, 3.6, 2.2], edge: [2.8, 1.3, 0.35], diamonds: 0, length: 1.3, body: 1.2, smoke: 1 },
+// In thick air only: `tail` is the colour the flame cools to, `flare` how many nozzle widths it spreads by its end,
+// `reach` how much longer than in vacuum the air keeps it lit.
+type Look = { core: [number, number, number]; edge: [number, number, number]; tail: [number, number, number]; diamonds: number; length: number; body: number; smoke: number; flare: number; reach: number }
+const PLUME_COLORS: Record<Propellant, Look> = {
+  kerolox: { core: [3.4, 2.5, 1.3], edge: [1.9, 0.6, 0.1], tail: [1.3, 0.3, 0.05], diamonds: 0.7, length: 1, body: 0.9, smoke: 0.6, flare: 1.5, reach: 1.3 },
+  methalox: { core: [2.2, 2.0, 3.0], edge: [0.9, 0.5, 1.5], tail: [1.5, 0.55, 0.4], diamonds: 1, length: 0.9, body: 0.5, smoke: 0.35, flare: 1.3, reach: 1.2 },
+  hydrolox: { core: [1.5, 1.9, 2.8], edge: [0.3, 0.45, 1.0], tail: [0.9, 0.4, 0.15], diamonds: 1, length: 0.7, body: 0.35, smoke: 0.22, flare: 1.1, reach: 1.2 },
+  solid: { core: [4.6, 3.6, 2.2], edge: [2.8, 1.3, 0.35], tail: [1.8, 0.6, 0.12], diamonds: 0, length: 1.3, body: 1.2, smoke: 1, flare: 10, reach: 1.1 },
 }
 
 export const smokiness = (p: Propellant) => PLUME_COLORS[p].smoke
 export const flameColor = (p: Propellant) => PLUME_COLORS[p].core
+/** How long the flame is in thick air, as a multiple of the length makePlume was given. */
+export const flameReach = (p: Propellant) => PLUME_COLORS[p].length * PLUME_COLORS[p].reach
 
 export interface Plume {
   mesh: THREE.Mesh
@@ -339,6 +360,9 @@ export function makePlume(nozzle: Nozzle, length: number, seed = 0): Plume {
     uSeed: { value: seed },
     uCore: { value: new THREE.Vector3(...look.core) },
     uEdge: { value: new THREE.Vector3(...look.edge) },
+    uTail: { value: new THREE.Vector3(...look.tail) },
+    uFlare: { value: look.flare },
+    uReach: { value: look.reach },
     uDiamonds: { value: look.diamonds },
     uBody: { value: look.body },
     uSolid: { value: nozzle.propellant === 'solid' ? 1 : 0 },
@@ -349,9 +373,14 @@ export function makePlume(nozzle: Nozzle, length: number, seed = 0): Plume {
       uniforms,
       vertexShader: /* glsl */ `
 uniform float uVacuum;
+uniform float uTime;
+uniform float uSeed;
+uniform float uFlare;
+uniform float uReach;
 varying float vAlong;
 varying float vRadii;
 varying float vLayer;
+varying float vAround;
 varying vec3 vN;
 varying vec3 vView;
 void main() {
@@ -365,10 +394,16 @@ void main() {
   float root = sqrt(vAlong);
   // Sea level: the air squeezes the flame into a long narrow spindle. Thin air: it fans out the moment it leaves the bell.
   float fan = uVacuum * step(vLayer, 0.5) * 0.9;
-  float outer = 1.0 + (1.0 - uVacuum) * (0.9 * root - 1.2 * vAlong * vAlong) + fan * vRadii;
-  float core = mix(0.62 + 0.25 * root - 0.7 * vAlong, 0.6 + 0.2 * vRadii, uVacuum);
+  float air = 1.0 - uVacuum;
+  // Thick air: the flame leaves as wide as the engines, flares out and stays lit far downstream; its edge boils.
+  vAround = position.x * 1.7 + position.z * 1.1;
+  float boil = 1.0 + 0.09 * vAlong * sin(vAlong * 37.0 - uTime * 21.0 + vAround * 2.0 + uSeed * 5.0);
+  float wide = uFlare * pow(vAlong, 0.6);
+  float outer = 1.0 + air * wide * boil + fan * vRadii;
+  float core = mix((0.55 + 0.35 * wide) * (1.0 - 0.45 * vAlong), 0.6 + 0.2 * vRadii, uVacuum);
   float jet = 1.0 + 0.25 * root - 1.2 * vAlong * vAlong;
   p.xz *= max(vLayer < 0.5 ? outer : vLayer < 1.5 ? core : jet, 0.05);
+  p.y *= 1.0 + air * (uReach - 1.0) * step(vLayer, 1.5);
   vec4 mv = modelViewMatrix * instanceMatrix * vec4(p, 1.0);
   // The shell's normal leans upstream by the angle it opens at.
   vN = normalize(normalMatrix * vec3(normal.x, fan + 0.02, normal.z));
@@ -383,12 +418,14 @@ uniform float uTime;
 uniform float uSeed;
 uniform vec3 uCore;
 uniform vec3 uEdge;
+uniform vec3 uTail;
 uniform float uDiamonds;
 uniform float uBody;
 uniform float uSolid;
 varying float vAlong;
 varying float vRadii;
 varying float vLayer;
+varying float vAround;
 varying vec3 vN;
 varying vec3 vView;
 ${NOISE2}
@@ -396,6 +433,8 @@ void main() {
   // A shell seen face-on is the thick middle of the flame; seen edge-on it is the thin rim, so it fades out: no outline.
   float facing = abs(dot(normalize(vN), normalize(vView)));
   float air = 1.0 - uVacuum;
+  // Never below zero: at the very end of the tube the interpolated value can overshoot, and pow() of a negative is not a number.
+  float left = max(1.0 - vAlong, 0.0);
   // Solid motors burn rough: their flame boils. Liquid engines only shimmer, and in vacuum the fan is steady.
   float flick = mix(0.8 + 0.4 * noise2(vec2(vAlong * 7.0 - uTime * 11.0, uSeed * 13.0 + facing * 2.0)),
                     0.5 + 1.0 * noise2(vec2(vAlong * 16.0 - uTime * 17.0, uSeed * 13.0 + facing * 5.0)), uSolid);
@@ -404,21 +443,24 @@ void main() {
   vec3 col;
   float a;
   if (vLayer < 0.5) {
-    // Outer flame: white-yellow where it leaves the engines, orange further down, dull red where it turns to smoke.
-    float hot = pow(facing, 2.0) * (1.0 - vAlong);
-    col = mix(mix(uEdge, uEdge * vec3(0.55, 0.3, 0.2), smoothstep(0.35, 1.0, vAlong)), uCore, smoothstep(0.3, 0.95, hot * 1.25));
-    a = pow(facing, 1.4) * pow(1.0 - vAlong, 1.3) * uBody;
+    // Outer flame: thick with glowing soot, so it is bright right across with a soft rim: white-yellow in the middle,
+    // the edge colour outside, cooling to the tail colour where it breaks up into ragged tongues.
+    float tongues = noise2(vec2(vAlong * 9.0 - uTime * 13.0, vAround * 2.0 + uSeed * 13.0));
+    float fine = noise2(vec2(vAlong * 38.0 - uTime * 29.0, vAround * 7.0 + uSeed * 7.0));
+    float hot = facing * (1.0 - 0.75 * vAlong);
+    col = mix(mix(uEdge, uTail, smoothstep(0.3, 0.9, vAlong)) * (0.7 + 0.3 * facing), uCore, smoothstep(0.4, 0.9, hot));
+    a = smoothstep(0.0, 0.25, facing) * (1.0 - smoothstep(0.65, 1.0, vAlong + (tongues - 0.5) * 0.5)) * uBody * (0.7 + 0.5 * tongues) * (0.85 + 0.3 * fine);
     // Vacuum: a wide bluish-white fan, brightest in a small zone behind the bell, then thinning out fast as it spreads.
     vec3 fan = mix(vec3(0.3, 0.46, 1.0), vec3(0.55, 0.7, 1.0), facing) + 0.04 * uCore;
     // Even across the cone and soft only at its outline: a peak where a wall faces the eye reads as a torch beam.
-    float thin = smoothstep(0.0, 0.5, facing) * (0.012 + 0.12 / (1.0 + 0.1 * vRadii * vRadii)) * (0.45 + 0.5 * uBody) * pow(1.0 - vAlong, 1.5) * smoothstep(0.0, 3.0, vRadii);
+    float thin = smoothstep(0.0, 0.5, facing) * (0.012 + 0.12 / (1.0 + 0.1 * vRadii * vRadii)) * (0.45 + 0.5 * uBody) * pow(left, 1.5) * smoothstep(0.0, 3.0, vRadii);
     col = mix(col, fan, uVacuum);
     // The flame dims faster than it widens: the same light spread over a far bigger cone.
     a = a * air * air + thin * uVacuum;
   } else if (vLayer < 1.5) {
     // Core: too bright to have a colour at the nozzle.
     col = mix(uCore, vec3(3.6, 3.3, 2.8), (1.0 - vAlong) * air * (1.0 - 0.5 * uSolid) * 0.7);
-    a = pow(facing, 2.4) * pow(1.0 - vAlong, 1.1) * (0.5 + 0.8 * uBody) * (1.0 - 0.4 * uDiamonds);
+    a = pow(facing, 1.6) * pow(left, 0.8) * (0.4 + 0.6 * uBody) * (1.0 - 0.4 * uDiamonds);
     // Vacuum: a short blue-white knot at the exit of the bell.
     col = mix(col, vec3(0.9, 1.3, 2.4) + 0.15 * uCore, uVacuum);
     a = a * air * air + pow(facing, 2.0) * exp(-vRadii * 2.0) * 0.5 * uVacuum;
@@ -426,15 +468,20 @@ void main() {
     // One engine's jet. Shock diamonds: bright knots where the air squeezes it, closer and dimmer down the jet, gone in thin air.
     float knots = pow(max(sin(vAlong * 44.0 * (1.0 + 0.35 * vAlong) - 0.5), 0.0), 4.0) * (1.0 - smoothstep(0.08, 0.7, vAlong)) * uDiamonds * air;
     col = mix(uEdge, uCore, 0.85 - 0.5 * vAlong) + vec3(1.2, 1.1, 0.9) * knots;
-    a = pow(facing, 2.0) * pow(1.0 - vAlong, 1.4) * (0.3 + 0.3 * uBody + 4.5 * knots) * air;
+    a = pow(facing, 2.0) * pow(left, 1.4) * (0.3 + 0.3 * uBody + 4.5 * knots) * air;
   }
   a *= start * flick * uPower;
   // A grain finer than one colour step, so the long faint gradients do not show bands.
   a *= 0.97 + 0.06 * hash2(gl_FragCoord.xy + uSeed);
-  gl_FragColor = vec4(col * a, 1.0);
+  // In thick air the sooty flame also hides what is behind it, so its orange edge keeps its colour against a bright
+  // sky and the layers settle at the flame's own brightness instead of adding up. In vacuum it only adds light.
+  float solid = min(a, 1.0) * air * step(vLayer, 1.5);
+  gl_FragColor = vec4(col * mix(a, min(a, 1.0), air), solid);
 }
 `,
-      blending: THREE.AdditiveBlending,
+      blending: THREE.CustomBlending,
+      blendSrc: THREE.OneFactor,
+      blendDst: THREE.OneMinusSrcAlphaFactor,
       transparent: true,
       depthWrite: false,
       side: THREE.DoubleSide,
@@ -491,49 +538,22 @@ export interface Puffs {
   /** Start a frame, add puffs, then commit. Positions are in the mesh's parent frame; `scale` converts sizes to world units. */
   begin(): void
   add(x: number, y: number, z: number, size: number, alpha: number, heat: number, seed: number): void
-  commit(sunView: THREE.Vector3, scale: number, inSpace: boolean): void
+  /** `view`: the camera's world-to-view matrix. Billows need it, to draw the far ones first. */
+  commit(sunView: THREE.Vector3, scale: number, inSpace: boolean, view?: THREE.Matrix4): void
 }
 
-/** Camera-facing smoke puffs, drawn in one instanced call. Stateless: the scene refills them every frame. */
-export function makePuffs(capacity: number): Puffs {
-  const base = new THREE.PlaneGeometry(1, 1)
-  const geo = new THREE.InstancedBufferGeometry()
-  geo.index = base.index
-  geo.setAttribute('position', base.getAttribute('position'))
-  geo.setAttribute('uv', base.getAttribute('uv'))
-  const pos = new THREE.InstancedBufferAttribute(new Float32Array(capacity * 3), 3)
-  const data = new THREE.InstancedBufferAttribute(new Float32Array(capacity * 4), 4)
-  pos.setUsage(THREE.DynamicDrawUsage)
-  data.setUsage(THREE.DynamicDrawUsage)
-  geo.setAttribute('iPos', pos)
-  geo.setAttribute('iData', data)
-  const uniforms = {
-    uSunView: { value: new THREE.Vector3(0, 1, 0) },
-    uScale: { value: 1 },
-    uLit: { value: new THREE.Vector3() },
-    uShade: { value: new THREE.Vector3() },
+/** Fills `order` with 0 to n-1 so that `key` rises along it. Sorts in place and allocates nothing: it runs every frame. */
+export function sortByKey(order: Uint16Array, key: Float32Array, n: number): void {
+  for (let i = 0; i < n; i++) {
+    const k = key[i]!
+    let j = i - 1
+    for (; j >= 0 && key[order[j]!]! > k; j--) order[j + 1] = order[j]!
+    order[j + 1] = i
   }
-  const mesh = new THREE.Mesh(
-    geo,
-    new THREE.ShaderMaterial({
-      uniforms,
-      vertexShader: /* glsl */ `
-attribute vec3 iPos;
-attribute vec4 iData;
-uniform float uScale;
-varying vec2 vUv;
-varying vec3 vData;
-void main() {
-  vUv = uv * 2.0 - 1.0;
-  vData = iData.yzw;
-  float a = iData.w * 6.283;
-  vec2 corner = mat2(cos(a), -sin(a), sin(a), cos(a)) * position.xy;
-  vec4 mv = modelViewMatrix * vec4(iPos, 1.0);
-  mv.xy += corner * iData.x * uScale;
-  gl_Position = projectionMatrix * mv;
 }
-`,
-      fragmentShader: /* glsl */ `
+
+// Thin vapour: a soft-edged wisp, lit as one round ball.
+const WISP = /* glsl */ `
 uniform vec3 uSunView;
 uniform vec3 uLit;
 uniform vec3 uShade;
@@ -552,32 +572,163 @@ void main() {
   col += vec3(3.0, 1.1, 0.25) * vData.y * (1.0 - r * 0.6);
   gl_FragColor = vec4(col, a * vData.x);
 }
+`
+
+// Dense smoke and steam: every puff is a solid ball covered in round lumps, like a cauliflower, with a crisp outline.
+// It is shaded as that shape: bright where a lump faces the Sun, grey in the creases and underneath, orange toward the fire.
+const BILLOW = /* glsl */ `
+uniform vec3 uSunView;
+uniform vec3 uLit;
+uniform vec3 uShade;
+uniform vec4 uFire;
+uniform float uUnit;
+varying vec2 vUv;
+varying vec3 vData;
+varying vec3 vAt;
+varying float vHalf;
+${NOISE2}
+// One layer of lumps: xy points away from the nearest lump's middle, z is 1 on its crown and falls to 0 around it.
+// The lumps are blended (a smooth "highest one wins"), so the creases between them are rounded, not cut with a knife.
+vec3 lumps(vec2 p) {
+  vec2 i = floor(p);
+  vec2 f = fract(p);
+  vec3 sum = vec3(0.0);
+  for (int y = -1; y <= 1; y++) {
+    for (int x = -1; x <= 1; x++) {
+      vec2 g = vec2(float(x), float(y));
+      vec2 o = f - g - 0.15 - 0.7 * vec2(hash2(i + g), hash2(i + g + 57.0));
+      sum += vec3(o, 1.0) * exp(-12.0 * dot(o, o));
+    }
+  }
+  return vec3(sum.xy / sum.z, clamp(1.0 + log(sum.z) / 12.0, 0.0, 1.0));
+}
+void main() {
+  if (dot(vUv, vUv) > 1.0) discard;
+  vec2 q = vUv + vData.z * vec2(31.0, 17.0);
+  // The ball is pulled out of round, a different way for every puff.
+  float r2 = dot(vUv, vUv) * (0.75 + 0.9 * noise2(q * 1.1));
+  vec3 big = lumps(q * 1.6);
+  vec3 small = lumps(q * 4.1);
+  // The finest lumps only show on a puff that fills much of the screen: skip the work on the rest.
+  float close = smoothstep(0.012, 0.005, fwidth(vUv.x));
+  vec3 fine = close > 0.0 ? lumps(q * 9.7) * close : vec3(0.0);
+  // Height toward the eye, in puff radii: a few big round lobes on a ball that stops short of the quad's edge, with
+  // small lumps all over them. Where it reaches zero is the puff's outline.
+  float ball = sqrt(max(0.42 - r2, 0.0)) / 0.65;
+  float h = 0.35 * ball + 0.9 * big.z + 0.2 * small.z + 0.06 * fine.z - 0.6;
+  float a = smoothstep(0.0, 0.07, h) * (1.0 - smoothstep(0.8, 1.0, dot(vUv, vUv))) * vData.x;
+  if (a < 0.004) discard;
+  vec3 n = normalize(vec3(0.3 * vUv / max(0.42 * ball, 0.15) + 2.0 * big.xy + 1.3 * small.xy + 0.8 * fine.xy, 1.0));
+  vec3 up = viewMatrix[1].xyz;
+  float sun = clamp(dot(n, uSunView) * 0.75 + 0.25, 0.0, 1.0);
+  // The look of self-shadow: the creases between lobes are dark, and so is the foot of the whole cloud bank.
+  float height = dot(up, vAt) + cameraPosition.y;
+  float open = (0.5 + 0.5 * smoothstep(0.0, 0.5, big.z)) * (0.55 + 0.45 * smoothstep(0.0, 0.35 * uUnit, height)) * (0.8 + 0.2 * smoothstep(-0.6, 0.3, dot(vUv, up.xy)));
+  vec3 col = (uLit * sun * sun + uShade * (0.6 + 0.4 * dot(n, up))) * open;
+  vec3 toFire = (viewMatrix * vec4(uFire.xyz, 1.0)).xyz - vAt - vec3(0.0, 0.0, h * vHalf);
+  float d2 = dot(toFire, toFire);
+  col += vec3(6.0, 2.6, 0.7) * uFire.w * (0.15 + 0.85 * max(dot(n, toFire) * inversesqrt(d2), 0.0)) / (1.0 + d2 / (0.1 * uUnit * uUnit));
+  col += vec3(3.0, 1.1, 0.25) * vData.y * (1.0 - r2 * 0.6);
+  gl_FragColor = vec4(col, a);
+}
+`
+
+/**
+ * Camera-facing smoke puffs, drawn in one instanced call. Stateless: the scene refills them every frame.
+ * Without `billow` they are thin wisps of vapour. With it they are dense, solid-looking clouds, drawn far ones first:
+ * `fire` is where the engines' flame is (xyz) and how bright (w), `unit` the size of the site its glow is measured in.
+ */
+export function makePuffs(capacity: number, billow?: { fire: { value: THREE.Vector4 }; unit: number }): Puffs {
+  const base = new THREE.PlaneGeometry(1, 1)
+  const geo = new THREE.InstancedBufferGeometry()
+  geo.index = base.index
+  geo.setAttribute('position', base.getAttribute('position'))
+  geo.setAttribute('uv', base.getAttribute('uv'))
+  const pos = new THREE.InstancedBufferAttribute(new Float32Array(capacity * 3), 3)
+  const data = new THREE.InstancedBufferAttribute(new Float32Array(capacity * 4), 4)
+  pos.setUsage(THREE.DynamicDrawUsage)
+  data.setUsage(THREE.DynamicDrawUsage)
+  geo.setAttribute('iPos', pos)
+  geo.setAttribute('iData', data)
+  // Puffs are collected here as they are added; commit() copies them to the buffers in drawing order.
+  const spot = new Float32Array(capacity * 3)
+  const info = new Float32Array(capacity * 4)
+  const depth = new Float32Array(capacity)
+  const order = new Uint16Array(capacity)
+  const uniforms = {
+    uSunView: { value: new THREE.Vector3(0, 1, 0) },
+    uScale: { value: 1 },
+    uLit: { value: new THREE.Vector3() },
+    uShade: { value: new THREE.Vector3() },
+    uFire: billow?.fire ?? { value: new THREE.Vector4() },
+    uUnit: { value: billow?.unit ?? 1 },
+  }
+  const mesh = new THREE.Mesh(
+    geo,
+    new THREE.ShaderMaterial({
+      uniforms,
+      vertexShader: /* glsl */ `
+attribute vec3 iPos;
+attribute vec4 iData;
+uniform float uScale;
+varying vec2 vUv;
+varying vec3 vData;
+varying vec3 vAt;
+varying float vHalf;
+void main() {
+  vUv = uv * 2.0 - 1.0;
+  vData = iData.yzw;
+  vHalf = iData.x * uScale * 0.5;
+  // Wisps are turned at random; billows stay upright, because their shading knows which way is up.
+  float a = iData.w * 6.283 * ${billow ? '0.0' : '1.0'};
+  vec2 corner = mat2(cos(a), -sin(a), sin(a), cos(a)) * position.xy;
+  vec4 mv = modelViewMatrix * vec4(iPos, 1.0);
+  mv.xy += corner * iData.x * uScale;
+  vAt = mv.xyz;
+  gl_Position = projectionMatrix * mv;
+}
 `,
+      fragmentShader: billow ? BILLOW : WISP,
       transparent: true,
       depthWrite: false,
     }),
   )
   mesh.frustumCulled = false
-  mesh.renderOrder = 5
+  mesh.renderOrder = billow ? 4 : 5
   let n = 0
   return {
     mesh,
     begin() { n = 0 },
     add(x, y, z, size, alpha, heat, seed) {
       if (n >= capacity || alpha <= 0.004) return
-      pos.setXYZ(n, x, y, z)
-      data.setXYZW(n, size, alpha, heat, seed)
+      spot[n * 3] = x
+      spot[n * 3 + 1] = y
+      spot[n * 3 + 2] = z
+      info[n * 4] = size
+      info[n * 4 + 1] = alpha
+      info[n * 4 + 2] = heat
+      info[n * 4 + 3] = seed
       n++
     },
-    commit(sunView, scale, inSpace) {
+    commit(sunView, scale, inSpace, view) {
+      const e = view?.elements
+      for (let i = 0; i < n; i++) depth[i] = e ? e[2]! * spot[i * 3]! + e[6]! * spot[i * 3 + 1]! + e[10]! * spot[i * 3 + 2]! : i
+      sortByKey(order, depth, n)
+      for (let i = 0; i < n; i++) {
+        const from = order[i]!
+        pos.setXYZ(i, spot[from * 3]!, spot[from * 3 + 1]!, spot[from * 3 + 2]!)
+        data.setXYZW(i, info[from * 4]!, info[from * 4 + 1]!, info[from * 4 + 2]!, info[from * 4 + 3]!)
+      }
       geo.instanceCount = n
       pos.needsUpdate = true
       data.needsUpdate = true
       mesh.visible = n > 0
       uniforms.uSunView.value.copy(sunView)
       uniforms.uScale.value = scale
-      // Dawn on the ground: peach where the Sun hits, blue-grey in shade. In space: hard white and near-black.
+      // In space: hard white and near-black. On the ground, vapour is peach where the dawn Sun hits it and blue-grey
+      // in shade; dense cloud is white to cream in the Sun, with the sky's grey-blue filling its shadows.
       if (inSpace) { uniforms.uLit.value.set(1.1, 1.05, 1.0); uniforms.uShade.value.set(0.06, 0.07, 0.1) }
+      else if (billow) { uniforms.uLit.value.set(1.35, 1.28, 1.14); uniforms.uShade.value.set(0.26, 0.25, 0.27) }
       else { uniforms.uLit.value.set(1.0, 0.72, 0.56); uniforms.uShade.value.set(0.2, 0.23, 0.32) }
     },
   }
