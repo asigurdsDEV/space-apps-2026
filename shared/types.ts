@@ -182,7 +182,7 @@ export interface Decision {
   card_id: string
   title: string
   body: string
-  /** The co-op role that answers it (a `Role` from shared/net.ts). If nobody holds it, anyone may answer. */
+  /** The co-op role that answers it (a `Role` from shared/net.ts). Whoever holds it answers (decision 013: roles nobody picked are shared out). */
   console: string
   options: DecisionOption[]
   story?: { mission: string; year: number | string; text: string; source_url?: string }

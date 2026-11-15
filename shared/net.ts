@@ -81,19 +81,41 @@ export function ownerRole(command: Command, decisionConsole?: Role | null): Role
 }
 
 /**
- * May a player with `role` send `command`? Yes if they hold the owning role, or if
- * nobody in the room holds it (so 1 to 3 players can still fly a whole mission).
- * `claimedRoles` is every role currently taken in the roster.
+ * Who holds each role (decision 013). A player holds the role they picked; each role nobody
+ * picked goes to whoever holds the fewest so far, roster order breaking ties. So 1 player holds
+ * all 4, 2 players 2 each, 3 players 2/1/1. Empty roster: nobody holds anything.
+ */
+export function roleHolders<P extends Pick<Player, 'player_id' | 'role'>>(players: readonly P[]): Partial<Record<Role, P>> {
+  const holders: Partial<Record<Role, P>> = {}
+  for (const player of players) if (player.role && !holders[player.role]) holders[player.role] = player
+  const count = (p: P) => ROLES.filter((role) => holders[role] === p).length
+  for (const role of ROLES) {
+    if (holders[role] || players.length === 0) continue
+    holders[role] = players.reduce((best, p) => (count(p) < count(best) ? p : best))
+  }
+  return holders
+}
+
+/** Every role `playerId` holds, in ROLES order. */
+export const rolesOf = (players: readonly Pick<Player, 'player_id' | 'role'>[], playerId: PlayerId | undefined): Role[] => {
+  const holders = roleHolders(players)
+  return ROLES.filter((role) => holders[role] !== undefined && holders[role]?.player_id === playerId)
+}
+
+/**
+ * May `playerId` send `command`? Yes if they hold its owning role (see roleHolders), or if
+ * nobody does (an empty roster, e.g. solo screens with no players).
  */
 export function canSend(
-  role: Role | null,
+  players: readonly Pick<Player, 'player_id' | 'role'>[],
+  playerId: PlayerId | undefined,
   command: Command,
-  claimedRoles: readonly (Role | null)[],
   decisionConsole?: Role | null,
 ): boolean {
   const owner = ownerRole(command, decisionConsole)
   if (owner === null) return true
-  return role === owner || !claimedRoles.includes(owner)
+  const holder = roleHolders(players)[owner]
+  return !holder || holder.player_id === playerId
 }
 
 // ------------------------------------------------------------ Runtime validators

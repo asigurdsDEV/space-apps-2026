@@ -229,10 +229,11 @@ describe('anomaly cards in co-op', () => {
     expect(isCommand({ type: 'resolve_decision', payload: {} })).toBe(false)
   })
 
-  it("belongs to the card's console, or to anyone when nobody holds it", () => {
-    expect(canSend('spacecraft', answer, ['spacecraft', 'science'], 'spacecraft')).toBe(true)
-    expect(canSend('science', answer, ['spacecraft', 'science'], 'spacecraft')).toBe(false)
-    expect(canSend('science', answer, ['science'], 'spacecraft')).toBe(true)
-    expect(canSend(null, answer, [], null)).toBe(true)
+  it("belongs to whoever holds the card's console", () => {
+    const two = [{ player_id: 'a', role: 'spacecraft' as const }, { player_id: 'b', role: 'science' as const }]
+    expect(canSend(two, 'a', answer, 'spacecraft')).toBe(true)
+    expect(canSend(two, 'b', answer, 'spacecraft')).toBe(false)
+    expect(canSend([{ player_id: 'b', role: 'science' as const }], 'b', answer, 'spacecraft')).toBe(true)
+    expect(canSend([], undefined, answer, null)).toBe(true)
   })
 })
