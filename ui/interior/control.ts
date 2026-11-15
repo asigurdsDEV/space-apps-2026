@@ -16,7 +16,7 @@ import { atmosphereShader, cloudShader, planetShader, toScreen } from '../scene3
 import { sunDirection } from '../scene3d/sun'
 import type { CraftSpec } from '../scene3d/model'
 import type { Decision } from '../../shared'
-import { choiceSpots, choiceTitleAt, DASH, dialAngle, HATCH, moduleFor, ROOM, SPEEDS, START, WINDOW, type Gauge, type Module } from './layout'
+import { choiceSpots, choiceTitleAt, DASH, dialAngle, HATCH, moduleFor, ROOM, section, SPEEDS, STANDOFF, START, WINDOW, type Gauge, type Module } from './layout'
 import { mountCrew, type CrewPose } from '../crew/crew'
 
 export interface CabinScreens {
@@ -68,152 +68,23 @@ function painted(w: number, h: number, draw: (ctx: CanvasRenderingContext2D) => 
 /** The same numbers every time, so every player sees the same room. */
 const seeded = (seed: number) => () => (seed = (seed * 16807) % 2147483647) / 2147483647
 
-/**
- * A station module's wall: two equipment racks side by side, 2 m wide and 3.2 m tall at 320 px a metre.
- * Lockers, a round port cover, a display with switches, stowage pads. No lettering.
- */
-function rackMap() {
-  const PX = 320
-  const map = painted(640, 1024, (g) => {
-    const rnd = seeded(11)
-    const Y = (metres: number) => (3.2 - metres) * PX
-    g.fillStyle = '#d6d9de'
-    g.fillRect(0, 0, 640, 1024)
-    /** A panel front with a fastener in each corner: x, y (its bottom edge) and size in metres. */
-    const panel = (x: number, y: number, w: number, h: number) => {
-      const shade = 222 + Math.round(rnd() * 10)
-      g.fillStyle = `rgb(${shade}, ${shade + 2}, ${shade + 5})`
-      g.fillRect(x * PX + 3, Y(y + h) + 3, w * PX - 6, h * PX - 6)
-      g.strokeStyle = '#99a0aa'
-      g.lineWidth = 2
-      g.strokeRect(x * PX + 3, Y(y + h) + 3, w * PX - 6, h * PX - 6)
-      g.fillStyle = '#6f7682'
-      for (const [fx, fy] of [[0.035, 0.035], [w - 0.035, 0.035], [0.035, h - 0.035], [w - 0.035, h - 0.035]] as const) {
-        g.beginPath()
-        g.arc((x + fx) * PX, Y(y + fy), 2.6, 0, Math.PI * 2)
-        g.fill()
-      }
-    }
-    /** A round cover with a ring of bolts. */
-    const disc = (x: number, y: number, r: number, bolts: number) => {
-      g.fillStyle = '#eceef1'
-      g.strokeStyle = '#8b929c'
-      g.lineWidth = 3
-      g.beginPath()
-      g.arc(x * PX, Y(y), r * PX, 0, Math.PI * 2)
-      g.fill()
-      g.stroke()
-      g.lineWidth = 2
-      g.beginPath()
-      g.arc(x * PX, Y(y), r * PX * 0.56, 0, Math.PI * 2)
-      g.stroke()
-      g.fillStyle = '#39404b'
-      g.beginPath()
-      g.arc(x * PX, Y(y), r * PX * 0.17, 0, Math.PI * 2)
-      g.fill()
-      g.fillStyle = '#6f7682'
-      for (let i = 0; i < bolts; i++) {
-        const a = (i / bolts) * Math.PI * 2
-        g.beginPath()
-        g.arc(x * PX + Math.cos(a) * r * PX * 0.84, Y(y) + Math.sin(a) * r * PX * 0.84, 2.4, 0, Math.PI * 2)
-        g.fill()
-      }
-    }
-    /** A dark pull handle, or a coloured tag. */
-    const bar = (x: number, y: number, w: number, colour = '#39404b', thick = 8) => {
-      g.fillStyle = colour
-      g.fillRect(x * PX, Y(y) - thick / 2, w * PX, thick)
-    }
-    for (const x of [0, 1]) {
-      panel(x + 0.02, 0.02, 0.96, 0.42)
-      bar(x + 0.35, 0.3, 0.3)
-      panel(x + 0.02, 0.46, 0.47, 0.58)
-      panel(x + 0.51, 0.46, 0.47, 0.58)
-      bar(x + 0.15, 0.92, 0.2)
-      bar(x + 0.65, 0.92, 0.2)
-      bar(x + 0.08, 0.6, 0.11, '#3d6fc4', 11)
-      bar(x + 0.57, 0.6, 0.11, '#3d6fc4', 11)
-      panel(x + 0.02, 1.06, 0.96, 0.72)
-      if (x === 0) {
-        disc(x + 0.5, 1.42, 0.27, 12)
-        for (let row = 0; row < 2; row++) for (let col = 0; col < 3; col++) panel(x + 0.02 + col * 0.32, 1.8 + row * 0.33, 0.32, 0.33)
-        bar(x + 0.1, 1.9, 0.09, '#3d6fc4', 10)
-        bar(x + 0.74, 2.24, 0.09, '#d08a2c', 10)
-        panel(x + 0.02, 2.48, 0.96, 0.7)
-        disc(x + 0.27, 2.83, 0.2, 8)
-        disc(x + 0.73, 2.83, 0.2, 8)
-      } else {
-        g.fillStyle = '#1b222e'
-        g.fillRect((x + 0.1) * PX, Y(1.68), 0.34 * PX, 0.22 * PX)
-        g.fillStyle = '#39c79a'
-        g.fillRect((x + 0.13) * PX, Y(1.64), 0.1 * PX, 5)
-        g.fillRect((x + 0.13) * PX, Y(1.6), 0.18 * PX, 5)
-        g.fillStyle = '#4a515c'
-        for (let i = 0; i < 6; i++) g.fillRect((x + 0.53 + i * 0.065) * PX, Y(1.66), 0.035 * PX, 0.075 * PX)
-        g.strokeStyle = '#6f7682'
-        g.lineWidth = 3
-        for (let i = 0; i < 3; i++) {
-          g.beginPath()
-          g.arc((x + 0.59 + i * 0.12) * PX, Y(1.42), 0.03 * PX, 0, Math.PI * 2)
-          g.stroke()
-        }
-        g.strokeStyle = '#8b929c'
-        g.lineWidth = 3
-        for (let i = 0; i < 7; i++) {
-          g.beginPath()
-          g.moveTo((x + 0.1) * PX, Y(1.14 + i * 0.03))
-          g.lineTo((x + 0.44) * PX, Y(1.14 + i * 0.03))
-          g.stroke()
-        }
-        panel(x + 0.02, 1.8, 0.96, 0.33)
-        bar(x + 0.38, 1.97, 0.24)
-        panel(x + 0.02, 2.13, 0.96, 0.33)
-        bar(x + 0.38, 2.3, 0.24)
-        // Soft stowage pads strapped to the top of the rack.
-        for (let i = 0; i < 2; i++) {
-          g.fillStyle = '#e7e2d6'
-          g.strokeStyle = '#bdb7a8'
-          g.lineWidth = 2
-          g.beginPath()
-          if (g.roundRect) g.roundRect((x + 0.04 + i * 0.47) * PX, Y(3.16), 0.45 * PX, 0.66 * PX, 16)
-          else g.rect((x + 0.04 + i * 0.47) * PX, Y(3.16), 0.45 * PX, 0.66 * PX)
-          g.fill()
-          g.stroke()
-          bar(x + 0.04 + i * 0.47, 2.83, 0.45, '#8f8a7c', 5)
-        }
-      }
-    }
-    // Shade baked in where the racks meet the deck.
-    const foot = g.createLinearGradient(0, Y(0), 0, Y(0.9))
-    foot.addColorStop(0, 'rgba(8,10,16,0.6)')
-    foot.addColorStop(1, 'rgba(8,10,16,0)')
-    g.fillStyle = foot
-    g.fillRect(0, Y(0.9), 640, 0.9 * PX)
-  })
-  map.wrapS = THREE.RepeatWrapping
-  return map
-}
-
-/** One square metre of hull lining (ceiling, and the wall round the window): a panel with a soft pad on it. */
+/** One square metre of hull lining (ceiling, stand-offs, end walls): a quiet off-white panel, a seam round it, a fastener in each corner. */
 function hullMap() {
   const map = painted(256, 256, (g) => {
+    const rnd = seeded(7)
     g.fillStyle = '#e2e4e8'
     g.fillRect(0, 0, 256, 256)
-    g.strokeStyle = '#a4aab3'
-    g.lineWidth = 3
-    g.strokeRect(1.5, 1.5, 253, 253)
-    g.fillStyle = '#ecebe6'
-    g.strokeStyle = '#c4c1b8'
+    for (let i = 0; i < 120; i++) {
+      g.fillStyle = rnd() < 0.5 ? 'rgba(0,0,0,0.018)' : 'rgba(255,255,255,0.05)'
+      g.fillRect(rnd() * 256, rnd() * 256, 30 + rnd() * 90, 1 + rnd() * 3)
+    }
+    g.strokeStyle = 'rgba(120,128,140,0.5)'
     g.lineWidth = 2
-    g.beginPath()
-    if (g.roundRect) g.roundRect(34, 34, 188, 188, 24)
-    else g.rect(34, 34, 188, 188)
-    g.fill()
-    g.stroke()
-    g.fillStyle = '#7a818c'
-    for (const [x, y] of [[14, 14], [242, 14], [14, 242], [242, 242]] as const) {
+    g.strokeRect(1, 1, 254, 254)
+    g.fillStyle = '#8b929c'
+    for (const [x, y] of [[12, 12], [244, 12], [12, 244], [244, 244]] as const) {
       g.beginPath()
-      g.arc(x, y, 3.2, 0, Math.PI * 2)
+      g.arc(x, y, 2.6, 0, Math.PI * 2)
       g.fill()
     }
   })
@@ -221,29 +92,37 @@ function hullMap() {
   return map
 }
 
-/** One square metre of deck: a grey panel with seams, a recessed pull ring and a few scuffs. */
+/** Two metres square of deck: plates a metre wide and two long, laid staggered along the module, with a tie-down ring in each and a few scuffs. */
 function floorMap() {
-  const map = painted(256, 256, (g) => {
+  const map = painted(512, 512, (g) => {
     const rnd = seeded(5)
     g.fillStyle = '#c3c7cd'
-    g.fillRect(0, 0, 256, 256)
-    g.strokeStyle = 'rgba(70, 76, 88, 0.16)'
+    g.fillRect(0, 0, 512, 512)
+    g.strokeStyle = 'rgba(70, 76, 88, 0.14)'
     g.lineWidth = 2
-    for (let i = 0; i < 14; i++) {
-      const x = rnd() * 256, y = rnd() * 256
+    for (let i = 0; i < 44; i++) {
+      const x = rnd() * 512, y = rnd() * 512
       g.beginPath()
       g.moveTo(x, y)
-      g.lineTo(x + (rnd() - 0.5) * 70, y + (rnd() - 0.5) * 24)
+      g.lineTo(x + (rnd() - 0.5) * 24, y + (rnd() - 0.5) * 80)
       g.stroke()
     }
-    g.strokeStyle = '#868d98'
-    g.lineWidth = 4
-    g.strokeRect(2, 2, 252, 252)
-    g.strokeStyle = '#7a818c'
-    g.lineWidth = 3
-    g.beginPath()
-    g.arc(214, 42, 11, 0, Math.PI * 2)
-    g.stroke()
+    /** A seam: a dark line with a thin bright edge beside it. */
+    const seam = (x: number, y: number, w: number, h: number) => {
+      g.fillStyle = 'rgba(52, 58, 70, 0.6)'
+      g.fillRect(x - 1.5, y - 1.5, w + 3, h + 3)
+      g.fillStyle = 'rgba(255, 255, 255, 0.22)'
+      g.fillRect(x + 1.5, y + 1.5, w ? w : 1, h ? h : 1)
+    }
+    for (const col of [0, 1]) {
+      seam(col * 256, 0, 0, 512)
+      seam(col * 256, col * 256, 256, 0)
+      g.strokeStyle = 'rgba(90, 97, 110, 0.75)'
+      g.lineWidth = 3
+      g.beginPath()
+      g.arc(col * 256 + 128, ((col * 256 + 256) % 512) + 40, 9, 0, Math.PI * 2)
+      g.stroke()
+    }
   })
   map.wrapS = map.wrapT = THREE.RepeatWrapping
   return map
@@ -437,7 +316,50 @@ const put = (list: Pieces, geo: THREE.BufferGeometry, x = 0, y = 0, z = 0, to?: 
   const g = (geo.index ? geo.toNonIndexed() : geo).translate(x, y, z)
   list.push(to ? g.applyMatrix4(to) : g)
 }
-const rounded = (w: number, h: number, d: number, r: number) => new RoundedBoxGeometry(w, h, d, 2, r)
+const rounded = (w: number, h: number, d: number, r: number, segments = 2) => new RoundedBoxGeometry(w, h, d, segments, r)
+const v3 = (p: readonly number[]) => new THREE.Vector3(p[0], p[1], p[2])
+
+/** Paint a piece one colour, so pieces of many colours share one mesh. */
+function tint<G extends THREE.BufferGeometry>(geo: G, hex: number) {
+  const c = new THREE.Color(hex)
+  const colours = new Float32Array(geo.getAttribute('position').count * 3)
+  for (let i = 0; i < colours.length; i += 3) {
+    colours[i] = c.r
+    colours[i + 1] = c.g
+    colours[i + 2] = c.b
+  }
+  return geo.setAttribute('color', new THREE.BufferAttribute(colours, 3))
+}
+
+/** The direction a cross-section path faces at point i: to the left of the way it runs. */
+function leftOf(path: readonly THREE.Vector2[], i: number) {
+  const a = path[Math.max(0, i - 1)]!
+  const b = path[Math.min(path.length - 1, i + 1)]!
+  return new THREE.Vector2(a.y - b.y, b.x - a.x).normalize()
+}
+
+/** A lining swept along z through a cross-section path, smooth round its curves and facing left of the path. Its picture repeats about every metre. */
+function loft(path: readonly THREE.Vector2[], za: number, zb: number) {
+  const pos: number[] = []
+  const nor: number[] = []
+  const uv: number[] = []
+  const runs = [0]
+  for (let i = 1; i < path.length; i++) runs.push(runs[i - 1]! + path[i]!.distanceTo(path[i - 1]!))
+  const whole = Math.round(runs.at(-1)!) / runs.at(-1)! // a whole number of panels round the section, so both sides match
+  for (let i = 0; i < path.length - 1; i++) {
+    for (const [k, z] of [[i, za], [i + 1, zb], [i + 1, za], [i, za], [i, zb], [i + 1, zb]] as const) {
+      const n = leftOf(path, k)
+      pos.push(path[k]!.x, path[k]!.y, z)
+      nor.push(n.x, n.y, 0)
+      uv.push(runs[k]! * whole, z)
+    }
+  }
+  const geo = new THREE.BufferGeometry()
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3))
+  geo.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3))
+  geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2))
+  return geo
+}
 const smooth = THREE.MathUtils.smoothstep
 
 export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start' | 'yaw'> & { onPose?: (pose: { x: number; z: number; yaw: number }) => void }): Cabin {
@@ -498,38 +420,38 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   const dark = keep(new THREE.MeshStandardMaterial({ color: 0x14161a, roughness: 0.5, metalness: 0.35 }))
   const shadeMat = keep(new THREE.MeshBasicMaterial({ map: blob, color: 0x000000, transparent: true, opacity: 0.62, depthWrite: false, toneMapped: false }))
   const glowMat = keep(new THREE.MeshBasicMaterial({ map: blob, color: 0x8fa9cc, transparent: true, opacity: 0.2, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }))
-  const rackMat = new THREE.MeshStandardMaterial({ map: rackMap(), color: 0xa4a9b2, roughness: 0.66, metalness: 0.06 })
+  // Rack fronts, bags and ducts: one painted mesh, each piece its own colour.
+  const skinMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.62, metalness: 0.06 })
   const wallMat = new THREE.MeshStandardMaterial({ map: hullMap(), color: 0xaab0ba, roughness: 0.74, metalness: 0.04 })
+  const FACING = Math.PI / 2
   const fitted = (list: Pieces, mat: THREE.Material, into: THREE.Object3D = scene) => {
     const mesh = new THREE.Mesh(mergeGeometries(list), mat)
     into.add(mesh)
     return mesh
   }
 
-  // ---- The module: equipment racks down both sides and across the back, like a space-station lab.
-  const t = 0.1
-  const SQUARE: [number, number] = [1, 1]
-  const RACKS: [number, number] = [2, y1]
-  const racks: Pieces = []
+  // ---- The module: a barrel of ring frames like a space-station lab. Racks stand off the walls in relief, and the
+  // stand-off corners between wall and ceiling carry the lights and the cable trays.
+  const half = section().map(([x, y]) => new THREE.Vector2(x, y))
+  const SECTION = [...half, ...half.slice(0, -1).reverse().map((p) => new THREE.Vector2(-p.x, p.y))] // right deck, over the crown, to the left deck
+  const CROWN = half.at(-1)!.y
   const hull: Pieces = []
-  // cursor@kaipo's survey hatch: the gold plate in the floor (E on it goes down to the ground on Earth missions).
-  const probeHatch = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.04, 0.9), new THREE.MeshStandardMaterial({ color: 0xc9a227, emissive: 0x6a4e10, emissiveIntensity: 0.35, roughness: 0.45 }))
-  probeHatch.position.set(HATCH[0], 0.02, HATCH[2])
+  // cursor@kaipo's survey hatch: a round gold hatch in the floor (E on it goes down to the ground on Earth missions).
+  const gold: Pieces = []
+  put(gold, new THREE.TorusGeometry(0.45, 0.035, 10, 48).rotateX(FACING), 0, 0.02, 0)
+  put(gold, new THREE.LatheGeometry([[0.43, 0.02], [0.41, 0.034], [0.37, 0.034], [0.34, 0.022], [0.17, 0.022], [0.14, 0.036], [0, 0.036]].map(([r, y]) => new THREE.Vector2(r, y)), 48))
+  put(gold, new THREE.TorusGeometry(0.06, 0.011, 8, 24).rotateX(FACING), 0, 0.042, 0)
+  put(gold, rounded(0.22, 0.05, 0.08, 0.02), 0, 0.025, -0.48)
+  for (let i = 0; i < 6; i++) put(gold, rounded(0.08, 0.036, 0.05, 0.012).rotateY(-(i + 0.5) * (Math.PI / 3) + FACING), Math.cos((i + 0.5) * (Math.PI / 3)) * 0.47, 0.03, Math.sin((i + 0.5) * (Math.PI / 3)) * 0.47)
+  const probeHatch = new THREE.Mesh(mergeGeometries(gold), new THREE.MeshStandardMaterial({ color: 0xc9a227, emissive: 0x6a4e10, emissiveIntensity: 0.35, roughness: 0.38, metalness: 0.6 }))
+  probeHatch.position.set(HATCH[0], 0, HATCH[2])
   scene.add(probeHatch)
-  const wl = WINDOW.x - WINDOW.w / 2
-  const wr = WINDOW.x + WINDOW.w / 2
-  const wb = WINDOW.y - WINDOW.h / 2
-  const wt = WINDOW.y + WINDOW.h / 2
-  fitted([tiledBox(W, t, D, ...SQUARE).translate(0, -t / 2, 0)], new THREE.MeshStandardMaterial({ map: floorMap(), color: 0x7e848e, roughness: 0.6, metalness: 0.15 }))
-  put(hull, tiledBox(W, t, D, ...SQUARE), 0, y1 + t / 2, 0)
-  put(racks, tiledBox(t, y1, D, ...RACKS), x0 - t / 2, y1 / 2, 0)
-  put(racks, tiledBox(t, y1, D, ...RACKS), x1 + t / 2, y1 / 2, 0)
-  put(racks, tiledBox(W, y1, t, ...RACKS), 0, y1 / 2, z1 + t / 2)
-  put(hull, tiledBox(wl - x0, y1, t, ...SQUARE), (x0 + wl) / 2, y1 / 2, z0 - t / 2)
-  put(hull, tiledBox(x1 - wr, y1, t, ...SQUARE), (wr + x1) / 2, y1 / 2, z0 - t / 2)
-  put(hull, tiledBox(WINDOW.w, wb, t, ...SQUARE), WINDOW.x, wb / 2, z0 - t / 2)
-  put(hull, tiledBox(WINDOW.w, y1 - wt, t, ...SQUARE), WINDOW.x, (wt + y1) / 2, z0 - t / 2)
-  fitted(racks, rackMat)
+  fitted([tiledBox(W, 0.1, D, 2, 2).translate(0, -0.05, 0)], new THREE.MeshStandardMaterial({ map: floorMap(), color: 0x7e848e, roughness: 0.6, metalness: 0.15 }))
+  put(hull, loft(SECTION, z0 - 0.02, z1 + 0.02))
+  const bow = new THREE.Shape(SECTION)
+  bow.holes.push(new THREE.Path(roundRect(WINDOW.w - 0.04, WINDOW.h - 0.04, 0.24).getPoints(6).map((p) => p.set(p.x + WINDOW.x, p.y + WINDOW.y))))
+  put(hull, new THREE.ShapeGeometry(bow), 0, 0, z0)
+  put(hull, new THREE.ShapeGeometry(new THREE.Shape(SECTION)).rotateY(Math.PI), 0, 0, z1)
   fitted(hull, wallMat)
 
   // Fittings, merged so each material is one draw call.
@@ -539,33 +461,174 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   const darks: Pieces = []
   const rails: Pieces = []
   const lamps: Pieces = []
+  const skins: Pieces = []
   const hatch: Pieces = []
   const shades: Pieces = []
   const glows: Pieces = []
-  const FACING = Math.PI / 2
   const flatOn = (w: number, d: number) => new THREE.PlaneGeometry(w, d).rotateX(-FACING)
-  // A post between every two racks, and a blue handrail on every other post.
-  for (let k = 1; k < D; k++) {
-    for (const [x, out] of [[x0, 1], [x1, -1]] as const) {
-      put(metals, new THREE.BoxGeometry(0.06, y1, 0.07), x + out * 0.03, y1 / 2, z0 + k)
-      if (k % 2 === 0) continue
-      put(rails, new THREE.CylinderGeometry(0.017, 0.017, 0.72, 12), x + out * 0.13, 1.72, z0 + k)
-      for (const y of [1.42, 2.02]) put(rails, new THREE.CylinderGeometry(0.012, 0.012, 0.1, 8).rotateZ(FACING), x + out * 0.085, y, z0 + k)
+  put(darks, new THREE.TorusGeometry(0.385, 0.007, 6, 48).rotateX(FACING), HATCH[0], 0.036, HATCH[2])
+  put(shades, flatOn(1.5, 1.5), HATCH[0], 0.004, HATCH[2])
+
+  // A ring frame every metre: deck to crown and down again, standing proud of the lining.
+  const RIB = 0.14
+  const band = new THREE.Shape([...SECTION, ...SECTION.map((p, i) => p.clone().addScaledVector(leftOf(SECTION, i), RIB)).reverse()])
+  const rib = new THREE.ExtrudeGeometry(band, { depth: 0.058, bevelEnabled: true, bevelSize: 0.006, bevelThickness: 0.006, bevelSegments: 1 }).translate(0, 0, -0.029)
+  for (let k = 0; k <= D; k++) put(metals, rib.clone(), 0, 0, z0 + k + (k === 0 ? 0.035 : k === D ? -0.035 : 0))
+
+  // ---- Racks, built once each and stood along the walls. Local frame: u across the rack, y up, z off the wall.
+  const SKIN = { white: 0xc9cdd3, pale: 0xb9bec6, fabric: 0xc8c1ae, back: 0x2a2e35, strap: 0x5d626c, skirt: 0x6a707b, blue: 0x3d6fc4, amber: 0xd08a2c }
+  type Kit = { skins: Pieces; metals: Pieces; darks: Pieces; lamps: Pieces }
+  /** A rounded slab on a rack, centred at (u, y), w × h, standing from `base` to `base + d` off the wall. With a colour it joins the painted mesh. */
+  const slab = (list: Pieces, u: number, y: number, w: number, h: number, d: number, base = 0.03, colour?: number, r = 0.02) => {
+    const geo = rounded(w, h, d, Math.min(r, w / 2.2, h / 2.2, d / 2.2), 1)
+    put(list, colour === undefined ? geo : tint(geo, colour), u, y, base + d / 2)
+  }
+  /** A pull handle in a dark recess. */
+  const pull = (k: Kit, u: number, y: number, w: number, base = 0.1) => {
+    slab(k.darks, u, y, w + 0.05, 0.05, 0.008, base - 0.002)
+    slab(k.metals, u, y, w, 0.02, 0.026, base + 0.004, undefined, 0.009)
+  }
+  /** A row of n locker doors, h tall, centred at height y. */
+  const lockers = (k: Kit, y: number, h: number, n = 2) => {
+    for (let c = 0; c < n; c++) {
+      const w = 0.93 / n
+      const u = (c - (n - 1) / 2) * w
+      slab(k.skins, u, y, w - 0.02, h - 0.02, 0.07, 0.03, c % 2 ? SKIN.white : SKIN.pale)
+      pull(k, u, y + h / 2 - 0.09, Math.min(0.16, w * 0.32))
     }
   }
-  for (let k = 1; k < W; k++) if (x0 + k !== 0) put(metals, new THREE.BoxGeometry(0.07, y1, 0.06), x0 + k, y1 / 2, z1 - 0.03) // no post through the hatch
+  const disc = (r: number, d: number, n = 40) => new THREE.CylinderGeometry(r, r, d, n).rotateX(FACING)
+  const Y0 = 0.18 // racks stand 2.2 m tall above the cove
+  const racks = ([
+    // Stowage lockers.
+    (k) => {
+      for (let r = 0; r < 4; r++) lockers(k, Y0 + 0.275 + r * 0.55, 0.55)
+      slab(k.skins, -0.36, Y0 + 0.92, 0.08, 0.04, 0.004, 0.099, SKIN.blue)
+      slab(k.skins, 0.1, Y0 + 1.47, 0.08, 0.04, 0.004, 0.099, SKIN.amber)
+      // A pouch strapped to one door.
+      slab(k.skins, -0.2325, Y0 + 1.345, 0.38, 0.34, 0.08, 0.1, SKIN.fabric, 0.04)
+      for (const s of [-1, 1]) slab(k.skins, -0.2325 + s * 0.1, Y0 + 1.345, 0.03, 0.28, 0.006, 0.177, SKIN.strap)
+    },
+    // A systems rack: two drawers, a recessed service bay with a port and plugged-in cables, a control panel, two lockers.
+    (k) => {
+      lockers(k, Y0 + 0.17, 0.34, 1)
+      lockers(k, Y0 + 0.51, 0.34, 1)
+      const yc = Y0 + 1.06
+      slab(k.skins, 0, yc, 0.92, 0.74, 0.02, 0.02, SKIN.back)
+      for (const s of [-1, 1]) {
+        slab(k.skins, s * 0.435, yc, 0.05, 0.74, 0.1, 0.03, SKIN.white)
+        slab(k.skins, 0, yc + s * 0.345, 0.92, 0.05, 0.1, 0.03, SKIN.white)
+      }
+      put(k.metals, new THREE.TorusGeometry(0.19, 0.024, 10, 40), -0.16, yc, 0.07)
+      put(k.skins, tint(disc(0.175, 0.03), SKIN.white), -0.16, yc, 0.055)
+      put(k.darks, new THREE.CylinderGeometry(0.045, 0.055, 0.03, 24).rotateX(FACING), -0.16, yc, 0.08)
+      for (const dy of [0.2, 0, -0.2]) put(k.darks, disc(0.028, 0.05, 16), 0.2, yc + dy, 0.065)
+      for (const run of [[[0.2, yc + 0.2, 0.08], [0.31, yc + 0.12, 0.13], [0.32, yc - 0.1, 0.13], [0.2, yc - 0.2, 0.08]], [[0.2, yc, 0.08], [0.08, yc - 0.1, 0.125], [0.03, yc - 0.26, 0.11], [0.03, yc - 0.33, 0.05]]])
+        put(k.darks, new THREE.TubeGeometry(new THREE.CatmullRomCurve3(run.map(v3)), 16, 0.011, 6))
+      const yp = Y0 + 1.66
+      slab(k.skins, 0, yp, 0.92, 0.4, 0.08, 0.03, SKIN.pale)
+      slab(k.darks, -0.2, yp + 0.03, 0.42, 0.26, 0.01, 0.108)
+      for (const [i, w] of [0.14, 0.24, 0.1].entries()) slab(k.lamps, -0.37 + w / 2, yp + 0.11 - i * 0.04, w, 0.012, 0.004, 0.117, 0x39c79a)
+      slab(k.darks, 0.25, yp + 0.11, 0.38, 0.05, 0.006, 0.108)
+      for (let i = 0; i < 6; i++) put(k.metals, disc(0.007, 0.035, 8), 0.1 + i * 0.06, yp + 0.11, 0.125)
+      for (let i = 0; i < 3; i++) put(k.darks, new THREE.CylinderGeometry(0.03, 0.034, 0.03, 20).rotateX(FACING), 0.13 + i * 0.12, yp, 0.125)
+      for (let i = 0; i < 5; i++) slab(k.darks, 0.25, yp - 0.09 - i * 0.022, 0.36, 0.01, 0.004, 0.108)
+      lockers(k, Y0 + 2.04, 0.3)
+    },
+    // Soft stowage: a drawer, and fabric bags strapped to the rack above it.
+    (k) => {
+      lockers(k, Y0 + 0.34, 0.68, 1)
+      slab(k.skins, 0, Y0 + 1.44, 0.92, 1.5, 0.02, 0.02, SKIN.back)
+      for (const [u, y, w, h, d] of [[-0.235, 1.0, 0.44, 0.6, 0.13], [0.235, 0.94, 0.44, 0.48, 0.1], [0.235, 1.45, 0.44, 0.5, 0.12], [-0.235, 1.56, 0.44, 0.48, 0.09], [0, 2, 0.9, 0.36, 0.11]] as const) {
+        slab(k.skins, u, Y0 + y, w, h, d, 0.04, SKIN.fabric, 0.05)
+        for (const s of [-1, 1]) slab(k.skins, u + s * w * 0.24, Y0 + y, 0.035, h - 0.1, 0.008, 0.036 + d, SKIN.strap)
+        slab(k.skins, u, Y0 + y + h * 0.18, 0.11, 0.06, 0.004, 0.038 + d, SKIN.white)
+      }
+    },
+    // A round port cover with a rim, a ring of bolts and a handle, between lockers.
+    (k) => {
+      lockers(k, Y0 + 0.275, 0.55)
+      const yc = Y0 + 1.02
+      slab(k.skins, 0, yc, 0.92, 0.9, 0.05, 0.03, SKIN.pale)
+      put(k.metals, new THREE.TorusGeometry(0.36, 0.03, 10, 48), 0, yc, 0.085)
+      put(k.skins, tint(disc(0.34, 0.03, 48), SKIN.white), 0, yc, 0.085)
+      put(k.darks, new THREE.TorusGeometry(0.2, 0.008, 6, 40), 0, yc, 0.1)
+      put(k.darks, new THREE.CylinderGeometry(0.06, 0.075, 0.04, 24).rotateX(FACING), 0, yc, 0.11)
+      for (let i = 0; i < 12; i++) put(k.darks, disc(0.011, 0.012, 6), Math.cos(i * 0.5236) * 0.415, yc + Math.sin(i * 0.5236) * 0.415, 0.084)
+      slab(k.metals, 0, yc, 0.34, 0.03, 0.03, 0.13, undefined, 0.012)
+      for (const s of [-1, 1]) put(k.metals, disc(0.01, 0.05, 8), s * 0.15, yc, 0.115)
+      lockers(k, Y0 + 1.75, 0.5)
+      slab(k.skins, 0, Y0 + 2.1, 0.92, 0.18, 0.06, 0.03, SKIN.white)
+      for (let i = 0; i < 4; i++) slab(k.darks, -0.2, Y0 + 2.14 - i * 0.025, 0.4, 0.012, 0.004, 0.088)
+      slab(k.skins, 0.28, Y0 + 2.1, 0.1, 0.05, 0.004, 0.089, SKIN.amber)
+    },
+    // Overhead lockers, for the end wall above the racks.
+    (k) => {
+      lockers(k, 2.66, 0.44)
+      slab(k.skins, 0.33, 2.56, 0.08, 0.04, 0.004, 0.099, SKIN.blue)
+    },
+  ] as ((k: Kit) => void)[]).map((build) => {
+    const k: Kit = { skins: [], metals: [], darks: [], lamps: [] }
+    build(k)
+    return k
+  })
+  const fittings: Kit = { skins, metals, darks, lamps }
+  const rackAt = (kind: number, turn: number, x: number, z: number) => {
+    const to = new THREE.Matrix4().makeRotationY(turn).setPosition(x, 0, z)
+    for (const key of ['skins', 'metals', 'darks', 'lamps'] as const) for (const g of racks[kind]![key]) fittings[key].push(g.clone().applyMatrix4(to))
+    // Baked shade: the light is overhead, so rack fronts darken gently towards the deck.
+    for (const g of skins.slice(-racks[kind]!.skins.length)) {
+      const at = g.getAttribute('position')
+      const c = g.getAttribute('color')
+      for (let i = 0; i < c.count; i++) {
+        const k = 0.66 + 0.34 * smooth(at.getY(i), 0.1, 1.5)
+        c.setXYZ(i, c.getX(i) * k, c.getY(i) * k, c.getZ(i) * k)
+      }
+    }
+  }
+  for (let k = 0; k < D; k++) {
+    rackAt([1, 0, 3, 2, 0, 1][k]!, FACING, x0, z0 + 0.5 + k)
+    rackAt([3, 1, 0, 2, 3, 0][k]!, -FACING, x1, z0 + 0.5 + k)
+  }
+  for (const [i, x] of [-3.5, -2.5, -1.5, 1.5, 2.5, 3.5].entries()) rackAt([2, 0, 1, 3, 2, 0][i]!, Math.PI, x, z1)
+  for (const x of [-2.5, -1.5, 1.5, 2.5]) rackAt(4, Math.PI, x, z1)
+  rackAt(0, 0, -3.5, z0)
+  rackAt(2, 0, 3.5, z0)
+  for (const x of [-3, -2, 2, 3]) put(metals, rounded(0.07, 2.26, RIB, 0.01, 1), x, Y0 + 1.1, z1 - RIB / 2)
+  // A kick rail where the end walls meet the deck.
+  for (const z of [z0 + 0.05, z1 - 0.05]) put(skins, tint(rounded(W - 0.4, 0.16, 0.1, 0.045, 1), SKIN.skirt), 0, 0.08, z)
+
+  // A blue handrail standing off every other frame, and a blue edge to the deck.
   for (const [x, out] of [[x0, 1], [x1, -1]] as const) {
-    // A long rail at hand height, and a blue edge to the deck under it.
-    put(rails, new THREE.CylinderGeometry(0.02, 0.02, D - 0.6, 12).rotateX(FACING), x + out * 0.1, 1.05, 0)
-    put(rails, new THREE.BoxGeometry(0.5, 0.014, D), x + out * 0.25, 0.007, 0)
-    // The light strip where the wall meets the ceiling: a housing, its glowing diffuser cut into luminaires, a cable tray beside it.
-    put(guns, rounded(0.34, 0.08, D - 0.3, 0.02), x + out * 0.42, y1 - 0.04, 0)
-    put(lamps, new THREE.BoxGeometry(0.22, 0.02, D - 0.44), x + out * 0.42, y1 - 0.085, 0)
-    for (let k = 0; k <= 6; k++) put(darks, new THREE.BoxGeometry(0.3, 0.035, 0.035), x + out * 0.42, y1 - 0.085, -(D - 0.44) / 2 + (k * (D - 0.44)) / 6)
-    put(darks, new THREE.BoxGeometry(0.05, 0.05, D - 0.8), x + out * 0.12, y1 - 0.08, 0)
+    for (const z of [-2, 0, 2]) {
+      put(rails, new THREE.CylinderGeometry(0.017, 0.017, 0.72, 12), x + out * (RIB + 0.07), 1.72, z)
+      for (const y of [1.42, 2.02]) put(rails, new THREE.CylinderGeometry(0.012, 0.012, 0.08, 8).rotateZ(FACING), x + out * (RIB + 0.035), y, z)
+    }
+    put(rails, new THREE.BoxGeometry(0.34, 0.014, D), x + out * 0.33, 0.007, 0)
     // Shade where the deck meets the wall.
     put(shades, fadeStrip(D, 0.9).rotateX(-FACING).rotateY(-out * FACING), x + out * 0.45, 0.004, 0)
   }
+  // The stand-off corners: a luminaire in every bay, and a tray of cables running the length of the module.
+  const rnd = seeded(3)
+  const LAMP = 0xeef3ff
+  const up = new THREE.Vector2(STANDOFF.to[0] - STANDOFF.from[0], STANDOFF.to[1] - STANDOFF.from[1]).normalize()
+  for (const side of [1, -1]) {
+    const to = new THREE.Matrix4()
+      .makeBasis(new THREE.Vector3(side * up.x, up.y, 0), new THREE.Vector3(-side * up.y, up.x, 0), new THREE.Vector3(0, 0, side))
+      .setPosition((side * (STANDOFF.from[0] + STANDOFF.to[0])) / 2, (STANDOFF.from[1] + STANDOFF.to[1]) / 2, 0)
+    for (let k = 0; k < D; k++) {
+      put(guns, rounded(0.36, 0.05, 0.86, 0.02), 0.1, 0.022, z0 + 0.5 + k, to)
+      put(lamps, tint(new THREE.BoxGeometry(0.26, 0.012, 0.78), LAMP), 0.1, 0.05, z0 + 0.5 + k, to)
+    }
+    put(darks, new THREE.BoxGeometry(0.2, 0.016, D - 0.1), -0.25, 0.008, 0, to)
+    for (const [i, [x, r]] of ([[-0.31, 0.016], [-0.265, 0.012], [-0.215, 0.019]] as const).entries()) {
+      const run = new THREE.CatmullRomCurve3(Array.from({ length: 13 }, (_, j) => new THREE.Vector3(x + (rnd() - 0.5) * 0.02, 0.016 + r + rnd() * 0.014, -D / 2 + 0.06 + (j * (D - 0.12)) / 12)))
+      put(i === 1 ? rails : darks, new THREE.TubeGeometry(run, 72, r, 6), 0, 0, 0, to)
+    }
+  }
+  // Two seat tracks let into the deck, running the length of the module.
+  for (const x of [-1, 1]) put(metals, new THREE.BoxGeometry(0.07, 0.008, D - 0.3), x, 0.004, 0)
+  const LOW = CROWN - RIB - 0.006 // the beacon hangs under the middle ring frame
   put(shades, fadeStrip(W, 0.9).rotateX(-FACING), 0, 0.004, z1 - 0.45)
   put(shades, fadeStrip(W, 0.9).rotateX(-FACING).rotateY(Math.PI), 0, 0.004, z0 + 0.45)
   put(shades, fadeStrip(W, 0.8), 0, 0.4, z0 + 0.004)
@@ -668,14 +731,41 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   /** How much the world outside lights the window, by body: bright blue Earth, dark grey Moon, dusty Mars. */
   let shine = 1
 
-  // ---- The console: a shaped desk with a sloped control shelf and a raised instrument panel.
-  // Its side profile, front to back (metres in front of DASH.z, height), run the length of the desk.
+  // ---- The console: a desk blade with a sloped control shelf and a raised instrument panel, carried on two
+  // pedestals so the deck runs on under it. Its side profile (metres in front of DASH.z, height) runs the length of the desk.
   const SHELF = Math.atan2(0.11, 0.35)
   const TILT = Math.atan2(0.14, 0.33)
-  const profile = new THREE.Shape([[0.26, 0], [0.3, 0.84], [0.3, 0.9], [-0.05, 1.01], [-0.19, 1.34], [-0.3, 1.34], [-0.3, 0]].map(([z, y]) => new THREE.Vector2(-z!, y)))
-  put(guns, new THREE.ExtrudeGeometry(profile, { depth: DASH.w - 0.04, bevelEnabled: true, bevelSize: 0.012, bevelThickness: 0.02, bevelSegments: 2 }).rotateY(FACING), -DASH.w / 2 + 0.02, 0, DASH.z)
-  for (let i = 0; i < 5; i++) put(paints, rounded(0.8, 0.66, 0.03, 0.012), -1.72 + i * 0.86, 0.45, DASH.z + 0.287)
-  put(darks, new THREE.BoxGeometry(DASH.w - 0.1, 0.07, 0.02), 0, 0.035, DASH.z + 0.262)
+  const blade = new THREE.Shape()
+  blade.moveTo(-0.3, 0.9) // the shelf's front edge; x is metres behind DASH.z
+  blade.lineTo(0.05, 1.01)
+  blade.lineTo(0.19, 1.34)
+  blade.quadraticCurveTo(0.2, 1.365, 0.24, 1.365)
+  blade.quadraticCurveTo(0.3, 1.365, 0.3, 1.3)
+  blade.lineTo(0.3, 0.82)
+  blade.quadraticCurveTo(0.3, 0.76, 0.24, 0.76)
+  blade.lineTo(-0.02, 0.76)
+  blade.lineTo(-0.27, 0.845)
+  blade.quadraticCurveTo(-0.318, 0.862, -0.3, 0.9)
+  const HALF_DESK = DASH.w / 2 - 0.04
+  const leg = new THREE.Shape([[-0.2, 0.76], [0.26, 0.76], [0.26, 0.07], [-0.05, 0.07]].map(([x, y]) => new THREE.Vector2(x, y)))
+  const RAKE = Math.atan2(0.15, 0.69)
+  put(guns, new THREE.ExtrudeGeometry(blade, { depth: HALF_DESK * 2 - 0.04, bevelEnabled: true, bevelSize: 0.012, bevelThickness: 0.02, bevelSegments: 2 }).rotateY(FACING), -HALF_DESK + 0.02, 0, DASH.z)
+  for (const s of [-1, 1]) {
+    // A bright cheek closing each end of the blade.
+    put(metals, new THREE.ExtrudeGeometry(blade, { depth: 0.024, bevelEnabled: true, bevelSize: 0.03, bevelThickness: 0.008, bevelSegments: 2 }).rotateY(FACING), s * (HALF_DESK + 0.02) - 0.012, 0, DASH.z)
+    // A leg raked back towards its foot, a vented service door on its sloping face.
+    put(guns, new THREE.ExtrudeGeometry(leg, { depth: 0.44, bevelEnabled: true, bevelSize: 0.03, bevelThickness: 0.03, bevelSegments: 3 }).rotateY(FACING), s * 1.45 - 0.22, 0, DASH.z)
+    put(paints, rounded(0.4, 0.56, 0.03, 0.012), 0, 0, 0.032, new THREE.Matrix4().makeRotationX(RAKE).setPosition(s * 1.45, 0.415, DASH.z + 0.125))
+    put(darks, new THREE.BoxGeometry(0.44, 0.05, 0.26), s * 1.45, 0.025, DASH.z - 0.1)
+  }
+  // Between the pedestals: a foot rail, an equipment box slung under the blade and its cables down to the deck.
+  put(metals, new THREE.CylinderGeometry(0.018, 0.018, 2.3, 12).rotateZ(FACING), 0, 0.17, DASH.z + 0.1)
+  put(guns, rounded(1.2, 0.17, 0.22, 0.03), 0, 0.68, DASH.z - 0.17)
+  for (const [x, r] of [[-0.36, 0.014], [-0.31, 0.01], [0.4, 0.012]] as const)
+    put(darks, new THREE.TubeGeometry(new THREE.CatmullRomCurve3([[x, 0.6, DASH.z - 0.17], [x + 0.02, 0.36, DASH.z - 0.2], [x - 0.01, 0.12, DASH.z - 0.34], [x, 0.01, DASH.z - 0.5]].map(v3)), 16, r, 6))
+  // A grab bar along the front of the blade.
+  put(metals, new THREE.CylinderGeometry(0.014, 0.014, 3.7, 12).rotateZ(FACING), 0, 0.868, DASH.z + 0.365)
+  for (let i = 0; i < 5; i++) put(metals, new THREE.CylinderGeometry(0.008, 0.008, 0.07, 8).rotateX(FACING), (i - 2) * 0.9, 0.868, DASH.z + 0.335)
   put(shades, flatOn(DASH.w + 1.3, 2), 0, 0.005, DASH.z + 0.05)
   /** Onto the control shelf, x along the desk and z metres in front of DASH.z; and onto the face of the instrument panel. */
   const onShelf = (x: number, z: number) => new THREE.Matrix4().makeRotationX(SHELF).setPosition(x, 0.912 + (0.3 - z) * (0.11 / 0.35), DASH.z + z)
@@ -694,6 +784,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   for (const x of [-1.6, -0.52]) {
     const to = onShelf(x, 0.12)
     put(darks, rounded(0.74, 0.012, 0.2, 0.005), 0, 0.006, 0, to)
+    put(metals, ring(0.75, 0.21, 0.02, 0.02, 0.026, 0.004).rotateX(-FACING), 0, 0, 0, to) // the rim of the well the keys sit in
     for (let row = 0; row < 2; row++) for (let col = 0; col < 10; col++) put(guns, rounded(0.05, 0.016, 0.05, 0.006), (col - 4.5) * 0.07, 0.018, (row - 0.5) * 0.08, to)
   }
   // Your spacecraft, a desk model on a turned stand.
@@ -740,10 +831,10 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   let controlsKey = ''
 
   // ---- The alarm beacon: a caged red dome on the ceiling, and the red light it throws.
-  put(metals, new THREE.CylinderGeometry(0.15, 0.16, 0.035, 48), 0, y1 - 0.018, 0)
-  for (const turn of [0, FACING]) put(darks, new THREE.TorusGeometry(0.118, 0.006, 8, 32, Math.PI).rotateX(Math.PI).rotateY(turn), 0, y1 - 0.035, 0)
+  put(metals, new THREE.CylinderGeometry(0.15, 0.16, 0.035, 48), 0, LOW - 0.018, 0)
+  for (const turn of [0, FACING]) put(darks, new THREE.TorusGeometry(0.118, 0.006, 8, 32, Math.PI).rotateX(Math.PI).rotateY(turn), 0, LOW - 0.035, 0)
   const beaconMat = new THREE.MeshStandardMaterial({ color: 0x4a0d0a, emissive: 0xff2a1a, emissiveIntensity: 0, roughness: 0.25 })
-  const beacon = new THREE.Mesh(new THREE.SphereGeometry(0.1, 32, 16, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2).translate(0, y1 - 0.035, 0), beaconMat)
+  const beacon = new THREE.Mesh(new THREE.SphereGeometry(0.1, 32, 16, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2).translate(0, LOW - 0.035, 0), beaconMat)
   scene.add(beacon)
   const alarmLight = new THREE.PointLight(0xff2a1a, 0, 12, 2)
   alarmLight.position.set(0, y1 - 0.3, 0)
@@ -760,7 +851,8 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   fitted(paints, paint)
   fitted(darks, dark)
   fitted(rails, new THREE.MeshStandardMaterial({ color: 0x29426f, roughness: 0.45, metalness: 0.5 }))
-  fitted(lamps, new THREE.MeshBasicMaterial({ color: 0xeef3ff, toneMapped: false }))
+  fitted(lamps, new THREE.MeshBasicMaterial({ vertexColors: true, toneMapped: false }))
+  fitted(skins, skinMat)
   fitted(hatch, new THREE.MeshStandardMaterial({ map: brushed, color: 0xa9aeb7, roughness: 0.42, metalness: 0.3 }))
   fitted(shades, shadeMat).renderOrder = 1
   fitted(glows, glowMat).renderOrder = 1
@@ -782,39 +874,31 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
     }
     lights.clear()
     storageScreen = null
-    const mounts = { metals: [] as Pieces, guns: [] as Pieces, paints: [] as Pieces, darks: [] as Pieces, shades: [] as Pieces }
+    const mounts = { metals: [] as Pieces, guns: [] as Pieces, darks: [] as Pieces, shades: [] as Pieces }
+    const column = new THREE.LatheGeometry([[0, 0], [0.3, 0], [0.3, 0.022], [0.26, 0.04], [0.15, 0.1], [0.115, 0.22], [0.105, 0.56], [0.13, 0.74], [0.21, 0.84], [0.31, 0.874]].map(([r, y]) => new THREE.Vector2(r, y)), 40).toNonIndexed()
+    const table = new THREE.LatheGeometry([[0, 0.872], [0.33, 0.872], [0.352, 0.879], [0.36, 0.891], [0.352, 0.904], [0.33, 0.91], [0, 0.91]].map(([r, y]) => new THREE.Vector2(r, y)), 48).toNonIndexed()
     const size = new THREE.Box3()
     for (const m of list) {
       const rot = Math.atan2(m.face[0], m.face[1])
       // Local frame: the mount stands at the origin facing +z, the wall 0.5 m behind it.
       const to = new THREE.Matrix4().makeRotationY(rot).setPosition(m.at[0], 0, m.at[2])
-      // An equipment mount bolted to deck and wall: plinth, cabinet, machined top plate with a turned ring for the part.
-      put(mounts.darks, new THREE.BoxGeometry(0.6, 0.08, 0.54), 0, 0.04, -0.02, to)
-      put(mounts.paints, rounded(0.66, 0.8, 0.6, 0.02), 0, 0.48, -0.02, to)
-      put(mounts.metals, rounded(0.74, 0.03, 0.66, 0.012), 0, 0.895, -0.01, to)
+      // An equipment mount: a turned column bolted to the deck, a machined table with a ring for the part, a tilted
+      // name pod on an arm, and an umbilical plugged into the rack behind.
+      put(mounts.guns, column.clone(), 0, 0, 0, to)
+      put(mounts.metals, table.clone(), 0, 0, 0, to)
       put(mounts.guns, new THREE.CylinderGeometry(0.21, 0.22, 0.016, 48), 0, PLATE - 0.008, 0, to)
-      for (let i = 0; i < 8; i++) put(mounts.darks, new THREE.CylinderGeometry(0.009, 0.009, 0.006, 6), Math.cos(i * 0.785) * 0.32, 0.913, Math.sin(i * 0.785) * 0.28, to)
-      for (const sx of [-1, 1]) {
-        for (const z of [0.2, -0.24]) {
-          put(mounts.metals, new THREE.BoxGeometry(0.08, 0.012, 0.1), sx * 0.35, 0.006, z, to)
-          put(mounts.darks, new THREE.CylinderGeometry(0.014, 0.014, 0.01, 6), sx * 0.365, 0.017, z, to)
-        }
-        put(mounts.metals, new THREE.BoxGeometry(0.04, 0.04, 0.2), sx * 0.22, 0.72, -0.41, to)
-        // The grab rail's two standoffs.
-        put(mounts.metals, new THREE.CylinderGeometry(0.009, 0.009, 0.06, 8).rotateX(FACING), sx * 0.21, 0.82, 0.305, to)
+      for (let i = 0; i < 8; i++) {
+        put(mounts.darks, new THREE.CylinderGeometry(0.009, 0.009, 0.006, 6), Math.cos(i * 0.785) * 0.3, 0.913, Math.sin(i * 0.785) * 0.3, to)
+        put(mounts.darks, new THREE.CylinderGeometry(0.013, 0.013, 0.012, 6), Math.cos(i * 0.785) * 0.275, 0.03, Math.sin(i * 0.785) * 0.275, to)
       }
-      put(mounts.metals, new THREE.BoxGeometry(0.56, 0.12, 0.012), 0, 0.72, -0.494, to)
-      put(mounts.metals, new THREE.CylinderGeometry(0.013, 0.013, 0.5, 12).rotateZ(FACING), 0, 0.82, 0.335, to)
-      // Cables from the cabinet up the wall to the tray at the ceiling, clamped on the way.
-      for (const [x, r] of [[0.27, 0.012], [0.305, 0.008]] as const) {
-        const run = new THREE.CatmullRomCurve3([[x, 0.8, -0.3], [x, 0.92, -0.4], [x, 1.2, -0.47], [x, 2, -0.475], [x, y1 - 0.1, -0.475]].map((p) => new THREE.Vector3(...p)))
-        put(mounts.darks, new THREE.TubeGeometry(run, 24, r, 6), 0, 0, 0, to)
-      }
-      for (const y of [1.4, 2.2, 2.9]) put(mounts.metals, new THREE.BoxGeometry(0.1, 0.03, 0.03), 0.287, y, -0.48, to)
-      // Indicator housing on the cabinet's brow.
-      put(mounts.darks, rounded(0.3, 0.05, 0.02, 0.008), 0, 0.72, 0.283, to)
-      put(mounts.shades, flatOn(1.7, 1.6), 0, 0.006, -0.05, to)
-      put(mounts.shades, new THREE.PlaneGeometry(1.5, 1.9), 0, 0.6, -0.493, to)
+      const pod = to.clone().multiply(new THREE.Matrix4().makeRotationX(-0.45).setPosition(0, 0.6, 0.2))
+      put(mounts.metals, rounded(0.06, 0.05, 0.14, 0.012), 0, 0.6, 0.13, to)
+      put(mounts.guns, rounded(0.46, 0.21, 0.04, 0.015), 0, 0, 0, pod)
+      put(mounts.darks, rounded(0.3, 0.045, 0.012, 0.005), 0, 0.06, 0.022, pod)
+      for (const [x, r] of [[0.03, 0.014], [-0.03, 0.009]] as const)
+        put(mounts.darks, new THREE.TubeGeometry(new THREE.CatmullRomCurve3([[x, 0.8, -0.14], [x * 1.4, 0.64, -0.27], [x * 1.4, 0.57, -0.36], [x * 1.4, 0.6, -0.41]].map(v3)), 14, r, 6), 0, 0, 0, to)
+      put(mounts.metals, new THREE.CylinderGeometry(0.035, 0.035, 0.03, 16).rotateX(FACING), 0, 0.6, -0.395, to)
+      put(mounts.shades, flatOn(1.5, 1.4), 0, 0.006, 0, to)
       put(mounts.shades, flatOn(0.62, 0.56), 0, PLATE + 0.002, 0, to)
 
       const model = m.part ? partModel(m.part) : null
@@ -836,17 +920,16 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
         moduleGroup.add(scr)
       }
       const plateMap = label(m.name, m.part?.name)
-      const plate = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.1).translate(0, 0.6, 0.283).applyMatrix4(to), new THREE.MeshStandardMaterial({ map: plateMap, emissiveMap: plateMap, emissive: 0xffffff, emissiveIntensity: 0.45, roughness: 0.6 }))
+      const plate = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.1).translate(0, -0.035, 0.0215).applyMatrix4(pod), new THREE.MeshStandardMaterial({ map: plateMap, emissiveMap: plateMap, emissive: 0xffffff, emissiveIntensity: 0.45, roughness: 0.6 }))
       // Five small LEDs in the housing: green in flight, flashing red when this module raises the alarm.
       const lightMat = new THREE.MeshStandardMaterial({ color: 0x0a0c0e, emissive: 0x5ee0a8, emissiveIntensity: 1 })
       const leds: Pieces = []
-      for (let i = 0; i < 5; i++) put(leds, new THREE.BoxGeometry(0.03, 0.012, 0.006), (i - 2) * 0.05, 0.72, 0.294, to)
+      for (let i = 0; i < 5; i++) put(leds, new THREE.BoxGeometry(0.03, 0.012, 0.006), (i - 2) * 0.05, 0.06, 0.03, pod)
       moduleGroup.add(plate, new THREE.Mesh(mergeGeometries(leds), lightMat))
       lights.set(m.key, lightMat)
     }
     fitted(mounts.metals, metal, moduleGroup)
     fitted(mounts.guns, gun, moduleGroup)
-    fitted(mounts.paints, paint, moduleGroup)
     fitted(mounts.darks, dark, moduleGroup)
     fitted(mounts.shades, shadeMat, moduleGroup).renderOrder = 1
   }
@@ -959,7 +1042,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
       const hit = s.decision ? moduleFor(s.decision.console, s.modules) : undefined
       alarmKey = hit?.key ?? null
       if (hit) {
-        wash.position.set(hit.at[0] - hit.face[0] * 0.49, 1.1, hit.at[2] - hit.face[1] * 0.49)
+        wash.position.set(hit.at[0] - hit.face[0] * 0.33, 1.1, hit.at[2] - hit.face[1] * 0.33) // just clear of the rack fronts
         wash.rotation.y = Math.atan2(hit.face[0], hit.face[1])
         wash.updateMatrixWorld(true)
       }
