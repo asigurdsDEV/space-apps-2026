@@ -7,7 +7,7 @@
 //   z=-3    [        WINDOW: where your spacecraft is        ]
 //   z=-2.1  [ CONSOLE: gauges · your craft · pause button · speed switch ]
 //   x=-4    power  battery                    radio  storage   x=+4
-//   z=+3    [ instruments along the back wall ]
+//   z=+3    [ instruments along the back wall, either side of the hatchway to the next module ]
 
 import type { Interactable, Obstacle, Vec3 } from '../fps/model'
 import { parseIds } from '../builder/model'
@@ -20,16 +20,19 @@ export const HATCH: Vec3 = [-1.6, 0.04, 1.15]
 export const WINDOW = { x: 0, y: 2, w: 5.6, h: 1.8 }
 export const DASH = { z: -2.15, w: 4.4, depth: 0.6, top: 0.95 }
 export const SPEEDS = [1, 5, 20, 60] as const
-/** The stand-off corner between a side wall and the ceiling (right side, [x, y] from the wall end to the ceiling end): it carries the lights and cables. */
-export const STANDOFF = { from: [ROOM.max[0] - 0.087, 2.503], to: [ROOM.max[0] - 0.622, 3.016] } as const
+/** The stand-off corner between a side wall and the ceiling (right side, [x, y] from the wall end to the ceiling end): it carries the lights, vents and cables. */
+export const STANDOFF = { from: [ROOM.max[0] - 0.07, 2.5], to: [ROOM.max[0] - 0.85, 3.34] } as const
+/** The flat ceiling, a face of racks like the walls. */
+export const CEILING = 3.4
+/** The hatchway in the end wall behind you: a rounded-square opening `w` across with a frame `rim` wide, onto the next module. You cannot walk through: the wall's obstacle stays. */
+export const HATCHWAY = { y: 1.5, w: 1.56, r: 0.34, rim: 0.22 } as const
 
 /**
- * The module's cross-section, right half, deck to crown ([x, y] metres; the left half mirrors it): a cove at the deck,
- * the straight wall the racks stand on (where the player's wall is), the stand-off corner, and an arched ceiling.
+ * The module's cross-section, right half, deck to the middle of the ceiling ([x, y] metres; the left half mirrors it): a cove
+ * at the deck, the straight wall the racks stand on (where the player's wall is), the chamfered stand-off corner, and a flat ceiling.
  */
-export function section(steps = 8): [number, number][] {
+export function section(steps = 6): [number, number][] {
   const x = ROOM.max[0]
-  const top = ROOM.max[1]
   const pts: [number, number][] = [[x - 0.16, 0]]
   /** A quadratic curve from the last point round corner `k` to `b`. */
   const round = (k: readonly [number, number], b: readonly [number, number]) => {
@@ -44,8 +47,8 @@ export function section(steps = 8): [number, number][] {
   pts.push([x, 2.3])
   round([x, 2.42], STANDOFF.from)
   pts.push([...STANDOFF.to])
-  round([x - 0.73, top - 0.08], [x - 0.88, top - 0.04])
-  round([x * 0.46, top + 0.3], [0, top + 0.3])
+  round([x - 0.906, CEILING], [x - 1, CEILING])
+  pts.push([0, CEILING])
   return pts
 }
 /** Where the speed switch points, radians clockwise from straight ahead: its stops fan evenly across the top of its dial. */

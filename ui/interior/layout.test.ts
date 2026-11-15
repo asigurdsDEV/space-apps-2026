@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { getDatasets, getScenario } from '../../data'
 import { catalogEntities } from '../../sim'
 import type { Command, Decision } from '../../shared'
-import { choiceSpots, choiceTitleAt, DASH, dialAngle, gauges, interactables, modules, obstacles, ROOM, section, SPEEDS, WINDOW } from './layout'
+import { CEILING, choiceSpots, choiceTitleAt, DASH, dialAngle, gauges, HATCHWAY, interactables, modules, obstacles, ROOM, section, SPEEDS, STANDOFF, WINDOW } from './layout'
 
 const config = getScenario('demo')!
 const state = { entities: catalogEntities(getDatasets(config.datasets)), params: { ...config.params, instruments: 'camera-basic,magnetometer' } as typeof config.params }
@@ -112,6 +112,24 @@ describe('walk-in spacecraft layout', () => {
     // Over the window and its 0.19 m frame the ceiling is above the frame's top edge.
     const frame = 0.19
     for (const [x, y] of half) if (y > 2.6 && x < WINDOW.w / 2 + frame) expect(y).toBeGreaterThan(WINDOW.y + WINDOW.h / 2 + frame)
+  })
+
+  it('the section is a station module: a flat ceiling on chamfered stand-offs, and a hatchway that fits its end wall', () => {
+    const half = section()
+    for (const [x, y] of half) if (x <= ROOM.max[0] - 1) expect(y).toBe(CEILING) // flat, no arch
+    expect(half).toContainEqual([...STANDOFF.from])
+    expect(half).toContainEqual([...STANDOFF.to])
+    const slope = (STANDOFF.to[1] - STANDOFF.from[1]) / (STANDOFF.from[0] - STANDOFF.to[0])
+    expect(slope).toBeGreaterThan(0.8) // a chamfer near 45 degrees
+    expect(slope).toBeLessThan(1.25)
+    const out = HATCHWAY.w / 2 + HATCHWAY.rim
+    expect(out).toBeLessThanOrEqual(1) // instruments stand from 1.4 m out, their mounts 0.37 m wide each way
+    expect(HATCHWAY.y - out).toBeGreaterThan(0.2)
+    expect(HATCHWAY.y + out).toBeLessThan(STANDOFF.from[1] + 0.01)
+    // The back wall is still an obstacle right across the hatchway.
+    const back = obstacles([]).find((o) => o.min[2] === ROOM.max[2])!
+    expect(back.min[0]).toBeLessThan(-out)
+    expect(back.max[0]).toBeGreaterThan(out)
   })
 
   it('gauges are numbers, clamped, and flag lost data', () => {
