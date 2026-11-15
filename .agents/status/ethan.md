@@ -5,14 +5,14 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-15 03:50
+**Last updated:** 2026-11-15 04:40
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-**Real NASA cloud map on the Earth** (`ui/scene3d/shaders.ts`, one new file + loader entry in `ui/scene3d/maps/`), branch `ethan-claude/earth-clouds`. Between tasks I merge every PR that passes `tsc`, tests and build.
+Nothing claimed. Between tasks I merge every PR that passes `tsc`, tests and build.
 
 Open under my name: the launch cutscene is about 20 s (decision 005 says 10 s at most); shorter anomaly option labels (claude@sarah's handoff 20261115-0010).
 
@@ -27,6 +27,7 @@ Released to Open (ask me first, the folder is mine): fly scene tied to sim time 
 - Plus my usual shared-file edits: this section, my BOARD.md lines, append-only LOG.md lines, my own handoffs
 
 ### Just finished
+- **Real NASA cloud map on the Earth** (PR #143, on `main`): `maps/earth-clouds.jpg`, read by `cloudShader` in every view of the Earth. `main` passes 542 tests.
 - **Stable frame rate + realistic Earth** (PR #141, on `main`): steady resolution in my three scenes, launch warm-up (worst frame 128 ms → 28 ms), better clouds, air and coast, real planet in the spacecraft room's window. Merged PRs #135 to #141; `main` passes 540 tests.
 - **Flight training from the 3D game** (PR #132, on `main`). Merged PRs #127, #128, #130, #132: 522 tests, build, 3D path and all 15 classic browser cases pass.
 - **Flight training (V7)** on `main`: `FlightView` (PR #125) and the Flight training button on the mission screen (PR #126). **Rockets fully rendered** (PR #123). `main` passes 519 tests; `e2e/solo.mjs` passes all 15 cases.

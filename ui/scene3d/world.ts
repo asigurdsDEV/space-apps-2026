@@ -129,7 +129,7 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
   const planet = new THREE.Mesh(new THREE.SphereGeometry(1, 160, 120), planetMaterial)
   const clouds = new THREE.Mesh(
     new THREE.SphereGeometry(1.012, 128, 96),
-    new THREE.ShaderMaterial({ ...cloudShader, uniforms: { uSun, uTime }, transparent: true, depthWrite: false }),
+    new THREE.ShaderMaterial({ ...cloudShader, uniforms: { uSun, uTime, ...bodyMaps.maps.earth }, transparent: true, depthWrite: false }),
   )
   const uAtmo = { value: new THREE.Color() }
   const atmosphere = new THREE.Mesh(

@@ -54,20 +54,20 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** aiden-codex/preflight-readability (on #135)
-**Last updated:** 2026-11-14 16:40
+**Branch:** aiden-codex/preflight-readability — PR #144
+**Last updated:** 2026-11-14 17:13
 
 ### Working on right now
-Aiden asks explicit Download → real progress → Continue before first-person play; screenshot cutscene scaling + choice title overlap fixes; contextual help; concrete task split for everyone. Claim pushed before code. Astra read-only layout review confirms title/card coplanar overlap and World launch missing fullscreen class.
+Implementation complete in PR #144; checking CI and handing release acceptance to owners. No new source task claimed.
 
 ### Files / folders I'm touching (hands off)
-`app/main.tsx`, new `app/GameAssets.tsx`, `app/assets-download.ts` + tests/CSS, `app/World.tsx`, `app/app.css`; `pwa/plugin.ts`, `pwa/sw-source.ts` + tests/new download manifest test; `ui/fps/Prompt.tsx`, new `help.ts` + tests, `fps.css`; `ui/hangar/MissionControl.tsx`; `ui/interior/SpacecraftRoom.tsx`, `layout.ts`, `layout.test.ts`, `control.ts`; new `docs/qa/preflight-assets.md`. Own coordination/decision note; scope add before edit: additive deployment-manifest paragraph in `.agents/CONTRACTS.md` only (no core shapes), as required for the new build/app interface. No scene3d/cutscene model source, sim/shared/catalog edits; no Claude section/branch or docs/CHALLENGE 2.md edits.
+None. PR #144 contains app download gate/manifest consumption, PWA allowlist cache fix, fullscreen World launch, fps contextual help and interior title/choice separation. Additive deployment contract + decision 010. Coordinate PR fixes with me; Claude section/branches and docs/CHALLENGE 2.md untouched.
 
 ### Just finished
-PR #135 desktop polish is green/mergeable and preserves merged #132/#133. New task will build on that published source, not edit its owner branches. Team follow-ups published as owner tasks, not false claims.
+PR #144 on current main (#135–#142 integrated): explicit Download → actual completed-file progress → Continue. All 47 generated/public game assets cached, failure blocks Continue, retry reuses completed files. Origin-stopped reload and first-person play through launch/planning anomaly pass without exceptions. Launch fills 1280×1000 and1920×1080; cards/title/gauges separated. Part and option explanations; help/radio/E/menu do not overlap at1280×800 and756×469. Classic/no-WebGL bypass pass. 550 tests/71 files, build/typecheck/size72.0kB pass. docs/qa/preflight-assets.md records executed evidence. Preserved team's cabin, hall, Earth and crew additions; no owner branches edited.
 
 ### Missing / I need from someone
-Ethan merges #135 before this follow-up. Kaipo verifies public deployment/build parity and asset URLs; Caleb runs real-laptop/zoom acceptance; Sarah checks contextual science wording; Jamie catalog/demo owners continue isolated scopes. Claude Aiden is at usage limit and gets no blocking assignment.
+Ethan reviews/merges green #144; Kaipo checks deployed build parity + manifest URLs and cross-device join; Caleb physical-laptop/zoom/full-game acceptance; Sarah help science review; Claude Jamie descriptions; Codex Jamie demo narration. Vercel Git connection still needs Aiden/account-owner approval. No task depends on Claude Aiden while at usage limit.
 
 ### Heads up for other agents
-Gate must include generated-model code chunks as well as GLBs; progress counts real completed files and preparation, no fake timer. Continue stays blocked on failure. Cached files reused. First-person help stays out of the crosshair/radio and does not add a modal. Desktop priority unchanged. Astra used for layout guidance; Sol implementation.
+All-handoff 1713 has exact isolated next actions; existing 1640 owner tasks remain. The gate warms/downloads code and models; it cannot guarantee GPU frame rate or permanent cache storage. API/ICE/signaling remain on the network. Offline local preview lazy-import failure fixed; live-host confirmation still pending. Decision numbered010 to preserve Kaipo's009 crew pose. Astra read-only design review complete; Sol implementation.

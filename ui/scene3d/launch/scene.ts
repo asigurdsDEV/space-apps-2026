@@ -176,7 +176,7 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
   const clouds = new THREE.Mesh(
     new THREE.SphereGeometry(EARTH_R + 9_000, 192, 96),
     // Blended but not "transparent": it must draw with the backdrop, before the rocket, not over it.
-    new THREE.ShaderMaterial({ ...cloudShader, uniforms: { uSun: spaceU.uSun, uTime: skyU.uTime }, blending: THREE.CustomBlending, ...backdrop }),
+    new THREE.ShaderMaterial({ ...cloudShader, uniforms: { uSun: spaceU.uSun, uTime: skyU.uTime, ...maps.maps.earth }, blending: THREE.CustomBlending, ...backdrop }),
   )
   planet.renderOrder = -8
   clouds.renderOrder = -7
