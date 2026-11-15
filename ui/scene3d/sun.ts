@@ -1,5 +1,8 @@
 // Where the real Sun stands over the Earth at a moment, so every view of the Earth can light the side that really has daylight.
+import { cross, without } from './sky'
+
 const RAD = Math.PI / 180
+type Vec3 = [number, number, number]
 
 /** The point on Earth with the Sun straight overhead: [latitude, east longitude] in degrees. Good to about one degree. */
 export function subsolarPoint(date: Date): [number, number] {
@@ -14,8 +17,25 @@ export function subsolarPoint(date: Date): [number, number] {
 }
 
 /** Unit vector to the Sun in the Earth map's own frame, the one `mapUv` in shaders.ts reads: longitude 0 on +X, east toward -Z, north on +Y. */
-export function sunDirection(date: Date): [number, number, number] {
+export function sunDirection(date: Date): Vec3 {
   const [lat, lon] = subsolarPoint(date)
   const c = Math.cos(lat * RAD)
   return [c * Math.cos(lon * RAD), Math.sin(lat * RAD), -c * Math.sin(lon * RAD)]
+}
+
+/**
+ * How to turn an Earth globe drawn in the map frame so the real daylight faces the scene's Sun: a quaternion [x, y, z, w]
+ * that takes `sunInMap` (from `sunDirection`) onto `sunInScene`, with the north pole as near `poleHint` as that allows.
+ * The pole leans toward or away from the Sun by the real amount for the date. Spin the globe about its own +Y after this.
+ */
+export function earthOrientation(sunInMap: Vec3, sunInScene: Vec3, poleHint: Vec3 = [0, 1, 0]): [number, number, number, number] {
+  // The Sun, the pole's side of it, and the third axis: the rotation carries the map's three onto the scene's three.
+  const axes = (sun: Vec3, pole: Vec3) => [sun, without(pole, sun), cross(sun, without(pole, sun))]
+  const from = axes(sunInMap, [0, 1, 0])
+  const to = axes(sunInScene, poleHint)
+  const m = (row: number, col: number) => to[0][row] * from[0][col] + to[1][row] * from[1][col] + to[2][row] * from[2][col]
+  // shortcut: loses the signs at an exact half turn, which needs the Sun and the hint lined up to 1e-8; use the four-branch form if that can happen.
+  const half = (a: number, b: number, c: number) => Math.sqrt(Math.max(0, 1 + a * m(0, 0) + b * m(1, 1) + c * m(2, 2))) / 2
+  const sign = (x: number) => (x < 0 ? -1 : 1)
+  return [half(1, -1, -1) * sign(m(2, 1) - m(1, 2)), half(-1, 1, -1) * sign(m(0, 2) - m(2, 0)), half(-1, -1, 1) * sign(m(1, 0) - m(0, 1)), half(1, 1, 1)]
 }

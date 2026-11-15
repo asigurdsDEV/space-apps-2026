@@ -47,12 +47,13 @@ export const COMPANIONS: Record<Body, Companion[]> = {
 }
 
 const dot = (a: Vec3, b: Vec3) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
-const cross = (a: Vec3, b: Vec3): Vec3 => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]]
+export const cross = (a: Vec3, b: Vec3): Vec3 => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]]
 const unit = (a: Vec3): Vec3 => {
   const length = Math.hypot(a[0], a[1], a[2]) || 1
   return [a[0] / length, a[1] / length, a[2] / length]
 }
-const without = (a: Vec3, axis: Vec3): Vec3 => unit([a[0] - dot(a, axis) * axis[0], a[1] - dot(a, axis) * axis[1], a[2] - dot(a, axis) * axis[2]])
+/** The unit vector of `a` with its part along `axis` taken out. */
+export const without = (a: Vec3, axis: Vec3): Vec3 => unit([a[0] - dot(a, axis) * axis[0], a[1] - dot(a, axis) * axis[1], a[2] - dot(a, axis) * axis[2]])
 
 /**
  * Where a companion is, in planet radii, with the planet's north pole along +y.
