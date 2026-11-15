@@ -14,6 +14,10 @@
 - Desktop bounds: test viewport override1280x800; the browser's zoom produced a measured CSS viewport1163x727. The board/form remained within the viewport with no horizontal overflow. Saved screenshots of the board, awarded grant and retry notice. This is not a physical laptop or zoom acceptance pass.
 - Unit checks cover ordered/duplicate/wrong-session/loss award rejection; corrupt/out-of-order/blocked/quota storage; preserved longer progress from another tab; locked cards and end-of-route copy. All three assignment configs win with real sim+real anomaly rules using the reference designs.
 
+## Production and integration
+
+Download → completed preparation → Continue opened the funded/locked campaign board in the production preview without console errors. Free play opened the existing menu with Daily and one-screen controls; Guided missions returned to the board with heading focus restored. The final integrated build preserves #153's Start polish/one-screen children and Ethan's new models/motion; explicit world=classic URLs keep the legacy solo/co-op entry. No e2e/owner source files changed. 578 tests/76files, typecheck, production build and size check pass; first load72.0kB gzip (150kB limit). Real browser full win/loss/retry ran against the pre-integration feature build; all three configs were also flown by the sim tests.
+
 ## Limits
 
 Solo guided campaign; free play/online remain separate. Progress is browser-local, with an in-memory fallback if storage is denied. Existing personal/Daily scores are preserved; they are not treated as proof of campaign completion. Grants are fixed per assignment and do not accumulate through retries. Classic uses the same progress observer and returns to the mission board through Main menu. No new cloud save, currency economy, model assets or sim commands.

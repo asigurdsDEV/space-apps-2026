@@ -123,7 +123,8 @@ function useUtcDay(): string {
 /** Start screen until a session exists, then the room (lobby, briefing, game, or "room closed"). */
 export function App() {
   const [active, setActive] = useState<Active | null>(null)
-  const [guided, setGuided] = useState(true)
+  // Explicit Classic links keep their existing free-play landing; Guided missions remains available.
+  const [guided, setGuided] = useState(() => typeof location === 'undefined' || new URLSearchParams(location.search).get('world') !== 'classic')
   const [campaignRun, setCampaignRun] = useState(0)
   const [progress, setProgress] = useState(readCampaign)
   const [persistent, setPersistent] = useState(true)

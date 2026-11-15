@@ -2,6 +2,8 @@
 
 Default solo progression, decision011: First Light Easy ($12M) → Moon Normal ($300M) → Mars Normal ($500M). Reuses data/PROGRAM and getScenario; no parallel sim or catalog balance. CampaignBoard is the entry; the original Start screen remains under Free play, Daily & online.
 
+Explicit `?world=classic` links keep their original free-play landing (including existing solo/co-op e2e entry points). Guided missions can still be chosen there, using the Classic game screens. Ordinary/no-WebGL entry defaults to the guided board.
+
 App marks only these sessions with Active.campaign. awardMission needs a matching scenario, ended status and successful scenario_ended event, and only awards the next incomplete assignment. Failures keep the same grant. Completed assignments can replay without stacking funds. Grants are fixed per mission, not a wallet or leftover-money transfer.
 
 Browser key space-apps-2026:campaign:v1 stores completed base IDs, in order. Validation accepts only the contiguous known route; save never lowers a longer completion list. Blocked storage reports that progress lasts only for this visit; App still tracks it in memory. Existing scores/Daily/design records are untouched.

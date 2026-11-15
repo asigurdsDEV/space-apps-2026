@@ -1,7 +1,7 @@
 // Renders the shell to a string (no browser): which screen shows in which phase.
 
 import { renderToStaticMarkup } from 'react-dom/server'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import type { Command, Config, Player } from '../shared'
 import { simCore } from '../sim'
 import { demoConfig, fixtureDatasets, goodDesign } from '../sim/testing/fixtures'
@@ -42,6 +42,19 @@ describe('start screen', () => {
 
   it('keeps free play, Daily and online accessible through the original Start flow', () => {
     expect(html).toContain('Free play, Daily &amp; online')
+  })
+
+  it('preserves explicit Classic links and their solo/co-op automation landing', () => {
+    vi.stubGlobal('location', { search: '?world=classic', hash: '' })
+    try {
+      const classic = renderToStaticMarkup(<App />)
+      expect(classic).toContain('ss-root')
+      expect(classic).toContain('>Start</button>')
+      expect(classic).toContain('Play daily mission')
+      expect(classic).toContain('Play on one screen')
+      expect(classic).toContain('Guided missions')
+      expect(classic).not.toContain('Start guided mission')
+    } finally { vi.unstubAllGlobals() }
   })
 
   it('knows every scenario at every difficulty by id, the scenario as written first', () => {
