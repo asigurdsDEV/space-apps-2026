@@ -28,16 +28,15 @@ const screen = (session: ReturnType<typeof soloSession>['session']) =>
 describe('start screen', () => {
   const html = renderToStaticMarkup(<App />)
 
-  it('is the real Start screen with solo, host and join, inside the shared theme', () => {
+  it('is the real Start screen, opening on its menu, inside the shared theme', () => {
     expect(html).toContain('class="game-theme app"')
     expect(html).toContain('ss-root')
-    for (const label of ['Play solo', 'Host online', 'Join a room']) expect(html).toContain(label)
+    expect(html).toContain('>Start</button>')
   })
 
-  it('offers every scenario in data/ with the difficulty picker and the numbers for that level', () => {
-    for (const scenario of scenarios) expect(html).toContain(`<option value="${scenario.scenario_id}"`)
-    for (const level of Object.values(DIFFICULTIES)) expect(html).toContain(`>${level.label}</option>`)
-    expect(html).toContain(`${String(scenarios[0].params.target_science_score)} points`) // scenarioPreview is wired
+  // Mode, mission and difficulty are later steps of the Start screen (ui/start/StartScreen.test.tsx).
+  it('asks for one thing at a time: no mission or difficulty list on the menu', () => {
+    expect(html.slice(0, html.indexOf('app-same-screen'))).not.toContain('<option')
   })
 
   it('offers today’s daily mission', () => {
