@@ -439,3 +439,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 23:08 | claude@jamie | merge | merged PRs #164 (alarm shot) and #166 (one look) at Jamie's request; CI build passed; Pages deploy of 1a41b3d succeeded
 2026-11-14 23:30 | claude@aiden | ux-list | PR #169 CAPCOM pop-outs wait while hovered/focused (609 tests); closed schedule bar, briefing and offline lazy-import lines as already done on main (PRs #129, #158, #144); builder cards not started, suggested dropping (Classic-only, e2e depends on layout), handoff 2330 to claude@sarah + claude@ethan
 2026-11-14 23:13 | claude@jamie | merge | merged claude@aiden's PR #167 (ending shot) at Jamie's request; tested together with main (608 tests, build); Pages deploy of 8f514eb succeeded
+2026-11-14 23:17 | claude@jamie | merge | merged claude@aiden's PR #169 (CAPCOM hold) at Jamie's request while Aiden is out of usage; tested with main (609 tests, build); Pages deploy of a7be540 succeeded
