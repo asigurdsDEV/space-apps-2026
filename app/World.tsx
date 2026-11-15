@@ -23,6 +23,8 @@ import { fitCallout } from '../ui/story'
 import { useSession } from './useSession'
 import { hasWebGL } from './Walk'
 import { WorldMenu } from './WorldMenu'
+import { CampaignResult } from '../ui/campaign/CampaignBoard'
+import { designGuide } from '../ui/campaign/model'
 
 /** First-person 3D, unless the address says `?world=classic` or the browser can't draw it. */
 export const WORLD_3D = typeof location !== 'undefined' && new URLSearchParams(location.search).get('world') !== 'classic' && hasWebGL()
@@ -39,12 +41,13 @@ export interface WorldProps {
   active: Active
   config: Config
   onExit: () => void
+  onCampaignNext?: (id: string) => void
 }
 
 const LaunchView = SceneLaunchView as ComponentType<{ state: SimState; onDone: () => void; className?: string }>
 const Training = lazy(() => import('./Training'))
 
-export function World({ active, config, onExit }: WorldProps) {
+export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
   const { session, roomCode, daily } = active
   const { state, events, players, me, paused, speed } = useSession(session)
   const [classic, setClassic] = useState(false)
@@ -65,6 +68,9 @@ export function World({ active, config, onExit }: WorldProps) {
   const [arrived, setArrived] = useState(false)
   const phase = state.metrics.phase
   const ended = state.status === 'ended'
+  useEffect(() => {
+    if (ended && active.campaign && !cutscene) setMenuOpen(true)
+  }, [ended, active.campaign, cutscene])
 
   // "What would have fixed it": the flown mission rerun with every single change, once, when it ends.
   const fixes = useMemo(
@@ -159,7 +165,10 @@ export function World({ active, config, onExit }: WorldProps) {
       online={roomCode !== null}
       onTraining={canTrain ? () => { setMenuOpen(false); setTraining(true) } : undefined}
       onClassic={() => { setMenuOpen(false); setClassic(true) }}
-      onExit={onExit} />
+      onExit={onExit}>
+      {ended && active.campaign && <CampaignResult missionId={active.campaign} success={summary?.outcome === 'success'}
+        onContinue={onCampaignNext} onBoard={onExit} />}
+    </WorldMenu>
   )
   const enabled = !cutscene && !menuOpen
 
@@ -222,6 +231,7 @@ export function World({ active, config, onExit }: WorldProps) {
         me={me}
         title={config.title}
         debrief={debrief}
+        guide={active.campaign && !ended ? designGuide(state) : undefined}
         enabled={enabled}
         onFailed={() => setClassic(true)}
         reportPose={session.reportPose}

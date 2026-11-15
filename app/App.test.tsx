@@ -1,7 +1,7 @@
 // Renders the shell to a string (no browser): which screen shows in which phase.
 
 import { renderToStaticMarkup } from 'react-dom/server'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import type { Command, Config, Player } from '../shared'
 import { simCore } from '../sim'
 import { demoConfig, fixtureDatasets, goodDesign } from '../sim/testing/fixtures'
@@ -28,37 +28,39 @@ const screen = (session: ReturnType<typeof soloSession>['session']) =>
 describe('start screen', () => {
   const html = renderToStaticMarkup(<App />)
 
-  it('is the real Start screen, opening on its menu, inside the shared theme', () => {
+  it('opens the guided mission board inside the shared theme', () => {
     expect(html).toContain('class="game-theme app"')
-    expect(html).toContain('ss-root')
-    expect(html).toContain('>Start</button>')
+    expect(html).toContain('Build your space program')
+    expect(html).toContain('Start guided mission')
   })
 
-  // Mode, mission and difficulty are later steps of the Start screen (ui/start/StartScreen.test.tsx).
-  it('asks for one thing at a time: no mission or difficulty list on the menu', () => {
-    expect(html.slice(0, html.indexOf('app-same-screen'))).not.toContain('<option')
+  it('shows only the first funded assignment as available to new players', () => {
+    expect(html).toContain('Funded · Ready to fly')
+    expect(html).toContain('Complete mission 1 to unlock')
+    expect(html).not.toContain('<option')
   })
 
-  it('offers today’s daily mission', () => {
-    expect(html).toContain('Play daily mission')
-    expect(html).toContain(`dateTime="${new Date().toISOString().slice(0, 10)}"`)
+  it('keeps free play, Daily and online accessible through the original Start flow', () => {
+    expect(html).toContain('Free play, Daily &amp; online')
+  })
+
+  it('preserves explicit Classic links and their solo/co-op automation landing', () => {
+    vi.stubGlobal('location', { search: '?world=classic', hash: '' })
+    try {
+      const classic = renderToStaticMarkup(<App />)
+      expect(classic).toContain('ss-root')
+      expect(classic).toContain('>Start</button>')
+      expect(classic).toContain('Play daily mission')
+      expect(classic).toContain('Play on one screen')
+      expect(classic).toContain('Guided missions')
+      expect(classic).not.toContain('Start guided mission')
+    } finally { vi.unstubAllGlobals() }
   })
 
   it('knows every scenario at every difficulty by id, the scenario as written first', () => {
     expect(SCENARIOS).toHaveLength(scenarios.length * Object.keys(DIFFICULTIES).length)
     expect(SCENARIOS[0]).toBe(scenarios[0])
     expect(SCENARIOS.map((scenario) => scenario.scenario_id)).toContain('mars-hard')
-  })
-
-  it('keeps play on one screen, which needs no network', () => {
-    expect(html).toMatch(/<button(?![^>]*disabled)[^>]*>Play on one screen/)
-  })
-
-  it('lists each mission once on the one-screen strip, with its own difficulty picker', () => {
-    const strip = html.slice(html.indexOf('app-same-screen'))
-    expect(strip.match(/<option/g)).toHaveLength(scenarios.length + Object.keys(DIFFICULTIES).length)
-    expect(strip).not.toContain('(Easy)')
-    expect(strip).toContain('>Difficulty<')
   })
 
   it('explains a failed join without net/ jargon', () => {

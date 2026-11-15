@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef } from 'react'
+import { useEffect, useId, useRef, type ReactNode } from 'react'
 import { SoundToggle } from '../ui/audio'
 
 interface WorldMenuProps {
@@ -9,10 +9,11 @@ interface WorldMenuProps {
   onTraining?: () => void
   onExit: () => void
   online: boolean
+  children?: ReactNode
 }
 
 /** One deliberate menu; the native dialog contains focus and makes the room inert. */
-export function WorldMenu({ open, disabled, onOpenChange, onClassic, onTraining, onExit, online }: WorldMenuProps) {
+export function WorldMenu({ open, disabled, onOpenChange, onClassic, onTraining, onExit, online, children }: WorldMenuProps) {
   const dialog = useRef<HTMLDialogElement>(null)
   const title = useId()
 
@@ -28,10 +29,10 @@ export function WorldMenu({ open, disabled, onOpenChange, onClassic, onTraining,
 
   useEffect(() => {
     const el = dialog.current!
-    if (open && !el.open) {
+    if (open && !disabled && !el.open) {
       document.exitPointerLock?.()
       el.showModal()
-    } else if (!open && el.open) {
+    } else if ((!open || disabled) && el.open) {
       el.close()
       document.querySelector<HTMLElement>(disabled ? '.st-skip' : '.mc-canvas, .sc-canvas')?.focus()
     }
@@ -45,6 +46,7 @@ export function WorldMenu({ open, disabled, onOpenChange, onClassic, onTraining,
         onCancel={(e) => { e.preventDefault(); onOpenChange(false) }}>
         <h1 id={title}>Mission menu</h1>
         <p className="game-muted">{online ? 'Your crew’s mission keeps running.' : 'Take a breath. Your mission is held.'}</p>
+        {children}
         <button type="button" className="game-button" autoFocus onClick={() => onOpenChange(false)}>Back to game</button>
         {onTraining && <button type="button" className="game-button" onClick={onTraining}>Flight training</button>}
         <SoundToggle />
