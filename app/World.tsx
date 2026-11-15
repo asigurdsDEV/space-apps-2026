@@ -5,7 +5,7 @@
 // over: back to mission control for the debrief. Same Session and Commands as the 2D screens, so
 // co-op works unchanged.
 
-import { useEffect, useMemo, useRef, useState, type ComponentType } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, type ComponentType } from 'react'
 import { getDatasets } from '../data'
 import type { Config, SimEvent, SimState, Summary } from '../shared'
 import { canSend, ROLES } from '../shared'
@@ -48,6 +48,8 @@ export interface WorldProps {
 }
 
 const LaunchView = SceneLaunchView as ComponentType<{ state: SimState; onDone: () => void }>
+/** Flight training (decision 006): the same lazy chunk the classic mission screen opens. */
+const Training = lazy(() => import('./Training'))
 
 export function World({ active, config, onExit }: WorldProps) {
   const { session, roomCode, daily } = active
@@ -115,6 +117,19 @@ export function World({ active, config, onExit }: WorldProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [flying])
 
+  // Flight training takes the spacecraft room's place while it is open. Practice only: it sends no commands.
+  // Solo, the clock waits for it like for a cutscene; an anomaly card or the end of the mission brings the player back.
+  const [training, setTraining] = useState(false)
+  const canTrain = flying && launched && !cutscene && !pendingDecision(state)
+  const showTraining = (open: boolean) => {
+    setTraining(open)
+    holdClock(open)
+  }
+  useEffect(() => {
+    if (training && !canTrain) showTraining(false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [training, canTrain])
+
   if (classic) return <GameScreen session={session} config={config} onExit={onExit} roomCode={roomCode} daily={daily} />
 
   const onCutscene = (playing: boolean) => {
@@ -125,6 +140,11 @@ export function World({ active, config, onExit }: WorldProps) {
   const bar = (
     <div className="app-world-bar">
       <SoundToggle />
+      {canTrain && (
+        <button type="button" className="game-button app-small" onClick={() => showTraining(true)}>
+          Flight training
+        </button>
+      )}
       <button type="button" className="game-button app-small" onClick={() => setClassic(true)}>
         Classic view
       </button>
@@ -143,6 +163,16 @@ export function World({ active, config, onExit }: WorldProps) {
           setLaunched(true)
         }}
       />
+    )
+  }
+
+  if (training && canTrain) {
+    return (
+      <div className="app-world app-world-training game-theme" data-theme="dark">
+        <Suspense fallback={<p className="app-training-loading" aria-busy="true">Loading flight training…</p>}>
+          <Training state={state} onClose={() => showTraining(false)} />
+        </Suspense>
+      </div>
     )
   }
 
