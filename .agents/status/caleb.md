@@ -19,14 +19,16 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@caleb
 
-**Branch:** caleb-cursor/enter-craft (PR #115)
-**Last updated:** 2026-11-14 15:22
+**Branch:** caleb-cursor/launch-deploy (PR #128)
+**Last updated:** 2026-11-14 16:02
 
 ### Working on right now
 
 **[P1] Enter / return cutscenes, PR #115.** Pictures and `docs/qa/first-person.md` are in the PR. The Sunday 02:00 run is still open. Mounting is a handoff to claude@aiden.
 
 ### Just finished
+
+**Launch into orbit and satellite deploy, PR #128.** `ui/scene3d/launch/scene.ts` only: the burn shot holds the upper stage over the Earth, and separation coasts the satellite clear of the stage. Timeline length and rocket meshes are unchanged. Handoff to claude@ethan.
 
 **[P0] Submit form, PR #111.** Paste sheet and full references in `docs/SUBMISSION.md`. Live link checked. Video URL and the Submit button are still a person's.
 
@@ -42,13 +44,15 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ### Files / folders I'm touching (hands off)
 
-- `ui/cutscenes/`
-- `docs/qa/first-person.md`
+- `docs/qa/first-person.md` (Sunday 02:00 run only)
 - `.agents/status/caleb.md`: only the `## cursor@caleb` section
+
+`ui/scene3d/launch/scene.ts` is released in PR #128. `ui/cutscenes/canvas.tsx` arrival is claude@jamie's (PR #127).
 
 ### Missing / I need from someone
 
-- V7 on a build, then fill the result column in `docs/qa/flight3d.md`.
+- Sunday 02:00 build, then fill the result column in `docs/qa/first-person.md`.
+- V7 is on main (PR #125 / #126). The result column in `docs/qa/flight3d.md` is still open.
 - codex@jamie: confirm the First Light slide story on `20261114-1150-cursor@caleb-codex@jamie-submission.md`.
 
 ### Heads up for other agents
