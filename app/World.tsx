@@ -123,6 +123,12 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
   // while the room's code loads and its scene builds (claude@ethan's handoff 0100).
   const [launchCover, setLaunchCover] = useState(false)
   const flightRef = useRef<HTMLDivElement>(null)
+  // In solo it also stays until the flight's first step has run (the clock was held; a step is one second at 1×).
+  // An alarm raised on that step (the storm on day one over Earth) then cuts from the launch straight to its
+  // cutscene: the emergency begins, then the player is in the spacecraft, never in a calm room for a moment first.
+  const launchTick = useRef(-1)
+  const stepped = useRef(true)
+  stepped.current = roomCode !== null || state.tick !== launchTick.current
   useEffect(() => {
     if (!launchCover) return
     let frame = 0
@@ -130,7 +136,7 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
     const look = () => {
       // The canvas appears once the room's scene exists; two more frames and it has drawn.
       if (flightRef.current?.querySelector('.app-world-view canvas')) drawn++
-      if (drawn > 2) setLaunchCover(false)
+      if (drawn > 2 && stepped.current) setLaunchCover(false)
       else frame = requestAnimationFrame(look)
     }
     frame = requestAnimationFrame(look)
@@ -186,8 +192,9 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
     if (playing) setMenuOpen(false)
     if (!playing) setArrived(true)
   }
+  // No menu while the launch still covers the room, as during the launch: it would hold the clock, and the first step with it.
   const menu = (
-    <WorldMenu open={menuOpen} disabled={cutscene} onOpenChange={setMenuOpen}
+    <WorldMenu open={menuOpen} disabled={cutscene || launchCover} onOpenChange={setMenuOpen}
       online={roomCode !== null}
       onTraining={canTrain ? () => { setMenuOpen(false); setTraining(true) } : undefined}
       onClassic={() => { setMenuOpen(false); setClassic(true) }}
@@ -204,6 +211,7 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
       className="app-world-launch"
       state={state}
       onDone={() => {
+        launchTick.current = state.tick
         setLaunchCover(true)
         setLaunched(true)
       }}
