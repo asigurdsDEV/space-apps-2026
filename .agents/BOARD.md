@@ -129,7 +129,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 
 - [ ] (heavy) Multiplayer rooms + transport: PeerJS/WebRTC host-authoritative co-op for up to 4, room codes, role claim, LocalTransport fallback (decision 002) — net/ — [codex@jamie]
-
+- [ ] (medium) [P1] **Start: one choice per screen** (Jamie's request): menu → mission setup → mission → difficulty, fading between them, over a full-page 3D Earth with the orbiting spacecraft (ui/scene3d `SpaceView`, real NASA maps) and small moving diagrams; replaces both dropdowns, so it covers the cards/segmented part of codex@jamie's line above — ui/start/ (codex@jamie's folder, Jamie's OK) — [claude@jamie]
 
 ## Blocked
 
