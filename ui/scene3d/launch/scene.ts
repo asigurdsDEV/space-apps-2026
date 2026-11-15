@@ -1,6 +1,6 @@
 // The three.js scene behind <LaunchView>. Every frame is a pure function of screen time, so the
 // sequence can be frozen at any second (the preview page, still frames for reduced motion).
-// Units are meters. Low shots happen over a flat ground plane; high shots over the round planet,
+// Units are meters. Low shots happen over a ground plane (bent to the Earth's curve once airborne); high shots over the round planet,
 // with the rocket at the origin and the planet turning underneath. The cuts hide the switch.
 // The climb is an illustration: the sim only decides whether the launch works.
 import * as THREE from 'three'
@@ -14,7 +14,7 @@ import { steadyResolution } from '../steady'
 import type { CraftSpec } from '../model'
 import { makeBirds } from './birds'
 import { altitudeM, downrangeM, pitchRad, vacuum } from './flight'
-import { flameColor, flameReach, flameShine, makeCloudDeck, makeEarthBelow, makeGlow, makeGround, makePlume, makePuffs, makeSky, makeSpaceSky, makeStars, smokiness, type Plume } from './fx'
+import { AIR, CLOUD_DECK_M, flameColor, flameReach, flameShine, makeCloudDeck, makeEarthBelow, makeGlow, makeGround, makePlume, makePuffs, makeSky, makeSpaceSky, makeStars, smokiness, type Plume } from './fx'
 import { siteUnit } from './layout'
 import { buildRocket, type Nozzle } from './rocket'
 import { buildCarrier, buildPad } from './site'
@@ -154,7 +154,8 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
   const birds = pad ? makeBirds(14, H, skyU.uTime) : null
   const carrier = air ? buildCarrier(spec.s1.radius) : null
   const standoff = pad?.standoff ?? 0
-  low.add(skyDome, makeGround(skyU, siteUnit(H), fireU), makeCloudDeck(skyU, 3_600))
+  // An air launch is flown out over the sea, with the coast 40 km to the west.
+  low.add(skyDome, makeGround(skyU, siteUnit(H), fireU, air ? 40_000 : 0), makeCloudDeck(skyU, CLOUD_DECK_M))
   if (pad) {
     shade(pad.group)
     low.add(pad.group, pad.backdrop, birds!.mesh)
@@ -480,8 +481,9 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
         fov = 38
         break
       case 'maxq':
+        // From above, looking back toward the land: the coast far below and the horizon show how high it is.
         onAxis(0.45, target)
-        eye.copy(target).add(tmp.set(lerp(1.5, 1.0, p) * H, -0.45 * H, 2.3 * H))
+        eye.copy(target).add(tmp.set(lerp(1.5, 1.0, p) * H, 0.5 * H, 2.3 * H))
         fov = 38
         shake = 0.45
         break
@@ -586,7 +588,8 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
       globe.position.set(0, -(EARTH_R + altitude), 0)
       globe.quaternion.copy(spin.setFromAxisAngle(Z, (downrangeM(met) + GROUND_MS * t) / EARTH_R)).multiply(globeStart)
     } else {
-      skyU.uSpace.value = smooth(4_000, 45_000, eye.y)
+      // How much of the air is below the camera: the sky overhead darkens and the pale band on the horizon narrows.
+      skyU.uSpace.value = eye.y > AIR ? 1 - Math.exp((AIR - eye.y) / 9_000) : 0
       skyDome.position.copy(eye)
       if (carrier) {
         // The aircraft holds its course; once the rocket is away it climbs and banks clear.
