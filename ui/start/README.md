@@ -45,9 +45,15 @@ Daily button appears on the menu step when both descriptor and callback are supp
 
 The screen is four steps that fade into each other: **menu** (Start, daily mission) → **mission setup** (solo / host / join, name; joining ends here with the room code) → **mission** (one card per scenario with its Normal budget and goal; picking one moves on) → **difficulty** (three buttons, the level's budget and goal, Start mission). There are no dropdowns. Back returns one step and keeps every choice. `StartRequest`, the daily callback, `busy` and `error` are unchanged. `initialStep` opens a later step for previews and tests.
 
-**Background:** the whole page sits on `SpaceView` from `ui/scene3d` in orbit mode (real NASA maps, the scenario's own spacecraft flying its starting orbit). It needs `entities` on the scenario, which is now an optional field of `StartScenario`; without it (or without WebGL) the page is plain black. The view ignores the pointer so the page scrolls as before. Text straight on the background is light in both themes; panels use the theme.
+**Background:** the whole page sits on `SpaceView` from `ui/scene3d` in orbit mode with `backdrop` (real NASA maps, the scenario's own spacecraft flying its starting orbit 3 times slower than elsewhere, no locator ring). It is fixed to the window and ignores the pointer, so the page scrolls over it. It needs `entities` on the scenario, an optional field of `StartScenario`; without it (or without WebGL) the page is plain black.
 
-**Diagrams:** `Diagram.tsx` shows one small moving diagram per step (mission plan, the four consoles, the trip, budget and goal bars). They are `aria-hidden` because the step's text says the same; hidden under 760 px.
+**Look (Jamie's request):** white and grey only, hairlines, see-through glass panels, Inter Tight Regular/Medium (a free stand-in for Ferrari Sans, from Google Fonts; offline it falls back to the system sans). `start.css` sets the shared theme tokens on `.ss-root`, and `.ss-root.ss-root` rules outrank the game theme's console look (amber, corner brackets, chamfered buttons, display caps). The page stays dark in the light theme, because it is space.
+
+**Children:** whatever the app passes as `children` (the one-screen strip) shows under the menu step only, on the same background, with the start look.
+
+**Fades:** each step change fades out and back in over 0.7 s each way (`FADE_MS`).
+
+**Diagrams:** `Diagram.tsx` shows one small moving diagram per step: the mission plan (three phases on a line, a light travelling down and each phase brightening as it passes), the four consoles, the trip, and budget and goal bars. They are `aria-hidden` because the step's text says the same; hidden under 760 px.
 
 **Reduced motion:** steps swap with no fade and the diagrams hold still (the 3D view already stops turning). After each step change, focus moves to the new step's heading.
 
