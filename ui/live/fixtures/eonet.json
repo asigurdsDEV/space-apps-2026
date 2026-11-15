@@ -1,0 +1,89 @@
+{
+ "title": "EONET Events",
+ "description": "Natural events from EONET.",
+ "link": "https://eonet.gsfc.nasa.gov/api/v3/events",
+ "events": [
+  {
+   "id": "EONET_26157",
+   "title": "Typhoon Cempaka",
+   "description": null,
+   "link": "https://eonet.gsfc.nasa.gov/api/v3/events/EONET_26157",
+   "closed": null,
+   "categories": [
+    {
+     "id": "severeStorms",
+     "title": "Severe Storms"
+    }
+   ],
+   "sources": [
+    {
+     "id": "JTWC",
+     "url": "https://www.metoc.navy.mil/jtwc/products/wp3126.tcw"
+    }
+   ],
+   "geometry": [
+    {
+     "magnitudeValue": 65,
+     "magnitudeUnit": "kts",
+     "date": "2026-11-11T06:00:00Z",
+     "type": "Point",
+     "coordinates": [
+      150.2,
+      29.1
+     ]
+    },
+    {
+     "magnitudeValue": 65,
+     "magnitudeUnit": "kts",
+     "date": "2026-11-11T12:00:00Z",
+     "type": "Point",
+     "coordinates": [
+      154.1,
+      30.2
+     ]
+    }
+   ]
+  },
+  {
+   "id": "EONET_26158",
+   "title": "Tropical Storm Pena",
+   "description": null,
+   "link": "https://eonet.gsfc.nasa.gov/api/v3/events/EONET_26158",
+   "closed": null,
+   "categories": [
+    {
+     "id": "severeStorms",
+     "title": "Severe Storms"
+    }
+   ],
+   "sources": [
+    {
+     "id": "JTWC",
+     "url": "https://www.metoc.navy.mil/jtwc/products/cp0426.tcw"
+    }
+   ],
+   "geometry": [
+    {
+     "magnitudeValue": 35,
+     "magnitudeUnit": "kts",
+     "date": "2026-11-12T06:00:00Z",
+     "type": "Point",
+     "coordinates": [
+      -171.3,
+      9.8
+     ]
+    },
+    {
+     "magnitudeValue": 30,
+     "magnitudeUnit": "kts",
+     "date": "2026-11-12T12:00:00Z",
+     "type": "Point",
+     "coordinates": [
+      -173.2,
+      9.8
+     ]
+    }
+   ]
+  }
+ ]
+}
