@@ -278,6 +278,10 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
   const sunView = new THREE.Vector3()
   const p3 = new THREE.Vector3()
   const outAxis = new THREE.Vector3()
+  const tail = new THREE.Vector3()
+  const trailHead = new THREE.Vector3()
+  const trailStart = new THREE.Vector3()
+  const exhaust = new THREE.Vector3()
   /** World position of the point `f` rocket-heights up the stack. */
   const onAxis = (f: number, out: THREE.Vector3) => out.copy(model.root.position).addScaledVector(axis, f * H)
 
@@ -699,20 +703,33 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
         const head = id === 'failure' ? Math.min(met, missionTime(timeline, stage.start + BLAST * (stage.end - stage.start))) : met
         if (head > from) {
           // The smoke starts where the flame ends: on the pad that is under the ground, so the flame stands clear.
-          const s0 = pathS(head) - H * 0.55 * Math.max(0.85 * flameReach(n1.propellant), nb && sB <= 0 ? 0.95 * flameReach(nb.propellant) : 0)
+          const lead = H * 0.55 * Math.max(0.85 * flameReach(n1.propellant), nb && sB <= 0 ? 0.95 * flameReach(nb.propellant) : 0)
+          const s0 = pathS(head) - lead
           const first = Math.floor(s0 / gap)
           const floor = pathS(from)
+          // The flame points along the rocket's axis, not along its path: new smoke leaves the end of each burning nozzle's
+          // flame on that axis and bends onto the path flown over two rocket lengths. The rocket's attitude holds after a blast.
+          tail.set(0, -1, 0).applyQuaternion(model.root.quaternion)
+          basePos(head, trailHead)
+          basePos(metAtPath(s0, from, head), trailStart)
+          const sources = nb && sB <= 0 ? model.boosters.length : 0
           for (let j = 0; j < 70; j++) {
             const s = (first - j) * gap
             if (s < floor) break
             const m = metAtPath(s, from, head)
             const age = met - m + 0.05
             basePos(m, p3)
+            const bend = smooth(0, 2 * H, p3.distanceTo(trailStart))
+            const b = sources ? model.boosters[Math.abs((first - j) % sources)]!.home : null
+            exhaust.set(b ? b.x : 0, b ? b.y + nb!.y : model.stage1.position.y + n1.y, b ? b.z : 0).applyQuaternion(model.root.quaternion)
+            exhaust.add(trailHead).addScaledVector(tail, lead + p3.distanceTo(trailStart))
+            p3.lerp(exhaust, 1 - bend)
             // The newest puffs of dense smoke are small, not thin: it is opaque from the start.
             const young = Math.min(1, j / 3 + (dense ? 0.4 : 0.2))
             const size = W * (3 + 4.5 * Math.sqrt(age)) * (0.8 + 0.4 * hash(first - j)) * (dense ? young : 1)
-            p3.x += (hash(first - j + 0.3) - 0.5) * size * 0.5
-            p3.z += (hash(first - j + 0.6) - 0.5) * size * 0.5
+            const spread = size * 0.5 * lerp(0.3, 1, bend)
+            p3.x += (hash(first - j + 0.3) - 0.5) * spread
+            p3.z += (hash(first - j + 0.6) - 0.5) * spread
             ;(dense ? clouds : puffs).add(p3.x, p3.y, p3.z, size, trail * (dense ? 1 : young) * (1 - j / 70) * lerp(1, 0.55, thin), Math.exp(-age * 5) * 0.6, hash(first - j + 0.9))
           }
         }
