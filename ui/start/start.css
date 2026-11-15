@@ -38,11 +38,20 @@
 .ss-root.ss-root :is(.game-panel, [class$="-panel"], [class*="card"]) { background-image: none; }
 .ss-root.ss-root :is([class*="primary"], button[type="submit"]):not(:disabled) { clip-path: none; padding-inline: 1.5em; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.24em; }
 .ss-root :focus-visible { outline: 1px solid #fff; outline-offset: 4px; }
+/* Rounded corners everywhere (the game theme squares them with !important). */
+.ss-root.ss-root :is(.ss-panel, .ss-diagram) { border-radius: 22px !important; }
+.ss-root.ss-root :is(button, .ss-mode, .ss-program button, .ss-primary, .ss-back, .ss-daily-button) { border-radius: 14px !important; }
+.ss-root.ss-root :is(.ss-stats, .ss-stats > div, .ss-parts, .ss-parts > div) { border-radius: 0 !important; }
 .ss-root h1:focus { outline: none; }
 .ss-root :disabled { opacity: 0.45; cursor: not-allowed; }
 
 /* Background: fixed to the window, so it stays put while the page scrolls. */
-.ss-bg.s3d { position: fixed; inset: 0; z-index: -1; height: auto; border-radius: 0; pointer-events: none; }
+.ss-bg.s3d { position: fixed; inset: 0; z-index: -1; height: auto; border-radius: 0; }
+.ss-bg .s3d-canvas { cursor: default; }
+.ss-bg::after { pointer-events: none; }
+/* Clicks pass through the empty parts of the layout to the satellite; panels, text and diagrams still take them. */
+.ss-stage, .ss-side { pointer-events: none; }
+.ss-panel, .ss-intro, .ss-diagram { pointer-events: auto; }
 .ss-bg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgb(0 0 2 / 0.7), transparent 50%, rgb(0 0 2 / 0.35)); }
 
 .ss-masthead { width: 100%; max-width: 1240px; margin: 0 auto; padding-bottom: 22px; border-bottom: 1px solid var(--ss-line); display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; color: var(--game-muted); font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; }
@@ -82,18 +91,36 @@
 .ss-mode span { margin-top: 4px; color: var(--game-muted); font-size: 0.75rem; font-weight: 400; }
 .ss-root .ss-mode[aria-pressed="true"] { border-color: #fff; background: var(--game-selected); }
 
+.ss-root.ss-root .ss-link { display: block; margin: 16px auto 0; padding: 8px 12px; border: 0; background: none; color: var(--game-muted); font-size: 0.78rem; letter-spacing: 0.12em; cursor: pointer; transition: color 300ms ease; }
+.ss-root.ss-root .ss-link:hover { color: #fff; background: none; }
+
+/* The spacecraft page: the starting design, part by part. */
+.ss-lead { margin: 0 0 20px; }
+.ss-parts { margin: 0; max-height: min(52vh, 460px); overflow-y: auto; border-top: 1px solid var(--ss-line); scrollbar-width: thin; scrollbar-color: rgb(255 255 255 / 0.25) transparent; }
+.ss-parts > div { display: grid; grid-template-columns: 7.5rem 1fr; gap: 16px; padding: 14px 4px; border-bottom: 1px solid var(--ss-line); }
+.ss-parts dt { padding-top: 3px; color: var(--game-muted); font-size: 0.62rem; letter-spacing: 0.22em; text-transform: uppercase; }
+.ss-parts dd { margin: 0; }
+.ss-parts strong { display: block; font-weight: 500; }
+.ss-parts span { display: block; margin-top: 2px; color: var(--game-muted); font-size: 0.82rem; line-height: 1.5; }
+
 /* Missions: a hairline list. */
 .ss-program { display: grid; border-top: 1px solid var(--ss-line); }
 .ss-root.ss-root .ss-program button { display: grid; grid-template-columns: auto 1fr; gap: 4px 18px; align-items: center; padding: 18px 12px; border: 0; border-bottom: 1px solid var(--ss-line); background: transparent; color: var(--game-text); text-align: left; font-size: 1rem; cursor: pointer; transition: background 300ms ease; }
 .ss-root .ss-program button[aria-pressed="true"] { background: var(--game-selected); }
+.ss-program { border-top: 0; gap: 4px; }
+.ss-root.ss-root .ss-program button { border: 1px solid transparent; }
+.ss-root.ss-root .ss-program button[aria-pressed="true"] { border-color: var(--ss-line); }
 .ss-program small { display: block; color: var(--game-muted); font-size: 0.65rem; letter-spacing: 0.24em; }
 .ss-program strong { display: block; font-size: 1.05rem; font-weight: 500; }
 .ss-program em { display: block; color: var(--game-muted); font-size: 0.82rem; font-style: normal; }
 .ss-chips { grid-column: 2; display: flex; flex-wrap: wrap; gap: 0 14px; color: var(--game-muted); font-size: 0.75rem; font-weight: 400; letter-spacing: 0.04em; }
-.ss-world { display: block; width: 30px; height: 30px; border-radius: 50%; background: radial-gradient(circle at 32% 28%, #e8ecf2, #7d8696 55%, #15181e); }
-.ss-world-demo { background: radial-gradient(ellipse at 30% 22%, #a8dec2 0 12%, transparent 14%), radial-gradient(circle at 30% 25%, #9fd2e6, #2b6f92 55%, #0b141f); }
-.ss-world-moon { background: radial-gradient(circle at 60% 60%, #6a7080 0 16%, transparent 18%), radial-gradient(circle at 30% 25%, #ecebe4, #8a8f9a 55%, #15181e); }
-.ss-world-mars { background: radial-gradient(circle at 30% 25%, #f0b48a, #a24a32 55%, #1f1513); }
+.ss-world { --g: 46px; position: relative; display: block; width: var(--g); height: var(--g); border-radius: 50% !important; background: radial-gradient(circle at 32% 28%, #e8ecf2, #7d8696 55%, #15181e); background-size: calc(var(--g) * 2) var(--g); background-repeat: repeat-x; background-blend-mode: screen; box-shadow: inset -9px -7px 14px rgb(0 0 0 / 0.9), inset 2px 2px 6px rgb(255 255 255 / 0.18); animation: ss-turn 48s linear infinite; }
+/* Lit from the upper left like the Earth behind it: a soft terminator over the real map. */
+.ss-world::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 34% 30%, rgb(255 255 255 / 0.16), transparent 38%, rgb(0 0 0 / 0.55) 78%); }
+.ss-world-demo, .ss-world-sandbox { box-shadow: inset -9px -7px 14px rgb(0 0 0 / 0.9), inset 2px 2px 6px rgb(255 255 255 / 0.18), 0 0 10px rgb(110 160 255 / 0.35); }
+.ss-world-mars { box-shadow: inset -9px -7px 14px rgb(0 0 0 / 0.9), 0 0 8px rgb(230 140 100 / 0.2); }
+.ss-world-moon { animation-duration: 120s; }
+@keyframes ss-turn { to { background-position-x: calc(var(--g) * -2); } }
 
 .ss-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 28px 0 0; padding-top: 20px; border-top: 1px solid var(--ss-line); }
 .ss-stats dt { color: var(--game-muted); font-size: 0.65rem; letter-spacing: 0.24em; text-transform: uppercase; }
@@ -162,8 +189,10 @@
 @media (prefers-reduced-motion: reduce) {
   .ss-stage, .ss-footer, .ss-diagram, .ss-draw, .ss-draw.ss-dash, .ss-pulse, .ss-plan li { animation: none; transition: none; stroke-dashoffset: 0; opacity: 1; }
   .ss-diagram .ss-dot, .ss-plan-dot { display: none; }
+  .ss-world { animation: none; }
 }
 @media (max-width: 760px) {
+  .ss-parts > div { grid-template-columns: 1fr; gap: 4px; }
   .ss-masthead { gap: 8px 16px; }
   .ss-masthead > span:not(.ss-edition):not(.ss-brand) { display: none; }
   .ss-edition { font-size: 0.6rem; }

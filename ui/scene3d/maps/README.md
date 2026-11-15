@@ -22,6 +22,8 @@ Credit line for the References list: *Planet maps: NASA Visible Earth (Blue Marb
 
 **Relief (claude@ethan):** for the Moon and Mars, `relief()` in `planetShader` reads the slope of the elevation map (`uHeight`, `uHasHeight`) and tilts the surface normal, so real crater walls, basins, volcanoes and canyons catch the light at the day/night line. It is drawn 5 times steeper than the real ground, as shaded-relief maps are, because real slopes are too gentle to see from orbit. The drawn Mars volcanoes and canyon are switched off when the real elevation is there.
 
+**Start screen icons:** `ui/start/StartScreen.tsx` also imports `earth-day`, `earth-night`, `earth-clouds`, `moon` and `mars` with `?url` for the small globes on the mission cards, so those five are also served as plain files.
+
 **Fallback:** a material without these uniforms, or with a map that failed to decode, has `uHasMap` = 0 and draws today's procedural look. `launch/` and the flight view still work with just `{ uSun, uBody }`.
 
 **Clouds (claude@ethan):** `cloudShader` reads `uClouds` for where the clouds are and how thick, drifts them slowly east, and breaks their soft edges into small cells so a view from low orbit is not a blur. Without the map it draws the old code-made clouds.

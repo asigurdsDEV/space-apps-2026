@@ -28,6 +28,8 @@ export interface WorldOptions {
   onShadow?: (inShadow: boolean) => void
   /** Drawn as a page background: the craft laps 3 times slower and has no locator ring. */
   backdrop?: boolean
+  /** Called when the spacecraft is clicked or tapped (orbit mode). The pointer turns into a hand over it. */
+  onCraftClick?: () => void
 }
 
 export interface World {
@@ -244,9 +246,10 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
   const controls = new OrbitControls(camera, renderer.domElement)
   controls.enableDamping = true
   controls.enablePan = false
-  controls.enabled = options.interactive
+  // A backdrop never drags or zooms, so the page under the cursor still scrolls.
+  controls.enabled = options.interactive && !options.backdrop
   // OrbitControls always sets touch-action: none; give touch scrolling back when dragging is off.
-  if (!options.interactive) renderer.domElement.style.touchAction = 'auto'
+  if (!controls.enabled) renderer.domElement.style.touchAction = 'auto'
   controls.autoRotate = !options.reducedMotion
   const motion = options.reducedMotion ? 0 : 1
 
@@ -376,6 +379,28 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
     }
   }
 
+  // The craft is a few pixels wide, so anything within HIT_PX of it on screen counts, unless the planet hides it.
+  const HIT_PX = 36
+  const onScreen = new THREE.Vector3()
+  function overCraft(event: MouseEvent): boolean {
+    if (shown !== 'orbit') return false
+    const toCraft = pos.clone().sub(camera.position)
+    const t = -camera.position.dot(toCraft) / toCraft.lengthSq() // closest approach of the sight line to the planet's centre
+    if (t > 0 && t < 1 && camera.position.clone().addScaledVector(toCraft, t).length() < 1) return false
+    onScreen.copy(pos).project(camera)
+    const box = renderer.domElement.getBoundingClientRect()
+    const x = box.left + ((onScreen.x + 1) / 2) * box.width
+    const y = box.top + ((1 - onScreen.y) / 2) * box.height
+    return Math.hypot(event.clientX - x, event.clientY - y) < HIT_PX
+  }
+  const craftClick = options.onCraftClick
+  const hover = (event: PointerEvent) => { renderer.domElement.style.cursor = overCraft(event) ? 'pointer' : '' }
+  const click = (event: MouseEvent) => { if (overCraft(event)) craftClick?.() }
+  if (craftClick) {
+    renderer.domElement.addEventListener('pointermove', hover)
+    renderer.domElement.addEventListener('click', click)
+  }
+
   // Slower graphics chips get fewer pixels, not fewer frames (steady.ts).
   const steady = steadyResolution((ratio) => {
     renderer.setPixelRatio(ratio)
@@ -437,6 +462,8 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
       progress = next === null ? null : Math.min(1, Math.max(0, next))
     },
     dispose() {
+      renderer.domElement.removeEventListener('pointermove', hover)
+      renderer.domElement.removeEventListener('click', click)
       renderer.setAnimationLoop(null)
       visibility.disconnect()
       resizeObserver.disconnect()
