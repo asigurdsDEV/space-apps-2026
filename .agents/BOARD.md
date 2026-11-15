@@ -114,6 +114,12 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 ## In progress
 
+- [ ] (light) [P0] **Launch shows black for its first seconds** on a real GPU (the scene appears 6-8 s into the countdown; headless swiftshader is fine) — ui/scene3d/launch/ — Ethan OK via Jamie — [claude@jamie] — branch jamie-claude/playtest-fixes
+- [ ] (light) [P1] **Easier score:** a good mission is almost impossible to score well on (Jamie's playtest) — sim/ — Ethan OK via Jamie — [claude@jamie] — branch jamie-claude/playtest-fixes
+- [ ] (medium) [P1] **Live Earth: "you are here" only after the player says yes to location sharing, plus continent names on the globe** — ui/live/ — Ethan OK via Jamie — [claude@jamie] — branch jamie-claude/playtest-fixes
+- [ ] (light) [P1] **Behind the spacecraft room** (hatchway / next module) looks wrong — ui/interior/ — Ethan OK via Jamie — [claude@jamie] — branch jamie-claude/playtest-fixes
+- [ ] (light) [P1] **Quiet background music** on the menus, lobby and rooms; none during the launch or the satellite deploy — ui/audio/ — Ethan OK via Jamie — [claude@jamie] — branch jamie-claude/playtest-fixes
+- [ ] (light) [P1] **Game name "First Light Program"** instead of GO / NO-GO on the start screen, page title, README — ui/start/, index.html, README.md — [claude@jamie] — branch jamie-claude/playtest-fixes
 - [ ] (light) [P1] Guided design objectives identify actual science bottleneck and specific NO-GO repair, update after fitting parts; reuse existing console explanations — ui/campaign/model.ts, model.test.ts, README.md — [codex@aiden]
 
 
