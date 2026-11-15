@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { getDatasets, getScenario } from '../../data'
 import { catalogEntities } from '../../sim'
 import type { Command, Decision } from '../../shared'
-import { choiceSpots, choiceTitleAt, gauges, interactables, modules, obstacles, ROOM } from './layout'
+import { choiceSpots, choiceTitleAt, DASH, dialAngle, gauges, interactables, modules, obstacles, ROOM, SPEEDS, WINDOW } from './layout'
 
 const config = getScenario('demo')!
 const state = { entities: catalogEntities(getDatasets(config.datasets)), params: { ...config.params, instruments: 'camera-basic,magnetometer' } as typeof config.params }
@@ -63,6 +63,26 @@ describe('walk-in spacecraft layout', () => {
     items.find((i) => i.id === 'speed')!.use()
     expect(sent.at(-1)).toEqual({ type: 'set_speed', payload: { multiplier: 20 } })
     expect(items.find((i) => i.id === 'pause')!.disabled).toBeTruthy() // time is held until the alarm is answered
+  })
+
+  it('the speed switch has a stop for each speed, left to right, and the controls sit on the console', () => {
+    const stops = SPEEDS.map(dialAngle)
+    expect(stops).toEqual([...stops].sort((a, b) => a - b))
+    expect(new Set(stops).size).toBe(SPEEDS.length)
+    expect(stops[0]).toBeCloseTo(-stops.at(-1)!)
+    expect(Math.abs(stops[0]!)).toBeLessThan(Math.PI / 2) // every number stays on the far side of the knob, where it can be read
+    for (const id of ['pause', 'speed']) {
+      const at = interactables(list, { send: () => {}, paused: false, speed: 1, decision: null }).find((i) => i.id === id)!.at
+      expect(Math.abs(at[0])).toBeLessThan(DASH.w / 2)
+      expect(Math.abs(at[2] - DASH.z)).toBeLessThan(DASH.depth / 2)
+    }
+  })
+
+  it('the window is a hole in the front wall, above the console', () => {
+    expect(WINDOW.x - WINDOW.w / 2).toBeGreaterThan(ROOM.min[0])
+    expect(WINDOW.x + WINDOW.w / 2).toBeLessThan(ROOM.max[0])
+    expect(WINDOW.y - WINDOW.h / 2).toBeGreaterThan(DASH.top)
+    expect(WINDOW.y + WINDOW.h / 2).toBeLessThan(ROOM.max[1])
   })
 
   it('gauges are numbers, clamped, and flag lost data', () => {

@@ -5,7 +5,7 @@
 // Seen from above (you start at the back, facing the window):
 //
 //   z=-3    [        WINDOW: where your spacecraft is        ]
-//   z=-2.1  [ DASHBOARD: gauges · time lever ]
+//   z=-2.1  [ CONSOLE: gauges · your craft · pause button · speed switch ]
 //   x=-4    power  battery                    radio  storage   x=+4
 //   z=+3    [ instruments along the back wall ]
 
@@ -15,9 +15,11 @@ import type { Command, Decision, Entity, Metrics, Role, SimState } from '../../s
 
 export const ROOM = { min: [-4, 0, -3] as Vec3, max: [4, 3.2, 3] as Vec3 }
 export const START: { pos: Vec3; yaw: number } = { pos: [0, 0, 1.6], yaw: 0 }
-export const WINDOW = { x: 0, y: 1.9, w: 5, h: 1.6 }
+export const WINDOW = { x: 0, y: 2, w: 5.6, h: 1.8 }
 export const DASH = { z: -2.15, w: 4.4, depth: 0.6, top: 0.95 }
 export const SPEEDS = [1, 5, 20, 60] as const
+/** Where the speed switch points, radians clockwise from straight ahead: its stops fan evenly across the top of its dial. */
+export const dialAngle = (speed: number) => (Math.max(0, SPEEDS.indexOf(speed as (typeof SPEEDS)[number])) - (SPEEDS.length - 1) / 2) * 0.7
 
 export type ModuleKey = 'solar' | 'battery' | 'comms' | 'storage' | 'bus' | `instrument:${string}`
 
@@ -116,7 +118,7 @@ export function gauges(m: Metrics): Gauge[] {
 /** At most `words` words. */
 export const words = (text: string, max: number) => text.split(/\s+/).slice(0, max).join(' ').replace(/[,;:.–-]+$/, '')
 
-/** Room walls and module pedestals, so the player walks around them. */
+/** Room walls, the console and the module mounts, so the player walks around them. */
 export function obstacles(list: readonly Module[]): Obstacle[] {
   const [x0, , z0] = ROOM.min
   const [x1, , z1] = ROOM.max
@@ -141,12 +143,12 @@ export interface FlightOptions {
   decisionBlocked?: string
 }
 
-/** What E does in the spacecraft: the time lever, and the anomaly card's choices when one is waiting. */
+/** What E does in the spacecraft: the pause button and the speed switch on the console, and the anomaly card's choices when one is waiting. */
 export function interactables(list: readonly Module[], { send, paused, speed, decision, decisionBlocked }: FlightOptions): Interactable[] {
   const next = SPEEDS.find((s) => s > speed) ?? SPEEDS[0]
   const out: Interactable[] = [
-    { id: 'pause', at: [1.4, 1.1, DASH.z + 0.05], label: paused ? 'Resume time' : 'Pause time', disabled: decision ? 'Answer the alarm first' : undefined, use: () => send({ type: paused ? 'resume' : 'pause', payload: {} }) },
-    { id: 'speed', at: [1.9, 1.1, DASH.z + 0.05], label: `Speed ${next}×`, use: () => send({ type: 'set_speed', payload: { multiplier: next } }) },
+    { id: 'pause', at: [1.4, 1, DASH.z + 0.1], label: paused ? 'Resume time' : 'Pause time', disabled: decision ? 'Answer the alarm first' : undefined, use: () => send({ type: paused ? 'resume' : 'pause', payload: {} }) },
+    { id: 'speed', at: [1.9, 1, DASH.z + 0.1], label: `Speed ${next}×`, use: () => send({ type: 'set_speed', payload: { multiplier: next } }) },
   ]
   if (decision) {
     const spots = choiceSpots(decision, list)
