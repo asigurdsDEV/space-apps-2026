@@ -5,7 +5,7 @@
 **Challenge:** [Space Mission Design Game](https://www.spaceappschallenge.org/2026/challenges/space-mission-design-game/)
 **Project:** Space Mission Design Game
 **Repo:** https://github.com/asigurdsDEV/space-apps-2026
-**Live link:** https://asigurdsdev.github.io/space-apps-2026/
+**Live link:** https://nasaspacemission.vercel.app (mirror without the online-play relay: https://asigurdsdev.github.io/space-apps-2026/)
 **License:** MIT
 
 This page is the text to paste into the Space Apps project form. The project form takes a **30-second video** or a slide deck of **at most 7 slides**. Spoken words are the narration in `docs/PITCH.md`. Shot timing is in `docs/DEMO.md`. Those files stay with their owners. This page does not replace them.
@@ -17,7 +17,7 @@ This page is the text to paste into the Space Apps project form. The project for
 | Project name | Space Mission Design Game |
 | Team | Kimchi Trenchers |
 | Challenge | Space Mission Design Game |
-| Project link | https://asigurdsdev.github.io/space-apps-2026/ |
+| Project link | https://nasaspacemission.vercel.app |
 | Repository | https://github.com/asigurdsDEV/space-apps-2026 |
 | Description | The Project summary below |
 | NASA data | The Form sentences in NASA resources used |
@@ -27,6 +27,8 @@ This page is the text to paste into the Space Apps project form. The project for
 
 A person on the team still has to press Submit. This page cannot file the form.
 
+**Project link check, 2026-11-15 02:05 (claude@aiden):** https://nasaspacemission.vercel.app is Aiden's Vercel project. It serves the same build as `main` and deploys every push, and `/api/ice` returns the Cloudflare TURN relay for online play across networks. The guided First Light was played first-person from the mission board to "Moon Mapper unlocked" with no page errors (`e2e/world.mjs`, on the dev build of the same code).
+
 **Project link check, 2026-11-14 14:56:** https://asigurdsdev.github.io/space-apps-2026/ opens the game. The page title is Space Mission Design Game. The start screen shows First Light, Moon Mapper, and Red Planet Radar, plus Play solo, Host online, and Join a room. It is not a scaffold page. Sandbox is not on that screen. This check used a fresh browser tab, not a private window. The page is static, so a private window shows the same start screen.
 
 ## Project summary
@@ -35,9 +37,9 @@ Students can name a satellite's instruments without seeing why a real mission ca
 
 The player picks a launch vehicle, an orbit, a spacecraft bus, instruments, power, and a radio. The simulation connects those choices to mass, power, cost, data, and communications. A better instrument can still lose if it is too heavy for the rocket, too expensive, or makes more data than the radio can send home. The teaching line for the beginner mission, First Light, is: "Your radio is part of your science."
 
-The play path on the live site is Start, Briefing, Build, GO/NO-GO, launch, Fly, and Results. Online play is for up to four people in roles (mission planning, spacecraft, science, communications/resources). One browser runs the simulation. The same mission can be played on one device.
+The game opens on a mission board: a guided campaign from Earth (First Light) to the Moon and Mars, plus free play, the daily mission and online rooms. A mission is played in first person. You walk mission control and fit parts at hologram stations, check the four GO/NO-GO consoles, and launch. Then you fly from inside the spacecraft, answer alarms at its panels, and come back to the debrief. It plays with keyboard and mouse, or with thumb pads on a phone. Classic view in the menu keeps the original 2D screens (Briefing, Build, GO/NO-GO, Fly, Results). Online play is for up to four people in roles (mission planning, spacecraft, science, communications/resources). One browser runs the simulation. The same mission can be played on one device.
 
-**What is true now:** the live link is the game, not a scaffold page. A solo First Light run on 2026-11-14 went from Start to Results on desktop and on a phone. Host and Join are on the start screen. Earth, the Moon, and Mars use the public-domain maps in References. The four-device venue rehearsal is still open. Sandbox mode and part build-times are in PR #105 and are not on this live site until that pull request merges, so leave them out of the form until then. Read the result text on screen when you record. Do not recite a score from an older check.
+**What is true now:** the live link is the game, not a scaffold page. A solo First Light run on 2026-11-14 went from Start to Results on desktop and on a phone. Host and Join are on the start screen. Earth, the Moon, and Mars use the public-domain maps in References. The four-device venue rehearsal is still open. Sandbox mode and part build-times (PR #105) are merged and live. Read the result text on screen when you record. Do not recite a score from an older check.
 
 ## NASA resources used
 
