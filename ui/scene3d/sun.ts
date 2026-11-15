@@ -23,6 +23,14 @@ export function sunDirection(date: Date): Vec3 {
   return [c * Math.cos(lon * RAD), Math.sin(lat * RAD), -c * Math.sin(lon * RAD)]
 }
 
+/** The scene Sun that lets the Earth stand pole-up (+Y): `compass` swung up or down to the real Sun's height over the equator. */
+export function uprightSun(sunInMap: Vec3, compass: Vec3): Vec3 {
+  const height = unit(sunInMap)[1]
+  const flat = Math.sqrt(1 - height * height)
+  const [x, , z] = without(compass, [0, 1, 0])
+  return [x * flat, height, z * flat]
+}
+
 /**
  * How to turn an Earth globe drawn in the map frame so the real daylight faces the scene's Sun: a quaternion [x, y, z, w]
  * that takes `sunInMap` (from `sunDirection`) onto `sunInScene`, with the north pole as near `poleHint` as that allows.

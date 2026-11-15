@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { earthOrientation, subsolarPoint, sunDirection } from './sun'
+import { earthOrientation, subsolarPoint, sunDirection, uprightSun } from './sun'
 
 describe('real Sun position', () => {
   it('is over the equator near Greenwich at noon UTC on the March equinox', () => {
@@ -46,5 +46,26 @@ describe('real Sun position', () => {
     // Near a half turn (it comes once a day) a Sun vector that is only roughly unit length must not flip the globe.
     const halfTurn = sunDirection(new Date('2026-07-20T00:22:00Z'))
     expect(dot(turn(earthOrientation(halfTurn, sceneSun, [0, Math.cos(1.1), Math.sin(1.1)]), halfTurn), sceneSun)).toBeCloseTo(1, 3)
+  })
+  it('stands the north pole straight up when the scene Sun is at its real height, with the noon point still on the Sun', () => {
+    type V = [number, number, number]
+    const turn = ([x, y, z, w]: number[], [a, b, c]: V): V => {
+      const [i, j, k] = [y * c - z * b, z * a - x * c, x * b - y * a]
+      return [a + 2 * (w * i + y * k - z * j), b + 2 * (w * j + z * i - x * k), c + 2 * (w * k + x * j - y * i)]
+    }
+    const compass: V = [0.8377, 0.2932, 0.4607] // world.ts SUN
+    for (const when of ['2026-03-20T12:00:00Z', '2026-06-21T18:00:00Z', '2026-11-15T09:00:00Z', '2026-12-21T00:00:00Z', '2026-07-20T00:22:00Z']) {
+      const date = new Date(when)
+      const sun = uprightSun(sunDirection(date), compass)
+      expect(Math.hypot(...sun)).toBeCloseTo(1, 9)
+      expect(Math.asin(sun[1]) * (180 / Math.PI)).toBeCloseTo(subsolarPoint(date)[0], 6) // as high as the real Sun stands over the equator
+      expect(sun[2] / sun[0]).toBeCloseTo(compass[2] / compass[0], 9) // and still on the same side of the scene
+      const q = earthOrientation(sunDirection(date), sun)
+      const pole = turn(q, [0, 1, 0])
+      expect(pole[1]).toBeGreaterThan(0.999999)
+      expect(Math.hypot(pole[0], pole[2])).toBeLessThan(1e-3)
+      const noon = turn(q, sunDirection(date))
+      expect(noon[0] * sun[0] + noon[1] * sun[1] + noon[2] * sun[2]).toBeCloseTo(1, 6)
+    }
   })
 })
