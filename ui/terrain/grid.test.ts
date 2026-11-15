@@ -1,3 +1,4 @@
+// @ts-expect-error The app's tsconfig has no Node types; Vitest runs this file in Node.
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { elevationAt, groundPoint, isPatchMeta, localXZ, patchMetres, type PatchMeta } from './grid'
