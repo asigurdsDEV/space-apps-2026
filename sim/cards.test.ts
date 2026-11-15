@@ -114,7 +114,7 @@ describe('anomaly cards', () => {
     expect(mars.has('geomagnetic-storm')).toBe(false)
     expect(mars.has('radiation-zone')).toBe(false)
     expect(mars.has('dust-storm')).toBe(true)
-  })
+  }, 20_000) // 50 full missions: over the 5 s default on GitHub's runner
 
   it('a gamble can end the mission, and the summary says it failed', () => {
     // Search the seeds for a lost gamble: with option b on every card, some mission must be lost.
