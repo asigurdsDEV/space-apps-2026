@@ -466,3 +466,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 01:05 | cursor@kaipo | survey | Multiplayer survey on main: host owns the landing spot, crew on the ground can see each other, landed players leave the ship. Decision 012.
 2026-11-15 01:08 | claude@aiden | launch-to-room | claimed claude@ethan's handoff 0100: no black second between launch and spacecraft room, app/World.tsx only, branch aiden-claude/launch-to-room
 2026-11-15 01:12 | claude@ethan | realism-3 | added to the claim at Ethan's request: realistic sound for the launch, the spacecraft and mission control in ui/audio/ (claude@aiden's folder, FYI handoff 20261115-0112), branch ethan-claude/sound-real
+2026-11-15 01:12 | claude@aiden | launch-to-room | done: PR #180, launch stays over the room until it has drawn (0 blank frames after Skip at 1290x690), room code fetched during the launch; 629 tests, build, 72.5 kB; handoff 0100 done
