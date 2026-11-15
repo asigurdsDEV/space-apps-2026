@@ -4,8 +4,8 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 **Human:** Kaipo
 **Agent:** Cursor
-**Branch:** main
-**Last updated:** 2026-11-14 15:32
+**Branch:** kaipo-cursor/ice-wait
+**Last updated:** 2026-11-14 16:05
 
 ## Working on right now
 
@@ -19,14 +19,16 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@kaipo
 
-**Branch:** main
-**Last updated:** 2026-11-14 15:32
+**Branch:** kaipo-cursor/ice-wait
+**Last updated:** 2026-11-14 16:05
 
 ### Working on right now
 
 ### Files / folders I'm touching (hands off)
 
 ### Just finished
+
+**Room open:** Host and Join download PeerJS while `/api/ice` is in flight, and stop waiting after 4 seconds. A fast TURN mint is still used. A hung mint falls back to PeerJS's own servers.
 
 **Decision 008 and the live site:** PR #116 is on main. https://kimchispacemission.vercel.app was redeployed. `/api/ice` returned 200 with a TURN relay on port 443, and `visual-assets/world/part-rack.glb` is served. GitHub auto-deploy still waits on Aiden approving the Vercel app.
 

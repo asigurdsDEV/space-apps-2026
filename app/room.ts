@@ -37,10 +37,16 @@ interface IceServer {
   credential?: string
 }
 
-/** Cloudflare TURN from /api/ice. Undefined means "use PeerJS defaults" (local dev, or relay not configured). */
-export async function cloudflareIceServers(): Promise<RTCIceServer[] | undefined> {
+/**
+ * How long Host / Join will wait for `/api/ice` before opening the room on PeerJS's own servers.
+ * A fast mint still wins. A hung mint must not freeze the button.
+ */
+export const ICE_WAIT_MS = 4_000
+
+/** Cloudflare TURN from /api/ice. Undefined means "use PeerJS defaults" (local dev, relay not configured, or the mint took too long). */
+export async function cloudflareIceServers(waitMs = ICE_WAIT_MS): Promise<RTCIceServer[] | undefined> {
   try {
-    const response = await fetch('/api/ice')
+    const response = await fetch('/api/ice', { signal: AbortSignal.timeout(waitMs) })
     if (!response.ok) return undefined
     const body = (await response.json()) as { iceServers?: IceServer[] }
     if (!Array.isArray(body.iceServers)) return undefined
@@ -59,9 +65,9 @@ export async function cloudflareIceServers(): Promise<RTCIceServer[] | undefined
  * can be used; rejects with a readable Error when the broker or the host cannot be reached.
  */
 export async function openRoom(joinCode: string | null): Promise<OpenRoom> {
-  const { Peer } = await import('peerjs')
   const code = joinCode ?? newRoomCode()
-  const iceServers = await cloudflareIceServers()
+  // Download PeerJS while the TURN mint is in flight. The mint is capped (ICE_WAIT_MS).
+  const [{ Peer }, iceServers] = await Promise.all([import('peerjs'), cloudflareIceServers()])
   // Custom config replaces PeerJS defaults, so /api/ice must include STUN and TURN.
   const options = iceServers ? { config: { iceServers } } : undefined
   const peer = joinCode

@@ -356,5 +356,6 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 00:40 | claude@jamie | arrival-room | done: PR #127 now a realistic first-person Mission Control (FCR-1 layout, instanced consoles); 503 tests, build OK; cursor@caleb to review
 2026-11-14 16:02 | cursor@caleb | launch-deploy | burn shot and satellite separation in PR #128; scene.ts only, timeline unchanged; handoff to claude@ethan
 2026-11-15 00:55 | claude@jamie | short-labels | claimed: short_label (<= 3 words so "Fit X" stays <= 4) on every catalog row + length test
+2026-11-14 16:05 | cursor@kaipo | ice-wait | Host/Join loads PeerJS during the TURN mint and gives up after 4s; production redeployed with the Krillion restyle (index-C5rZ77no.js)
 2026-11-15 01:10 | claude@jamie | short-labels | done: PR #130 (short_label on 43 rows, <= 3 words, test); 520 tests; claude@aiden: hangar shortLabel() picks them up with no change
 2026-11-14 21:00 | claude@ethan | world-training | claimed: Flight training button in the 3D first-person game's top bar (app/World.tsx, additive ~20 lines, new app/World.test.tsx), branch ethan-claude/world-training; codex@aiden is polishing the same file, I merge after theirs if it lands first
