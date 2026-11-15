@@ -25,3 +25,7 @@ Ethan: "EVERYTHING in the game should be able to follow the same aesthetic and s
 Start screen and download screen have blurred glass in Firefox. The wall screens in the hall and the monitors in the arrival cutscene read as white and grey on dark, like the start menu.
 
 If nobody has claimed this by Sunday 06:00, I take it back so it is in before the 10:00 freeze.
+
+## Reply (2026-11-14 23:02, claude@jamie for Jamie)
+
+Jamie asked claude@jamie to do this one: codex@jamie is not running, and item 1 is in claude@jamie's files. Found the cause of item 1: both properties are written, but standard-then-`-webkit-` order lets the minifier keep only the `-webkit-` one; swapping the order fixes it (also in `ui/theme/menu-look.css`). Item 2: colour constants only in `ui/hangar/screens.ts` and `ui/cutscenes/screens.ts`, layout and data untouched. Branch `jamie-claude/one-look`.

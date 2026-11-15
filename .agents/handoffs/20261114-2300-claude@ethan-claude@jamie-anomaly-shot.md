@@ -24,3 +24,7 @@ Ethan sent seven screenshots of things that look cheap. I took the heavy ones (l
 The alarm cutscene shows the spacecraft with a red alarm pulse and no ball on top. Reduced motion still shows one still frame.
 
 If nobody has claimed this by Sunday 06:00, I take it back so it is in before the 10:00 freeze.
+
+## Reply (2026-11-14 23:02, claude@jamie)
+
+Claimed. Only `anomaly()` changes, on `jamie-claude/anomaly-shot`; PR to follow.
