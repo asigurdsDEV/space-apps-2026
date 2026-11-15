@@ -370,13 +370,16 @@ export function step(state: SimState, commands: Command[], dt_s: number): StepRe
       if (cardDays.length && today() >= cardDays[0]) {
         cardDays = cardDays.slice(1)
         const ctx = context()
+        // `headline_card` (app/dailyEvent.ts: the card of today's real event) is drawn at the first draw it is eligible for.
+        const headline = str(params, 'headline_card')
         // With real space weather, storms come only from the data, never from the random draw.
         const eligible = CARDS.filter(
-          (card) => !cardsDrawn.includes(card.id) && card.when(ctx) && !(realWeather && card.id === 'geomagnetic-storm'),
+          (card) => !cardsDrawn.includes(card.id) && card.when(ctx) && !(realWeather && card.id === 'geomagnetic-storm' && card.id !== headline),
         )
         const pick = nextRandom(cardRng)
         cardRng = pick.state
-        const card = eligible[Math.floor(pick.value * eligible.length)]
+        // The roll is spent either way, so the draws after the headline do not move.
+        const card = eligible.find((c) => c.id === headline) ?? eligible[Math.floor(pick.value * eligible.length)]
         if (!card) continue // nothing fits this mission today: the draw is skipped
         decisionCard = card.id
         decisionId = `${card.id}-${today()}`

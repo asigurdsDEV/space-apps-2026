@@ -187,6 +187,39 @@ describe('anomaly cards', () => {
   })
 })
 
+describe("headline_card: the card of today's real event", () => {
+  const daily = (params: Config['params'] = {}, seed = 20261115): Config => {
+    const c = getScenario('demo')!
+    return { ...c, seed, params: { ...c.params, anomaly_cards: 2, ...params } }
+  }
+  const ids = (config: Config, design = WINS.demo) => play(config, design).drawn.map((e) => e.payload.decision_id)
+  const GOLDEN_7 = ['geomagnetic-storm-106', 'station-bumped-354']
+
+  it('changes nothing when it is absent or names no card: the draws recorded on main before the param existed', () => {
+    expect(ids(daily())).toEqual(['station-bumped-173', 'geomagnetic-storm-259'])
+    expect(ids(daily({}, 7))).toEqual(GOLDEN_7)
+    expect(ids(daily({ headline_card: 'no-such-card' }))).toEqual(['station-bumped-173', 'geomagnetic-storm-259'])
+  })
+
+  it('comes up as the first card, on the day the first draw was due anyway, and is not drawn twice', () => {
+    for (const id of ['geomagnetic-storm', 'station-bumped', 'debris-pass']) {
+      // real_storms: '' is how app/ flies an event daily: no historical storm can come before the headline.
+      const drawn = ids(daily({ headline_card: id, real_storms: '' }, 7))
+      expect(drawn[0]).toBe(`${id}-${GOLDEN_7[0].split('-').pop()}`)
+      expect(drawn).toHaveLength(2)
+      expect(drawn[1].split('-').pop()).toBe(GOLDEN_7[1].split('-').pop())
+      expect(drawn[1].startsWith(id)).toBe(false)
+    }
+  })
+
+  it('leaves the normal draw alone when the mission cannot meet it (debris needs a thruster)', () => {
+    const noThruster = { bus: 'cubesat-6u' }
+    const normal = ids(daily(), noThruster)
+    expect(normal.length).toBeGreaterThan(0)
+    expect(ids(daily({ headline_card: 'debris-pass' }), noThruster)).toEqual(normal)
+  })
+})
+
 describe('anomaly cards in co-op', () => {
   const answer: Command = { type: 'resolve_decision', payload: { decision_id: 'reaction-wheel-40', option_id: 'a' } }
 
