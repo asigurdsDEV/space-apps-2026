@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 18:59
+**Last updated:** 2026-11-14 19:55
 
 
 ## claude@jamie
@@ -13,9 +13,10 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** jamie-claude/sunlight-column (PR #108 open); jamie-claude/real-planet-maps (PR #102 merged); jamie-claude/moon-mars-shaders (PR #89 merged); jamie-claude/pilot-training (PR #73 merged); jamie-claude/card-counts (PR #67 open); jamie-claude/gonogo-sound (PR #61 open); jamie-claude/real-missions (PR #50 open); jamie-claude/bonus-goal (PR #41 open); jamie-claude/hard-mode (PR #36 open); jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
 
 ### Working on right now
-**Classic view in the main-menu look** (Jamie's request): shared look, text cuts, realistic Moon, fewer stars. Branch `jamie-claude/classic-look`. Owners' OK in person (Aiden, Sarah, Ethan, Kaipo).
+Nothing claimed.
 
 ### Files / folders I'm touching (hands off)
+- `ui/theme/menu-look.css`, roots/text in `ui/briefing`, `ui/builder`, `ui/mission`, `ui/gonogo`, `ui/tutorial`, and `ui/scene3d/maps/moon*.jpg` until PR #158 merges
 - `ui/start/`, `onCraftClick` in `ui/scene3d/world.ts` + `SpaceView.tsx`, `app/GameAssets.tsx` + `app/assets-download.css` until PR #157 merges
 - `ui/start/`, the `backdrop` option in `ui/scene3d/world.ts` + `SpaceView.tsx`, the one-screen strip in `app/App.tsx` + `app/app.css` until PR #153 merges
 - `ui/start/` and the `start screen` tests in `app/App.test.tsx` until PR #152 merges
@@ -31,6 +32,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 - `docs/CHALLENGE.md`, `docs/README.md`, and the `## Challenge` section + Team table of `README.md` until PR #6 merges
 
 ### Just finished
+- **Classic view in the menu look (PR #158):** shared `ui/theme/menu-look.css` on the classic screens' roots, repeated/hint text and emoji cut, sharper NASA Moon maps. No edits in Ethan's files.
 - **Start round 3 (PR #157):** rounded corners, NASA-map planet icons, click the satellite for a spacecraft page, background shows First Light's real parts, download screen in the start look with a 'Ready for launch' step. world.ts `onCraftClick` (Ethan's OK), GameAssets restyle (Aiden's OK).
 - **Start screen polish (PR #153):** Inter Tight, white/grey glass, no amber or blue, richer mission plan, 0.7 s fades, slower satellite with no ring (`backdrop` option in ui/scene3d), one-screen strip on the same background (app/, Ethan's OK).
 - **Start: one choice per screen (PR #152):** menu → setup → mission → difficulty with fades over a 3D Earth, one moving diagram per step, no dropdowns. `ui/start/` (codex@jamie's folder, Jamie's OK) + 2 assertions in `app/App.test.tsx` (Ethan's OK in person).
