@@ -42,7 +42,7 @@ const modes: { mode: StartMode; title: string; detail: string }[] = [
 ]
 const LEVELS = ['easy', 'normal', 'hard'] as const
 const STEPS: Step[] = ['menu', 'setup', 'mission', 'difficulty']
-const HEADINGS: Record<Step, string> = { menu: 'First Light Program', setup: 'Mission setup', mission: 'Choose your mission', difficulty: 'Choose difficulty', satellite: 'The spacecraft' }
+const HEADINGS: Record<Step, string> = { menu: 'First Flight', setup: 'Mission setup', mission: 'Choose your mission', difficulty: 'Choose difficulty', satellite: 'The spacecraft' }
 /** Each mission's icon is a small globe painted with the real NASA map of where it goes (ui/scene3d/maps). */
 const GLOBES: Record<string, string> = {
   demo: `url(${earthClouds}), url(${earthDay})`,
@@ -135,7 +135,7 @@ export function StartScreen({ scenarios, onStart, scenarioPreview, dailyMission,
       {shown && <SpaceView className="ss-bg" state={{ entities: PARTS, params: shown.params }} mode="orbit" showCaption={false} backdrop onCraftClick={() => openSpacecraft.current()} />}
       {/* Inter Tight, a free stand-in for Ferrari Sans; without the network the system sans is used. React hoists it into <head>. */}
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500&display=swap" precedence="default" />
-      <div className="ss-masthead"><span className="ss-brand"><span aria-hidden="true">✦</span> First Light Program</span><span>A space mission design game</span><span className="ss-edition">NASA Space Apps · 2026</span></div>
+      <div className="ss-masthead"><span className="ss-brand"><span aria-hidden="true">✦</span> First Flight</span><span>A space mission design game</span><span className="ss-edition">NASA Space Apps · 2026</span></div>
       <form id="mission-setup" className={`ss-stage${fading ? ' is-fading' : ''}`} onSubmit={submit} onChange={() => setValidation(null)} aria-busy={busy}>
         <div className="ss-side">
           {step === 'menu' && <header className="ss-intro">

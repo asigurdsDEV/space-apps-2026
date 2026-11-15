@@ -30,7 +30,7 @@ export function CampaignBoard({ progress, persistent, onStart, onFreePlay }: Pro
     <main className="campaign" aria-labelledby="campaign-title">
       <SpaceView className="campaign-bg" state={{ entities: mission.config.entities, params: mission.config.params }} mode="orbit" showCaption={false} />
       <section className="campaign-route">
-        <p className="game-eyebrow">First Light Program · Guided missions · Solo</p>
+        <p className="game-eyebrow">First Flight · Guided missions · Solo</p>
         <h1 id="campaign-title">Build your space program</h1>
         <p>Complete a mission. Earn the next assignment and a larger budget.</p>
         <p className="game-muted">{progress.length} / {MISSIONS.length} missions complete</p>

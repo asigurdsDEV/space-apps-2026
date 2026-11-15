@@ -1,4 +1,4 @@
-# First Light Program
+# First Flight
 
 **Play it now: https://nasaspacemission.vercel.app** (browser only, works on a phone, solo or co-op for up to 4; mirror: https://asigurdsdev.github.io/space-apps-2026/)
 
