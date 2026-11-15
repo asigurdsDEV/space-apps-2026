@@ -139,7 +139,7 @@ summary(state: SimState) -> { [key: string]: number | string }   // for end-of-r
 | `set_param` | `{ "key": string, "value": number\|string\|bool }` | ui | sim |
 | `select_entity` | `{ "id": string \| null }` | ui | app/ui only (no sim effect) |
 | `launch` | `{}` | ui | sim (leaves the design phase; refused with a `warning` event while any `error` issue exists) |
-| `resolve_decision` | `{ "decision_id": string, "option_id": string }` | ui | sim (answers the anomaly card that is waiting; decision 004. Owned by the card's `console` role, or by anyone if nobody holds it) |
+| `resolve_decision` | `{ "decision_id": string, "option_id": string }` | ui | sim (answers the anomaly card that is waiting; decision 004. Owned by whoever holds the card's `console` role, decision 013) |
 
 Scenario-specific commands are allowed. Add a row here when you add one.
 
@@ -188,7 +188,9 @@ Decision 002: online co-op for up to 4 players, host-authoritative. The types ar
 
 ### Who may send which Command
 
-Each command has one owning role. A player may send it if they hold that role, **or if nobody in the room holds it**, so 1 to 3 players can still fly a whole mission. The host enforces this with `canSend()` from `shared/net.ts`.
+Each command has one owning role. A player may send it if they **hold** that role. Decision 013: each player picks one role; the roles nobody picked are shared out by `roleHolders(players)` (each to whoever holds the fewest, roster order breaking ties), so 1 player holds all 4, 2 players 2 each, 3 players 2/1/1. With an empty roster anyone may send. The host enforces this with `canSend(players, playerId, command, decisionConsole?)` from `shared/net.ts`; `rolesOf(players, playerId)` lists a player's roles.
+
+With two or more players the host cannot start until every player has picked a role.
 
 | Role | `set_param` keys it owns | Other commands it owns |
 |------|--------------------------|------------------------|
