@@ -30,6 +30,17 @@ float fbm(vec3 p) {
 vec3 lin(vec3 c) { return pow(c, vec3(2.2)); }
 `
 
+const MAP_UV = /* glsl */ `
+// Equirectangular map coordinates. Picks whichever of two u's has no jump here, so mipmapping
+// leaves no seam at lon 180 (Tarini's trick).
+vec2 mapUv(vec3 p) {
+  float u1 = atan(-p.z, p.x) / 6.2831853 + 0.5;
+  float u2 = fract(u1 + 0.5) - 0.5;
+  float u = fwidth(u1) <= fwidth(u2) + 1e-6 ? u1 : u2;
+  return vec2(u, asin(clamp(p.y, -1.0, 1.0)) / 3.14159265 + 0.5);
+}
+`
+
 const VERTEX = /* glsl */ `
 varying vec3 vObj;
 varying vec3 vWorldN;
@@ -70,14 +81,7 @@ vec3 latLon(float lat, float lon) {
   float a = radians(lat), b = radians(lon);
   return vec3(cos(a) * cos(b), sin(a), -cos(a) * sin(b));
 }
-// Equirectangular map coordinates. Picks whichever of two u's has no jump here, so mipmapping
-// leaves no seam at lon 180 (Tarini's trick).
-vec2 mapUv(vec3 p) {
-  float u1 = atan(-p.z, p.x) / 6.2831853 + 0.5;
-  float u2 = fract(u1 + 0.5) - 0.5;
-  float u = fwidth(u1) <= fwidth(u2) + 1e-6 ? u1 : u2;
-  return vec2(u, asin(clamp(p.y, -1.0, 1.0)) / 3.14159265 + 0.5);
-}
+${MAP_UV}
 // How the real ground slopes (LOLA / MOLA elevation, maps/README.md), as a tilt for the surface normal.
 // \`steepness\` = map height range / distance across two texels, times the vertical exaggeration.
 vec3 relief(vec3 p, float steepness) {
@@ -300,23 +304,35 @@ export const cloudShader = {
   fragmentShader: /* glsl */ `
 uniform vec3 uSun;
 uniform float uTime;
+uniform sampler2D uClouds;
+uniform float uHasClouds;
 varying vec3 vObj;
 varying vec3 vWorldN;
 varying vec3 vWorldPos;
 ${NOISE}
+${MAP_UV}
 void main() {
   vec3 p = normalize(vObj);
-  vec3 q = p * vec3(3.2, 6.0, 3.2) + vec3(uTime * 0.004, 0.0, uTime * 0.002);
-  float c = fbm(q + 0.6 * vec3(fbm(q + 1.7), fbm(q + 9.2), 0.0));
-  // Break big patches into puffs and streaks so close-ups show cloud, not fog.
-  c += 0.35 * (fbm(p * 28.0 + c * 2.0) - 0.5);
   // Cloud cells and streets, the size you see from low orbit (tens of km): without them a close view is a flat haze.
-  float cells = fbm(p * 170.0 + c * 3.0);
-  c += 0.2 * (cells - 0.5);
-  // Real cloud belts: the stormy equator (ITCZ) and mid-latitudes, clearer subtropics where deserts sit.
-  float lat = abs(p.y);
-  float belt = 0.07 * exp(-pow(p.y / 0.12, 2.0)) - 0.08 * exp(-pow((lat - 0.42) / 0.13, 2.0)) + 0.06 * exp(-pow((lat - 0.78) / 0.12, 2.0));
-  float cover = smoothstep(0.55 - belt, 0.82 - belt, c) * (1.0 - 0.6 * smoothstep(0.85, 0.95, lat));
+  float cells = fbm(p * 170.0);
+  float cover;
+  if (uHasClouds > 0.5) {
+    // Real clouds from a NASA photo mosaic (maps/README.md), drifting slowly east.
+    float a = uTime * 0.0015;
+    vec3 moved = vec3(p.x * cos(a) - p.z * sin(a), p.y, p.x * sin(a) + p.z * cos(a));
+    float seen = texture2D(uClouds, mapUv(moved)).r;
+    // The photo is coarse (about 40 km a pixel), so its soft edges are broken into cells for close views.
+    cover = smoothstep(0.1, 0.72, seen + 0.3 * (cells - 0.5) * smoothstep(0.03, 0.35, seen));
+  } else {
+    vec3 q = p * vec3(3.2, 6.0, 3.2) + vec3(uTime * 0.004, 0.0, uTime * 0.002);
+    float c = fbm(q + 0.6 * vec3(fbm(q + 1.7), fbm(q + 9.2), 0.0));
+    // Break big patches into puffs and streaks so close-ups show cloud, not fog.
+    c += 0.35 * (fbm(p * 28.0 + c * 2.0) - 0.5) + 0.2 * (cells - 0.5);
+    // Real cloud belts: the stormy equator (ITCZ) and mid-latitudes, clearer subtropics where deserts sit.
+    float lat = abs(p.y);
+    float belt = 0.07 * exp(-pow(p.y / 0.12, 2.0)) - 0.08 * exp(-pow((lat - 0.42) / 0.13, 2.0)) + 0.06 * exp(-pow((lat - 0.78) / 0.12, 2.0));
+    cover = smoothstep(0.55 - belt, 0.82 - belt, c) * (1.0 - 0.6 * smoothstep(0.85, 0.95, lat));
+  }
   float d = dot(normalize(vWorldN), uSun);
   // Thick cores are bright, thin edges and the gaps between cells are grey: that relief is what reads as cloud.
   float light = (0.01 + 1.1 * smoothstep(-0.08, 0.35, d)) * (0.72 + 0.28 * cover) * (0.86 + 0.28 * cells);

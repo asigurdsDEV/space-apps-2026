@@ -1,6 +1,7 @@
 // Real NASA surface maps (README.md here), inlined as data URLs so they work offline.
 import * as THREE from 'three'
 import type { Body } from '../model'
+import earthClouds from './earth-clouds.jpg?inline'
 import earthDay from './earth-day.jpg?inline'
 import earthNight from './earth-night.jpg?inline'
 import mars from './mars.jpg?inline'
@@ -17,6 +18,9 @@ export interface MapUniforms {
   /** Real elevation (grey = height), for relief shading. The Moon and Mars have one. */
   uHeight: { value: THREE.Texture | null }
   uHasHeight: { value: number }
+  /** Earth's real clouds (grey = how thick), read by cloudShader. */
+  uClouds: { value: THREE.Texture | null }
+  uHasClouds: { value: number }
 }
 
 const DAY: Record<Body, string> = { earth: earthDay, moon, mars }
@@ -38,9 +42,12 @@ export function planetMaps(anisotropy = 4): { maps: Record<Body, MapUniforms>; d
   }
   const maps = {} as Record<Body, MapUniforms>
   for (const body of ['earth', 'moon', 'mars'] as const) {
-    const u: MapUniforms = { uMap: { value: null }, uHasMap: { value: 0 }, uNight: { value: null }, uHasNight: { value: 0 }, uHeight: { value: null }, uHasHeight: { value: 0 } }
+    const u: MapUniforms = { uMap: { value: null }, uHasMap: { value: 0 }, uNight: { value: null }, uHasNight: { value: 0 }, uHeight: { value: null }, uHasHeight: { value: 0 }, uClouds: { value: null }, uHasClouds: { value: 0 } }
     load(DAY[body], u.uMap, u.uHasMap)
-    if (body === 'earth') load(earthNight, u.uNight, u.uHasNight)
+    if (body === 'earth') {
+      load(earthNight, u.uNight, u.uHasNight)
+      load(earthClouds, u.uClouds, u.uHasClouds, true)
+    }
     const height = HEIGHT[body]
     if (height) load(height, u.uHeight, u.uHasHeight, true)
     maps[body] = u
