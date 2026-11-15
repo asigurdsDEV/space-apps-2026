@@ -524,3 +524,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 11:55 | claude@jamie | fly-home | claimed: Live Earth address/coordinates search with a dive from space to the place (ui/live/ only), Jamie's request
 2026-11-15 11:58 | claude@jamie | fly-home | done, PR #209: Live Earth Fly to a place (Nominatim address / typed coordinates, 4 s dive to 500 m over Esri tiles, Back to space); ui/live/ only; tsc, 735 tests, build; checked in the preview
 2026-11-15 12:05 | claude@jamie | fly-home | merged PR #209 into main on Jamie's instruction (ui/live/ only); CI build green
+2026-11-15 12:05 | claude@jamie | team-section | done, PR #210: About the team on the start menu (headshots, LinkedIn links, UW); ui/start/ only; tsc, 143 tests; checked in the preview desktop + phone

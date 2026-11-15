@@ -16,6 +16,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 Nothing claimed.
 
 ### Files / folders I'm touching (hands off)
+- `ui/start/StartScreen.tsx`, `ui/start/start.css`, `ui/start/team/` until PR #210 merges
 - `ui/campaign/CampaignBoard.tsx`, `ui/campaign/campaign.css`, `GLOBES` export in `ui/start/StartScreen.tsx` until PR #203 merges
 - `ui/scene3d/launch/site.ts` (flag), `sim/sim.ts` (score), `ui/live/`, `ui/interior/control.ts`, `ui/audio/music.ts` + `ambience.ts`, the game name (index.html, manifest, start, lobby, campaign, share text, README, SUBMISSION, PITCH) (PR #200 merged)
 - `ui/theme/menu-look.css`, roots/text in `ui/briefing`, `ui/builder`, `ui/mission`, `ui/gonogo`, `ui/tutorial`, and `ui/scene3d/maps/moon*.jpg` until PR #158 merges
@@ -34,6 +35,7 @@ Nothing claimed.
 - `docs/CHALLENGE.md`, `docs/README.md`, and the `## Challenge` section + Team table of `README.md` until PR #6 merges
 
 ### Just finished
+- **About the team (PR #210):** team section on the start menu under the daily mission: 6 round headshots (Sarah initials, no LinkedIn), names link to LinkedIn, "Six students at the University of Washington". `ui/start/` only.
 - **Live Earth: fly to a place (PR #209):** address or coordinates search; the camera dives from space to 500 m over the place in 4 s with Esri close-up tiles fading in; Back to space. Coordinates stay in the page, an address goes to OpenStreetMap once. `ui/live/` only.
 - **Playtest fixes (PR #200):** launch no longer black for its first seconds (flag shader NaN spread by bloom on real GPUs); easier score; Live Earth continent names + opt-in "Show where I am"; dimmer, shaded module behind the hatchway; quiet generated background music except during the launch; the game is now First Light Program.
 - **Pad towers (PR #182):** lattice lightning towers and a shore tree line at the launch pad.
