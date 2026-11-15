@@ -22,6 +22,7 @@ import { fitCallout } from '../ui/story'
 import { useSession } from './useSession'
 import { hasWebGL } from './Walk'
 import { WorldMenu } from './WorldMenu'
+import { useRisingSound } from '../ui/audio/moments'
 import { CampaignResult } from '../ui/campaign/CampaignBoard'
 import { designGuide } from '../ui/campaign/model'
 import { isEarthScenario } from '../ui/probe/nasa'
@@ -51,6 +52,7 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
   const { session, roomCode, daily } = active
   const { state, events, players, me, paused, speed } = useSession(session)
   const [classic, setClassic] = useState(false)
+  useRisingSound(players.length, 'join')
   const [menuOpen, setMenuOpen] = useState(false)
   const [training, setTraining] = useState(false)
   const [cutscene, setCutscene] = useState(false)

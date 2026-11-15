@@ -29,3 +29,12 @@ it('places earned campaign funding inside the same single menu, without a second
   expect(html.split('<dialog')[1]).toContain('Next grant approved: $300M')
   expect(html.match(/<dialog/g)).toHaveLength(1)
 })
+
+it('offers volume and mouse sensitivity as labelled sliders, and no fullscreen button where the browser has none', () => {
+  const html = renderToStaticMarkup(<WorldMenu open={false} disabled={false} onOpenChange={() => {}}
+    onClassic={() => {}} onExit={() => {}} online={false} />)
+  const menu = html.split('<dialog')[1]
+  expect(menu).toMatch(/<label[^>]*>Volume<input type="range"[^>]*value="100"/)
+  expect(menu).toMatch(/<label[^>]*>Mouse sensitivity<input type="range"[^>]*value="100"/) // 1 is today's feel
+  expect(menu).not.toContain('Fullscreen')
+})

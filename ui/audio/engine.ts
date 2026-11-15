@@ -41,7 +41,7 @@ const CEILING = curve((x) => (Math.abs(x) < 0.6 ? x : Math.sign(x) * (0.6 + 0.29
 const TRIM = 0.5
 
 /** The shared output: a limiter, then the ceiling. Returns the node to connect places to. */
-export function output(ctx: BaseAudioContext): AudioNode {
+export function output(ctx: BaseAudioContext, dest: AudioNode = ctx.destination): AudioNode {
   const input = ctx.createGain()
   input.gain.value = TRIM
   const limiter = ctx.createDynamicsCompressor()
@@ -52,7 +52,7 @@ export function output(ctx: BaseAudioContext): AudioNode {
   limiter.release.value = 0.15
   const ceiling = ctx.createWaveShaper()
   ceiling.curve = CEILING
-  input.connect(limiter).connect(ceiling).connect(ctx.destination)
+  input.connect(limiter).connect(ceiling).connect(dest)
   return input
 }
 

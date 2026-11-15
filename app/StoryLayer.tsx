@@ -8,6 +8,7 @@ import type { SimEvent, SimState } from '../shared'
 import { AnomalyScene, ArrivalScene, EndingScene, OrbitArrivalScene } from '../ui/cutscenes'
 import { sceneSpec, type CraftSpec } from '../ui/scene3d/model'
 import { Scenery } from './Walk'
+import { story } from '../ui/audio/moments'
 import { CapcomPopout, Cutscene, CUTSCENE_MS, LINES, storyBeat, worldOf, type CutsceneId, type StoryScreen } from '../ui/story'
 
 /** The 3D scene for a cutscene. Launch has none here: the app plays ui/scene3d's own (see `shown`), so its frame keeps the still. */
@@ -80,6 +81,8 @@ export function StoryLayer({ screen, events = NO_EVENTS, scenarioId, design, onC
     const timer = setTimeout(() => setClosed(key), LINE_MS)
     return () => clearTimeout(timer)
   }, [key, playing, held])
+
+  useEffect(() => story(cutscene, key, cutscene || closed !== key ? key : null))
 
   if (cutscene) {
     return (

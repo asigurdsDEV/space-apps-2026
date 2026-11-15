@@ -9,6 +9,8 @@ import { rocketSpec } from '../scene3d/launch/vehicles'
 import { SOUNDS, SoundToggle, playSound, type SoundName } from '.'
 import { caution, enter } from './ambience'
 import { buildPlace, output } from './engine'
+import { scheduleSound } from './audio'
+import { soundLength } from './model'
 import { DETAILS, detailGap, launchScore, type Place } from './places'
 
 interface Scene { place: Place; vehicle?: string; failed?: boolean; seconds?: number; alarmAt?: number }
@@ -42,7 +44,19 @@ async function render({ place, vehicle = 'falcon-9', failed = false, seconds = 3
   for (let i = 0; i < bytes.length; i += 0x8000) text += String.fromCharCode(...bytes.subarray(i, i + 0x8000))
   return { sampleRate: 48000, stages: place === 'launch' ? timeline.stages.map(({ id, start, end }) => ({ id, start, end })) : [], events, pcm: btoa(text) }
 }
-Object.assign(window, { __render: render })
+/** Renders one one-shot as the game plays it (the 0.7 one-shot level, full volume). Same return shape as `__render`. */
+async function renderSound(name: SoundName) {
+  const ctx = new OfflineAudioContext(1, Math.ceil((soundLength(name) + 0.2) * 48000), 48000)
+  const master = ctx.createGain()
+  master.gain.value = 0.7
+  master.connect(ctx.destination)
+  scheduleSound(ctx, master, name, 0.01)
+  const bytes = new Uint8Array((await ctx.startRendering()).getChannelData(0).buffer)
+  let text = ''
+  for (let i = 0; i < bytes.length; i += 0x8000) text += String.fromCharCode(...bytes.subarray(i, i + 0x8000))
+  return { sampleRate: 48000, pcm: btoa(text) }
+}
+Object.assign(window, { __render: render, __renderSound: renderSound })
 
 function Preview() {
   const [leave, setLeave] = useState<{ place: string; stop: () => void } | null>(null)

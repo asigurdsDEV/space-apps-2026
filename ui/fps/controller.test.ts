@@ -1,6 +1,6 @@
 import { afterEach, expect, it, vi } from 'vitest'
 import { PerspectiveCamera } from 'three'
-import { createFps, headMotion } from './controller'
+import { createFps, headMotion, mouseSensitivity, setMouseSensitivity } from './controller'
 
 class Element extends EventTarget {
   isContentEditable = false
@@ -118,4 +118,31 @@ it('head motion follows the speed actually walked, leaves aim and feet alone, an
     return y
   })()
   expect(blocked).toBeCloseTo(1.7, 5) // pushing against a wall: no bobbing on the spot
+})
+
+it('mouse sensitivity scales a mouse drag, defaults to 1 and stays in range', () => {
+  const win = new EventTarget()
+  vi.stubGlobal('window', win)
+  vi.stubGlobal('HTMLElement', Element)
+  vi.stubGlobal('document', Object.assign(new EventTarget(), { hidden: false, pointerLockElement: null }))
+  vi.stubGlobal('addEventListener', win.addEventListener.bind(win))
+  vi.stubGlobal('removeEventListener', win.removeEventListener.bind(win))
+  expect(mouseSensitivity()).toBe(1)
+  const turn = (s: number) => {
+    setMouseSensitivity(s)
+    const el = new Element()
+    const camera = new PerspectiveCamera()
+    const fps = createFps(el as unknown as HTMLElement, camera, { start: [0, 0, 0] })
+    el.dispatchEvent(Object.assign(new Event('pointerdown'), { pointerType: 'mouse', pointerId: 1, clientX: 0, clientY: 0 }))
+    win.dispatchEvent(Object.assign(new Event('pointermove'), { pointerId: 1, clientX: 100, clientY: 0 }))
+    for (let i = 0; i < 60; i++) fps.update(0.05)
+    fps.dispose()
+    return camera.rotation.y
+  }
+  const base = turn(1)
+  expect(base).toBeCloseTo(-0.22, 2) // today's feel: 0.0022 rad per pixel
+  expect(turn(2)).toBeCloseTo(2 * base, 3)
+  setMouseSensitivity(99)
+  expect(mouseSensitivity()).toBe(3)
+  setMouseSensitivity(1)
 })

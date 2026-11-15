@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { playSound } from '../audio'
 import { SpaceView } from '../scene3d'
 import { readName, rememberName } from '../start/name'
 import { canStartMission, funding, MISSIONS, nextMission, type CampaignProgress } from './model'
@@ -35,7 +36,7 @@ export function CampaignBoard({ progress, persistent, onStart, onFreePlay }: Pro
         <p className="game-muted">{progress.length} / {MISSIONS.length} missions complete</p>
         <ol aria-label="Campaign missions">
           {MISSIONS.map(({ id, config }, i) => <li key={id}>
-            <button type="button" disabled={!canStartMission(progress, id)} aria-pressed={id === selected} onClick={() => setSelected(id)}>
+            <button type="button" disabled={!canStartMission(progress, id)} aria-pressed={id === selected} onClick={() => (playSound('click'), setSelected(id))}>
               <span className="campaign-number">0{i + 1}</span>
               <span><strong>{config.title.split(':')[0].replace(' (Easy)', '')}</strong><small>{i < progress.length ? 'Complete · Replay available' : i === progress.length ? 'Funded · Ready to fly' : `Complete mission ${i} to unlock`}</small></span>
               <b>{funding(config.params.budget_usd)}</b>
