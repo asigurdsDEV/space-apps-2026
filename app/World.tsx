@@ -10,7 +10,8 @@ import { getDatasets } from '../data'
 import type { Config, SimEvent, SimState, Summary } from '../shared'
 import { canSend, ROLES } from '../shared'
 import { choicesOf, pendingDecision, whatIf } from '../sim'
-import { playSound } from '../ui/audio'
+// shortcut: stands in for the old one-shot rumble so this merges cleanly with the launch hand-over change; the launch view makes its own sound now (ui/audio/ambience.ts). Delete this and its one call after the merge.
+const playSound = (_name: 'launch') => {}
 import { savePersonalBest } from '../ui/leaderboard/storage'
 import { stars } from '../ui/mission'
 import { MissionControl, type Debrief } from '../ui/hangar'

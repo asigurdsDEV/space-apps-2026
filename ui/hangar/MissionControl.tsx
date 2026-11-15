@@ -5,6 +5,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { playSound } from '../audio'
+import { useAmbience } from '../audio/ambience'
 import { budgetBars, commandAccess, formatValue, slotAccess } from '../builder/model'
 import { FpsPrompt } from '../fps/Prompt'
 import { partHelp } from '../fps/help'
@@ -62,6 +63,7 @@ export function MissionControl({ state, send, players = NO_PLAYERS, me, title, g
   const [failed, setFailed] = useState(false)
   const [aimed, setAimed] = useState<Interactable>()
   const [locked, setLocked] = useState(false)
+  useAmbience('control')
   /** The station whose menu is open, and where the player stood when they opened it (the cards face that spot). */
   const [open, setOpen] = useState<{ key: string; from: [number, number] } | null>(null)
   const coop = players.length > 1

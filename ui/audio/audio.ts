@@ -12,7 +12,8 @@ let ctx: AudioContext | null = null
 let master: GainNode | null = null
 let noiseBuffer: AudioBuffer | null = null
 
-function context(): AudioContext | null {
+/** The one AudioContext, created and resumed on demand. Also used by ambience.ts. */
+export function context(): AudioContext | null {
   if (typeof AudioContext === 'undefined') return null
   if (!ctx) {
     ctx = new AudioContext()

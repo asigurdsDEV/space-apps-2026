@@ -10,7 +10,7 @@ import { LocalTransport } from '../net'
 import type { Config, NetMessage, SimEvent, SimState, Summary } from '../shared'
 import { canSend, MAX_PLAYERS, ROLES } from '../shared'
 import { catalogEntities, choicesOf, pendingDecision, simCore, whatIf } from '../sim'
-import { playSound, SoundToggle } from '../ui/audio'
+import { SoundToggle } from '../ui/audio'
 import { Briefing } from '../ui/briefing'
 import { MissionBuilder } from '../ui/builder'
 import { GoNoGoPoll } from '../ui/gonogo'
@@ -566,9 +566,6 @@ function Flight({ session, config, daily, online, skipLaunch, onLaunchDone }: { 
   const [launchDone, setLaunchDone] = useState(() => skipLaunch || session.getSnapshot().state.t_s > 86400)
   const [weather, setWeather] = useState(weatherData)
   useEffect(() => {
-    // Flight mounts when the mission leaves design, but also for a late joiner and after a crash screen: those are not a launch.
-    const now = session.getSnapshot().state
-    if (!skipLaunch && now.status !== 'ended' && Number(now.metrics.mission_day) < 1) playSound('launch')
     if (LaunchView && !launchDone) holdClock(true) // nothing flies unseen during the launch
     if (!weather) void loadWeather().then(setWeather) // a late joiner never saw the builder
     // eslint-disable-next-line react-hooks/exhaustive-deps

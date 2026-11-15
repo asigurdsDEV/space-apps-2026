@@ -4,6 +4,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { playSound } from '../audio'
+import { caution, useAmbience } from '../audio/ambience'
 import { FpsPrompt } from '../fps/Prompt'
 import { flightHelp } from '../fps/help'
 import type { Interactable } from '../fps/model'
@@ -44,6 +45,7 @@ export function SpacecraftRoom({ state, send, paused, speed, decision, decisionB
   const [failed, setFailed] = useState(false)
   const [aimed, setAimed] = useState<Interactable>()
   const [locked, setLocked] = useState(false)
+  useAmbience('cabin')
 
   const poseRef = useRef(reportPose)
   const crewRef = useRef(subscribeCrew)
@@ -84,7 +86,7 @@ export function SpacecraftRoom({ state, send, paused, speed, decision, decisionB
   // An alarm: a sound once per card.
   const lastCard = useRef<string | null>(null)
   useEffect(() => {
-    if (decision && decision.decision_id !== lastCard.current) playSound('no-go')
+    if (decision && decision.decision_id !== lastCard.current) caution()
     lastCard.current = decision?.decision_id ?? null
   }, [decision])
 
