@@ -130,31 +130,45 @@ function paintWood(g: CanvasRenderingContext2D) {
 /** Four tall windows side by side: late light through autumn trees, behind dark mullions. */
 function paintWindows(g: CanvasRenderingContext2D) {
   const sky = g.createLinearGradient(0, 0, 0, 512)
-  sky.addColorStop(0, '#ffe9b8')
-  sky.addColorStop(0.55, '#f2a43a')
+  sky.addColorStop(0, '#f4f1e4')
+  sky.addColorStop(0.3, '#ffe2a0')
+  sky.addColorStop(0.7, '#f2a43a')
   sky.addColorStop(1, '#7a3c10')
   g.fillStyle = sky
   g.fillRect(0, 0, 512, 512)
-  const leaves = ['#ffcf5a', '#e07a1c', '#b4530f', '#fff0c4', '#5a2c0c']
-  for (let i = 0; i < 520; i++) {
-    const [x, y, r] = [Math.random() * 512, Math.random() * 512, 6 + Math.random() * 26]
-    const blob = g.createRadialGradient(x, y, 0, x, y, r)
-    blob.addColorStop(0, leaves[i % leaves.length]!)
-    blob.addColorStop(1, 'rgba(0,0,0,0)')
-    g.globalAlpha = 0.25 + Math.random() * 0.4
-    g.fillStyle = blob
-    g.fillRect(x - r, y - r, r * 2, r * 2)
-  }
-  g.globalAlpha = 0.7
+  // Trunks and branches first, so the foliage hangs in front of them.
+  g.globalAlpha = 0.75
   g.strokeStyle = '#2a1408'
-  for (let i = 0; i < 14; i++) {
-    // trunks and branches
-    const x = Math.random() * 512
-    g.lineWidth = 2 + Math.random() * 6
+  g.lineCap = 'round'
+  for (let i = 0; i < 12; i++) {
+    const x = (i + Math.random()) * 43
+    const lean = (Math.random() - 0.5) * 50
+    g.lineWidth = 5 + Math.random() * 7
     g.beginPath()
     g.moveTo(x, 512)
-    g.quadraticCurveTo(x + (Math.random() - 0.5) * 60, 260, x + (Math.random() - 0.5) * 140, Math.random() * 200)
+    g.quadraticCurveTo(x + lean * 0.4, 330, x + lean, 150 + Math.random() * 80)
     g.stroke()
+    for (let b = 0; b < 4; b++) {
+      const y = 180 + Math.random() * 220
+      g.lineWidth = 1.5 + Math.random() * 2
+      g.beginPath()
+      g.moveTo(x + lean * ((512 - y) / 330), y)
+      g.lineTo(x + (Math.random() - 0.5) * 110, y - 50 - Math.random() * 90)
+      g.stroke()
+    }
+  }
+  const leaves = ['#ffc94a', '#f08a1e', '#c9600f', '#ffe08a', '#e8a020']
+  for (let i = 0; i < 700; i++) {
+    // Leaf clumps: big and thick in the crowns, thinning towards the sky and the ground.
+    const y = 40 + Math.random() * Math.random() * 520
+    const [x, r] = [Math.random() * 512, 8 + Math.random() * 22]
+    const blob = g.createRadialGradient(x, y, 0, x, y, r)
+    blob.addColorStop(0, leaves[i % leaves.length]!)
+    blob.addColorStop(0.4, leaves[i % leaves.length]!)
+    blob.addColorStop(1, 'rgba(0,0,0,0)')
+    g.globalAlpha = 0.2 + Math.random() * 0.35
+    g.fillStyle = blob
+    g.fillRect(x - r, y - r, r * 2, r * 2)
   }
   g.globalAlpha = 1
   g.fillStyle = '#0b0705'
@@ -206,8 +220,8 @@ export function arrival(scene: THREE.Scene, camera: THREE.PerspectiveCamera) {
   let seed = 7
   const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647
   const add = (geometry: THREE.BufferGeometry, material: THREE.Material) => scene.add(new THREE.Mesh(geometry, material))
-  const matte = (color: number, map?: THREE.Texture) => new THREE.MeshLambertMaterial({ color, map })
-  const lit = (color: number, map?: THREE.Texture) => new THREE.MeshBasicMaterial({ color, map, toneMapped: false })
+  const matte = (color: number, map: THREE.Texture | null = null) => new THREE.MeshLambertMaterial({ color, map })
+  const lit = (color: number, map: THREE.Texture | null = null) => new THREE.MeshBasicMaterial({ color, map, toneMapped: false })
 
   // ---- Shell: dark carpet under the desks, lighter tiles on the walkways, walnut walls, a black ceiling.
   add(floorRect(-HALF, HALF, FRONT, BACK, 0), matte(0xffffff, carpet('#16262a', '#3f6268', '#05090a')))
@@ -231,14 +245,28 @@ export function arrival(scene: THREE.Scene, camera: THREE.PerspectiveCamera) {
     ]),
     matte(0xffffff, paintTexture(512, 512, paintWood, 10, 1)),
   )
-  const dark = matte(0x0b0c0f)
-  add(
-    mergeGeometries([
-      new THREE.PlaneGeometry(HALF * 2, depth).rotateX(Math.PI / 2).translate(0, HEIGHT, midZ),
-      ...[-7, -2.6, 1.8, 6.2, 10.6].map((z) => box(HALF * 2, 0.4, 0.5, 0, HEIGHT - 0.2, z)), // ceiling beams
-    ]),
-    dark,
-  )
+  // Ceiling: dark tiles with a faint pool of light around each downlight (one texture repeat per light).
+  const ceiling = new THREE.PlaneGeometry(HALF * 2, depth).rotateX(Math.PI / 2).translate(0, HEIGHT, midZ)
+  const [cp, cuv] = [ceiling.getAttribute('position'), ceiling.getAttribute('uv')]
+  for (let i = 0; i < cp.count; i++) cuv.setXY(i, (cp.getX(i) + 12) / 4 + 0.5, (cp.getZ(i) + 8.8) / 4.4 + 0.5)
+  const beams = mergeGeometries([-7, -2.6, 1.8, 6.2, 10.6].map((z) => box(HALF * 2, 0.4, 0.5, 0, HEIGHT - 0.2, z)))
+  beams.getAttribute('uv').array.fill(0) // beams take the texture's unlit corner
+  const tiles = paintTexture(128, 128, (g) => {
+    g.fillStyle = '#060709'
+    g.fillRect(0, 0, 128, 128)
+    const pool = g.createRadialGradient(64, 64, 2, 64, 64, 62)
+    pool.addColorStop(0, 'rgba(255,232,196,0.3)')
+    pool.addColorStop(0.3, 'rgba(255,232,196,0.1)')
+    pool.addColorStop(1, 'rgba(255,232,196,0)')
+    g.fillStyle = pool
+    g.fillRect(0, 0, 128, 128)
+    g.fillStyle = 'rgba(0,0,0,0.55)'
+    for (let at = 0; at < 128; at += 32) {
+      g.fillRect(at, 0, 1, 128)
+      g.fillRect(0, at, 128, 1)
+    }
+  })
+  add(mergeGeometries([ceiling, beams]), lit(0xffffff, tiles))
   const downlights: Place[] = []
   for (let x = -12; x <= 12; x += 4) for (let z = -8.8; z <= 12; z += 4.4) downlights.push([x, HEIGHT - 0.01, z, 0, Math.PI / 2])
   instanced(scene, new THREE.CircleGeometry(0.08, 12), lit(0xfff0d6), downlights)
@@ -300,6 +328,7 @@ export function arrival(scene: THREE.Scene, camera: THREE.PerspectiveCamera) {
   const strips: THREE.BufferGeometry[] = []
   const labels: THREE.BufferGeometry[] = []
   const glows: THREE.BufferGeometry[] = []
+  const pools: THREE.BufferGeometry[] = []
   const bezels: Place[] = []
   const stands: Place[] = []
   const shown = new Map<ScreenId, Place[]>(SCREEN_IDS.map((id) => [id, []]))
@@ -334,6 +363,7 @@ export function arrival(scene: THREE.Scene, camera: THREE.PerspectiveCamera) {
         shown.get(SCREEN_IDS[(i * 4 + row * 3 + (s > 0 ? 5 : 0)) % SCREEN_IDS.length]!)!.push(onArc(row, along, -0.203, DESK_TOP + 0.34, turn, -0.07))
       }
       glows.push(arcBox(row, -0.2, 0.47, DESK_TOP + 0.002, DESK_TOP + 0.003, a0 + s * 0.3, a1 - s * 0.3))
+      pools.push(arcBox(row, 0.175, 1.5, 0.008, 0.009, a0 + s * 0.15, a1 - s * 0.15))
       for (let seat = 0; seat < 4; seat++) {
         const along = mid + (seat - 1.5) * 2.3 + (rnd() - 0.5) * 0.2
         const away = rnd() < 0.3 // a few chairs are pushed back and turned, as if someone just stood up
@@ -346,14 +376,19 @@ export function arrival(scene: THREE.Scene, camera: THREE.PerspectiveCamera) {
   }
   add(mergeGeometries(tops), new THREE.MeshStandardMaterial({ color: 0x8f887c, roughness: 0.55 }))
   // The monitors' light on the worktop, painted on: real lights for a hundred screens would cost far too much.
-  const spill = paintTexture(4, 64, (g) => {
-    const fade = g.createLinearGradient(0, 0, 0, 64)
-    fade.addColorStop(0, '#000')
-    fade.addColorStop(1, '#263c4a')
-    g.fillStyle = fade
-    g.fillRect(0, 0, 4, 64)
-  })
-  add(mergeGeometries(glows), new THREE.MeshBasicMaterial({ map: spill, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }))
+  const glow = (stops: [number, string][]) => {
+    const map = paintTexture(4, 64, (g) => {
+      const fade = g.createLinearGradient(0, 0, 0, 64)
+      for (const [at, color] of stops) fade.addColorStop(at, color)
+      g.fillStyle = fade
+      g.fillRect(0, 0, 4, 64)
+    })
+    map.wrapT = THREE.ClampToEdgeWrapping // or the bright end bleeds into the dark one
+    return new THREE.MeshBasicMaterial({ map, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false })
+  }
+  add(mergeGeometries(glows), glow([[0, '#000'], [1, '#263c4a']]))
+  // The same trick on the carpet for the teal strip under each desk: brightest at the strip, gone 1.3 m out.
+  add(mergeGeometries(pools), glow([[0, '#0e423d'], [0.25, '#072421'], [1, '#000']]))
   add(mergeGeometries(bodies), new THREE.MeshStandardMaterial({ color: 0x1d4347, roughness: 0.6, metalness: 0.1 }))
   add(mergeGeometries(strips), lit(TEAL))
   const names = paintTexture(512, ROWS * 96, (g) => {
@@ -406,6 +441,11 @@ export function arrival(scene: THREE.Scene, camera: THREE.PerspectiveCamera) {
       const spot = screens.marker(t)
       marker.position.set((spot.u - 0.5) * WALL.w, WALL.y + (0.5 - spot.v) * WALL.h, WALL.z + 0.01)
     },
-    dispose() {},
+    dispose() {
+      // disposeObject() frees geometries, materials and maps; an instanced mesh also owns a matrix buffer.
+      scene.traverse((o) => {
+        if (o instanceof THREE.InstancedMesh) o.dispose()
+      })
+    },
   }
 }
