@@ -16,6 +16,7 @@ import { buildBus, buildPart, busKey, modelKey, SLOT, type Mount } from '../scen
 import type { Entity } from '../../shared'
 import { CALL_WALL, DESK_XS, DESK_Z, GAUGES, LAUNCH, ROOM, START, STAND, shortLabel, type Debrief, type Rack } from './layout'
 import { gridTexture } from './world'
+import { mountCrew, type CrewPose } from '../crew/crew'
 
 export interface RoomScreens {
   title: string
@@ -32,6 +33,8 @@ export interface ControlRoom {
   fps: Fps
   setActive(on: boolean): void
   show(screens: RoomScreens): void
+  /** Other players in this room. Pass an empty list when they leave. */
+  setCrew(members: readonly CrewPose[]): void
   dispose(): void
 }
 
@@ -112,7 +115,8 @@ export function partModel(part: Entity): THREE.Object3D | null {
 const callColour = (c: ConsoleCall) => (c.call === 'go' ? GOOD : c.call === 'no-go' ? BAD : WARN)
 const callWord = (c: ConsoleCall) => (c.call === 'go' ? 'GO' : c.call === 'no-go' ? 'NO-GO' : 'GO?')
 
-export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, 'start' | 'yaw'>): ControlRoom {
+export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, 'start' | 'yaw'> & { onPose?: (pose: { x: number; z: number; yaw: number }) => void }): ControlRoom {
+  const { onPose, ...fpsOptions } = options
   const renderer = new THREE.WebGLRenderer({ antialias: true }) // throws without WebGL; the component shows a fallback
   // 1.25× not the screen's 2×: ~60% fewer pixels to fill, and a big room hardly looks softer.
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25))
@@ -428,7 +432,8 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
 
   // ---- Walking.
   scene.updateMatrixWorld(true)
-  const fps = createFps(renderer.domElement, camera, { ...options, start: START.pos, yaw: START.yaw })
+  const fps = createFps(renderer.domElement, camera, { ...fpsOptions, start: START.pos, yaw: START.yaw })
+  const crew = mountCrew(scene)
   let dirty = true
   const resize = () => {
     const { clientWidth: cw, clientHeight: ch } = host
@@ -444,8 +449,10 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
   resize()
   const loop = roomLoop((_now, dt) => {
     const moved = fps.update(dt)
-    if (moved || dirty) for (const m of models) m.visible = m.position.distanceTo(camera.position) < NEAR
-    if (moved || dirty) renderer.render(scene, camera)
+    onPose?.(fps.feet())
+    const crewMoved = crew.update(dt)
+    if (moved || dirty || crewMoved) for (const m of models) m.visible = m.position.distanceTo(camera.position) < NEAR
+    if (moved || dirty || crewMoved) renderer.render(scene, camera)
     dirty = false
   })
 
@@ -456,6 +463,7 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
       dirty = true
       loop.setActive(on)
     },
+    setCrew: crew.set,
     show(s) {
       const key = s.racks.map((r) => `${r.key}:${r.items.map((i) => i.part.id).join(',')}`).join('|')
       if (key !== rackKey) {
@@ -492,6 +500,7 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
       disposed = true
       loop.dispose()
       observer.disconnect()
+      crew.dispose()
       fps.dispose()
       disposeObject(scene)
       envMap.dispose()

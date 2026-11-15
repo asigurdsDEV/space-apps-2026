@@ -225,6 +225,11 @@ describe('co-op screens', () => {
       claimRole() {},
       start() {},
       close() {},
+      reportPose() {},
+      subscribeCrew(listener) {
+        listener([])
+        return () => {}
+      },
     }
   }
 

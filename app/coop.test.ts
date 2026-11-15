@@ -413,6 +413,27 @@ describe('closing', () => {
   })
 })
 
+describe('where people stand', () => {
+  it('relays a pose so the other players can see who moved', async () => {
+    const { host, guests } = await startRoom('Gus', 'Sam')
+    const onHost: { name: string; x: number }[][] = []
+    const onSam: { name: string; x: number }[][] = []
+    host.subscribeCrew((crew) => onHost.push(crew.map((p) => ({ name: p.name, x: p.x }))))
+    guests[1].subscribeCrew((crew) => onSam.push(crew.map((p) => ({ name: p.name, x: p.x }))))
+    guests[0].reportPose({ x: 1.5, z: -2, yaw: 0.4 })
+    await settle()
+    expect(onHost.at(-1)).toEqual([{ name: 'Gus', x: 1.5 }])
+    expect(onSam.at(-1)).toEqual([{ name: 'Gus', x: 1.5 }])
+    host.reportPose({ x: -1, z: 3, yaw: 1 })
+    await settle()
+    expect(onSam.at(-1)).toEqual([{ name: 'Gus', x: 1.5 }, { name: 'Hana', x: -1 }])
+    expect(guests[0].getSnapshot().players.map((p) => p.name)).toEqual(['Hana', 'Gus', 'Sam'])
+    guests[0].close()
+    host.close()
+    guests[1].close()
+  })
+})
+
 describe('same screen', () => {
   it('plays a whole design on one LocalTransport, every role open to the one seat', async () => {
     const game = newGame()
