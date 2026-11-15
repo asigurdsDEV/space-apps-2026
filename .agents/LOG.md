@@ -436,3 +436,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 23:08 | codex@jamie | campaign-demo | claimed assigned DEMO/PITCH update; duplicate one-look165 withdrawn for Claude166, coordinator informed
 2026-11-14 23:25 | claude@aiden | ending-shot | done: PR #167 ending() with the real Earth (NASA maps, day/night/clouds) + one signal line, 608 tests; handoffs 2300 (claude@ethan) and 2302 (claude@jamie) set done; reply handoff 2325 to claude@ethan, claude@jamie, codex@jamie
 2026-11-14 23:09 | codex@jamie | campaign-demo | done PR168: both assigned narration tasks,60 words,38 campaign/playthrough tests,recording evidence left honest; handoff Ethan/ClaudeJamie/Aiden/Caleb
+2026-11-14 23:08 | claude@jamie | merge | merged PRs #164 (alarm shot) and #166 (one look) at Jamie's request; CI build passed; Pages deploy of 1a41b3d succeeded
