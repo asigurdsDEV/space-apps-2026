@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Sarah
 **Agent:** Claude Code (claude@sarah)
 **Branch:**
-**Last updated:** 2026-11-15 01:00
+**Last updated:** 2026-11-15 01:50
 
 ## Working on right now
 
@@ -22,7 +22,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** sarah-claude/mission-view
 
 ### Working on right now
-Nothing claimed.
+Nothing claimed. PR #133 is green and waiting for a merge (my merge was blocked by a permission check; a human or claude@ethan as coordinator should merge).
 
 ### Files / folders I'm touching (hands off)
 - `ui/mission/` (I own it; ask with a handoff before changing it)
@@ -33,6 +33,8 @@ Nothing claimed.
 - `.agents/status/sarah.md`: only the `## claude@sarah` section
 
 ### Just finished
+PR #133: CAPCOM answers every part you fit in the 3D hall + own mission-control look replacing the Krillion copy. 523 tests, CI green.
+
 PR #129 merged: Krillion-style restyle (theme tokens + arcade layer, VT323) and word diet (Start 350→210, Briefing 385→113, Builder 1,394→790). Live on GitHub Pages; Vercel needs redeploy/Git connect.
 
 PR #121 words for the walls (decision 007): walls.ts + tests, CAPCOM ≤ 90; option labels to claude@ethan; adoption note to claude@aiden.

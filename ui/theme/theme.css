@@ -2,20 +2,21 @@
 :root,
 [data-theme="dark"] {
   color-scheme: dark;
-  /* Krillion-style arcade palette (krillion.io): deep navy, pale text, cyan frames, gold highlights. */
-  --game-bg: #070d1a;
-  --game-panel: #0d1830;
-  --game-surface: #13223f;
-  --game-text: #e8f1ff;
-  --game-muted: #8fa3c4;
-  --game-border: #3d6e8f;
-  --game-accent: #4de3ff;
-  --game-on-accent: #071022;
-  --game-selected: #12324d;
-  --game-success: #63e6be;
-  --game-warning: #ffd166;
-  --game-danger: #ff6b6b;
-  --game-focus: #ffd166;
+  /* GO / NO-GO mission-control palette: night-shift navy, telemetry cyan, flight-director amber. */
+  --game-bg: #0a0f1c;
+  --game-panel: #111a2e;
+  --game-surface: #172440;
+  --game-text: #eef3ff;
+  --game-muted: #9eb0cf;
+  --game-border: #4a6c9b;
+  --game-accent: #ffb547;
+  --game-on-accent: #1a1206;
+  --game-selected: #2a2a24;
+  --game-success: #5ee0a8;
+  --game-warning: #ffd479;
+  --game-danger: #ff7a7a;
+  --game-focus: #ffd479;
+  --game-telemetry: #5fd4ff;
 }
 
 
@@ -38,9 +39,9 @@
 
 :root {
   --game-font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --game-font-mono: ui-monospace, SFMono-Regular, Consolas, monospace;
+  --game-font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
   /* Pixel display font for headings, buttons and labels; body text stays readable. */
-  --game-font-display: "VT323", ui-monospace, SFMono-Regular, Consolas, monospace;
+  --game-font-display: "Rajdhani", "Segoe UI", system-ui, sans-serif;
   --game-space-1: 0.25rem;
   --game-space-2: 0.5rem;
   --game-space-3: 0.75rem;
@@ -53,8 +54,11 @@
 
 .game-theme {
   background-color: var(--game-bg);
-  /* faint CRT scanlines */
-  background-image: repeating-linear-gradient(0deg, rgb(255 255 255 / 0.025) 0 1px, transparent 1px 3px);
+  /* faint mission-control floor grid */
+  background-image:
+    linear-gradient(rgb(95 212 255 / 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(95 212 255 / 0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
   color: var(--game-text);
   font: 1rem/1.5 var(--game-font);
   overflow-wrap: anywhere;
@@ -136,41 +140,54 @@
   }
 }
 
-/* ---------- Krillion-style arcade layer (claude@sarah, Sarah's request) ---------- */
-/* Pixel font, uppercase and wide spacing on headings, buttons and labels. Beats single-class screen rules,
-   loses to more specific ones, so a screen can still opt out. */
+/* ---------- GO / NO-GO console layer (claude@sarah, Sarah's request: our own look) ---------- */
+/* Headings, buttons and labels in the console face; numbers in mono telemetry. */
 .game-theme :is(h1, h2, h3, summary, th, legend),
 .game-theme button,
-.game-theme .game-button,
-.game-theme .game-stat {
+.game-theme .game-button {
   font-family: var(--game-font-display);
-  font-weight: 400;
-  letter-spacing: 0.08em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
 }
-.game-theme :is(h1, h2) { text-transform: uppercase; letter-spacing: 0.12em; }
-.game-theme h1 { font-size: clamp(2.4rem, 7vw, 4rem); color: var(--game-text); text-shadow: 3px 0 0 rgb(255 82 82 / 0.55), -3px 0 0 rgb(77 227 255 / 0.55); }
-.game-theme h2 { font-size: clamp(1.6rem, 4vw, 2.2rem); }
-.game-theme h3 { font-size: 1.3rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--game-muted); }
+.game-theme .game-stat,
+.game-theme .game-eyebrow { font-family: var(--game-font-mono); }
+.game-theme :is(h1, h2) { text-transform: uppercase; }
+.game-theme h1 { font-size: clamp(2.4rem, 6vw, 3.8rem); letter-spacing: 0.08em; color: var(--game-text); }
+.game-theme h1::after { content: ""; display: block; width: 3.5rem; height: 4px; margin-top: 0.35rem; background: var(--game-accent); }
+.game-theme h2 { font-size: clamp(1.4rem, 3.4vw, 2rem); }
+.game-theme h3 { font-size: 1.05rem; text-transform: uppercase; letter-spacing: 0.14em; color: var(--game-telemetry); }
 .game-theme button,
-.game-theme .game-button { font-size: 1.2em; text-transform: uppercase; border-radius: 0; }
-.game-theme .game-button { border-width: 2px; }
-.game-theme .game-button:not(:disabled):hover { outline: none; border-color: var(--game-accent); box-shadow: 0 0 0 2px rgb(77 227 255 / 0.35); }
-.game-theme .game-panel { border-width: 2px; }
-/* Square everything boxy (screens set their own radii; planets and dots are not in this list). */
+.game-theme .game-button { font-size: 1.05em; text-transform: uppercase; }
+.game-theme .game-button:not(:disabled):hover { outline: none; border-color: var(--game-telemetry); }
+.game-theme .game-eyebrow { color: var(--game-telemetry); letter-spacing: 0.18em; }
+
+/* Square consoles. */
 .game-theme :is(input, select, textarea, button, fieldset, form, section, details, dialog, figure, dl > div, .game-panel, [class$="-panel"], [class*="card"], [class*="tile"], [class*="art"], [class*="stat"], [class*="fact"]) {
   border-radius: 0 !important;
 }
-/* Every screen's primary button gets the framed arcade look (krillion.io "BEGIN DESCENT"). */
+/* Signature: HUD corner brackets on panels. */
+.game-theme :is(.game-panel, [class$="-panel"], [class*="card"]) {
+  background-image:
+    linear-gradient(var(--game-telemetry), var(--game-telemetry)), linear-gradient(var(--game-telemetry), var(--game-telemetry)),
+    linear-gradient(var(--game-telemetry), var(--game-telemetry)), linear-gradient(var(--game-telemetry), var(--game-telemetry)),
+    linear-gradient(var(--game-telemetry), var(--game-telemetry)), linear-gradient(var(--game-telemetry), var(--game-telemetry)),
+    linear-gradient(var(--game-telemetry), var(--game-telemetry)), linear-gradient(var(--game-telemetry), var(--game-telemetry));
+  background-size: 14px 2px, 2px 14px, 14px 2px, 2px 14px, 14px 2px, 2px 14px, 14px 2px, 2px 14px;
+  background-position: top left, top left, top right, top right, bottom left, bottom left, bottom right, bottom right;
+  background-repeat: no-repeat;
+}
+/* Signature: the main action is an amber "mission patch" button with chamfered corners. */
 .game-theme :is([class*="primary"], button[type="submit"]):not(:disabled) {
-  background: var(--game-panel);
-  color: var(--game-text);
-  border: 3px solid var(--game-accent);
-  box-shadow: 0 0 0 3px var(--game-bg), 0 0 0 5px rgb(77 227 255 / 0.35);
+  background: var(--game-accent);
+  color: var(--game-on-accent);
+  border: 0;
+  clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
   font-family: var(--game-font-display);
-  font-size: 1.45rem;
-  letter-spacing: 0.22em;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
+  padding-inline: 1.5em;
 }
-.game-theme :is([class*="primary"], button[type="submit"]):not(:disabled):hover {
-  background: var(--game-selected);
-}
+.game-theme :is([class*="primary"], button[type="submit"]):not(:disabled):hover { filter: brightness(1.08); }
+.game-theme :is([class*="primary"], button[type="submit"]):focus-visible { outline-offset: 4px; }

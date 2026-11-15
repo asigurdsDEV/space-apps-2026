@@ -33,9 +33,21 @@ export interface StoryLayerProps {
   onCutscene?: (playing: boolean) => void
   /** Cutscenes the app already showed itself (the 3D launch), so the plain one is not played again. */
   shown?: readonly string[]
+  /** CAPCOM's live reply to the player's last design choice (ui/story fitCallout); wins over the beat line. */
+  callout?: { key: string; text: string } | null
 }
 
-export function StoryLayer({ screen, events = NO_EVENTS, scenarioId, onCutscene, shown }: StoryLayerProps) {
+/** A live callout hides itself sooner than a story line. */
+const CALLOUT_MS = 5000
+
+export function StoryLayer({ screen, events = NO_EVENTS, scenarioId, onCutscene, shown, callout }: StoryLayerProps) {
+  const [calloutClosed, setCalloutClosed] = useState<string | null>(null)
+  const calloutKey = callout?.key ?? null
+  useEffect(() => {
+    if (!calloutKey) return
+    const timer = setTimeout(() => setCalloutClosed(calloutKey), CALLOUT_MS)
+    return () => clearTimeout(timer)
+  }, [calloutKey])
   /** Beats whose cutscene has played on this screen. */
   const [played, setPlayed] = useState<string[]>([])
   /** The beat whose line was closed (or timed out). */
@@ -67,6 +79,9 @@ export function StoryLayer({ screen, events = NO_EVENTS, scenarioId, onCutscene,
         <Scenery>{sceneFor(cutscene, scenarioId)}</Scenery>
       </Cutscene>
     )
+  }
+  if (callout && calloutClosed !== callout.key) {
+    return <CapcomPopout key={callout.key} text={callout.text} onClose={() => setCalloutClosed(callout.key)} />
   }
   if (closed === key) return null
   return <CapcomPopout key={key} line={beat.line} onClose={() => setClosed(key)} />
