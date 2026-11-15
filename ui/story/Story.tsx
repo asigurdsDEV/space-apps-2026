@@ -6,12 +6,12 @@ import { glossaryEntry } from '../learn'
 import { CUTSCENE_MS, LINES, type CutsceneId, type LineId } from './model'
 import './story.css'
 
-/** CAPCOM's line, one at a time. Announced politely to screen readers. */
-export function CapcomPopout({ line, onClose }: { line: LineId; onClose?: () => void }) {
+/** CAPCOM's line, one at a time. Announced politely to screen readers. `text` overrides `line` (live callouts). */
+export function CapcomPopout({ line, text, onClose }: { line?: LineId; text?: string; onClose?: () => void }) {
   return (
     <aside className="st-pop st-capcom" role="status" aria-live="polite" aria-label="CAPCOM">
       <span className="st-speaker" aria-hidden="true">CAPCOM</span>
-      <p className="st-line">{LINES[line]}</p>
+      <p className="st-line">{text ?? (line ? LINES[line] : '')}</p>
       {onClose && (
         <button type="button" className="st-button" onClick={onClose}>
           Got it
