@@ -4,6 +4,8 @@ import * as THREE from 'three'
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js'
 import { buildCraft, disposeObject } from '../scene3d/craft'
 import { sceneSpec } from '../scene3d/model'
+import { planetMaps } from '../scene3d/maps'
+import { cloudShader, planetShader } from '../scene3d/shaders'
 import { arrival } from './room'
 import { CUTSCENE_SCENE_MS, shotProgress, type CutsceneCanvasProps, type CutsceneSceneId } from './timing'
 
@@ -437,47 +439,59 @@ function transit(scene: THREE.Scene, camera: THREE.PerspectiveCamera, entering: 
 }
 
 function ending(scene: THREE.Scene, camera: THREE.PerspectiveCamera, success: boolean): Shot {
-  scene.background = new THREE.Color(success ? 0x03110c : 0x10060a)
-  lights(scene, success ? 0xfff2e0 : 0xc8b8b0, success ? 0x6d90d0 : 0x402028)
+  scene.background = new THREE.Color(0x000002)
+  lights(scene)
   stars(scene, 200)
-  const earth = new THREE.Mesh(
-    new THREE.SphereGeometry(0.85, 40, 28),
-    new THREE.MeshStandardMaterial({ color: success ? 0x2f6fd0 : 0x1d3f6e, roughness: 0.7 }),
+  // The real Earth (NASA day, night and cloud maps, ui/scene3d/maps); procedural until they load.
+  const sun = new THREE.Vector3(-0.6, 1.2, 2.6).normalize() // mostly day towards the camera; night and its city lights on the side facing the spacecraft
+  const uSun = { value: sun }
+  const uTime = { value: 0 }
+  const maps = planetMaps()
+  const earth = new THREE.Group()
+  earth.add(
+    new THREE.Mesh(
+      new THREE.SphereGeometry(0.85, 96, 64),
+      new THREE.ShaderMaterial({ ...planetShader, uniforms: { uSun, uBody: { value: 0 }, ...maps.maps.earth } }),
+    ),
+    new THREE.Mesh(
+      new THREE.SphereGeometry(0.86, 96, 64),
+      new THREE.ShaderMaterial({ ...cloudShader, uniforms: { uSun, uTime, ...maps.maps.earth }, transparent: true, depthWrite: false }),
+    ),
   )
+  earth.rotation.z = 0.41 // the axis tilt
   scene.add(earth)
   const craft = craftMesh()
   scene.add(craft)
-  const links: THREE.Mesh[] = []
-  for (let i = 0; i < 8; i++) {
-    const link = new THREE.Mesh(
-      new THREE.SphereGeometry(0.045, 12, 10),
-      new THREE.MeshBasicMaterial({ color: success ? 0x7dffa8 : 0xff5a6a, transparent: true, opacity: 0, depthWrite: false }),
-    )
-    scene.add(link)
-    links.push(link)
-  }
-  const glow = new THREE.PointLight(success ? 0x39e58a : 0xff3355, 0, 5)
-  glow.position.copy(earth.position)
-  scene.add(glow)
+  // The signal: one thin white line from the spacecraft to the ground. It reaches home, or fades out on the way.
+  const SEGMENTS = 48
+  const signalGeo = new THREE.BufferGeometry()
+  signalGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array((SEGMENTS + 1) * 3), 3))
+  const signalMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0, depthWrite: false })
+  const signal = new THREE.Line(signalGeo, signalMat)
+  signal.frustumCulled = false
+  scene.add(signal)
   return {
-    update(progress, _elapsed, aspect) {
+    update(progress, elapsed, aspect) {
       const spread = aspect < 0.9 ? 0.55 : 1
       earth.position.set(-1.7 * spread, -0.1, 0)
       craft.position.set(1.7 * spread, 0.15, 0.2)
-      earth.rotation.y = progress * 0.5
-      const reached = progress / 0.7
-      const fade = success ? 1 : 1 - Math.max(0, (progress - 0.62) / 0.38)
-      links.forEach((link, i) => {
-        const t = i / (links.length - 1)
-        link.position.set(lerp(1.35, -1.15, t) * spread, Math.sin(t * Math.PI) * 0.55, 0.1)
-        const on = t <= reached ? fade : 0
-        ;(link.material as THREE.MeshBasicMaterial).opacity = on
-      })
-      glow.position.copy(earth.position)
-      glow.intensity = success ? progress * 3 : fade * 1.2
+      earth.rotation.y = 1.2 + progress * 0.5
+      uTime.value = elapsed / 1000
+      const points = signalGeo.getAttribute('position') as THREE.BufferAttribute
+      for (let i = 0; i <= SEGMENTS; i++) {
+        const t = i / SEGMENTS
+        points.setXYZ(i, lerp(1.35, -0.95, t) * spread, 0.1 + Math.sin(t * Math.PI) * 0.5, 0.15)
+      }
+      points.needsUpdate = true
+      // Success: the line grows until it touches the Earth and stays. Loss: it stops short and fades.
+      const reach = Math.min(1, progress / 0.7) * (success ? 1 : 0.6)
+      signalGeo.setDrawRange(0, Math.max(2, Math.round(reach * SEGMENTS) + 1))
+      signalMat.opacity = success ? 0.9 : 0.9 * (1 - Math.max(0, (progress - 0.5) / 0.4))
       camera.position.set(0, 0.7, lerp(distance(aspect, 4.4), distance(aspect, 3.5), ease(progress)))
       camera.lookAt(0, 0.15, 0)
     },
-    dispose() {},
+    dispose() {
+      maps.dispose()
+    },
   }
 }
