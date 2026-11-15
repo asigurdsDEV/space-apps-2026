@@ -10,7 +10,6 @@ import { getDatasets } from '../data'
 import type { Config, SimEvent, SimState, Summary } from '../shared'
 import { canSend, ROLES } from '../shared'
 import { choicesOf, pendingDecision, whatIf } from '../sim'
-import { playSound } from '../ui/audio'
 import { savePersonalBest } from '../ui/leaderboard/storage'
 import { stars } from '../ui/mission'
 import { MissionControl, type Debrief } from '../ui/hangar'
@@ -134,7 +133,6 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
   }, [hold, roomCode, session])
   useEffect(() => {
     if (!flying) setLaunched(session.getSnapshot().state.t_s > 86400)
-    else if (!launched && !classic) playSound('launch')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [flying])
 

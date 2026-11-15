@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { SimState } from '../../../shared'
+import { useLaunchSound } from '../../audio/ambience'
 import { sceneSpec } from '../model'
 import { createLaunchScene, type LaunchScene } from './scene'
 import { formatMissionTime, launchTimeline, missionTime, stageAt, stillTime } from './timeline'
@@ -59,6 +60,7 @@ export function LaunchView({ state, onDone, failed = false, className, reducedMo
     setIsDone(true)
     onDoneRef.current?.()
   }, [])
+  const sound = useLaunchSound(rocket, timeline, playing && !isDone)
 
   // One scene per vehicle and design; play, pause and seek go through the effects below.
   useEffect(() => {
@@ -69,6 +71,7 @@ export function LaunchView({ state, onDone, failed = false, className, reducedMo
         reducedMotion: still,
         startAt: still ? stillTime(stages[first]!) : startAt,
         onFrame: (t) => {
+          sound(t)
           if (clock.current) clock.current.textContent = formatMissionTime(missionTime(timeline, t))
           setIndex(stages.indexOf(stageAt(timeline, t)))
         },
