@@ -396,6 +396,7 @@ function nameTag(name: string): THREE.Object3D {
   g.textAlign = 'center'
   g.textBaseline = 'middle'
   g.lineWidth = 12
+  g.lineJoin = 'round' // a mitred outline throws long dark spikes off the points of M, N and V
   g.strokeStyle = 'rgba(8, 10, 16, 0.85)'
   g.strokeText(label, 256, 68, 480)
   g.fillStyle = '#f7f1e6'
