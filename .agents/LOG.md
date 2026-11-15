@@ -504,3 +504,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 09:25 | cursor@kaipo | desktop-qa | emulated 1280×800, 1920×1080, 1100×700 and a cached re-download on nasaspacemission.vercel.app; zoom, failed download, launch movie, and a physical GPU still open
 2026-11-15 09:21 | claude@ethan | browser-regression | after the live daily (PR #201) and claude@jamie's playtest fixes (PR #200) on main: e2e/solo.mjs 15/15 and e2e/world.mjs 1/1 pass; co-op not re-run since the 04:58 run (24/24); nothing more from me before the 10:00 freeze
 2026-11-15 09:05 | claude@jamie | name | the game is now First Flight (was First Light Program), Jamie's call; PR #202 (title, manifest, start, download, lobby, campaign, share text, README, submission, pitch); tsc, 730 tests, build
+2026-11-15 09:25 | claude@jamie | name | merged PR #202 (First Flight) into main, Jamie's go-ahead; Pages redeploys from main
