@@ -217,15 +217,16 @@ export function App() {
             onStart={start}
             busy={busy}
             error={error}
-          />
-          <SameScreen disabled={busy} onPlay={playSameScreen} />
+          >
+            <SameScreen disabled={busy} onPlay={playSameScreen} />
+          </StartScreen>
         </>
       )}
     </div>
   )
 }
 
-/** Under the Start screen: the no-network way to play together, which ui/start has no mode for. */
+/** Under the Start screen's menu, on its background: the no-network way to play together, which ui/start has no mode for. */
 function SameScreen({ disabled, onPlay }: { disabled: boolean; onPlay: (config: Config) => void }) {
   const [scenarioId, setScenarioId] = useState(scenarios[0]?.scenario_id ?? '')
   const [difficulty, setDifficulty] = useState<Difficulty>('normal')

@@ -17,13 +17,15 @@ export interface SpaceViewProps {
   progress?: number
   /** Show the name/orbit caption (and sunlight/shadow in orbit mode). Default true. */
   showCaption?: boolean
+  /** A page background: slower orbit, no locator ring (read once, when the view opens). */
+  backdrop?: boolean
   /** Sizes the view; the default height is in scene3d.css. */
   className?: string
 }
 
 const media = (q: string) => typeof window !== 'undefined' && window.matchMedia(q).matches
 
-export function SpaceView({ state, mode = 'orbit', progress, showCaption = true, className }: SpaceViewProps) {
+export function SpaceView({ state, mode = 'orbit', progress, showCaption = true, className, backdrop }: SpaceViewProps) {
   const host = useRef<HTMLDivElement>(null)
   const world = useRef<World | null>(null)
   const spec = useMemo(() => sceneSpec(state), [state.entities, state.params])
@@ -39,6 +41,7 @@ export function SpaceView({ state, mode = 'orbit', progress, showCaption = true,
         reducedMotion: media('(prefers-reduced-motion: reduce)'),
         interactive,
         onShadow: setInShadow,
+        backdrop,
       })
     } catch {
       setFailed(true) // no WebGL

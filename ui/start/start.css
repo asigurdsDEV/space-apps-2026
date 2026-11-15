@@ -1,96 +1,175 @@
-/* The page is always deep space (the 3D Earth behind it), so text straight on it is light in both themes. Panels keep the theme. */
-.ss-root { position: relative; isolation: isolate; overflow: hidden; display: flex; flex-direction: column; color: #eef2fc; background: #000002; min-height: 100dvh; padding: 24px clamp(20px, 4vw, 64px) 48px; font: 16px/1.5 var(--game-font); }
+/* The start screen: quiet glass over the 3D Earth. White and grey only, Inter Tight, hairlines.
+   It sets the shared theme tokens locally, so the app's one-screen strip inside it matches.
+   `.ss-root.ss-root` outranks the game theme's console look (amber, brackets, chamfers, caps). */
+.ss-root {
+  --ss-font: "Inter Tight", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ss-line: rgb(255 255 255 / 0.14);
+  --ss-glass: rgb(10 12 16 / 0.26);
+  --game-font: var(--ss-font);
+  --game-font-display: var(--ss-font);
+  --game-font-mono: var(--ss-font);
+  --game-text: #f5f6f8;
+  --game-muted: rgb(245 246 248 / 0.6);
+  --game-border: var(--ss-line);
+  --game-accent: #ffffff;
+  --game-on-accent: #0b0c0e;
+  --game-telemetry: rgb(245 246 248 / 0.6);
+  --game-selected: rgb(255 255 255 / 0.07);
+  --game-focus: #ffffff;
+  --game-panel: var(--ss-glass);
+  --game-bg: transparent;
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  padding: 28px clamp(20px, 4vw, 64px) 40px;
+  color: var(--game-text);
+  background: #000002;
+  font: 400 16px/1.55 var(--ss-font);
+  letter-spacing: 0.005em;
+  -webkit-font-smoothing: antialiased;
+}
 .ss-root *, .ss-root *::before, .ss-root *::after { box-sizing: border-box; }
-.ss-masthead { width: 100%; max-width: 1240px; margin: 0 auto 24px; color: #b9c4dd; padding-bottom: 20px; border-bottom: 1px solid #ffffff30; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; color: var(--game-muted); font-size: .75rem; }
-.ss-masthead .ss-brand { color: #eef2fc; font-size: 1.05rem; font-weight: 800; letter-spacing: .08em; text-decoration: none; }
-.ss-brand span { color: var(--game-accent); font-size: 1.5rem; vertical-align: middle; margin-right: 8px; }
-.ss-edition { margin-left: auto; font-family: var(--game-font-mono); }
-.ss-eyebrow { color: var(--game-accent); font-size: .7rem; letter-spacing: .16em; text-transform: uppercase; margin: 0; }
-.ss-intro h1 { font-size: clamp(2.8rem, 5vw, 4.6rem); line-height: 1.03; letter-spacing: -.055em; margin: 18px 0; }
-.ss-lede { font-size: 1.05rem; color: #b9c4dd; max-width: 43ch; margin-bottom: 12px; }
-.ss-world { display: block; width: 32px; height: 32px; border-radius: 50%; background: radial-gradient(circle at 30% 25%, #abbcff, #485a9d 50%, #0b172c); box-shadow: 0 0 16px #5482b322; }
-.ss-world-demo { background: radial-gradient(ellipse at 30% 22%, #a8dec2 0 12%, transparent 14%), radial-gradient(circle at 30% 25%, #8bf0de, #287fa6 50%, #0b172c); }
-.ss-world-moon { background: radial-gradient(circle at 60% 60%, #58657b 0 16%, transparent 18%), radial-gradient(circle at 30% 25%, #e9e9db, #6f7e99 50%, #0b172c); }
-.ss-world-mars { background: radial-gradient(circle at 30% 25%, #ffc08c, #ab4c32 50%, #271b29); }
-.ss-panel fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
-.ss-panel-kicker { font: .65rem/1.5 var(--game-font-mono); color: var(--game-muted); text-transform: uppercase; letter-spacing: .1em; margin: 8px 0 12px; }
-.ss-panel label { display: block; font-size: .85rem; margin: 16px 0 7px; }
-.ss-panel input, .ss-panel select, .ss-panel button { font: inherit; }
-.ss-panel input, .ss-panel select { display: block; width: 100%; padding: 11px 12px; border: 1px solid var(--game-border); background: var(--game-bg); color: var(--game-text); border-radius: 8px; min-height: 46px; }
+
+/* Undo the game theme's console look inside the start screen. */
+.ss-root.ss-root :is(h1, h2, h3, legend, button, .game-button) { font-family: var(--ss-font); font-weight: 500; letter-spacing: 0.01em; text-transform: none; }
+.ss-root.ss-root h1::after { content: none; }
+.ss-root.ss-root :is(.game-panel, [class$="-panel"], [class*="card"]) { background-image: none; }
+.ss-root.ss-root :is([class*="primary"], button[type="submit"]):not(:disabled) { clip-path: none; padding-inline: 1.5em; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.24em; }
+.ss-root :focus-visible { outline: 1px solid #fff; outline-offset: 4px; }
+.ss-root h1:focus { outline: none; }
+.ss-root :disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* Background: fixed to the window, so it stays put while the page scrolls. */
+.ss-bg.s3d { position: fixed; inset: 0; z-index: -1; height: auto; border-radius: 0; pointer-events: none; }
+.ss-bg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgb(0 0 2 / 0.7), transparent 50%, rgb(0 0 2 / 0.35)); }
+
+.ss-masthead { width: 100%; max-width: 1240px; margin: 0 auto; padding-bottom: 22px; border-bottom: 1px solid var(--ss-line); display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; color: var(--game-muted); font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; }
+.ss-masthead .ss-brand { color: var(--game-text); font-size: 0.8rem; font-weight: 500; letter-spacing: 0.28em; }
+.ss-brand span { margin-right: 10px; opacity: 0.7; }
+.ss-edition { margin-left: auto; }
+
+/* Steps fade out, swap, fade back in: 0.7 s each way. */
+.ss-stage { flex: 1; width: 100%; max-width: 1240px; margin: auto; padding: 48px 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 440px); gap: clamp(32px, 6vw, 96px); align-items: center; transition: opacity 700ms cubic-bezier(0.4, 0, 0.2, 1), transform 700ms cubic-bezier(0.4, 0, 0.2, 1), filter 700ms ease; }
+.ss-stage.is-fading, .ss-footer.is-fading { opacity: 0; transform: translateY(10px); filter: blur(6px); }
+
+.ss-side { text-shadow: 0 1px 12px rgb(0 0 0 / 0.6); }
+.ss-eyebrow { margin: 0; color: var(--game-muted); font-size: 0.7rem; letter-spacing: 0.32em; text-transform: uppercase; }
+.ss-root.ss-root .ss-intro h1 { margin: 22px 0 18px; font-size: clamp(3.2rem, 6.4vw, 5.6rem); font-weight: 500; line-height: 1; letter-spacing: -0.035em; color: #fff; }
+.ss-lede { margin: 0; color: var(--game-muted); font-size: 1.05rem; letter-spacing: 0.02em; max-width: 40ch; }
+
+/* The panel: barely there glass. */
+.ss-panel { margin: 0; min-width: 0; padding: clamp(24px, 3vw, 40px); color: var(--game-text); background: var(--ss-glass); border: 1px solid var(--ss-line); backdrop-filter: blur(22px) saturate(1.3); -webkit-backdrop-filter: blur(22px) saturate(1.3); }
+.ss-panel-kicker { margin: 0 0 10px; color: var(--game-muted); font-size: 0.68rem; letter-spacing: 0.3em; text-transform: uppercase; }
+.ss-root.ss-root .ss-step-title { margin: 0 0 28px; font-size: 1.9rem; font-weight: 400; letter-spacing: -0.02em; text-transform: none; }
+.ss-panel label { display: block; margin: 28px 0 4px; color: var(--game-muted); font-size: 0.68rem; letter-spacing: 0.24em; text-transform: uppercase; }
+.ss-panel input { display: block; width: 100%; min-height: 44px; padding: 8px 0; border: 0; border-bottom: 1px solid rgb(255 255 255 / 0.3); background: transparent; color: var(--game-text); font: inherit; font-size: 1.05rem; }
+.ss-panel input:focus { outline: none; border-bottom-color: #fff; }
 .ss-panel input::placeholder { color: var(--game-muted); }
-.ss-modes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
-.ss-mode { color: var(--game-text); text-align: left; border: 1px solid var(--game-border); background: var(--game-bg); padding: 12px 10px; border-radius: 9px; cursor: pointer; }
+
+/* Buttons: a white one for the main action, hairline outlines for everything else. */
+.ss-root.ss-root .ss-primary { display: block; flex: 1; width: 100%; min-height: 52px; padding: 14px 24px; border: 0; background: #fff; color: #0b0c0e; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.24em; text-transform: uppercase; cursor: pointer; transition: background 300ms ease; }
+.ss-root.ss-root .ss-back, .ss-root.ss-root .ss-daily-button { min-height: 52px; padding: 14px 24px; border: 1px solid rgb(255 255 255 / 0.3); background: transparent; color: var(--game-text); font-size: 0.78rem; letter-spacing: 0.24em; text-transform: uppercase; cursor: pointer; transition: background 300ms ease, border-color 300ms ease; }
+.ss-root .ss-primary:not(:disabled):hover { background: rgb(255 255 255 / 0.86); }
+.ss-root :is(.ss-back, .ss-daily-button, .ss-mode, .ss-program button):not(:disabled):hover { border-color: rgb(255 255 255 / 0.6); background: rgb(255 255 255 / 0.04); }
+.ss-nav { display: flex; gap: 12px; margin-top: 32px; }
+
+.ss-modes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.ss-root.ss-root .ss-mode { padding: 16px 14px; border: 1px solid var(--ss-line); background: transparent; color: var(--game-text); text-align: left; font-size: 0.92rem; cursor: pointer; transition: border-color 300ms ease, background 300ms ease; }
 .ss-mode strong, .ss-mode span { display: block; }
-.ss-mode strong { font-size: .8rem; }
-.ss-mode span { color: var(--game-muted); font-size: .7rem; line-height: 1.4; margin-top: 6px; }
-.ss-mode[aria-pressed="true"] { border-color: var(--game-accent); background: var(--game-selected); box-shadow: inset 0 -3px var(--game-accent); }
-.ss-root :focus-visible { outline: 3px solid var(--game-focus); outline-offset: 3px; }
-.ss-root button:not(:disabled):hover { filter: brightness(1.1); }
-.ss-root :disabled { opacity: .6; cursor: not-allowed; }
-.ss-hint { color: var(--game-muted); font-size: .75rem; margin: 10px 0 0; overflow-wrap: anywhere; position: relative; }
+.ss-mode strong { font-weight: 500; }
+.ss-mode span { margin-top: 4px; color: var(--game-muted); font-size: 0.75rem; font-weight: 400; }
+.ss-root .ss-mode[aria-pressed="true"] { border-color: #fff; background: var(--game-selected); }
+
+/* Missions: a hairline list. */
+.ss-program { display: grid; border-top: 1px solid var(--ss-line); }
+.ss-root.ss-root .ss-program button { display: grid; grid-template-columns: auto 1fr; gap: 4px 18px; align-items: center; padding: 18px 12px; border: 0; border-bottom: 1px solid var(--ss-line); background: transparent; color: var(--game-text); text-align: left; font-size: 1rem; cursor: pointer; transition: background 300ms ease; }
+.ss-root .ss-program button[aria-pressed="true"] { background: var(--game-selected); }
+.ss-program small { display: block; color: var(--game-muted); font-size: 0.65rem; letter-spacing: 0.24em; }
+.ss-program strong { display: block; font-size: 1.05rem; font-weight: 500; }
+.ss-program em { display: block; color: var(--game-muted); font-size: 0.82rem; font-style: normal; }
+.ss-chips { grid-column: 2; display: flex; flex-wrap: wrap; gap: 0 14px; color: var(--game-muted); font-size: 0.75rem; font-weight: 400; letter-spacing: 0.04em; }
+.ss-world { display: block; width: 30px; height: 30px; border-radius: 50%; background: radial-gradient(circle at 32% 28%, #e8ecf2, #7d8696 55%, #15181e); }
+.ss-world-demo { background: radial-gradient(ellipse at 30% 22%, #a8dec2 0 12%, transparent 14%), radial-gradient(circle at 30% 25%, #9fd2e6, #2b6f92 55%, #0b141f); }
+.ss-world-moon { background: radial-gradient(circle at 60% 60%, #6a7080 0 16%, transparent 18%), radial-gradient(circle at 30% 25%, #ecebe4, #8a8f9a 55%, #15181e); }
+.ss-world-mars { background: radial-gradient(circle at 30% 25%, #f0b48a, #a24a32 55%, #1f1513); }
+
+.ss-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 28px 0 0; padding-top: 20px; border-top: 1px solid var(--ss-line); }
+.ss-stats dt { color: var(--game-muted); font-size: 0.65rem; letter-spacing: 0.24em; text-transform: uppercase; }
+.ss-stats dd { margin: 6px 0 0; font-size: 1.35rem; font-weight: 400; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+.ss-hint { position: relative; margin: 20px 0 0; color: var(--game-muted); font-size: 0.85rem; line-height: 1.6; overflow-wrap: anywhere; }
 .ss-hint .learn-term { position: static; }
 .ss-hint .learn-term-tip { width: min(22rem, 100%); }
-.ss-error { color: var(--game-danger); border-left: 3px solid var(--game-danger); padding-left: 12px; }
-.ss-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
-.ss-stats > div { padding: 12px; background: var(--game-bg); border-radius: 8px; }
-.ss-stats dt { color: var(--game-muted); font-size: .7rem; text-transform: uppercase; letter-spacing: .05em; }
-.ss-stats dd { font-weight: 650; font-size: 1.1rem; margin: 4px 0 0; font-variant-numeric: tabular-nums; }
-.ss-daily h2 { font-size: 1rem; margin: 0; }
-.ss-daily h2 span { color: var(--game-accent); margin-right: 6px; }
-.ss-daily-button { width: 100%; min-height: 44px; margin-top: 12px; padding: 10px; border: 1px solid var(--game-accent); border-radius: 8px; color: var(--game-text); background: var(--game-selected); cursor: pointer; }
-.ss-bg.s3d { position: absolute; inset: 0; z-index: -1; height: auto; border-radius: 0; pointer-events: none; }
-.ss-bg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, #000002cc, transparent 45%, #00000280); }
-.ss-stage { flex: 1; width: 100%; max-width: 1240px; margin: auto; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 460px); gap: clamp(24px, 5vw, 72px); align-items: center; transition: opacity 280ms ease, transform 280ms ease; }
-.ss-stage.is-fading { opacity: 0; transform: translateY(8px); }
-.ss-side { text-shadow: 0 1px 4px #000; }
-.ss-root h1:focus { outline: none; }
-.ss-panel { padding: clamp(20px, 2.5vw, 32px); margin: 0; min-width: 0; color: var(--game-text); background: color-mix(in srgb, var(--game-panel) 86%, transparent); backdrop-filter: blur(10px); border: 1px solid var(--game-border); border-radius: 20px; box-shadow: 0 20px 60px #00000060; }
-.ss-step-title { font-size: 1.6rem; letter-spacing: -.03em; margin: 0 0 16px; }
-.ss-nav { display: flex; gap: 10px; margin-top: 20px; }
-.ss-back { min-height: 48px; padding: 12px 18px; border: 1px solid var(--game-border); border-radius: 8px; background: transparent; color: var(--game-text); cursor: pointer; }
-.ss-primary { display: block; flex: 1; width: 100%; border: 0; border-radius: 8px; background: var(--game-accent); color: var(--game-on-accent); font-weight: 750 !important; min-height: 48px; padding: 12px 18px; cursor: pointer; }
-.ss-program { display: grid; gap: 8px; }
-.ss-program button { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; align-items: center; padding: 14px; border: 1px solid var(--game-border); border-radius: 12px; background: var(--game-bg); color: var(--game-text); text-align: left; cursor: pointer; min-width: 0; }
-.ss-program button[aria-pressed="true"] { background: var(--game-selected); border-color: var(--game-accent); box-shadow: inset 0 -3px var(--game-accent); }
-.ss-program small { display: block; color: var(--game-muted); font: .65rem var(--game-font-mono); }
-.ss-program strong { display: block; font-size: 1rem; }
-.ss-program em { display: block; font-style: normal; font-size: .75rem; color: var(--game-muted); }
-.ss-chips { grid-column: 2; display: flex; flex-wrap: wrap; gap: 6px; font: .7rem var(--game-font-mono); }
-.ss-chips span { padding: 2px 8px; border: 1px solid var(--game-border); border-radius: 999px; }
-.ss-daily { border-top: 1px solid var(--game-border); margin-top: 20px; padding-top: 18px; }
-/* Moving diagrams: they pop in after the step, then loop. */
-.ss-diagram { max-width: 340px; margin-top: 24px; padding: 14px 16px; border: 1px solid #7dbbcd55; border-left: 3px solid #7dbbcd; background: #06101dcc; color: #cfe6f2; font: .7rem/1.4 var(--game-font-mono); letter-spacing: .08em; text-transform: uppercase; text-shadow: none; animation: ss-pop 500ms 250ms cubic-bezier(.2, 1.3, .4, 1) both; }
-@keyframes ss-pop { from { opacity: 0; transform: translateY(14px) scale(.92); } }
-.ss-diagram p { margin: 0 0 8px; color: #7dbbcd; }
+.ss-error { padding-left: 12px; border-left: 1px solid var(--game-danger); color: var(--game-danger); }
+
+.ss-daily { margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--ss-line); }
+.ss-root.ss-root .ss-daily h2 { margin: 0; font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--game-muted); }
+.ss-daily h2 span { margin-right: 8px; }
+.ss-daily .ss-hint { margin-top: 8px; color: var(--game-text); font-size: 0.95rem; }
+.ss-root.ss-root .ss-daily-button { width: 100%; margin-top: 18px; }
+
+/* Moving diagrams beside each step: hairline glass, white lines, they fade up after the step. */
+.ss-diagram { max-width: 380px; margin-top: 40px; padding: 22px 24px; border: 1px solid var(--ss-line); background: rgb(10 12 16 / 0.2); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); color: var(--game-text); font-size: 0.7rem; line-height: 1.4; letter-spacing: 0.16em; text-transform: uppercase; text-shadow: none; animation: ss-rise 900ms 400ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+@keyframes ss-rise { from { opacity: 0; transform: translateY(16px); } }
+.ss-diagram > p { margin: 0 0 16px; color: var(--game-muted); font-size: 0.65rem; letter-spacing: 0.32em; }
 .ss-diagram svg { display: block; width: 100%; height: auto; overflow: visible; }
-.ss-diagram text { fill: #cfe6f2; font-size: 9px; }
-.ss-diagram circle, .ss-diagram rect, .ss-diagram ellipse { fill: #0e2438; stroke: #7dbbcd; }
-.ss-diagram .ss-dot { fill: #ffd479; stroke: none; }
-.ss-diagram .ss-hub { fill: #287fa6; }
-.ss-diagram .ss-target-moon { fill: #8e9bb3; }
-.ss-diagram .ss-target-mars { fill: #ab4c32; }
-.ss-draw { fill: none !important; stroke: #7dbbcd; stroke-dasharray: 300; stroke-dashoffset: 300; animation: ss-draw 1.2s 500ms ease forwards; }
+.ss-diagram text { fill: rgb(245 246 248 / 0.75); font-size: 8.5px; letter-spacing: 0.14em; }
+.ss-diagram circle, .ss-diagram rect, .ss-diagram ellipse { fill: rgb(255 255 255 / 0.04); stroke: rgb(255 255 255 / 0.55); stroke-width: 0.8; }
+.ss-diagram .ss-dot { fill: #fff; stroke: none; filter: drop-shadow(0 0 4px #fff); }
+.ss-diagram .ss-hub { fill: rgb(159 210 230 / 0.35); }
+.ss-diagram .ss-target-moon { fill: rgb(220 222 228 / 0.35); }
+.ss-diagram .ss-target-mars { fill: rgb(200 110 80 / 0.4); }
+.ss-draw { fill: none !important; stroke: rgb(255 255 255 / 0.45); stroke-width: 0.8; stroke-dasharray: 300; stroke-dashoffset: 300; animation: ss-draw 1.6s 700ms ease forwards; }
 @keyframes ss-draw { to { stroke-dashoffset: 0; } }
-.ss-draw.ss-dash { stroke-dasharray: 4 5; stroke-dashoffset: 0; opacity: 0; animation: ss-show 600ms 600ms forwards, ss-march 1.2s linear infinite; }
+.ss-draw.ss-dash { stroke-dasharray: 3 5; stroke-dashoffset: 0; opacity: 0; animation: ss-show 900ms 800ms forwards, ss-march 1.6s linear infinite; }
 @keyframes ss-show { to { opacity: 1; } }
-@keyframes ss-march { to { stroke-dashoffset: -9; } }
-.ss-pulse { animation: ss-pulse 2.7s ease-in-out infinite; }
-@keyframes ss-pulse { 0%, 60%, 100% { opacity: .45; } 20% { opacity: 1; } }
-.ss-bar { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; margin-top: 8px; }
-.ss-bar b { color: #fff; }
-.ss-bar > i { grid-column: 1 / -1; height: 6px; background: #0e2438; }
-.ss-bar > i > i { display: block; height: 100%; background: #ffd479; transition: width 500ms ease; }
+@keyframes ss-march { to { stroke-dashoffset: -8; } }
+.ss-pulse { animation: ss-pulse 3.6s ease-in-out infinite; }
+@keyframes ss-pulse { 0%, 60%, 100% { opacity: 0.5; } 20% { opacity: 1; } }
+.ss-bar { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-top: 14px; }
+.ss-bar span { color: var(--game-muted); }
+.ss-bar b { font-weight: 500; letter-spacing: 0.06em; }
+.ss-bar > i { grid-column: 1 / -1; height: 2px; background: rgb(255 255 255 / 0.12); }
+.ss-bar > i > i { display: block; height: 100%; background: #fff; transition: width 900ms cubic-bezier(0.4, 0, 0.2, 1); }
+
+/* Mission plan: three phases on a line, a light travels down it and each phase brightens as it passes. */
+.ss-plan { position: relative; margin: 0; padding: 0 0 0 26px; list-style: none; }
+.ss-plan::before { content: ""; position: absolute; left: 4px; top: 6px; bottom: 6px; width: 1px; background: linear-gradient(rgb(255 255 255 / 0.5), rgb(255 255 255 / 0.12)); }
+.ss-plan li { position: relative; display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; padding: 0 0 20px; text-transform: none; letter-spacing: 0.02em; animation: ss-rise 800ms cubic-bezier(0.2, 0.7, 0.2, 1) both, ss-lit 6s 1.4s ease-in-out infinite; }
+.ss-plan li:last-of-type { padding-bottom: 0; }
+.ss-plan li::before { content: ""; position: absolute; left: -26px; top: 5px; width: 9px; height: 9px; border: 1px solid rgb(255 255 255 / 0.7); border-radius: 50%; background: #05070a; }
+.ss-plan small { grid-row: span 2; padding-top: 1px; color: var(--game-muted); font-size: 0.65rem; letter-spacing: 0.2em; }
+.ss-plan strong { font-size: 0.95rem; font-weight: 500; letter-spacing: 0.04em; }
+.ss-plan span { color: var(--game-muted); font-size: 0.8rem; line-height: 1.5; letter-spacing: 0.01em; }
+.ss-plan li:nth-of-type(2) { animation-delay: 0.75s, 3.4s; }
+.ss-plan li:nth-of-type(3) { animation-delay: 1s, 5.4s; }
+@keyframes ss-lit { 0%, 30%, 100% { opacity: 0.55; } 8%, 18% { opacity: 1; } }
+.ss-plan-dot { position: absolute; left: 1px; top: 6px; width: 7px; height: 7px; border-radius: 50%; background: #fff; box-shadow: 0 0 10px 2px rgb(255 255 255 / 0.7); animation: ss-travel 6s 1.4s cubic-bezier(0.45, 0, 0.55, 1) infinite both; }
+@keyframes ss-travel { 0% { top: 6px; opacity: 0; } 8% { opacity: 1; } 80% { opacity: 1; } 92%, 100% { top: calc(100% - 12px); opacity: 0; } }
+
+/* Under the menu: the app's one-screen strip (app/App.tsx lays it out; this gives it the start look). */
+.ss-footer { width: 100%; max-width: 1240px; margin: 0 auto; transition: opacity 700ms cubic-bezier(0.4, 0, 0.2, 1), transform 700ms cubic-bezier(0.4, 0, 0.2, 1), filter 700ms ease; }
+.ss-root.ss-root .ss-footer .game-panel { padding: 28px 0 0; border: 0; border-top: 1px solid var(--ss-line); background: none; }
+.ss-root.ss-root .ss-footer h2 { margin: 0 0 6px; font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase; }
+.ss-footer label { color: var(--game-muted); font-size: 0.65rem; letter-spacing: 0.24em; text-transform: uppercase; }
+.ss-root .ss-footer .game-field { min-height: 40px; margin-top: 6px; padding: 6px 22px 6px 0; border: 0; border-bottom: 1px solid rgb(255 255 255 / 0.3); background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23fff' stroke-opacity='.7'/%3E%3C/svg%3E") no-repeat right 4px center; color: var(--game-text); font-size: 0.95rem; letter-spacing: 0.01em; text-transform: none; appearance: none; cursor: pointer; }
+.ss-root .ss-footer .game-field:focus { outline: none; border-bottom-color: #fff; }
+.ss-root .ss-footer .game-field option { color: #0b0c0e; background: #fff; }
+.ss-root.ss-root .ss-footer button[type="submit"] { min-height: 46px; padding: 12px 24px; border: 1px solid rgb(255 255 255 / 0.3); background: transparent; color: var(--game-text); font-size: 0.75rem; letter-spacing: 0.24em; text-transform: uppercase; box-shadow: none; transition: background 300ms ease, border-color 300ms ease; }
+.ss-root.ss-root .ss-footer button[type="submit"]:not(:disabled):hover { border-color: rgb(255 255 255 / 0.6); background: rgb(255 255 255 / 0.04); filter: none; }
+
 @media (prefers-reduced-motion: reduce) {
-  .ss-stage, .ss-diagram, .ss-draw, .ss-draw.ss-dash, .ss-pulse { animation: none; transition: none; stroke-dashoffset: 0; opacity: 1; }
-  .ss-diagram .ss-dot { display: none; }
+  .ss-stage, .ss-footer, .ss-diagram, .ss-draw, .ss-draw.ss-dash, .ss-pulse, .ss-plan li { animation: none; transition: none; stroke-dashoffset: 0; opacity: 1; }
+  .ss-diagram .ss-dot, .ss-plan-dot { display: none; }
 }
 @media (max-width: 760px) {
-  .ss-masthead { margin-bottom: 24px; gap: 8px 16px; }
+  .ss-masthead { gap: 8px 16px; }
   .ss-masthead > span:not(.ss-edition):not(.ss-brand) { display: none; }
-  .ss-edition { font-size: .6rem; }
-  .ss-stage { grid-template-columns: 1fr; gap: 20px; align-content: center; }
-  .ss-intro h1 { font-size: clamp(2.7rem, 9vw, 4rem); }
+  .ss-edition { font-size: 0.6rem; }
+  .ss-stage { grid-template-columns: 1fr; gap: 28px; padding: 32px 0; align-content: center; }
+  .ss-root.ss-root .ss-intro h1 { font-size: clamp(2.8rem, 13vw, 4rem); }
   .ss-diagram { display: none; }
-  .ss-bg::after { background: #00000266; }
+  .ss-bg::after { background: rgb(0 0 2 / 0.45); }
 }
 @media (max-width: 360px) { .ss-modes { grid-template-columns: 1fr; } .ss-mode span { display: none; } }
