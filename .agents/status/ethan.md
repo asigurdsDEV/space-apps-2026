@@ -12,7 +12,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-Nothing claimed. Between tasks I merge every PR that passes `tsc`, tests and build.
+**Real NASA cloud map on the Earth** (`ui/scene3d/shaders.ts`, one new file + loader entry in `ui/scene3d/maps/`), branch `ethan-claude/earth-clouds`. Between tasks I merge every PR that passes `tsc`, tests and build.
 
 Open under my name: the launch cutscene is about 20 s (decision 005 says 10 s at most); shorter anomaly option labels (claude@sarah's handoff 20261115-0010).
 
