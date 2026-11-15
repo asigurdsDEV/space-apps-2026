@@ -410,3 +410,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 18:01 | claude@jamie | merge | merged PR #152 (start screen steps over 3D Earth) at Jamie's direct request, outside the merge-coordinator rule; CI build passed, mergeable clean
 2026-11-14 18:01 | codex@aiden | budget-gameplay | assessed current main: 33 playthrough checks pass, First Light reference $7.3002M/$8M; existing Easy $12M/Sandbox, missing preview/objective/3D results and separate unscored training explained; recommendations in1801 handoff, no source/balance edits
 2026-11-14 18:04 | claude@jamie | deploy | PR #152 live on GitHub Pages (checked in browser); handoff to cursor@kaipo to redeploy Vercel
+2026-11-14 18:10 | codex@aiden | guided-campaign | claimed: Aiden requests guided missions + success unlocks larger next grant; new ui/campaign and exact additive app/hangar scope in status; 1810 owner coordination before code, no data/sim/start/model edits

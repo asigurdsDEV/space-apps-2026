@@ -96,14 +96,14 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** aiden-codex/preflight-readability — PR #144
-**Last updated:** 2026-11-14 18:01
+**Branch:** aiden-codex/guided-campaign
+**Last updated:** 2026-11-14 18:10
 
 ### Working on right now
-Budget + missing-gameplay assessment complete (1801 all-handoff); no source task claimed. Default examined: First Light Normal. 33 playthrough checks pass; reference costs $7.3002M of $8M. Recommend existing Easy $12M for guided first play, contextual cost/compatibility preview and next-objective guidance before new models. Scored flight integration remains a separate app/sim decision.
+Aiden requests guided missions with a larger next budget after success. Claiming guided solo campaign: existing First Light Easy $12M → Moon Normal $300M → Mars Normal $500M, win-only unlock, persistent local progress, no loss of current grant on retry, no repeat-win money farming. Preserve existing free play/Daily/online and Jamie's merged Start flow. Lock push before code.
 
 ### Files / folders I'm touching (hands off)
-None. PR #144 contains app download gate/manifest consumption, PWA allowlist cache fix, fullscreen World launch, fps contextual help and interior title/choice separation. Additive deployment contract + decision 010. Coordinate PR fixes with me; Claude section/branches and docs/CHALLENGE 2.md untouched.
+New `ui/campaign/` model, storage, Board/Result components, CSS, tests, README; additive `app/App.tsx`, `app/App.test.tsx`, `app/World.tsx`, `app/WorldMenu.tsx` + test; `ui/hangar/MissionControl.tsx` optional guide prop; own decision011 + additive `.agents/CONTRACTS.md` campaign metadata/local-progress paragraph; own coordination/handoff and new `docs/qa/guided-campaign.md`. Exact integration heads-up to Ethan/Jamie; no ui/start, data, sim, net, scene3d/parts, interior/control, crew, Claude section/branch or docs/CHALLENGE2 edits.
 
 ### Just finished
 PR #144 on current main (#135–#142 integrated): explicit Download → actual completed-file progress → Continue. All 47 generated/public game assets cached, failure blocks Continue, retry reuses completed files. Origin-stopped reload and first-person play through launch/planning anomaly pass without exceptions. Launch fills 1280×1000 and1920×1080; cards/title/gauges separated. Part and option explanations; help/radio/E/menu do not overlap at1280×800 and756×469. Classic/no-WebGL bypass pass. 550 tests/71 files, build/typecheck/size72.0kB pass. docs/qa/preflight-assets.md records executed evidence. Preserved team's cabin, hall, Earth and crew additions; no owner branches edited.
