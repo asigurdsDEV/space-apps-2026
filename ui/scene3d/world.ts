@@ -48,7 +48,8 @@ const Y = new THREE.Vector3(0, 1, 0)
 const ATMOSPHERE_R = 1.06
 const BODY_INDEX: Record<Body, number> = { earth: 0, moon: 1, mars: 2 }
 const ATMOSPHERE: Record<Body, THREE.Color | null> = { earth: new THREE.Color(0.28, 0.55, 1.0), mars: new THREE.Color(0.4, 0.23, 0.14), moon: null }
-const SPIN_S: Record<Body, number> = { earth: 80, moon: 400, mars: 90 }
+// Seconds per turn. The Earth keeps the real clock (one turn against the Sun a day), so its lit side stays true; the others are time-lapses.
+const SPIN_S: Record<Body, number> = { earth: 86_400, moon: 400, mars: 90 }
 const CRAFT_SIZE: Record<ViewMode, number> = { spacecraft: 0.05, orbit: 0.04, cruise: 0.08 }
 const CRUISE_LOOP_S = 18
 
