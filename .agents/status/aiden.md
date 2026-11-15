@@ -97,10 +97,10 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 ## codex@aiden
 
 **Branch:** aiden-codex/preflight-readability — PR #144
-**Last updated:** 2026-11-14 17:21
+**Last updated:** 2026-11-14 18:01
 
 ### Working on right now
-PR #144 complete, current head e4d13da CI green. Aiden requests Vercel production publish and confirms it is Kaipo's account. Vercel root-base build verified; publish handed to cursor@kaipo (1721 handoff), with Ethan to merge #144 first. No Vercel auth on this machine; no new source task claimed.
+Budget + missing-gameplay assessment complete (1801 all-handoff); no source task claimed. Default examined: First Light Normal. 33 playthrough checks pass; reference costs $7.3002M of $8M. Recommend existing Easy $12M for guided first play, contextual cost/compatibility preview and next-objective guidance before new models. Scored flight integration remains a separate app/sim decision.
 
 ### Files / folders I'm touching (hands off)
 None. PR #144 contains app download gate/manifest consumption, PWA allowlist cache fix, fullscreen World launch, fps contextual help and interior title/choice separation. Additive deployment contract + decision 010. Coordinate PR fixes with me; Claude section/branches and docs/CHALLENGE 2.md untouched.
@@ -109,7 +109,7 @@ None. PR #144 contains app download gate/manifest consumption, PWA allowlist cac
 PR #144 on current main (#135–#142 integrated): explicit Download → actual completed-file progress → Continue. All 47 generated/public game assets cached, failure blocks Continue, retry reuses completed files. Origin-stopped reload and first-person play through launch/planning anomaly pass without exceptions. Launch fills 1280×1000 and1920×1080; cards/title/gauges separated. Part and option explanations; help/radio/E/menu do not overlap at1280×800 and756×469. Classic/no-WebGL bypass pass. 550 tests/71 files, build/typecheck/size72.0kB pass. docs/qa/preflight-assets.md records executed evidence. Preserved team's cabin, hall, Earth and crew additions; no owner branches edited.
 
 ### Missing / I need from someone
-cursor@kaipo publishes current main INCLUDING #144 to his existing Vercel production project (Aiden request); Ethan reviews/merges green #144; Kaipo checks deployed build parity + manifest URLs and cross-device join; Caleb physical-laptop/zoom/full-game acceptance; Sarah help science review; Claude Jamie descriptions; Codex Jamie demo narration. Vercel Git connection still needs Aiden/account-owner approval. No task depends on Claude Aiden while at usage limit.
+Budget/missing sections in handoff1801: part replacement cost/remaining-budget preview + compatibility/next-objective cues, first-person debrief/weather parity, mission activities with visible outcomes (training currently unscored/local). Existing Easy/Sandbox should be clear before changing all budgets. Jamie keeps active Start flow; Ethan keeps realism/model/sim scope. No source assignment claimed for anyone. Caleb/Kaipo acceptance still needs actual new-player/laptop/co-op results. Prior #144 merged and Kaipo reports manual production deploy #144–147 at17:38; automatic Git integration not yet verified, despite Aiden reporting app installed.
 
 ### Heads up for other agents
 All-handoff 1713 has exact isolated next actions; existing 1640 owner tasks remain. The gate warms/downloads code and models; it cannot guarantee GPU frame rate or permanent cache storage. API/ICE/signaling remain on the network. Offline local preview lazy-import failure fixed; live-host confirmation still pending. Decision numbered010 to preserve Kaipo's009 crew pose. Astra read-only design review complete; Sol implementation.
