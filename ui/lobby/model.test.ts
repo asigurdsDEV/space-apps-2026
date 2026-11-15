@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Player } from '../../shared'
-import { crewReady, roleChoices } from './model'
+import { crewReady, roleChoices, waitingForRoles } from './model'
 const host: Player = { player_id: 'host', name: 'Jamie', role: 'science', is_host: true }
 const guest: Player = { player_id: 'guest', name: 'Ethan', role: 'spacecraft', is_host: false }
 describe('lobby role choices', () => {
@@ -19,5 +19,11 @@ describe('lobby role choices', () => {
   it('releases a departed player’s role from the next authoritative roster', () => {
     expect(roleChoices([host], 'host').find(choice => choice.role === 'spacecraft')?.taken).toBe(false)
     expect(guest.role).toBe('spacecraft')
+  })
+  it('names who the host is still waiting for', () => {
+    expect(waitingForRoles([host, guest])).toBeNull()
+    expect(waitingForRoles([host, { ...guest, name: 'Sam', role: null }])).toBe('Waiting for Sam to pick a role')
+    expect(waitingForRoles([{ ...host, role: null }, { ...guest, role: null }, { ...guest, name: 'Sam', role: null }]))
+      .toBe('Waiting for Jamie, Ethan and Sam to pick a role')
   })
 })

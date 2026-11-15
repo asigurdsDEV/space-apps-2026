@@ -1,8 +1,8 @@
 import { useId, useRef, useState } from 'react'
-import type { Player, Role } from '../../shared'
+import { rolesOf, type Player, type Role } from '../../shared'
 import { Term } from '../learn'
 import '../learn/learn.css'
-import { ROLE_DETAILS, crewReady, roleChoices } from './model'
+import { ROLE_DETAILS, crewReady, roleChoices, waitingForRoles } from './model'
 import './lobby.css'
 import { ConsoleArt } from './ConsoleArt'
 
@@ -58,14 +58,14 @@ export function LobbyScreen({ code, players, me, onClaimRole, onContinue, onLeav
           <ul className="ls-crew">
             {players.map(player => <li key={player.player_id}>
               <div><strong>{player.name}</strong>{player.player_id === me.player_id && ' (you)'}{player.is_host && <span className="ls-badge">Host</span>}</div>
-              <span className="ls-muted">{player.role ? ROLE_DETAILS[player.role].title : 'Choosing a role'}</span>
+              <span className="ls-muted">{player.role ? rolesOf(players, player.player_id).map(role => ROLE_DETAILS[role].title).join(' + ') : 'Choosing a role'}</span>
             </li>)}
           </ul>
           {!players.length && <p role="status">Waiting for the room roster…</p>}
         </section>
         <section className="ls-panel ls-wide" aria-labelledby={`${id}-roles`} aria-busy={busy}>
           <h2 id={`${id}-roles`}>Choose your role</h2>
-          <p className="ls-hint">One player per role. With fewer than four people, anyone can cover an unclaimed role.</p>
+          <p className="ls-hint">Pick one role each. With fewer than four of you, the roles nobody picks are shared out evenly.</p>
           <p className="ls-hint">Plan your <Term id="orbit" /> together and weigh your spacecraft’s <Term id="reliability" />.</p>
           <div className="ls-roles">
             {roleChoices(players, me.player_id).map(choice => <button type="button" key={choice.role}
@@ -78,11 +78,11 @@ export function LobbyScreen({ code, players, me, onClaimRole, onContinue, onLeav
           {error && <p className="ls-error" role="alert">{error}</p>}
           <div className="ls-actions">
             <button type="button" className="ls-secondary" onClick={onLeave} disabled={busy}>Leave room</button>
-            {self?.is_host ? <button type="button" className="ls-primary" onClick={onContinue} disabled={busy || !ready}>
+            {self?.is_host ? <button type="button" className="ls-primary" onClick={onContinue} disabled={busy || !ready} aria-describedby={`${id}-ready`}>
               {busy ? 'Please wait…' : 'Continue to briefing'}
             </button> : <p className="ls-hint" role="status">Waiting for the host to continue to the mission briefing.</p>}
           </div>
-          <p className="ls-hint">{ready ? 'You will review the mission and build your spacecraft before launch.' : 'Every player needs a role before the host can continue.'}</p>
+          <p className="ls-hint" id={`${id}-ready`} role="status">{ready ? 'You will review the mission and build your spacecraft before launch.' : `${waitingForRoles(players) ?? 'Waiting for the crew'}. Every player needs a role before the host can continue.`}</p>
         </section>
       </div>
     </main>

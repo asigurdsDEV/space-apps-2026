@@ -1,6 +1,6 @@
 // Pure helpers for the mission builder. No React here, so they're easy to test.
 import type { ConsoleCall } from '../gonogo'
-import { canSend, ownerRole, type Command, type Entity, type Metrics, type Params, type ParamValue, type Player, type Role, type SimState } from '../../shared'
+import { canSend, ownerRole, roleHolders, type Command, type Entity, type Metrics, type Params, type ParamValue, type Player, type Role, type SimState } from '../../shared'
 
 /** One design choice on the builder screen: a `set_param` key filled from the sim's part entities. */
 export interface Slot {
@@ -175,23 +175,22 @@ export const ROLE_TITLES: Record<Role, string> = {
 export interface Access {
   /** The role that owns this choice (shared/net.ts ROLE_PARAM_KEYS). */
   role: Role
-  /** The player holding that role, or null when nobody has claimed it. */
+  /** The player holding that role (picked or shared out, shared/net.ts roleHolders), or null with no players. */
   holder: Player | null
-  /** Same rule the host enforces: you hold the role, or nobody does. */
+  /** Same rule the host enforces (canSend): you hold the role, or nobody does. */
   canEdit: boolean
 }
 
 /** Who owns a command and whether `me` may send it. Solo (no players) can always send. */
 export function commandAccess(command: Command, players: readonly Player[], me: Player | undefined): Access {
   const role = ownerRole(command) ?? 'mission-planning'
-  const holder = players.find((p) => p.role === role) ?? null
-  return { role, holder, canEdit: canSend(me?.role ?? null, command, players.map((p) => p.role)) }
+  return { role, holder: roleHolders(players)[role] ?? null, canEdit: canSend(players, me?.player_id, command) }
 }
 
 export const slotAccess = (key: string, players: readonly Player[], me: Player | undefined): Access =>
   commandAccess({ type: 'set_param', payload: { key, value: '' } }, players, me)
 
-/** "You", the player's name, or null for an unclaimed role. */
+/** "You", the player's name, or null with no players. */
 export function playerLabel(player: Player | null, me: Player | undefined): string | null {
   if (!player) return null
   return player.player_id === me?.player_id ? 'You' : player.name

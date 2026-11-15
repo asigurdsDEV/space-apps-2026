@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import type { Command, Dataset, Player, SimState } from '../../shared'
+import { rolesOf, type Command, type Dataset, type Player, type SimState } from '../../shared'
 import {
   DEFAULT_SLOTS,
   ROLE_TITLES,
@@ -180,7 +180,7 @@ export function MissionBuilder({ state, send, slots = DEFAULT_SLOTS, players = N
         <h2 className="mb-sr">Flight consoles</h2>
         <ul className="mb-consoles">
           {poll(state.issues).map((c) => {
-            const mine = coop && me?.role === c.role
+            const mine = coop && rolesOf(players, me?.player_id).includes(c.role)
             return (
               <li key={c.id} className={`mb-console is-${c.call}${mine ? ' is-mine' : ''}`} title={c.reasons.map((r) => r.message).join('\n') || undefined}>
                 <span className="mb-console-name">

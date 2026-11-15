@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Command, NetMessage, Player } from './index'
-import { canSend, isCommand, isNetMessage, ownerRole, ROLES } from './index'
+import { canSend, isCommand, isNetMessage, ownerRole, roleHolders, rolesOf, ROLES } from './index'
 
 const set = (key: string): Command => ({ type: 'set_param', payload: { key, value: 'x' } })
 const launch: Command = { type: 'launch', payload: {} }
@@ -16,18 +16,38 @@ describe('role permissions', () => {
     expect(ownerRole({ type: 'select_entity', payload: { id: null } })).toBeNull()
   })
 
-  it('lets only the owning role send a command when that role is taken', () => {
-    expect(canSend('science', set('instruments'), ROLES)).toBe(true)
-    expect(canSend('spacecraft', set('instruments'), ROLES)).toBe(false)
-    expect(canSend('science', launch, ROLES)).toBe(false)
-    expect(canSend(null, { type: 'select_entity', payload: { id: 'spacecraft' } }, ROLES)).toBe(true)
+  const crew = (...roles: (Player['role'])[]) => roles.map((role, i) => ({ player_id: `p${i}`, role }))
+
+  it('lets only the holder of the owning role send a command', () => {
+    const four = crew('science', 'spacecraft', 'mission-planning', 'comms-resources')
+    expect(canSend(four, 'p0', set('instruments'))).toBe(true)
+    expect(canSend(four, 'p1', set('instruments'))).toBe(false)
+    expect(canSend(four, 'p0', launch)).toBe(false)
+    expect(canSend(four, 'p2', launch)).toBe(true)
+    expect(canSend(four, 'p1', { type: 'select_entity', payload: { id: 'spacecraft' } })).toBe(true)
   })
 
-  it('lets anyone cover a role nobody has claimed', () => {
-    expect(canSend('science', set('bus'), ['science', 'mission-planning'])).toBe(true)
-    expect(canSend('science', launch, ['science'])).toBe(true)
-    expect(canSend(null, launch, [])).toBe(true)
-    expect(canSend('science', launch, ['science', 'mission-planning'])).toBe(false)
+  it('lets anyone send when the roster is empty (solo screens)', () => {
+    expect(canSend([], undefined, launch)).toBe(true)
+  })
+
+  it('splits the roles nobody picked evenly: 1 → 4, 2 → 2/2, 3 → 2/1/1, 4 → 1 each', () => {
+    const counts = (players: ReturnType<typeof crew>) => players.map((p) => rolesOf(players, p.player_id).length)
+    expect(counts(crew(null))).toEqual([4])
+    expect(counts(crew('science', 'spacecraft'))).toEqual([2, 2])
+    expect(counts(crew('science', null))).toEqual([2, 2])
+    expect(counts(crew('science', 'spacecraft', 'comms-resources'))).toEqual([2, 1, 1])
+    expect(counts(crew('science', 'spacecraft', 'comms-resources', 'mission-planning'))).toEqual([1, 1, 1, 1])
+    // Every role is held, and a picked role stays with whoever picked it.
+    const two = crew('science', 'spacecraft')
+    expect(Object.keys(roleHolders(two)).sort()).toEqual([...ROLES].sort())
+    expect(rolesOf(two, 'p0')).toContain('science')
+    expect(rolesOf(two, 'p1')).toContain('spacecraft')
+    // A player holding two roles may act for both.
+    const [extra] = rolesOf(two, 'p1').filter((role) => role !== 'spacecraft')
+    expect(canSend(two, 'p1', { type: 'resolve_decision', payload: { decision_id: 'd', option_id: 'a' } }, extra)).toBe(true)
+    expect(canSend(two, 'p0', { type: 'resolve_decision', payload: { decision_id: 'd', option_id: 'a' } }, extra)).toBe(false)
+    expect(roleHolders([])).toEqual({})
   })
 
   it('types the message envelope', () => {
@@ -144,7 +164,7 @@ describe('runtime validators', () => {
     expect(isCommand({ type: 'launch', payload: { override: true, now: true } })).toBe(false)
     expect(isCommand({ type: 'pause', payload: { override: true } })).toBe(false)
     expect(ownerRole(anyway)).toBe('mission-planning')
-    expect(canSend('science', anyway, ROLES)).toBe(false)
+    expect(canSend([{ player_id: 'p0', role: 'science' }, { player_id: 'p1', role: 'mission-planning' }], 'p0', anyway)).toBe(false)
   })
 
   it('checks a bare Command the same way', () => {
