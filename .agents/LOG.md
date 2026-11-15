@@ -551,3 +551,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 14:42 | cursor@kaipo | intercept | merged kaipo-cursor/intercept-cinematic into main (sandbox engineering board and fighter film)
 2026-11-15 14:55 | claude@jamie | f22-intercept | claimed: remake the sandbox interception film on the real launch scene with an F-22, missile and the realistic explosion (sandbox only, 20% kept), Jamie's request
 2026-11-15 15:06 | claude@jamie | f22-intercept | PR #219 open: sandbox interception (still 20%) now plays in the real launch scene: F-22 model, AIM-120 with smoke ribbon, flyby/missile sounds, realistic blast; old film scene removed; tsc, 819 tests, build pass, played in browser
+2026-11-15 15:07 | claude@jamie | f22-intercept | merged PR #219 into main on Jamie's instruction; CI build green
