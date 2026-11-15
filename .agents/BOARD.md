@@ -53,13 +53,11 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 ### Accuracy audit + awards push (claude@sarah 18:45, Sarah's request; full report: docs/game-design/ACCURACY_AUDIT.md)
 - [ ] (light) [P1] **Schedule bar in the builder** (brief: show Time clearly): the sim gives `schedule_months` / `deadline_months` now that parts have build times (PR #105); today time only shows as an error — ui/builder/ — owner: claude@aiden
-- [ ] (light) [P1] Show each console's **priority** on the GO / NO-GO poll so co-op players negotiate before launch (GAME_DESIGN §4.7) — ui/gonogo/ — owner: claude@jamie
 
 ### UX declutter + fun (Sarah's ask 22:40; spec with word budgets: docs/game-design/UX_DECLUTTER.md)
 - [ ] (heavy) [P0] **Builder: cards instead of spreadsheet tables** (1,394 words, 8 screens tall → ≤ 250 words, no page scroll): one slot per tab (Orbit → Rocket → Bus → Instruments → Power → Battery → Radio), part cards with 2 key stat chips, pinned resource bars with ghost deltas on hover/tap, full table behind "Compare all ⓘ", one-line issues + ⓘ — ui/builder/ — owner: claude@aiden
 - [ ] (medium) [P1] **Start: mission cards** instead of the dropdown (art + one line + budget/goal chips), difficulty as a segmented control, helper sentences cut (350 → ≤ 120 words); fixes the repeated (Easy)/(Hard) list — ui/start/ — owner: codex@jamie
 - [ ] (light) [P1] **Briefing:** 3 fact chips + bonus chip, "How to win" as 3 icon rows ≤ 8 words, glossary wall → tap-to-learn chips (385 → ≤ 90 words) — ui/briefing/ — owner: claude@aiden
-- [ ] (light) [P1] **GO / NO-GO:** one short line per console + ⓘ for the rest, plus each console's priority chip (171 → ≤ 80 words) — ui/gonogo/ — owner: claude@jamie
 - [ ] (light) [P2] **CAPCOM pop-outs auto-dismiss** after ~6 s unless hovered/focused; on results it covers the leaderboard card — ui/story/ — owner: claude@aiden
 
 ## Missing / needed
@@ -107,6 +105,8 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
+- [ ] (light) [P1] Show each console's **priority** on the GO / NO-GO poll so co-op players negotiate before launch (GAME_DESIGN §4.7) — ui/gonogo/ — owner: claude@jamie — [claude@jamie]
+- [ ] (light) [P1] **GO / NO-GO:** one short line per console + ⓘ for the rest, plus each console's priority chip (171 → ≤ 80 words) — ui/gonogo/ — owner: claude@jamie — [claude@jamie]
 - [ ] (medium) [P1] Cutscenes "into the walk-in spacecraft" (after launch) and "back to mission control" (after the ending), ≤ 10 s, Skip + reduced motion as now; QA plan for the 3D loop, run on the Sun 02:00 build — ui/cutscenes/, docs/qa/ — owner: cursor@caleb — [cursor@caleb] — scenes and plan in PR #115 (`EnterCraftScene` 8 s, `ReturnControlScene` 6 s, `docs/qa/first-person.md`). The Sunday 02:00 run is not done. Mount handoff to claude@aiden.
 - [ ] (light) [P1] **Walk + cutscenes on a phone and with reduced motion / a screen reader:** hall and panels at 375 px, reduced motion cuts straight to each station, screen reader hears the screens not the hall, cutscene Skip/Escape works — app/Walk.tsx, app/StoryLayer.tsx, app/app.css — owner: claude@aiden — [claude@aiden]
 

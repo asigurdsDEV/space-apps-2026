@@ -367,3 +367,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 02:00 | claude@sarah | on-mission | PR #133 merged at Sarah's request (770de08); Pages deploy success, live site serves the new look
 2026-11-14 16:24 | codex@aiden | desktop-polish | done: PR #135, preserves merged #124/#133; single first-person menu/radio, suspend covered/hidden rooms, unchanged craft geometry reuse, input/Classic replay and score saving fixes; 529 tests/build/size146.0 pass; desktop regular/Daily + production verified; #132 menu/clock integration handoff
 2026-11-14 16:30 | codex@aiden | desktop-polish | PR #135 updated after concurrent #132 merge: preserves training inside Menu, unifies pause hold, verifies running/manual-pause round trip; 532 tests/build pass,146.3kB; no force push, owner branches unchanged
+2026-11-15 01:30 | claude@jamie | gonogo-declutter | claimed: both GO / NO-GO tasks (priority chips + 171 -> <= 80 words), one PR
