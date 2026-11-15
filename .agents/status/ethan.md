@@ -5,14 +5,14 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-15 02:40
+**Last updated:** 2026-11-15 03:37
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-**Realism pass 3** (claimed 2026-11-15 01:00, Ethan's lift-off photo): lift-off flame, exhaust clouds, sky, water and ground in `ui/scene3d/launch/fx.ts` and `scene.ts` (branch `ethan-claude/liftoff-real`); a less blocky spacecraft room in `ui/interior/` (branch `ethan-claude/cabin-smooth`). Realistic sound for the launch, the spacecraft and mission control in `ui/audio/` (claude@aiden's folder, told by handoff 20261115-0112; branch `ethan-claude/sound-real`). **Pass 4** (claimed 2026-11-15 02:40, handoff 20261115-0240): `ui/scene3d/shaders.ts`, `world.ts`, `sky.ts` (branch `ethan-claude/space-polish`); `sim/` and the card doc (`ethan-claude/debris-card`); `app/World.tsx` (`ethan-claude/alarm-first`); `ui/crew/` (`ethan-claude/astronaut-real`). **Live Earth screen** (claimed 2026-11-15 01:49): new folder `ui/live/`, one entry button in `app/App.tsx` and `app/WorldMenu.tsx`, `satellite.js` added to `package.json`; branch `ethan-claude/live-earth`. Pad towers (claude@jamie, PR #182) and the launch-to-room cut (claude@aiden, PR #180) are done and on `main`. I still merge every PR that passes `tsc`, tests and build.
+**Pass 4** (claimed 2026-11-15 02:40, handoff 20261115-0240): `ui/scene3d/shaders.ts`, `world.ts`, `sky.ts` (branch `ethan-claude/space-polish`); `sim/` and the card doc (`ethan-claude/debris-card`); `app/World.tsx` (`ethan-claude/alarm-first`); `ui/crew/` (`ethan-claude/astronaut-real`). **Live Earth screen** (claimed 2026-11-15 01:49): new folder `ui/live/`, one entry button in `app/App.tsx` and `app/WorldMenu.tsx`, `satellite.js` added to `package.json`; branch `ethan-claude/live-earth`. Pad towers (claude@jamie, PR #182) and the launch-to-room cut (claude@aiden, PR #180) are done and on `main`. I still merge every PR that passes `tsc`, tests and build.
 
 Open under my name: the launch cutscene is about 20 s (decision 005 says 10 s at most). Waiting on cursor@kaipo: redeploy `main` to Vercel (handoff 20261115-0450).
 
@@ -27,6 +27,10 @@ Released to Open (ask me first, the folder is mine): fly scene tied to sim time 
 - Plus my usual shared-file edits: this section, my BOARD.md lines, append-only LOG.md lines, my own handoffs
 
 ### Just finished
+- **Realism pass 3** (PRs #189, #190, #191, on `main`; each built, then reviewed twice by separate helpers):
+  - Lift-off (`ui/scene3d/launch/fx.ts`, `scene.ts`): a white-hot flame column per propellant, dense lit exhaust and steam billows, hazy horizon and a calm inlet. Space shots match the earlier build to within 1/255. Known: the flame is whiter and narrower than Ethan's photo; clouds are smooth, not cauliflower-grained; no fire visible in the trench at ignition (needs pad geometry in `site.ts`).
+  - Spacecraft room (`ui/interior/`): arched ceiling with ring frames, stand-off corners, racks with relief, a console on two pedestals; cursor@kaipo's hatch is a round gold lid at the same place; alarm lights hold steady under reduced motion. Known: 213,000 triangles from the door (95,000 before), measured on one Mac only.
+  - Sound (`ui/audio/places.ts`, `engine.ts`, `ambience.ts`; one hook each in `LaunchView.tsx`, `MissionControl.tsx`, `SpacecraftRoom.tsx`): synthesised launch roar per propellant and size, near silence in space, room beds, a short caution tone. Obeys the mute toggle. Ethan listened to rendered clips and approved. Known: checked in Chrome only; the old `playSound('launch')` call in `app/World.tsx` is removed.
 - **Upright Earth** (PR #188, on `main`): the Sun direction is now per scene in `ui/scene3d/world.ts`; in Earth scenes it sits at the real declination, so the pole is straight up (measured 0.00 degrees lean on three dates) and the lit side is still true. Moon and Mars views are byte-identical. Known: about 56% of the disc is lit in November; the Moon is above the default frame from late September to late March; the cruise-view Earth still leans.
 - **Earth on the real clock** (PR #179, on `main`): `SPIN_S.earth` in `ui/scene3d/world.ts` is one real day, so the lit side of the Earth in `SpaceView` stays true after the view opens. Moon and Mars keep their time-lapse.
 - **Realism pass 2** (PRs #176, #177, #178, on `main`, Ethan's seven screenshots; each piece built and then reviewed by a separate helper in a browser):
