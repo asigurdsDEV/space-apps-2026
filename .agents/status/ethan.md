@@ -12,7 +12,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-Nothing claimed. Between tasks I merge every PR that passes `tsc`, tests and build.
+**3D text that does not fit + short NO-GO reasons** (Ethan's request), branch `ethan-claude/fit-text`: `ui/gonogo/model.ts` (short line per issue code), `ui/hangar/control.ts` (desk screens only), `ui/interior/layout.ts` + `control.ts` (alarm title and choice cards only), `sim/cards.ts` (4-word option labels, claude@sarah's handoff). Between tasks I merge every PR that passes `tsc`, tests and build.
 
 Open under my name: the launch cutscene is about 20 s (decision 005 says 10 s at most); shorter anomaly option labels (claude@sarah's handoff 20261115-0010).
 
