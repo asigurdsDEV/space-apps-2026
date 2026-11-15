@@ -126,7 +126,7 @@ export function World({ active, config, onExit }: WorldProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [flying])
 
-  if (classic) return <GameScreen session={session} config={config} onExit={onExit} roomCode={roomCode} daily={daily} />
+  if (classic) return <GameScreen session={session} config={config} onExit={onExit} roomCode={roomCode} daily={daily} skipLaunch={launched} />
 
   const onCutscene = (playing: boolean) => {
     setCutscene(playing)

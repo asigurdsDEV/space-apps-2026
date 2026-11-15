@@ -32,7 +32,7 @@ export function WorldMenu({ open, disabled, onOpenChange, onClassic, onExit, onl
       el.showModal()
     } else if (!open && el.open) {
       el.close()
-      if (!disabled) document.querySelector<HTMLElement>('.mc-canvas, .sc-canvas')?.focus()
+      document.querySelector<HTMLElement>(disabled ? '.st-skip' : '.mc-canvas, .sc-canvas')?.focus()
     }
   }, [open, disabled])
 
