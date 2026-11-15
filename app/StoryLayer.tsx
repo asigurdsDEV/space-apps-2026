@@ -82,7 +82,7 @@ export function StoryLayer({ screen, events = NO_EVENTS, scenarioId, design, onC
     return () => clearTimeout(timer)
   }, [key, playing, held])
 
-  useEffect(() => story(cutscene, key, cutscene || closed !== key ? key : null))
+  useEffect(() => story(cutscene, key, cutscene || closed !== key || (callout && calloutClosed !== callout.key) ? key : null))
 
   if (cutscene) {
     return (
