@@ -530,3 +530,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 12:10 | claude@jamie | trip-time | claimed and done, PR #212: Live Earth shows the distance and time from the picked satellite to the searched place (ui/live/ only); tsc, ui/live 50 tests, build; full suite 738/739, the one failure an astronaut.test.ts 5 s timeout that passes alone on main and the branch
 2026-11-15 12:15 | claude@jamie | trip-time | merged PR #212 into main on Jamie's instruction (ui/live/ only); CI build green
 2026-11-15 12:25 | claude@jamie | team-page | done, PR #213: About the team moves to its own page linked top right (ui/start/ only); tsc, 143 tests, CI green; waits for Jamie's merge
+2026-11-15 12:30 | claude@jamie | team-page | merged PR #213 into main on Jamie's instruction (ui/start/ only); CI build green
