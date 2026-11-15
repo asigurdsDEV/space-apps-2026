@@ -15,7 +15,7 @@ export class HostRoom<Role extends string, Command> {
     readonly hostId: string,
     hostName: string,
     private roles: readonly Role[],
-    private allowed: (role: Role | null, command: Command, isHost: boolean) => boolean,
+    private allowed: (role: Role | null, command: Command, isHost: boolean, playerId: string) => boolean,
   ) {
     this.members.set(hostId, { player_id: hostId, name: this.name(hostName), role: null, is_host: true })
   }
@@ -44,7 +44,7 @@ export class HostRoom<Role extends string, Command> {
     if (this.ended) return { ok: false, reason: 'Room has ended' }
     const player = this.members.get(from)
     if (!player) return { ok: false, reason: 'Join before sending commands' }
-    return this.allowed(player.role, command, player.is_host)
+    return this.allowed(player.role, command, player.is_host, player.player_id)
       ? { ok: true } : { ok: false, reason: 'Your role cannot send that command' }
   }
   leave(from: string): void {

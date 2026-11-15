@@ -21,7 +21,7 @@ export function createRoomSession(raw: Transport<NetMessage>, id: string, name: 
   let closed = false
   const handlers = new Set<MessageHandler<NetMessage>>()
   const emit = (message: NetMessage, from: string) => { for (const handler of handlers) handler(message, from) }
-  const lobby: HostRoom<Role, Command> = new HostRoom<Role, Command>(id, self.name, ROLES, (role, command) => canSend(role, command, lobby.players.map(player => player.role)))
+  const lobby: HostRoom<Role, Command> = new HostRoom<Role, Command>(id, self.name, ROLES, (_role, command, _isHost, playerId) => canSend(lobby.players, playerId, command))
   function publishRoster() {
     roster = lobby.players
     self = roster.find(player => player.player_id === id) ?? self
