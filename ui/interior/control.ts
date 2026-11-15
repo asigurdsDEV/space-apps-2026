@@ -5,6 +5,7 @@
 import * as THREE from 'three'
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js'
 import { roomLoop } from '../fps/room-loop'
 import { createFps, type Fps, type FpsOptions } from '../fps/controller'
 import { canvasScreen, font, partModel } from '../hangar/control'
@@ -61,74 +62,194 @@ function painted(w: number, h: number, draw: (ctx: CanvasRenderingContext2D) => 
   return texture
 }
 
-function panelMap() {
-  const map = painted(256, 256, (ctx) => {
-    ctx.fillStyle = '#d5d8e0'
-    ctx.fillRect(0, 0, 256, 256)
-    ctx.strokeStyle = '#8a919c'
-    ctx.lineWidth = 3
-    for (let i = 0; i <= 256; i += 64) {
-      ctx.beginPath()
-      ctx.moveTo(i, 0)
-      ctx.lineTo(i, 256)
-      ctx.moveTo(0, i)
-      ctx.lineTo(256, i)
-      ctx.stroke()
+/** The same numbers every time, so every player sees the same room. */
+const seeded = (seed: number) => () => (seed = (seed * 16807) % 2147483647) / 2147483647
+
+/**
+ * A station module's wall: two equipment racks side by side, 2 m wide and 3.2 m tall at 320 px a metre.
+ * Lockers, a round port cover, a display with switches, stowage pads. No lettering.
+ */
+function rackMap() {
+  const PX = 320
+  const map = painted(640, 1024, (g) => {
+    const rnd = seeded(11)
+    const Y = (metres: number) => (3.2 - metres) * PX
+    g.fillStyle = '#d6d9de'
+    g.fillRect(0, 0, 640, 1024)
+    /** A panel front with a fastener in each corner: x, y (its bottom edge) and size in metres. */
+    const panel = (x: number, y: number, w: number, h: number) => {
+      const shade = 222 + Math.round(rnd() * 10)
+      g.fillStyle = `rgb(${shade}, ${shade + 2}, ${shade + 5})`
+      g.fillRect(x * PX + 3, Y(y + h) + 3, w * PX - 6, h * PX - 6)
+      g.strokeStyle = '#99a0aa'
+      g.lineWidth = 2
+      g.strokeRect(x * PX + 3, Y(y + h) + 3, w * PX - 6, h * PX - 6)
+      g.fillStyle = '#6f7682'
+      for (const [fx, fy] of [[0.035, 0.035], [w - 0.035, 0.035], [0.035, h - 0.035], [w - 0.035, h - 0.035]] as const) {
+        g.beginPath()
+        g.arc((x + fx) * PX, Y(y + fy), 2.6, 0, Math.PI * 2)
+        g.fill()
+      }
     }
-    ctx.fillStyle = '#66707c'
-    for (let y = 10; y < 256; y += 64) for (let x = 10; x < 256; x += 64) {
-      ctx.beginPath()
-      ctx.arc(x, y, 2.2, 0, Math.PI * 2)
-      ctx.fill()
+    /** A round cover with a ring of bolts. */
+    const disc = (x: number, y: number, r: number, bolts: number) => {
+      g.fillStyle = '#eceef1'
+      g.strokeStyle = '#8b929c'
+      g.lineWidth = 3
+      g.beginPath()
+      g.arc(x * PX, Y(y), r * PX, 0, Math.PI * 2)
+      g.fill()
+      g.stroke()
+      g.lineWidth = 2
+      g.beginPath()
+      g.arc(x * PX, Y(y), r * PX * 0.56, 0, Math.PI * 2)
+      g.stroke()
+      g.fillStyle = '#39404b'
+      g.beginPath()
+      g.arc(x * PX, Y(y), r * PX * 0.17, 0, Math.PI * 2)
+      g.fill()
+      g.fillStyle = '#6f7682'
+      for (let i = 0; i < bolts; i++) {
+        const a = (i / bolts) * Math.PI * 2
+        g.beginPath()
+        g.arc(x * PX + Math.cos(a) * r * PX * 0.84, Y(y) + Math.sin(a) * r * PX * 0.84, 2.4, 0, Math.PI * 2)
+        g.fill()
+      }
+    }
+    /** A dark pull handle, or a coloured tag. */
+    const bar = (x: number, y: number, w: number, colour = '#39404b', thick = 8) => {
+      g.fillStyle = colour
+      g.fillRect(x * PX, Y(y) - thick / 2, w * PX, thick)
+    }
+    for (const x of [0, 1]) {
+      panel(x + 0.02, 0.02, 0.96, 0.42)
+      bar(x + 0.35, 0.3, 0.3)
+      panel(x + 0.02, 0.46, 0.47, 0.58)
+      panel(x + 0.51, 0.46, 0.47, 0.58)
+      bar(x + 0.15, 0.92, 0.2)
+      bar(x + 0.65, 0.92, 0.2)
+      bar(x + 0.08, 0.6, 0.11, '#3d6fc4', 11)
+      bar(x + 0.57, 0.6, 0.11, '#3d6fc4', 11)
+      panel(x + 0.02, 1.06, 0.96, 0.72)
+      if (x === 0) {
+        disc(x + 0.5, 1.42, 0.27, 12)
+        for (let row = 0; row < 2; row++) for (let col = 0; col < 3; col++) panel(x + 0.02 + col * 0.32, 1.8 + row * 0.33, 0.32, 0.33)
+        bar(x + 0.1, 1.9, 0.09, '#3d6fc4', 10)
+        bar(x + 0.74, 2.24, 0.09, '#d08a2c', 10)
+        panel(x + 0.02, 2.48, 0.96, 0.7)
+        disc(x + 0.27, 2.83, 0.2, 8)
+        disc(x + 0.73, 2.83, 0.2, 8)
+      } else {
+        g.fillStyle = '#1b222e'
+        g.fillRect((x + 0.1) * PX, Y(1.68), 0.34 * PX, 0.22 * PX)
+        g.fillStyle = '#39c79a'
+        g.fillRect((x + 0.13) * PX, Y(1.64), 0.1 * PX, 5)
+        g.fillRect((x + 0.13) * PX, Y(1.6), 0.18 * PX, 5)
+        g.fillStyle = '#4a515c'
+        for (let i = 0; i < 6; i++) g.fillRect((x + 0.53 + i * 0.065) * PX, Y(1.66), 0.035 * PX, 0.075 * PX)
+        g.strokeStyle = '#6f7682'
+        g.lineWidth = 3
+        for (let i = 0; i < 3; i++) {
+          g.beginPath()
+          g.arc((x + 0.59 + i * 0.12) * PX, Y(1.42), 0.03 * PX, 0, Math.PI * 2)
+          g.stroke()
+        }
+        g.strokeStyle = '#8b929c'
+        g.lineWidth = 3
+        for (let i = 0; i < 7; i++) {
+          g.beginPath()
+          g.moveTo((x + 0.1) * PX, Y(1.14 + i * 0.03))
+          g.lineTo((x + 0.44) * PX, Y(1.14 + i * 0.03))
+          g.stroke()
+        }
+        panel(x + 0.02, 1.8, 0.96, 0.33)
+        bar(x + 0.38, 1.97, 0.24)
+        panel(x + 0.02, 2.13, 0.96, 0.33)
+        bar(x + 0.38, 2.3, 0.24)
+        // Soft stowage pads strapped to the top of the rack.
+        for (let i = 0; i < 2; i++) {
+          g.fillStyle = '#e7e2d6'
+          g.strokeStyle = '#bdb7a8'
+          g.lineWidth = 2
+          g.beginPath()
+          if (g.roundRect) g.roundRect((x + 0.04 + i * 0.47) * PX, Y(3.16), 0.45 * PX, 0.66 * PX, 16)
+          else g.rect((x + 0.04 + i * 0.47) * PX, Y(3.16), 0.45 * PX, 0.66 * PX)
+          g.fill()
+          g.stroke()
+          bar(x + 0.04 + i * 0.47, 2.83, 0.45, '#8f8a7c', 5)
+        }
+      }
     }
   })
-  map.wrapS = map.wrapT = THREE.RepeatWrapping
-  map.repeat.set(3, 2)
+  map.wrapS = THREE.RepeatWrapping
   return map
 }
 
-function mliMap() {
-  const map = painted(256, 256, (ctx) => {
-    ctx.fillStyle = '#c8963c'
-    ctx.fillRect(0, 0, 256, 256)
-    for (let y = 0; y < 256; y += 4) {
-      const k = 0.45 + 0.55 * Math.sin(y * 0.19)
-      ctx.fillStyle = `rgba(${30 + k * 70},${16 + k * 30},0,${0.12 + 0.28 * (1 - k)})`
-      ctx.fillRect(0, y, 256, 3)
+/** One square metre of hull lining (ceiling, and the wall round the window): a panel with a soft pad on it. */
+function hullMap() {
+  const map = painted(256, 256, (g) => {
+    g.fillStyle = '#e2e4e8'
+    g.fillRect(0, 0, 256, 256)
+    g.strokeStyle = '#a4aab3'
+    g.lineWidth = 3
+    g.strokeRect(1.5, 1.5, 253, 253)
+    g.fillStyle = '#ecebe6'
+    g.strokeStyle = '#c4c1b8'
+    g.lineWidth = 2
+    g.beginPath()
+    if (g.roundRect) g.roundRect(34, 34, 188, 188, 24)
+    else g.rect(34, 34, 188, 188)
+    g.fill()
+    g.stroke()
+    g.fillStyle = '#7a818c'
+    for (const [x, y] of [[14, 14], [242, 14], [14, 242], [242, 242]] as const) {
+      g.beginPath()
+      g.arc(x, y, 3.2, 0, Math.PI * 2)
+      g.fill()
     }
   })
   map.wrapS = map.wrapT = THREE.RepeatWrapping
-  map.repeat.set(4, 2)
   return map
 }
 
-function radiatorMap() {
-  return painted(256, 256, (ctx) => {
-    ctx.fillStyle = '#12161e'
-    ctx.fillRect(0, 0, 256, 256)
-    ctx.strokeStyle = '#41506a'
-    ctx.lineWidth = 2
-    for (let y = 8; y < 256; y += 14) {
-      ctx.beginPath()
-      ctx.moveTo(0, y)
-      ctx.lineTo(256, y)
-      ctx.stroke()
+/** One square metre of deck: a grey panel with seams, a recessed pull ring and a few scuffs. */
+function floorMap() {
+  const map = painted(256, 256, (g) => {
+    const rnd = seeded(5)
+    g.fillStyle = '#c3c7cd'
+    g.fillRect(0, 0, 256, 256)
+    g.strokeStyle = 'rgba(70, 76, 88, 0.16)'
+    g.lineWidth = 2
+    for (let i = 0; i < 14; i++) {
+      const x = rnd() * 256, y = rnd() * 256
+      g.beginPath()
+      g.moveTo(x, y)
+      g.lineTo(x + (rnd() - 0.5) * 70, y + (rnd() - 0.5) * 24)
+      g.stroke()
     }
+    g.strokeStyle = '#868d98'
+    g.lineWidth = 4
+    g.strokeRect(2, 2, 252, 252)
+    g.strokeStyle = '#7a818c'
+    g.lineWidth = 3
+    g.beginPath()
+    g.arc(214, 42, 11, 0, Math.PI * 2)
+    g.stroke()
   })
+  map.wrapS = map.wrapT = THREE.RepeatWrapping
+  return map
 }
 
-function avionicsMap() {
-  return painted(128, 128, (ctx) => {
-    ctx.fillStyle = '#1b212c'
-    ctx.fillRect(0, 0, 128, 128)
-    ctx.fillStyle = '#8d96a3'
-    ctx.fillRect(16, 34, 30, 16)
-    ctx.fillRect(16, 68, 30, 16)
-    ctx.fillStyle = '#3ddc97'
-    ctx.beginPath()
-    ctx.arc(98, 42, 6, 0, Math.PI * 2)
-    ctx.fill()
-  })
+/** A box whose texture repeats every `u` metres across and every `v` metres up, whatever the box's size. */
+function tiledBox(w: number, h: number, d: number, u: number, v: number) {
+  const geo = new THREE.BoxGeometry(w, h, d)
+  const uv = geo.getAttribute('uv')
+  const faces = [[d, h], [d, h], [w, d], [w, d], [w, h], [w, h]] as const // +x, -x, +y, -y, +z, -z
+  for (let i = 0; i < uv.count; i++) {
+    const [across, up] = faces[Math.floor(i / 4)]!
+    uv.setXY(i, uv.getX(i) * (across / u), uv.getY(i) * (up / v))
+  }
+  return geo
 }
 
 function label(text: string, sub?: string, w = 512, h = 128) {
@@ -169,18 +290,20 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   scene.environment = envMap
   scene.environmentIntensity = 0.3
   pmrem.dispose()
-  const cabinLight = new THREE.HemisphereLight(0xc9d6ff, 0x2a3044, 1.9)
+  const cabinLight = new THREE.HemisphereLight(0xf2f5ff, 0x767e90, 1.9)
   scene.add(cabinLight)
-  const lamp = new THREE.PointLight(0xdbe6ff, 10, 9, 2)
+  const lamp = new THREE.PointLight(0xeef3ff, 4, 9, 2) // soft: the walls are white now, a strong lamp burns them out
   lamp.position.set(0, 3, 0.5)
   scene.add(lamp)
 
-  // ---- Walls, with an opening for the window in the front wall.
+  // ---- The module: white equipment racks down both sides and across the back, like a space-station lab
+  // (Ethan's reference pictures). The window, the dashboard and where everything stands are unchanged.
   const [x0, , z0] = ROOM.min
   const [x1, y1, z1] = ROOM.max
-  const wallMat = new THREE.MeshStandardMaterial({ map: panelMap(), color: 0xffffff, roughness: 0.58, metalness: 0.2 })
-  const box = (w: number, h: number, d: number, x: number, y: number, z: number, mat: THREE.Material = wallMat) => {
-    const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat)
+  const rackMat = new THREE.MeshStandardMaterial({ map: rackMap(), color: 0xdcdfe5, roughness: 0.62, metalness: 0.08 })
+  const wallMat = new THREE.MeshStandardMaterial({ map: hullMap(), color: 0xdcdfe5, roughness: 0.7, metalness: 0.05 })
+  const box = (w: number, h: number, d: number, x: number, y: number, z: number, mat: THREE.Material = wallMat, tile?: [number, number]) => {
+    const m = new THREE.Mesh(tile ? tiledBox(w, h, d, ...tile) : new THREE.BoxGeometry(w, h, d), mat)
     m.position.set(x, y, z)
     scene.add(m)
     return m
@@ -188,46 +311,76 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   const t = 0.1
   const W = x1 - x0
   const D = z1 - z0
-  box(W, t, D, 0, -t / 2, 0, new THREE.MeshStandardMaterial({ color: 0x3a4152, roughness: 0.8 }))
-  const gold = new THREE.MeshStandardMaterial({ map: mliMap(), metalness: 0.86, roughness: 0.34 })
-  box(W, t, D, 0, y1 + t / 2, 0, gold)
-  box(t, y1, D, x0 - t / 2, y1 / 2, 0)
-  box(t, y1, D, x1 + t / 2, y1 / 2, 0)
-  box(W, y1, t, 0, y1 / 2, z1 + t / 2)
+  const SQUARE: [number, number] = [1, 1]
+  const RACKS: [number, number] = [2, y1]
+  box(W, t, D, 0, -t / 2, 0, new THREE.MeshStandardMaterial({ map: floorMap(), color: 0xd2d6dd, roughness: 0.82 }), SQUARE)
+  box(W, t, D, 0, y1 + t / 2, 0, wallMat, SQUARE)
+  box(t, y1, D, x0 - t / 2, y1 / 2, 0, rackMat, RACKS)
+  box(t, y1, D, x1 + t / 2, y1 / 2, 0, rackMat, RACKS)
+  box(W, y1, t, 0, y1 / 2, z1 + t / 2, rackMat, RACKS)
   const wl = WINDOW.x - WINDOW.w / 2
   const wr = WINDOW.x + WINDOW.w / 2
   const wb = WINDOW.y - WINDOW.h / 2
   const wt = WINDOW.y + WINDOW.h / 2
-  box(wl - x0, y1, t, (x0 + wl) / 2, y1 / 2, z0 - t / 2)
-  box(x1 - wr, y1, t, (wr + x1) / 2, y1 / 2, z0 - t / 2)
-  box(WINDOW.w, wb, t, WINDOW.x, wb / 2, z0 - t / 2)
-  box(WINDOW.w, y1 - wt, t, WINDOW.x, (wt + y1) / 2, z0 - t / 2)
+  box(wl - x0, y1, t, (x0 + wl) / 2, y1 / 2, z0 - t / 2, wallMat, SQUARE)
+  box(x1 - wr, y1, t, (wr + x1) / 2, y1 / 2, z0 - t / 2, wallMat, SQUARE)
+  box(WINDOW.w, wb, t, WINDOW.x, wb / 2, z0 - t / 2, wallMat, SQUARE)
+  box(WINDOW.w, y1 - wt, t, WINDOW.x, (wt + y1) / 2, z0 - t / 2, wallMat, SQUARE)
   const frameMat = new THREE.MeshStandardMaterial({ color: 0x2a3142, metalness: 0.5, roughness: 0.4 })
   for (const [w, h, x, y] of [[WINDOW.w + 0.2, 0.1, WINDOW.x, wt], [WINDOW.w + 0.2, 0.1, WINDOW.x, wb], [0.1, WINDOW.h, wl, WINDOW.y], [0.1, WINDOW.h, wr, WINDOW.y]] as const)
-    box(w, h, 0.16, x, y, z0)
-  // Handrails along the walls: it's a spacecraft.
-  for (const x of [x0 + 0.08, x1 - 0.08]) box(0.05, 0.05, D - 0.6, x, 1.05, 0, frameMat)
-  // Upper walls and ceiling: what you see when a satellite bus is opened. Kept above eye height
-  // so the walk path and the module pedestals stay clear.
-  const rad = new THREE.MeshStandardMaterial({ map: radiatorMap(), metalness: 0.4, roughness: 0.5 })
-  box(0.04, 0.9, 1.4, x0 + 0.05, 2.45, 0.15, rad)
-  box(0.04, 0.9, 1.4, x1 - 0.05, 2.45, 0.15, rad)
-  const harness = new THREE.MeshStandardMaterial({ color: 0x161a22, roughness: 0.7 })
-  box(0.05, 0.05, D - 0.8, x0 + 0.1, y1 - 0.08, 0, harness)
-  box(0.05, 0.05, D - 0.8, x1 - 0.1, y1 - 0.08, 0, harness)
-  const wheelMat = new THREE.MeshStandardMaterial({ color: 0xc9d0d8, metalness: 0.88, roughness: 0.24 })
-  for (const [x, z] of [[-0.18, 0.16], [0.18, 0.16], [0, -0.16]] as const) {
-    const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.07, 20), wheelMat)
-    wheel.position.set(-1.6 + x, y1 - 0.1, 0.2 + z)
-    scene.add(wheel)
+    box(w, h, 0.16, x, y, z0, frameMat)
+
+  // Fittings, merged so each material is one draw call: rack posts, blue handrails, light strips, the hatch.
+  const posts: THREE.BufferGeometry[] = []
+  const rails: THREE.BufferGeometry[] = []
+  const lamps: THREE.BufferGeometry[] = []
+  const hatch: THREE.BufferGeometry[] = []
+  const dark: THREE.BufferGeometry[] = []
+  const put = (list: THREE.BufferGeometry[], geo: THREE.BufferGeometry, x: number, y: number, z: number, turnX = 0) => list.push(geo.rotateX(turnX).translate(x, y, z))
+  // A post between every two racks, and a blue handrail on every other post.
+  for (let k = 1; k < D; k++) {
+    for (const [x, out] of [[x0, 1], [x1, -1]] as const) {
+      put(posts, new THREE.BoxGeometry(0.06, y1, 0.07), x + out * 0.03, y1 / 2, z0 + k)
+      if (k % 2 === 0) continue
+      put(rails, new THREE.CylinderGeometry(0.017, 0.017, 0.72, 10), x + out * 0.13, 1.72, z0 + k)
+      for (const y of [1.42, 2.02]) put(rails, new THREE.BoxGeometry(0.1, 0.03, 0.03), x + out * 0.085, y, z0 + k)
+    }
   }
-  const face = new THREE.MeshStandardMaterial({ map: avionicsMap(), metalness: 0.35, roughness: 0.48 })
-  const shell = new THREE.MeshStandardMaterial({ color: 0x232833, metalness: 0.55, roughness: 0.4 })
-  for (const x of [-1.5, 0, 1.5]) {
-    const unit = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.32, 0.12), [shell, shell, shell, shell, shell, face])
-    unit.position.set(x, 2.5, z1 - 0.08)
-    scene.add(unit)
+  for (let k = 1; k < W; k++) put(posts, new THREE.BoxGeometry(0.07, y1, 0.06), x0 + k, y1 / 2, z1 - 0.03)
+  // Long rails at hand height along both sides, and a blue edge to the deck under them.
+  for (const [x, out] of [[x0, 1], [x1, -1]] as const) {
+    put(rails, new THREE.BoxGeometry(0.04, 0.04, D - 0.6), x + out * 0.1, 1.05, 0)
+    put(rails, new THREE.BoxGeometry(0.5, 0.014, D), x + out * 0.25, 0.007, 0)
+    // Light strips where the walls meet the ceiling, and the cable run beside them.
+    put(lamps, new THREE.BoxGeometry(0.2, 0.05, D - 0.5), x + out * 0.42, y1 - 0.03, 0)
+    put(dark, new THREE.BoxGeometry(0.05, 0.05, D - 0.8), x + out * 0.12, y1 - 0.08, 0)
   }
+  // The hatch in the end wall: a rim, a stepped door, a centre window, a handle, latches, and two ports above it.
+  const hz = z1 - 0.02
+  const FACING = Math.PI / 2
+  put(posts, new THREE.TorusGeometry(0.93, 0.07, 12, 56), 0, 1.5, hz)
+  put(dark, new THREE.TorusGeometry(0.875, 0.012, 6, 56), 0, 1.5, hz - 0.045)
+  put(dark, new THREE.TorusGeometry(0.64, 0.01, 6, 48), 0, 1.5, hz - 0.125)
+  put(hatch, new THREE.CylinderGeometry(0.87, 0.87, 0.06, 56), 0, 1.5, hz - 0.01, FACING)
+  put(hatch, new THREE.CylinderGeometry(0.6, 0.66, 0.1, 48), 0, 1.5, hz - 0.07, FACING)
+  put(dark, new THREE.TorusGeometry(0.19, 0.03, 10, 32), 0, 1.5, hz - 0.12)
+  put(dark, new THREE.CylinderGeometry(0.17, 0.17, 0.02, 32), 0, 1.5, hz - 0.115, FACING)
+  put(dark, new THREE.BoxGeometry(0.06, 0.38, 0.05), 0.42, 1.5, hz - 0.17)
+  for (const y of [1.36, 1.64]) put(dark, new THREE.BoxGeometry(0.05, 0.05, 0.06), 0.42, y, hz - 0.14)
+  for (let i = 0; i < 8; i++) {
+    const a = ((i + 0.5) / 8) * Math.PI * 2
+    put(posts, new THREE.BoxGeometry(0.12, 0.12, 0.07), Math.cos(a) * 0.76, 1.5 + Math.sin(a) * 0.76, hz - 0.05)
+  }
+  for (const x of [-0.82, 0.82]) {
+    put(dark, new THREE.TorusGeometry(0.18, 0.04, 10, 32), x, 2.66, hz - 0.02)
+    put(dark, new THREE.CylinderGeometry(0.15, 0.15, 0.02, 32), x, 2.66, hz - 0.015, FACING)
+  }
+  const fitted = (list: THREE.BufferGeometry[], mat: THREE.Material) => scene.add(new THREE.Mesh(mergeGeometries(list), mat))
+  fitted(posts, new THREE.MeshStandardMaterial({ color: 0xaeb5bf, roughness: 0.45, metalness: 0.45 }))
+  fitted(rails, new THREE.MeshStandardMaterial({ color: 0x2f62b8, roughness: 0.55, metalness: 0.15 }))
+  fitted(lamps, new THREE.MeshBasicMaterial({ color: 0xf4f8ff, toneMapped: false }))
+  fitted(hatch, new THREE.MeshStandardMaterial({ color: 0xc9ced6, roughness: 0.42, metalness: 0.15 }))
+  fitted(dark, new THREE.MeshStandardMaterial({ color: 0x1c212b, roughness: 0.35, metalness: 0.6 }))
 
   // ---- Outside: stars, the Sun's light, the world you orbit.
   const starGeo = new THREE.BufferGeometry()
@@ -245,6 +398,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   // The real planet (claude@ethan, ui/scene3d): NASA surface maps, city lights at night, clouds over Earth.
   const uSun = { value: sun.position.clone().normalize() }
   const uBody = { value: WORLD_INDEX.earth as number }
+  const cloudTime = { value: 0 }
   const worldMaps = planetMaps(renderer.capabilities.getMaxAnisotropy())
   const worldMat = new THREE.ShaderMaterial({ ...toScreen(planetShader), uniforms: { uSun, uBody, ...worldMaps.maps.earth } })
   const world = new THREE.Mesh(new THREE.SphereGeometry(40, 96, 64), worldMat)
@@ -252,7 +406,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   scene.add(world)
   const clouds = new THREE.Mesh(
     new THREE.SphereGeometry(40.4, 96, 64),
-    new THREE.ShaderMaterial({ ...toScreen(cloudShader), uniforms: { uSun, uTime: { value: 0 }, ...worldMaps.maps.earth }, transparent: true, depthWrite: false }),
+    new THREE.ShaderMaterial({ ...toScreen(cloudShader), uniforms: { uSun, uTime: cloudTime, ...worldMaps.maps.earth }, transparent: true, depthWrite: false }),
   )
   world.add(clouds)
   // A soft glow of air around the limb, brightest on the sunlit side.
@@ -397,6 +551,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   observer.observe(host)
   resize()
   let worldTurn = 0
+  let worldSpin = 0
   /** Screens redraw only when their numbers change, and at most 4 times a second (the sim can step 60 times a second). */
   let screensKey = ''
   let screensAt = 0
@@ -407,7 +562,11 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
     fps.update(dt)
     onPose?.(fps.feet())
     crew.update(dt)
-    world.rotation.y = worldTurn
+    // The sim's day arrives in steps. Glide towards it every frame and keep a slow turn going between steps,
+    // so the planet never jumps; the clouds drift on their own.
+    worldSpin += (worldTurn - worldSpin) * (1 - Math.exp(-dt * 2.5))
+    world.rotation.y = worldSpin + now * 0.000004
+    cloudTime.value = now / 1000
     craftHolder.rotation.y += dt * 0.4
     world.updateMatrixWorld(true)
     craftHolder.updateMatrixWorld(true)
