@@ -4,6 +4,7 @@
   "installCommand": "npm ci",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "ignoreCommand": "[ \"$VERCEL_GIT_COMMIT_REF\" != main ] || git diff --quiet HEAD^ HEAD -- . ':(exclude).agents' ':(exclude)docs' ':(exclude)*.md'",
   "headers": [
     {
       "source": "/assets/(.*)",
