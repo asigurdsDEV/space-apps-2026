@@ -56,3 +56,5 @@
 /* The canvas fills the window, so its ring frames the whole game: a hairline is enough. */
 .mc-canvas:focus-visible { outline: 1px solid var(--game-focus, #fff); outline-offset: -1px; }
 .mc-fallback { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; color: #f5f6f8; }
+/* Screen-reader copy of the wall screens: read, not seen. */
+.mc-screens { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
