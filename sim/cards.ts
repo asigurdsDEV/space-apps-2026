@@ -335,6 +335,38 @@ export const CARDS: Card[] = [
       source_url: 'https://www.nasa.gov/directorates/somd/space-communications-navigation-program/what-is-the-deep-space-network/',
     },
   },
+  {
+    id: 'debris-pass',
+    title: 'Space debris close pass',
+    body: 'Tracking radar shows a piece of an old, broken satellite will pass very close to your spacecraft. Nobody can be sure it will miss.',
+    console: 'mission-planning',
+    when: (c) => c.body === 'earth',
+    options: [
+      { id: 'a', label: 'Fire thrusters to dodge', effect_text: 'Science stops for 1 day during the burn. The debris misses.', effects: () => [{ kind: 'lose_days', days: 1 }] },
+      {
+        id: 'b',
+        label: 'Hold course',
+        effect_text: 'It will probably miss. If it hits, the mission is over.',
+        effects: (c) => [
+          {
+            kind: 'chance',
+            // Tracked debris is thickest from about 750 to 1,000 km, thinner near 400 km (drag clears it) and far thinner at geostationary height.
+            p: c.altitude_km < 500 ? 0.02 : c.altitude_km <= 2000 ? 0.05 : 0.01,
+            then: [{ kind: 'end_mission', reason: 'debris_hit', message: 'A piece of space debris hit the spacecraft and destroyed it.' }],
+            otherwise: [],
+            then_text: 'The debris hit. The spacecraft broke apart.',
+            otherwise_text: 'The debris passed by. Nothing was lost.',
+          },
+        ],
+      },
+    ],
+    story: {
+      mission: 'Iridium 33 and Cosmos 2251',
+      year: 2009,
+      text: 'In 2009 a working satellite, Iridium 33, and a dead one, Cosmos 2251, crashed into each other and left thousands of tracked pieces in orbit. The International Space Station has fired its thrusters to dodge debris more than 30 times since 1999. It moves when the chance of a hit passes about 1 in 10,000.',
+      source_url: 'https://orbitaldebris.jsc.nasa.gov/faq/',
+    },
+  },
 ]
 
 export function cardById(id: string): Card | undefined {

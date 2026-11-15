@@ -95,6 +95,16 @@ Numbers below are starting values for balance. claude@ethan may tune them. Keep 
 - **Lesson:** downlink capacity is a shared, scheduled resource.
 - **source_url:** https://www.nasa.gov/directorates/somd/space-communications-navigation-program/what-is-the-deep-space-network/ · scheduling and priority: https://oig.nasa.gov/wp-content/uploads/2023/12/ig-23-016.pdf
 
+### 9. `debris-pass`: space debris close pass
+
+- **Console:** PLAN · **When:** operations, body = earth (any Earth orbit; never at the Moon or Mars)
+- **Body:** Tracking radar shows a piece of an old, broken satellite will pass very close to your spacecraft. Nobody can be sure it will miss.
+- **A. Fire thrusters to dodge:** `lose_days(1)`. *"Science stops for 1 day during the burn. The debris misses."* (A real burn also uses a little propellant. The sim has no propellant gauge in flight, so the cost is the day.)
+- **B. Hold course:** `chance(p_debris, [end_mission("debris_hit")], [])`, where `p_debris` = 0.02 below 500 km, 0.05 at 500–2,000 km, 0.01 above. *"It will probably miss. If it hits, the mission is over."* (Game balance: real teams move at about 1 in 10,000.)
+- **Story (Iridium 33 and Cosmos 2251, 2009):** In 2009 a working satellite, Iridium 33, and a dead one, Cosmos 2251, crashed into each other and left thousands of tracked pieces in orbit. The International Space Station has fired its thrusters to dodge debris more than 30 times since 1999. It moves when the chance of a hit passes about 1 in 10,000.
+- **Lesson:** orbits are shared and crowded. Tracking and a small burn keep a spacecraft safe, and the busiest heights (about 750 to 1,000 km) carry the most risk.
+- **source_url:** https://orbitaldebris.jsc.nasa.gov/faq/ (NASA Orbital Debris Program Office: station manoeuvres, the 1 in 10,000 rule, the 2009 collision, where debris is thickest) · the 2009 collision (10 February, about 790 km up, an active satellite and a derelict one): https://ntrs.nasa.gov/citations/20100008433 · NASA's conjunction assessment team, which screens NASA's spacecraft for close passes: https://www.nasa.gov/cara/
+
 ---
 
 ## Flavour for the GO / NO-GO poll (not cards)
