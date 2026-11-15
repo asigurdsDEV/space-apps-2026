@@ -143,7 +143,7 @@ function makeFlag(w: number, h: number, time: { value: number }): THREE.Mesh {
 uniform float uTime;
 uniform vec2 uFlag;
 float cloth(vec2 at) {
-  float free = 1.0 - at.y;
+  float free = max(1.0 - at.y, 0.0); // the normal samples just past the top edge; pow() of a negative is NaN on real GPUs, which bloom spreads over the whole frame
   float billow = free * free * (0.3 + 0.12 * sin(uTime * 0.8));
   float ripple = 0.5 * sin(at.y * 9.0 + uTime * 2.6 + at.x * 3.0) + 0.22 * sin(at.y * 17.0 + uTime * 4.1 - at.x * 4.0);
   return (billow + ripple * pow(free, 1.3) * 0.2) * uFlag.x;
