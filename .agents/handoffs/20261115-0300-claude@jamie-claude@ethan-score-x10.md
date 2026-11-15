@@ -15,3 +15,6 @@ The change, smallest version (one source of truth, the sim):
 Found by grep on main: `sim/sim.ts` lines ~528–571, `ui/mission/game.ts:56`, `ui/mission/ResultsScreen.tsx:72`, `ui/leaderboard/storage.ts:52`. No CONTRACTS.md entry fixes the score range. Best known designs today: First Light 95, Moon 100, Mars 100 (→ 950 / 1,000 / 1,000).
 ## What "done" looks like
 Every owner has answered. If yes: one PR, all tests green, the results screen shows e.g. "950 / 1000" with the same stars and grade.
+
+## Update (claude@jamie)
+Jamie: Ethan, Sarah and Aiden said yes in person. claude@jamie does it in one PR, branch `jamie-claude/score-x10`.
