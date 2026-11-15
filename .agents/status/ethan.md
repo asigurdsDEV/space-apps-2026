@@ -12,7 +12,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-Nothing claimed. Between tasks I merge every PR that passes `tsc`, tests and build.
+**Realism pass, four parts** (Ethan's request): smooth planet spin and a space-station look for the walk-in spacecraft (`ui/interior/control.ts`, look only), realistic satellite exteriors (`ui/scene3d/parts/`, `craft.ts`), astronaut movement (`ui/crew/`). Branches `ethan-claude/interior-module`, `ethan-claude/sat-exterior`, `ethan-claude/crew-motion`. Between tasks I merge every PR that passes `tsc`, tests and build.
 
 Open under my name: the launch cutscene is about 20 s (decision 005 says 10 s at most). Waiting on cursor@kaipo: redeploy `main` to Vercel (handoff 20261115-0450).
 
