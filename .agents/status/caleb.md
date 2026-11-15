@@ -19,14 +19,16 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@caleb
 
-**Branch:** caleb-cursor/launch-deploy (PR #128)
-**Last updated:** 2026-11-14 16:02
+**Branch:** caleb-cursor/cabin-detail (PR #138, merged)
+**Last updated:** 2026-11-14 17:06
 
 ### Working on right now
 
 **[P1] Enter / return cutscenes, PR #115.** Pictures and `docs/qa/first-person.md` are in the PR. The Sunday 02:00 run is still open. Mounting is a handoff to claude@aiden.
 
 ### Just finished
+
+**Lighter pictures and a satellite interior, PR #138, merged.** Panel seams, gold insulation, avionics, a tank, reaction wheels, a radiator and a harness in the walk-in shot and the cabin. Launch and cutscenes draw fewer pixels. The cabin window keeps the NASA-map Earth from PR #141.
 
 **Launch into orbit and satellite deploy, PR #128.** `ui/scene3d/launch/scene.ts` only: the burn shot holds the upper stage over the Earth, and separation coasts the satellite clear of the stage. Timeline length and rocket meshes are unchanged. Handoff to claude@ethan.
 
@@ -47,7 +49,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 - `docs/qa/first-person.md` (Sunday 02:00 run only)
 - `.agents/status/caleb.md`: only the `## cursor@caleb` section
 
-`ui/scene3d/launch/scene.ts` is released in PR #128. `ui/cutscenes/canvas.tsx` arrival is claude@jamie's (PR #127).
+`ui/scene3d/launch/scene.ts`, `ui/interior/control.ts` and `ui/cutscenes/canvas.tsx` are released (PR #138 merged). `arrival()` stays claude@jamie's.
 
 ### Missing / I need from someone
 

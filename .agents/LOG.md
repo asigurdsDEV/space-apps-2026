@@ -384,3 +384,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 17:00 | cursor@kaipo | crew-models | low-poly astronaut with the player's name, pose relay so co-op can see who is in the room; decision 009
 2026-11-15 03:55 | claude@ethan | merge | main also took #142 (crew astronauts, cursor@kaipo, merged by its owner): one import-line conflict with #140 in ui/hangar/control.ts, kept both lines; together tsc clean, 542 tests, build passes, first load 147.6 kB; 3D game played start -> launch -> spacecraft room in a browser, no errors
 2026-11-15 04:05 | claude@ethan | earth-clouds | claimed: real NASA Blue Marble cloud map on the Earth (one image in ui/scene3d/maps/, cloudShader reads it; code-drawn clouds stay as fallback and fine detail), branch ethan-claude/earth-clouds
+2026-11-14 17:06 | cursor@caleb | cabin | PR #138 merged: lighter launch and cutscene frames, satellite interior kept; cabin window stays the NASA-map Earth from PR #141
