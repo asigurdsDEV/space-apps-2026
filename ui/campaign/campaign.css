@@ -1,25 +1,11 @@
-.campaign { position: relative; min-height: 100dvh; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(320px, .9fr); align-items: center; gap: 48px; padding: 48px max(28px, calc((100vw - 1120px) / 2)); isolation: isolate; }
-.campaign .campaign-bg { position: fixed; inset: 0; width: 100%; height: 100dvh; min-height: 0; opacity: .35; z-index: -2; }
-.campaign::before { content: ''; position: fixed; inset: 0; background: linear-gradient(90deg, rgb(4 9 20 / .9), rgb(4 9 20 / .3)); z-index: -1; }
-.campaign h1 { font-size: clamp(2rem, 4vw, 3.5rem); margin: 12px 0 20px; max-width: 12ch; }
-.campaign-route > ol { list-style: none; padding: 0; display: grid; gap: 10px; margin: 24px 0 0; }
-.campaign-route li > button { width: 100%; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px; padding: 18px; text-align: left; background: rgb(10 15 28 / .9); color: var(--game-text); border: 1px solid var(--game-border); cursor: pointer; }
-.campaign-route button[aria-pressed="true"] { border-color: var(--game-accent); box-shadow: inset 3px 0 var(--game-accent); }
-.campaign-route button:disabled { opacity: .65; cursor: default; }
-.campaign-route small { display: block; margin-top: 4px; color: var(--game-muted); font-size: .75rem; }
-.campaign-number { color: var(--game-accent); font-family: var(--game-font-mono); }
-.campaign-brief { padding: 28px; background: rgb(12 21 40 / .96); }
-.campaign-brief h2 { font-size: 1.8rem; margin: 8px 0 12px; }
-.campaign-brief dl { display: flex; flex-wrap: wrap; gap: 24px; margin: 20px 0; }
-.campaign-brief dt { font-size: .75rem; color: var(--game-muted); }
-.campaign-brief dd { margin: 0; font-size: 1.5rem; color: var(--game-accent); }
-.campaign-steps { padding-left: 20px; font-size: .85rem; line-height: 1.7; margin: 20px 0; }
-.campaign-brief label { display: block; margin-bottom: 6px; }
-.campaign-brief input { width: 100%; background: var(--game-bg); color: var(--game-text); border: 1px solid var(--game-border); padding: 10px; }
-.campaign-brief .game-button { width: 100%; margin-top: 12px; }
-.campaign-save { font-size: .75rem; margin: 14px 0 4px; }
+/* The mission board wears the start screen's look (ui/start/start.css); only the extras live here. */
+.campaign .campaign-route { margin: 40px 0 0; padding: 0; list-style: none; max-width: 520px; pointer-events: auto; }
+.ss-root.ss-root .campaign-route button { width: 100%; grid-template-columns: auto 1fr auto; }
+.ss-root.ss-root .campaign-route .ss-chips { grid-column: auto; font-size: 0.85rem; color: var(--game-text); }
+.ss-root.ss-root .campaign .ss-intro h1 { font-size: clamp(2.8rem, 5vw, 4.4rem); }
+.ss-root.ss-root .campaign-route button:disabled .ss-world { filter: grayscale(1) brightness(0.6); }
+.campaign-steps { margin: 24px 0 0; padding-left: 18px; color: var(--game-muted); font-size: 0.85rem; line-height: 1.8; }
+.ss-root.ss-root .campaign .ss-daily-button { width: 100%; margin-top: 16px; }
 .campaign-result { padding: 16px; border: 1px solid var(--game-accent); margin: 16px 0; }
 .campaign-result > .game-muted { font-size: .8rem; }
 .campaign-return { position: fixed; top: 72px; right: 20px; z-index: 5; }
-@media (max-width: 900px) { .campaign { grid-template-columns: 1fr; padding: 28px; gap: 28px; } .campaign h1 { max-width: none; } }
-@media (max-height: 740px) and (min-width: 901px) { .campaign { padding-top: 24px; padding-bottom: 24px; gap: 32px; } .campaign-brief { padding: 20px; } .campaign-steps { margin: 12px 0; } }

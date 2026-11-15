@@ -44,7 +44,7 @@ const LEVELS = ['easy', 'normal', 'hard'] as const
 const STEPS: Step[] = ['menu', 'setup', 'mission', 'difficulty']
 const HEADINGS: Record<Step, string> = { menu: 'First Flight', setup: 'Mission setup', mission: 'Choose your mission', difficulty: 'Choose difficulty', satellite: 'The spacecraft' }
 /** Each mission's icon is a small globe painted with the real NASA map of where it goes (ui/scene3d/maps). */
-const GLOBES: Record<string, string> = {
+export const GLOBES: Record<string, string> = {
   demo: `url(${earthClouds}), url(${earthDay})`,
   moon: `url(${moonMap})`,
   mars: `url(${marsMap})`,
