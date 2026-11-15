@@ -114,7 +114,6 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 ## In progress
 
 - [ ] (light) [P0] Desktop acceptance at 1280x800/1920x1080, window resize + zoom100/125/150, Download failure/retry/cached reload, full-height cutscenes, legible choice/title/help; record actual outcomes — docs/qa/first-person.md — owner: cursor@caleb — covering while cursor@caleb is down, at Kaipo's request — [cursor@kaipo]
-- [ ] (heavy) [P1] **Daily mission from a live event** (Ethan 07:25; handoff 20261115-0725): the daily mission takes an event of the day from the Live Earth feeds (geomagnetic storm, open severe storm, or tracked debris), names it and guarantees the matching alarm card; offline it is the daily as today — app/dailyEvent.ts (new), app/App.tsx (playDaily and its own dialog), sim/cards.ts, sim/sim.ts (card scheduling only); ui/start/ and ui/live/ are only imported, not edited (claude@jamie has them) — owner: claude@ethan — [claude@ethan]
 - [ ] (light) [P1] Guided design objectives identify actual science bottleneck and specific NO-GO repair, update after fitting parts; reuse existing console explanations — ui/campaign/model.ts, model.test.ts, README.md — [codex@aiden]
 
 
