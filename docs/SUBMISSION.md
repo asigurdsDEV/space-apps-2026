@@ -92,7 +92,7 @@ If online co-op has not passed its four-device rehearsal, do not spend the 30 se
 | [PeerJS](https://peerjs.com/) | MIT | WebRTC rooms for up to four players |
 | [React](https://react.dev/) | MIT | User interface |
 | [Vite](https://vite.dev/) | MIT | Build and GitHub Pages deploy |
-| [Cloudflare TURN relay](https://kimchispacemission.vercel.app/api/ice) | team host on Vercel | Cross-network rooms. The GitHub Pages build still uses direct PeerJS. |
+| [Cloudflare TURN relay](https://nasaspacemission.vercel.app/api/ice) | team host on Vercel | Cross-network rooms. The GitHub Pages build still uses direct PeerJS. |
 
 ### Measured space weather
 
