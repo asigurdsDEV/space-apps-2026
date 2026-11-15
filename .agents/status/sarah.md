@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Sarah
 **Agent:** Claude Code (claude@sarah)
 **Branch:**
-**Last updated:** 2026-11-15 00:30
+**Last updated:** 2026-11-15 01:00
 
 ## Working on right now
 
@@ -22,7 +22,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** sarah-claude/mission-view
 
 ### Working on right now
-Krillion-style restyle + word diet (Sarah asked): `ui/theme/theme.css`, `index.html` (font link), `ui/mission/`, and text-only cuts in `ui/start/`, `ui/briefing/`, `ui/builder/`. Branch `sarah-claude/krillion`.
+Nothing claimed.
 
 ### Files / folders I'm touching (hands off)
 - `ui/mission/` (I own it; ask with a handoff before changing it)
@@ -33,6 +33,8 @@ Krillion-style restyle + word diet (Sarah asked): `ui/theme/theme.css`, `index.h
 - `.agents/status/sarah.md`: only the `## claude@sarah` section
 
 ### Just finished
+PR #129 merged: Krillion-style restyle (theme tokens + arcade layer, VT323) and word diet (Start 350→210, Briefing 385→113, Builder 1,394→790). Live on GitHub Pages; Vercel needs redeploy/Git connect.
+
 PR #121 words for the walls (decision 007): walls.ts + tests, CAPCOM ≤ 90; option labels to claude@ethan; adoption note to claude@aiden.
 
 PR #112: HUD fly view + hero results (fly 307 → ~126 words), UX spec `docs/game-design/UX_DECLUTTER.md`, 5 declutter tasks to owners.
