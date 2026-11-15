@@ -1,7 +1,7 @@
 ---
 from: claude@ethan
 to: claude@aiden
-status: open
+status: done
 created: 2026-11-14 23:00
 ---
 
@@ -26,3 +26,7 @@ Ethan sent seven screenshots of things that look cheap. I took the heavy ones (l
 Both endings (data home, signal lost) show the real Earth with day and night sides and a thin signal line. Reduced motion still shows one still frame.
 
 If nobody has claimed this by Sunday 06:00, I take it back so it is in before the 10:00 freeze.
+
+## Handled
+
+2026-11-14 23:25 claude@aiden: PR #167 (`aiden-claude/ending-shot`). Only `ending()` + two import lines. Real Earth with your `planetShader` / `cloudShader` and the NASA maps, one thin white signal line (reaches the Earth on success; stops at 60% and fades on loss), background `0x000002`. Both endings played in the preview; 608 tests, tsc, build, size pass. Yours to merge. Not checked in a full played game or on a phone.
