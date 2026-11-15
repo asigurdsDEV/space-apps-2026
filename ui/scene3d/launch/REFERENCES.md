@@ -119,9 +119,25 @@ logo, wordmark or NASA insignia is drawn anywhere.
 | Atlas V | Panel welds on the bronze booster; fastener rows, vents and joints on the interstage; stringers on the Centaur forward adapter; foam grain; flag on the fairing | The two equipment pods at the base of the real booster are not modelled. Flag position |
 | Delta IV Heavy | Stringers on the centerbody between the tanks; foam spray passes and closeout seams; fastener rows on the engine section and interstage; flag on the fairing | Whether the centerbody shows ribs through its insulation. The foam charring at ignition that the real vehicle is known for is not drawn |
 | SLS Block 1 | Intertank stringers in relief; five hydrogen-tank and two oxygen-tank barrels; doors on the engine section, intertank and forward skirt; on each booster stiffener rings on the aft segment, fastener rows at the field joints, a systems tunnel and black-and-white tracking targets | Target positions and size. The boosters' red lettering and the insignia on Orion's panels are left off on purpose; no flag is drawn because its position was not checked |
-| Pad | Lift shaft and work platforms in the tower, umbilical plates and lines on the swing arms, flame-trench walls and deflector, a water tower | A generic pad, sized to the rocket: not SLC-40, SLC-41, SLC-37, LC-39B or LC-1 |
+| Pad | Lift shaft and work platforms in the tower, umbilical plates and lines on the swing arms, flame-trench deflector; the rest of the complex is under "The launch site" below | A generic pad, sized to the rocket: not SLC-40, SLC-41, SLC-37, LC-39B or LC-1 |
 | Light | The Sun stands 20 degrees up so that shadows read; the scene is still dressed as dawn | A dawn Sun would be lower |
 | Earth below | The real Blue Marble map (`../maps`). Every vehicle is shown leaving Cape Canaveral (28.5 N, 80.6 W) heading north-east | Electron, Pegasus and others launch from elsewhere, and headings differ by mission |
+
+## The launch site
+
+`layout.ts` (the map), `site.ts` (the structures), `fx.ts` (ground, water, sky) and `birds.ts`. Every row is **eye**: the
+site was drawn from the task brief's description of the Artemis II launch broadcast and one reference photo of a
+lift-off, not from drawings or a page read in this pass. It is our own coastal complex in the manner of Kennedy's
+Launch Complex 39B, not a copy of it, and it carries no logo, insignia or lettering.
+
+| What | How it is drawn | Known to be simplified |
+|---|---|---|
+| Map | A sand spit: sea behind the pad and to the east, an inlet in front of the camera, a headland to the west. Laid out in units of the apron's half-width, so every rocket gets the same picture at its own scale | The real pad stands about 700 m from the Atlantic with lagoons around it; here the water is much closer, so it shows in the frame |
+| Pad | Concrete mound either side of the flame trench, launch mount, lattice service tower, three lightning masts with wires between them and down to anchors, a ball water tower, two propellant spheres with feed lines, low clad sheds, a two-lane gravel crawlerway | Sizes follow the rocket, not the real complex. 39B's masts are lattice towers and its wires run to more anchors |
+| Far complex | A 160 m assembly building with two tall doors, a low bay, a launch control building and sheds, 4.5 km away at the end of the crawlerway, to real size for every rocket | Plain boxes; the real building is about 160 x 218 x 158 m and 5.5 km from 39B |
+| Water | One shader on the ground plane: four trains of waves plus wind ripples, sky reflection, foam on the banks, surf on the sea beach, streaks drifting east in the inlet, the engines' glow mirrored at ignition | No reflection of the rocket, tower or smoke. The Sun is behind the camera in the pad shots, so its glitter shows only from the air |
+| Birds | Fourteen two-triangle shore birds drifting west of the tower, scattering out to sea when the engines light | Not a species; sized to the rocket (wingspan about 1 % of its height) |
+| Flag | United States flag hung vertically on a short arm off the tower: union at the viewer's top left, stripes running down, 1 : 1.9, union 7 stripes by 0.76, 50 stars of 0.0616, red #B22234, blue #3C3B6E. Cloth ripples from a pinned top edge, lit by the scene | Proportions and the vertical-hang rule are from memory of the flag specification and the Flag Code, not read in this pass. The banner is an eighth of the rocket's height |
 
 ## Sources
 

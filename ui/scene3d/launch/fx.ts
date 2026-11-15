@@ -1,6 +1,7 @@
 // Shader effects for the launch: dawn sky, ground, cloud deck, engine plumes and smoke puffs.
 // Everything is procedural (no texture files). Colors are linear; OutputPass tone-maps.
 import * as THREE from 'three'
+import { ASSEMBLY, COAST_GLSL, CRAWLER_TURN } from './layout'
 import type { Nozzle } from './stack'
 import type { Propellant } from './vehicles'
 
@@ -33,8 +34,8 @@ uniform float uTime;
 vec3 skyColor(vec3 d) {
   float toSun = max(dot(normalize(d.xz + 1e-5), normalize(uSun.xz)), 0.0);
   vec3 zenith = mix(lin(vec3(0.16, 0.27, 0.52)), vec3(0.0005, 0.001, 0.004), uSpace);
-  vec3 mid = mix(lin(vec3(0.46, 0.56, 0.78)), lin(vec3(0.10, 0.20, 0.50)), uSpace);
-  vec3 horizon = mix(lin(vec3(0.74, 0.68, 0.72)), lin(vec3(1.0, 0.60, 0.30)), pow(toSun, 3.0));
+  vec3 mid = mix(lin(vec3(0.45, 0.60, 0.84)), lin(vec3(0.10, 0.20, 0.50)), uSpace);
+  vec3 horizon = mix(lin(vec3(0.80, 0.80, 0.84)), lin(vec3(1.0, 0.60, 0.30)), pow(toSun, 3.0));
   float h = max(d.y, 0.0);
   vec3 col = mix(horizon, mid, smoothstep(0.0, mix(0.26, 0.10, uSpace), h));
   col = mix(col, zenith, smoothstep(0.08, mix(0.8, 0.3, uSpace), h));
@@ -86,56 +87,118 @@ void main() {
   return sky
 }
 
-/** Coastal launch site seen at dawn: concrete apron and roads at the pad, scrub, a shoreline, sea. uPad: apron radius in meters. */
-export function makeGround(u: SkyUniforms, padRadius: number): THREE.Mesh {
+/**
+ * The launch site's ground at dawn: a sand spit with the concrete apron and the crawlerway, the sea behind and to the
+ * east, an inlet in front (layout.ts has the map). `flame`: where the engines' fire is (xyz) and how bright (w), so
+ * the pad and the water can pick up its glow.
+ */
+export function makeGround(u: SkyUniforms, unit: number, flame: { value: THREE.Vector4 }): THREE.Mesh {
   const ground = new THREE.Mesh(
     new THREE.PlaneGeometry(400_000, 400_000).rotateX(-Math.PI / 2),
     new THREE.ShaderMaterial({
-      uniforms: { ...u, uPad: { value: padRadius } },
+      uniforms: { ...u, uPad: { value: unit }, uFlame: flame },
       vertexShader: WORLD_VERTEX,
       fragmentShader: /* glsl */ `
 uniform float uPad;
+uniform vec4 uFlame;
 varying vec3 vWorld;
 ${NOISE2}
 ${SKY}
+${COAST_GLSL}
+float segDist(vec2 p, vec2 a, vec2 b) {
+  vec2 pa = p - a;
+  vec2 ba = b - a;
+  return length(pa - ba * clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0));
+}
 void main() {
   vec2 p = vWorld.xz;
   vec3 toCam = cameraPosition - vWorld;
   float dist = length(toCam);
   vec3 v = toCam / dist;
+  float U = uPad;
+  float r = length(p);
   float big = fbm2(p * 0.00012 + 3.0);
   float mid = fbm2(p * 0.0021);
   float fine = fbm2(p * 0.07);
-  // Sea to the east, behind a wavy shoreline; a lagoon or two inland.
-  float r = length(p);
-  // The pad always stands on dry land, about 2 km from the beach.
-  float shore = p.x - 2200.0 + (big - 0.5) * 9000.0 * smoothstep(1500.0, 9000.0, r) + (mid - 0.5) * 500.0;
-  float sea = max(smoothstep(-30.0, 30.0, shore), smoothstep(0.66, 0.68, fbm2(p * 0.00035 + 20.0)) * smoothstep(2500.0, 5000.0, r));
-  float sand = smoothstep(-160.0, -30.0, shore) * (1.0 - sea);
-  // Florida's coast from the air: dark green scrub, darker marsh and stands of trees, paler grass.
-  vec3 scrub = mix(lin(vec3(0.13, 0.24, 0.11)), lin(vec3(0.30, 0.36, 0.18)), mid) * (0.7 + 0.6 * fine);
-  scrub *= 0.7 + 0.6 * smoothstep(0.35, 0.65, fbm2(p * 0.0009 + 7.0));
-  scrub = mix(scrub, lin(vec3(0.30, 0.31, 0.20)), smoothstep(0.55, 0.7, big));
-  vec3 col = mix(scrub, lin(vec3(0.66, 0.60, 0.48)), sand);
-  // Apron, a crawlerway to the west and a perimeter road.
-  float road = (1.0 - smoothstep(uPad * 0.10, uPad * 0.12, abs(p.y + 0.0))) * step(p.x, 0.0) * step(-uPad * 14.0, p.x);
-  road = max(road, 1.0 - smoothstep(uPad * 0.035, uPad * 0.05, abs(r - uPad * 2.4)));
-  float apron = max(1.0 - smoothstep(uPad * 0.96, uPad, r + (fine - 0.5) * uPad * 0.05), road);
-  vec3 concrete = lin(vec3(0.52, 0.51, 0.49)) * (0.8 + 0.4 * fbm2(p * 0.35));
-  concrete *= 1.0 - 0.6 * (1.0 - smoothstep(0.0, uPad * 0.5, abs(p.y))) * (1.0 - smoothstep(uPad * 0.3, uPad * 0.95, abs(p.x)));
+  vec2 lp = p * (0.9 / U) + 5.0;
+  float local = 0.65 * noise2(lp) + 0.35 * noise2(lp * 2.3 + 9.0);
+  vec2 assembly = vec2(${ASSEMBLY[0].toFixed(1)}, ${ASSEMBLY[1].toFixed(1)});
+  vec2 turn = vec2(-${CRAWLER_TURN.toFixed(1)} * U, 0.0);
+  float way = min(segDist(p, vec2(0.0), turn), segDist(p, turn, assembly));
+  // The waterline wanders a little at the pad and a lot far away (layout.ts: shoreWobble is the bound).
+  float shore = coast(p, U) + (local - 0.5) * 0.3 * U + (mid - 0.5) * 500.0 * smoothstep(600.0, 3000.0, r) + (big - 0.5) * 2500.0 * smoothstep(1500.0, 9000.0, r);
+  // Marsh ponds inland, but none under the crawlerway or the assembly buildings.
+  float pond = smoothstep(0.66, 0.68, fbm2(p * 0.00035 + 20.0)) * smoothstep(2500.0, 5000.0, r) * smoothstep(150.0, 400.0, way) * smoothstep(700.0, 1300.0, length(p - assembly));
+  float sea = max(smoothstep(-0.02 * U - 1.0, 0.02 * U + 1.0, shore), pond);
+  float sand = smoothstep(-0.3 * U - 12.0, -0.04 * U, shore) * (1.0 - sea);
+
+  // Coastal scrub: dry grass and bare sandy soil with darker stands of palmetto, sandier where the site was cleared.
+  float patches = 0.6 * noise2(p * 0.0009 + 7.0) + 0.4 * noise2(p * 0.0031 + 2.0);
+  vec3 scrub = mix(lin(vec3(0.20, 0.27, 0.15)), lin(vec3(0.50, 0.47, 0.30)), smoothstep(0.3, 0.7, mid)) * (0.75 + 0.5 * fine);
+  scrub = mix(scrub, lin(vec3(0.15, 0.22, 0.13)), smoothstep(0.5, 0.75, patches) * 0.7);
+  vec3 sandCol = lin(vec3(0.74, 0.68, 0.55)) * (0.85 + 0.3 * fine);
+  scrub = mix(scrub, sandCol, (0.3 + 0.5 * smoothstep(0.45, 0.8, local)) * (1.0 - smoothstep(1.2 * U, 5.0 * U, r)));
+  vec3 col = mix(scrub, sandCol, sand);
+  // The crawlerway: two lanes of pale river gravel with a strip of grass between them.
+  float lane = smoothstep(0.045 * U, 0.06 * U, way) * (1.0 - smoothstep(0.19 * U, 0.21 * U, way));
+  col = mix(col, lin(vec3(0.63, 0.59, 0.50)) * (0.85 + 0.3 * fine), lane * (1.0 - sea));
+  // The apron: a rounded square of concrete slabs, scorched along the flame trench.
+  vec2 q = abs(p) / vec2(U, 0.8 * U);
+  float apron = 1.0 - smoothstep(0.96, 1.0, sqrt(sqrt(q.x * q.x * q.x * q.x + q.y * q.y * q.y * q.y)) + (fine - 0.5) * 0.05);
+  vec2 slab = abs(fract(p / (0.125 * U)) - 0.5);
+  vec3 concrete = lin(vec3(0.60, 0.59, 0.56)) * (0.82 + 0.3 * fine + 0.1 * noise2(p * 0.4));
+  concrete *= 1.0 - 0.22 * smoothstep(0.47, 0.49, max(slab.x, slab.y)) * (1.0 - smoothstep(3.0 * U, 6.0 * U, dist));
+  concrete *= 1.0 - 0.6 * (1.0 - smoothstep(0.0, U * 0.45, abs(p.y))) * (1.0 - smoothstep(U * 0.3, U * 0.95, abs(p.x)));
   col = mix(col, concrete, apron * (1.0 - sea));
   // Dawn light: a low warm Sun plus blue sky light.
   vec3 light = vec3(1.0, 0.72, 0.5) * 0.5 * max(uSun.y * 3.0, 0.0) + lin(vec3(0.42, 0.52, 0.72)) * 0.75;
   col *= light;
-  // Water: reflects the sky, with a glitter path toward the Sun.
-  vec3 n = normalize(vec3((noise2(p * 0.05 + uTime * 0.3) - 0.5) * 0.16, 1.0, (noise2(p * 0.05 + 40.0 - uTime * 0.2) - 0.5) * 0.16));
+  // The engines' fire lights the pad around it.
+  vec3 toFlame = uFlame.xyz - vWorld;
+  col += col * vec3(2.4, 1.1, 0.35) * uFlame.w / (1.0 + dot(toFlame, toFlame) / (0.03 * U * U));
+
+  // ---- Water. Trains of waves, each with its own heading, length and speed, bent a little by noise so the crests
+  // are not ruler-straight. The short ones fade with distance, where they would only shimmer.
+  float inlet = step(1.0, p.y / U);
+  float jit = mid * 14.0 + local * 3.0 + 5.0 * noise2(p * 0.045);
+  float f1 = 1.0 - smoothstep(30.0, 220.0, dist);
+  float f2 = 1.0 - smoothstep(100.0, 800.0, dist);
+  float f3 = (1.0 - smoothstep(400.0, 3500.0, dist)) * (1.0 - 0.6 * inlet);
+  float f4 = (1.0 - smoothstep(2500.0, 14000.0, dist)) * (1.0 - 0.8 * inlet);
+  vec2 slope = vec2(0.94, 0.34) * 0.03 * f1 * cos(dot(p, vec2(0.94, 0.34)) * 3.7 - uTime * 6.0 + jit * 2.3)
+    + vec2(0.57, -0.82) * 0.03 * f2 * cos(dot(p, vec2(0.57, -0.82)) * 1.46 - uTime * 3.8 + jit * 1.7)
+    + vec2(-0.3, 0.954) * 0.045 * f3 * cos(dot(p, vec2(-0.3, 0.954)) * 0.57 - uTime * 2.4 + jit)
+    + vec2(-0.78, 0.62) * 0.04 * f4 * cos(dot(p, vec2(-0.78, 0.62)) * 0.2 - uTime * 1.4 + jit * 0.6);
+  // Wind ripples carried along by the current: the inlet drains east to the sea, the sea sets toward the beach.
+  vec2 drift = mix(vec2(-0.3, 0.5), vec2(1.0, 0.08), inlet) * uTime;
+  vec2 w1 = p * 0.9 - drift * 1.2;
+  vec2 w2 = p * 0.21 - drift * 0.5;
+  slope += (vec2(noise2(w1), noise2(w1 + 40.0)) - 0.5) * 0.08 * f1 + (vec2(noise2(w2), noise2(w2 + 17.0)) - 0.5) * 0.06 * f2;
+  vec3 n = normalize(vec3(slope.x, 1.0, slope.y));
+  // Far off, the many small waves the shader no longer draws still tip the mirror up: the sea reflects higher,
+  // bluer sky than the horizon behind it, and shows more of its own colour.
+  float distant = smoothstep(150.0, 4000.0, dist);
   vec3 refl = reflect(-v, n);
-  // Turquoise over the sandy shallows and in the lagoons, deep blue a few hundred metres out.
-  vec3 water = mix(lin(vec3(0.10, 0.36, 0.36)), lin(vec3(0.02, 0.07, 0.15)), smoothstep(0.0, 900.0, shore)) * light + skyColor(vec3(refl.x, abs(refl.y), refl.z)) * 0.4;
-  water += vec3(1.0, 0.6, 0.3) * pow(max(dot(refl, uSun), 0.0), 220.0) * 6.0;
+  refl.y = abs(refl.y) + 0.1 + 0.25 * distant;
+  refl = normalize(refl);
+  float fresnel = (0.03 + 0.97 * pow(1.0 - max(dot(n, v), 0.0), 5.0)) * mix(1.0, 0.6, distant);
+  // Sand shows through at the edge, then turquoise shallows, deep blue a few hundred meters out.
+  vec3 deep = mix(lin(vec3(0.16, 0.42, 0.45)), lin(vec3(0.05, 0.19, 0.34)), smoothstep(0.0, 6.0 * U + 300.0, shore));
+  vec3 body = mix(sandCol * 0.6, deep, smoothstep(0.0, 0.12 * U + 2.0, shore)) * light;
+  // Slow streaks on the inlet's surface show which way it flows.
+  body *= 1.0 + 0.3 * inlet * (noise2(vec2(p.x * 1.5 - uTime * 2.5, p.y * 12.0) / U) - 0.5);
+  vec3 water = mix(body, skyColor(refl), fresnel);
+  // Sun glitter, and the fire's reflection broken up by the ripples.
+  water += vec3(1.0, 0.6, 0.3) * (pow(max(dot(refl, uSun), 0.0), 220.0) * 6.0 + pow(max(dot(refl, uSun), 0.0), 24.0) * 0.25);
+  float along = dot(toFlame, refl);
+  vec3 off = toFlame - refl * along;
+  water += vec3(2.4, 1.0, 0.3) * uFlame.w * exp(-dot(off, off) / (0.05 * U * U + 0.004 * along * along)) * step(0.0, along);
+  // Foam: a thin line lapping the banks, and rows of surf rolling up the sea beach.
+  float lap = (1.0 - smoothstep(0.0, 0.035 * U + 0.6 + (0.02 * U + 0.4) * sin(uTime * 1.3 + local * 40.0), shore));
+  float surf = smoothstep(0.55, 0.95, sin(shore * 0.22 + uTime * 0.8 + local * 5.0)) * (1.0 - smoothstep(8.0, 55.0, shore)) * (1.0 - inlet);
+  float foam = max(lap, surf * (0.4 + 0.6 * noise2(p * 0.12 + uTime * 0.15)));
+  water = mix(water, vec3(0.92) * light, clamp(foam, 0.0, 1.0) * (1.0 - pond));
   col = mix(col, water, sea);
-  // A line of white surf where the waves break.
-  col = mix(col, vec3(0.9) * light, (1.0 - smoothstep(12.0, 50.0, abs(shore - 30.0))) * (0.35 + 0.5 * noise2(p * 0.03 + uTime * 0.2)));
   // Haze toward the horizon; thinner when looking down from high up.
   float haze = 1.0 - exp(-dist * mix(0.00004, 0.000012, smoothstep(2000.0, 20000.0, cameraPosition.y)));
   col = mix(col, skyColor(vec3(-v.x, 0.0, -v.z)), haze);
@@ -145,6 +208,45 @@ void main() {
     }),
   )
   return ground
+}
+
+/**
+ * Paint for things far away (the assembly complex): vertex colours lit by the same dawn light as the ground and faded
+ * into the same haze, so they sit on the horizon instead of standing out from it.
+ */
+export function makeHazed(u: SkyUniforms): THREE.ShaderMaterial {
+  return new THREE.ShaderMaterial({
+    uniforms: { ...u },
+    vertexColors: true,
+    vertexShader: /* glsl */ `
+varying vec3 vWorld;
+varying vec3 vColor;
+varying vec3 vN;
+void main() {
+  vec4 wp = modelMatrix * vec4(position, 1.0);
+  vWorld = wp.xyz;
+  vColor = color;
+  vN = normalize(mat3(modelMatrix) * normal);
+  gl_Position = projectionMatrix * viewMatrix * wp;
+}
+`,
+    fragmentShader: /* glsl */ `
+varying vec3 vWorld;
+varying vec3 vColor;
+varying vec3 vN;
+${NOISE2}
+${SKY}
+void main() {
+  vec3 toCam = cameraPosition - vWorld;
+  float dist = length(toCam);
+  vec3 v = toCam / dist;
+  vec3 light = vec3(1.0, 0.72, 0.5) * 1.5 * max(dot(normalize(vN), uSun), 0.0) + lin(vec3(0.42, 0.52, 0.72)) * (0.55 + 0.2 * vN.y);
+  vec3 col = lin(vColor) * light;
+  float haze = 1.0 - exp(-dist * mix(0.00004, 0.000012, smoothstep(2000.0, 20000.0, cameraPosition.y)));
+  gl_FragColor = vec4(mix(col, skyColor(vec3(-v.x, 0.0, -v.z)), haze), 1.0);
+}
+`,
+  })
 }
 
 /** A broken cloud deck: one big plane with noise holes, lit from the Sun side. */
@@ -164,11 +266,12 @@ void main() {
   float dist = length(toCam);
   vec3 v = toCam / dist;
   float c = fbm2(p * 0.00022 + vec2(uTime * 0.004, 0.0)) + 0.25 * (fbm2(p * 0.0016) - 0.5);
-  float a = smoothstep(0.52, 0.72, c);
+  // A few soft clouds, not an overcast.
+  float a = smoothstep(0.57, 0.82, c);
   // Seen from below, the Sun side glows pink; from above it is bright white.
   float above = step(0.0, toCam.y);
   float toSun = pow(max(dot(normalize(-v.xz + 1e-5), normalize(uSun.xz)), 0.0), 2.0);
-  vec3 under = mix(lin(vec3(0.42, 0.44, 0.56)), lin(vec3(1.0, 0.62, 0.45)), toSun) * (0.55 + 0.6 * c);
+  vec3 under = mix(lin(vec3(0.66, 0.68, 0.76)), lin(vec3(1.0, 0.70, 0.52)), toSun) * (0.55 + 0.6 * c);
   vec3 top = mix(lin(vec3(0.80, 0.82, 0.90)), lin(vec3(1.0, 0.86, 0.74)), toSun) * (0.5 + 0.7 * c);
   vec3 col = mix(under, top, above);
   float haze = 1.0 - exp(-dist * 0.000025);

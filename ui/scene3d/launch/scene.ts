@@ -13,8 +13,10 @@ import { planetMaps } from '../maps'
 import { steadyResolution } from '../steady'
 import type { CraftSpec } from '../model'
 import { cloudShader, planetShader } from '../shaders'
+import { makeBirds } from './birds'
 import { altitudeM, downrangeM, pitchRad, vacuum } from './flight'
 import { flameColor, makeCloudDeck, makeGlow, makeGround, makePlume, makePuffs, makeSky, makeSpaceSky, makeStars, smokiness, type Plume } from './fx'
+import { siteUnit } from './layout'
 import { buildRocket, type Nozzle } from './rocket'
 import { buildCarrier, buildPad } from './site'
 import { EVENT_AT, missionTime, stageAt, stageProgress, type LaunchTimeline, type StageId } from './timeline'
@@ -132,18 +134,21 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
   const nb = model.nozzles.booster
   if (nb) model.boosters.forEach((b, i) => addPlume(b.group, 'booster', nb, H * 0.95, 3 + i))
 
-  // ---- Low shots: dawn sky, ground, clouds, and the pad or the carrier aircraft.
+  // ---- Low shots: dawn sky, the coast, clouds, and the launch complex or the carrier aircraft.
   const skyU = { uSun: { value: SUN_GROUND.clone() }, uSpace: { value: 0 }, uTime: { value: 0 } }
+  // Where the engines' fire is and how bright: the ground and the water pick up its glow.
+  const fireU = { value: new THREE.Vector4() }
   const low = new THREE.Group()
   const skyDome = makeSky(skyU)
   skyDome.scale.setScalar(1000)
-  const pad = air ? null : buildPad(H, W, -n1.y)
+  const pad = air ? null : buildPad(H, W, -n1.y, skyU)
+  const birds = pad ? makeBirds(14, H, skyU.uTime) : null
   const carrier = air ? buildCarrier(spec.s1.radius) : null
   const standoff = pad?.standoff ?? 0
-  low.add(skyDome, makeGround(skyU, Math.max(30, H * 0.9)), makeCloudDeck(skyU, 3_600))
+  low.add(skyDome, makeGround(skyU, siteUnit(H), fireU), makeCloudDeck(skyU, 3_600))
   if (pad) {
     shade(pad.group)
-    low.add(pad.group)
+    low.add(pad.group, pad.backdrop, birds!.mesh)
     if (shadows) {
       // The ground is a shader of its own and takes no light, so the shadows fall on a sheet laid over the apron.
       const sheet = new THREE.Mesh(new THREE.CircleGeometry(H * 9, 48).rotateX(-Math.PI / 2), new THREE.ShadowMaterial({ opacity: 0.5, depthWrite: false }))
@@ -370,6 +375,7 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
     const thrust = Math.max(p1, pBoost)
     onAxis(-0.08, flame.position)
     flame.intensity = space ? 0 : thrust * 1.1 * (1 - 0.6 * thin)
+    fireU.value.set(flame.position.x, flame.position.y, flame.position.z, flame.intensity)
 
     // ---- Light.
     const sun = space ? SUN_SPACE : SUN_GROUND
@@ -399,8 +405,9 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
     let shake = 0
     switch (id) {
       case 'countdown':
-        onAxis(0.52, target)
-        eye.set(lerp(0.75, 0.55, p) * H, standoff + 0.1 * H, lerp(2.9, 2.55, p) * H)
+        // From across the inlet, low over the water: the rocket and its tower against the sky, the sea behind them.
+        onAxis(0.43, target)
+        eye.set(lerp(0.8, 0.6, p) * H, standoff + 0.12 * H, lerp(3.3, 2.95, p) * H)
         fov = 34
         break
       case 'ignition':
@@ -435,9 +442,9 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
         shake = 0.4
         break
       case 'pitch':
-        // From above and behind, so the tilt, the smoke trail and the coast all show.
+        // From above and behind, looking up the coast, so the tilt, the smoke trail and the shoreline all show.
         onAxis(0.35, target)
-        eye.copy(target).add(tmp.set(-0.9 * H, lerp(0.9, 1.3, p) * H, 3.0 * H))
+        eye.copy(target).add(tmp.set(1.1 * H, lerp(0.9, 1.3, p) * H, 3.0 * H))
         fov = 38
         break
       case 'maxq':
@@ -545,7 +552,10 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
         carrier.position.set(CARRIER_MS * met, 12_000 + 1.2 * away, -2 * away * away)
         carrier.rotation.set(-Math.min(away * 0.04, 0.3), 0, 0)
       }
-      if (pad) {
+      if (pad && birds) {
+        // The birds take off as the engines light, and are long gone by the time the rocket has cleared the tower.
+        birds.mesh.visible = id === 'countdown' || id === 'ignition' || id === 'liftoff'
+        birds.scatter.value = t - (shotStart.get('ignition') ?? Infinity) - 0.15
         const swing = id === 'countdown' ? smooth(0.2, 0.9, p) : 1
         pad.arms.forEach((arm, i) => (arm.rotation.y = swing * (i === 0 ? 1.1 : -1.1)))
       }
