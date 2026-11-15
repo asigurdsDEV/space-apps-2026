@@ -66,10 +66,20 @@ export function choiceSpots(decision: Decision, list: readonly Module[]): { at: 
   const n = decision.options.length
   return decision.options.map((_, i) => {
     const off = (i - (n - 1) / 2) * 0.45
-    if (!m) return { at: [off, 1.45, -1.1] as Vec3, along: [1, 0] as [number, number] }
+    if (!m) return { at: [1.5 + off, 1.45, -1.1] as Vec3, along: [1, 0] as [number, number] }
     const along: [number, number] = [-m.face[1], m.face[0]]
     return { at: [m.at[0] + m.face[0] * 0.75 + along[0] * off, 1.2, m.at[2] + m.face[1] * 0.75 + along[1] * off] as Vec3, along }
   })
+}
+
+/** Keep the header physically above the choice planes, never coplanar with their top edges. */
+export function choiceTitleAt(spots: readonly { at: Vec3 }[]): Vec3 {
+  const count = Math.max(1, spots.length)
+  return [
+    spots.reduce((sum, s) => sum + s.at[0], 0) / count,
+    Math.max(1.2, ...spots.map((s) => s.at[1])) + 0.39,
+    spots.reduce((sum, s) => sum + s.at[2], 0) / count,
+  ]
 }
 
 export interface Gauge {

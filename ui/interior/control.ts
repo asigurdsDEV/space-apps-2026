@@ -11,7 +11,7 @@ import { canvasScreen, font, partModel } from '../hangar/control'
 import { buildCraft, disposeObject } from '../scene3d/craft'
 import type { CraftSpec } from '../scene3d/model'
 import type { Decision } from '../../shared'
-import { choiceSpots, DASH, moduleFor, ROOM, START, WINDOW, type Gauge, type Module } from './layout'
+import { choiceSpots, choiceTitleAt, DASH, moduleFor, ROOM, START, WINDOW, type Gauge, type Module } from './layout'
 
 export interface CabinScreens {
   modules: Module[]
@@ -229,7 +229,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
       choiceGroup.add(btn)
     })
     // The card's title over the choices.
-    const mid = spots.reduce((a, s) => [a[0] + s.at[0] / spots.length, a[1], a[2] + s.at[2] / spots.length], [0, 1.62, 0])
+    const mid = choiceTitleAt(spots)
     const title = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 0.2), new THREE.MeshBasicMaterial({ map: label(decision.title.toUpperCase(), undefined, 768, 140), toneMapped: false }))
     title.position.set(mid[0], mid[1], mid[2])
     title.rotation.y = rot

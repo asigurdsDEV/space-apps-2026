@@ -11,6 +11,7 @@ export function serviceWorkerSource(assets: readonly string[], version: string):
 const CACHE = 'smdg-${version}'
 const ASSETS = ${JSON.stringify(assets)}
 const url = (path) => new URL(path, self.registration.scope).href
+const STATIC = new Set(ASSETS.map(url))
 const timeout = (ms) => new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
 
 self.addEventListener('install', (event) => {
@@ -29,24 +30,30 @@ self.addEventListener('fetch', (event) => {
   const request = event.request
   if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return
 
-  if (request.mode === 'navigate') {
+  const page = request.mode === 'navigate'
+  const manifest = request.url === url('game-assets.json')
+  // Only build-listed static files belong in this cache; API credentials must stay on the network.
+  if (!page && !STATIC.has(request.url)) return
+  if (page || manifest) {
     const network = fetch(request)
     event.respondWith(
       Promise.race([network, timeout(${PAGE_TIMEOUT_MS})])
         .then((response) => {
           if (response.ok) {
             const copy = response.clone()
-            caches.open(CACHE).then((cache) => cache.put(url('index.html'), copy))
+            caches.open(CACHE).then((cache) => cache.put(page ? url('index.html') : request, copy))
           }
           return response
         })
-        .catch(() => caches.match(url('index.html')).then((cached) => cached || network)),
+        .catch(() => caches.match(page ? url('index.html') : request, { ignoreVary: true }).then((cached) => cached || network)),
     )
     return
   }
 
   event.respondWith(
-    caches.match(request).then(
+    // Preview/CDN Vary: Origin differs between fetch() and module imports; these exact static URLs
+    // have the same public bytes for both. Keep the exception limited to the build's allowlist.
+    caches.match(request, { ignoreVary: true }).then(
       (cached) =>
         cached ||
         fetch(request).then((response) => {

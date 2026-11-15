@@ -1,6 +1,10 @@
-import { StrictMode } from 'react'
+import { lazy, StrictMode, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
-import { App, GAME_NAME } from './App'
+import '../ui/theme/theme.css'
+import { GameAssets } from './GameAssets'
+
+const App = lazy(() => import('./App').then((m) => ({ default: m.App })))
+const GAME_NAME = document.title
 
 // The tab shows the game's name and a small spacecraft-in-orbit icon. Set here because
 // index.html belongs to the scaffold; an inline SVG needs no file under the Pages base path.
@@ -19,6 +23,6 @@ document.head.append(icon)
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <GameAssets><Suspense fallback={<main className="game-theme ga-page" role="status">Opening mission control…</main>}><App /></Suspense></GameAssets>
   </StrictMode>,
 )

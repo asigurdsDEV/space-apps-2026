@@ -5,6 +5,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { playSound } from '../audio'
 import { FpsPrompt } from '../fps/Prompt'
+import { flightHelp } from '../fps/help'
 import type { Interactable } from '../fps/model'
 import { sceneSpec } from '../scene3d/model'
 import type { Command, Decision, SimState } from '../../shared'
@@ -82,7 +83,8 @@ export function SpacecraftRoom({ state, send, paused, speed, decision, decisionB
   return (
     <div className={`sc${className ? ` ${className}` : ''}`}>
       <div ref={host} className="sc-canvas" role="application" aria-label="Your spacecraft. W A S D to walk, arrow keys or mouse to look, E to use what you face." tabIndex={0} />
-      {failed ? <p className="sc-fallback">This view needs WebGL, which is off in this browser.</p> : enabled && <FpsPrompt aimed={aimed} locked={locked} />}
+      {failed ? <p className="sc-fallback">This view needs WebGL, which is off in this browser.</p> : enabled && <FpsPrompt aimed={aimed} locked={locked}
+        help={flightHelp(aimed?.id, decision)} objective={decision ? 'Alarm · Walk to the red choice panels · Look to inspect · E to choose' : 'Read the gauges · E on the clock or speed control'} />}
     </div>
   )
 }

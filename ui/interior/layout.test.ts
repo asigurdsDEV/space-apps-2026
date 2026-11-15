@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { getDatasets, getScenario } from '../../data'
 import { catalogEntities } from '../../sim'
 import type { Command, Decision } from '../../shared'
-import { choiceSpots, gauges, interactables, modules, obstacles, ROOM } from './layout'
+import { choiceSpots, choiceTitleAt, gauges, interactables, modules, obstacles, ROOM } from './layout'
 
 const config = getScenario('demo')!
 const state = { entities: catalogEntities(getDatasets(config.datasets)), params: { ...config.params, instruments: 'camera-basic,magnetometer' } as typeof config.params }
@@ -43,6 +43,13 @@ describe('walk-in spacecraft layout', () => {
     for (const role of ['spacecraft', 'comms-resources', 'science'])
       for (const s of choiceSpots(card(role), list))
         for (const b of boxes) expect(s.at[0] > b.min[0] && s.at[0] < b.max[0] && s.at[2] > b.min[2] && s.at[2] < b.max[2]).toBe(false)
+  })
+
+  it('keeps planning choices to the right of dashboard gauges, with a title above the cards', () => {
+    const spots = choiceSpots(card('mission-planning'), list)
+    for (const spot of spots) expect(spot.at[0] - 0.21).toBeGreaterThan(0)
+    const titleY = choiceTitleAt(spots)[1]
+    expect(titleY - 0.1).toBeGreaterThan(Math.max(...spots.map((s) => s.at[1] + 0.21)))
   })
 
   it('E on a choice answers the card; E on the lever pauses and speeds up', () => {

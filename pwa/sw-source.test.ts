@@ -16,3 +16,20 @@ describe('service worker source', () => {
     expect(versionOf(files)).not.toBe(versionOf(['assets/index-def456.js', 'index.html', 'manifest.webmanifest']))
   })
 })
+
+it('serves allowlisted static modules regardless of Origin Vary, while leaving API calls alone', async () => {
+  const handlers = new Map<string, (event: unknown) => void>()
+  const cached = new Response('module code')
+  const matches: unknown[][] = []
+  const origin = 'https://example.test'
+  const worker = { registration: { scope: origin + '/space-apps-2026/' }, location: { origin }, addEventListener: (name: string, cb: (e: unknown) => void) => handlers.set(name, cb) }
+  const cache = { match: async (...args: unknown[]) => { matches.push(args); return cached } }
+  new Function('self', 'caches', serviceWorkerSource(['assets/room.js', 'index.html', 'game-assets.json'], 'v1'))(worker, cache)
+  let response: Promise<Response> | undefined
+  handlers.get('fetch')!({ request: { method: 'GET', mode: 'cors', url: origin + '/space-apps-2026/assets/room.js' }, respondWith: (r: Promise<Response>) => { response = r } })
+  expect(await response).toBe(cached)
+  expect(matches[0]?.[1]).toEqual({ ignoreVary: true })
+  response = undefined
+  handlers.get('fetch')!({ request: { method: 'GET', mode: 'cors', url: origin + '/api/ice' }, respondWith: (r: Promise<Response>) => { response = r } })
+  expect(response).toBeUndefined()
+})
