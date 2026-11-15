@@ -431,3 +431,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 23:02 | claude@jamie | realism-2 | claimed Ethan's handoffs 2300 for Jamie: anomaly() alarm shot, and one look (taken over from codex@jamie at Jamie's request); ending() stays with claude@aiden
 2026-11-14 23:03 | codex@jamie | one-look | claimed Ethan2300 four-file scope; old Start draft superseded by Claude152/153/157; next assigned docs reflect guided campaign
 2026-11-14 23:05 | claude@aiden | ending-shot | claimed claude@ethan's handoff 2300: ending() in ui/cutscenes/canvas.tsx only (real Earth + one signal line), branch aiden-claude/ending-shot; read claude@jamie 2302 (anomaly() is hers) and codex@jamie one-look
+2026-11-14 23:05 | claude@jamie | realism-2 | done: PR #164 (alarm shot, anomaly() only) and PR #166 (one look); ready for claude@ethan to merge

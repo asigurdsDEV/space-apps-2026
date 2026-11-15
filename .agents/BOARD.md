@@ -116,7 +116,6 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 ## In progress
 - [ ] (light) [P1] **Ending cutscene:** the real Earth (NASA map, day and night) instead of a blue ball, one thin signal line instead of red dots — `ending()` in ui/cutscenes/canvas.tsx — owner: claude@aiden — [claude@aiden]
-- [ ] (light) [P1] **One look:** standard `backdrop-filter` on the start and download screens; hall and operations-room screens in white and grey instead of cyan and amber — ui/start/, app/assets-download.css, ui/hangar/screens.ts, ui/cutscenes/screens.ts — owner: codex@jamie — [codex@jamie]
 - [ ] (heavy) [P0] **Realism pass 2** (Ethan's seven screenshots, 22:55): launch view fills the window (black bar), fairing-separation shot (motion, real Earth below, realistic engine plume, real payload stack), walk-in spacecraft interior (stations, lighting, Earth window), real day/night on the Earth from the real date and time — ui/scene3d/, ui/interior/ — owner: claude@ethan — [claude@ethan]
 - [ ] (medium) [P1] Cutscenes "into the walk-in spacecraft" (after launch) and "back to mission control" (after the ending), ≤ 10 s, Skip + reduced motion as now; QA plan for the 3D loop, run on the Sun 02:00 build — ui/cutscenes/, docs/qa/ — owner: cursor@caleb — [cursor@caleb] — scenes and plan in PR #115 (`EnterCraftScene` 8 s, `ReturnControlScene` 6 s, `docs/qa/first-person.md`). The Sunday 02:00 run is not done. Mount handoff to claude@aiden.
 - [ ] (light) [P1] **Walk + cutscenes on a phone and with reduced motion / a screen reader:** hall and panels at 375 px, reduced motion cuts straight to each station, screen reader hears the screens not the hall, cutscene Skip/Escape works — app/Walk.tsx, app/StoryLayer.tsx, app/app.css — owner: claude@aiden — [claude@aiden]
@@ -133,13 +132,14 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 
 - [ ] (heavy) Multiplayer rooms + transport: PeerJS/WebRTC host-authoritative co-op for up to 4, room codes, role claim, LocalTransport fallback (decision 002) — net/ — [codex@jamie]
-- [ ] (light) [P1] **Alarm cutscene:** no red ball on top of the spacecraft, near-black background — `anomaly()` in ui/cutscenes/canvas.tsx — owner: claude@jamie — [claude@jamie] — branch jamie-claude/anomaly-shot
 - [ ] (light) [P1] **One look:** standard `backdrop-filter` on the start and download screens; hall and operations-room screens in white and grey instead of cyan and amber — ui/start/, app/assets-download.css, ui/hangar/screens.ts, ui/cutscenes/screens.ts — owner: codex@jamie — [claude@jamie] (taken over from codex@jamie at Jamie's request: Codex is not running and items 1 are claude@jamie's own files) — branch jamie-claude/one-look
 
 ## Blocked
 
 
 ## Done
+- [x] (light) [P1] **One look:** standard `backdrop-filter` on the start and download screens; hall and operations-room screens in white and grey instead of cyan and amber — ui/start/, app/assets-download.css, ui/hangar/screens.ts, ui/cutscenes/screens.ts — owner: codex@jamie — [codex@jamie] — in PR #166: both blur forms survive the build; screens white/grey; 608 tests, build
+- [x] (light) [P1] **Alarm cutscene:** no red ball on top of the spacecraft, near-black background — `anomaly()` in ui/cutscenes/canvas.tsx — owner: claude@jamie — [claude@jamie] — branch jamie-claude/anomaly-shot — in PR #164: no ball, near-black, alarm pulse kept; 608 tests, build
 - [x] (medium) [P1] **Start: mission cards** instead of the dropdown (art + one line + budget/goal chips), difficulty as a segmented control, helper sentences cut (350 → ≤ 120 words); fixes the repeated (Easy)/(Hard) list — ui/start/ — owner: codex@jamie — [codex@jamie] — superseded by Claude Jamie PR #152/#153/#157; old Codex draft preserved locally, not proposed for merge
 - [x] (light) [P1] Space view: 2200 stars (was 7000); mapped Moon uses the photo as its colour with a bright sunlit limb (PR #163, Jamie's request) — [claude@ethan] on `main`
 - [x] (heavy) [P1] **Realistic redesign (Ethan's request):** hologram mission control hall with pop-up part menus, craft floating dead centre, dim room, operator desks and wall screens with live mission data, walking head motion (PR #159); control-centre cutscene as a real operations room with project screens (PR #160); coastal launch with moving water, birds and a hanging US flag (PR #161); every in-game panel in the start menu's style (PR #162) — [claude@ethan] on `main`, 605 tests
