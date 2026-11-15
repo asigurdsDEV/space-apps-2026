@@ -14,7 +14,7 @@ import { steadyResolution } from '../steady'
 import type { CraftSpec } from '../model'
 import { makeBirds } from './birds'
 import { altitudeM, downrangeM, pitchRad, vacuum } from './flight'
-import { flameColor, flameReach, makeCloudDeck, makeEarthBelow, makeGlow, makeGround, makePlume, makePuffs, makeSky, makeSpaceSky, makeStars, smokiness, type Plume } from './fx'
+import { flameColor, flameReach, flameShine, makeCloudDeck, makeEarthBelow, makeGlow, makeGround, makePlume, makePuffs, makeSky, makeSpaceSky, makeStars, smokiness, type Plume } from './fx'
 import { siteUnit } from './layout'
 import { buildRocket, type Nozzle } from './rocket'
 import { buildCarrier, buildPad } from './site'
@@ -212,7 +212,7 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
   const envHigh = mirrored(makeSpaceSky(spaceU, EARTH_R), 0x3d6aa8)
 
   // Thin vapour (boil-off, frost, the fog at Max-Q, gas at separation) and the dense clouds of smoke and steam.
-  const puffs = makePuffs(120)
+  const puffs = makePuffs(160)
   const clouds = makePuffs(340, { fire: fireU, unit: siteUnit(H) })
   scene.add(puffs.mesh, clouds.mesh)
 
@@ -381,6 +381,8 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
       model.heat[of].emissiveIntensity = power * 1.6
     }
     const thrust = Math.max(p1, pBoost)
+    // How much light the fire gives off down in the air, 0 to 1: a solid motor's flame is blinding, a hydrogen one barely glows.
+    const shine = space ? 0 : Math.max(p1 * flameShine(n1.propellant), nb ? pBoost * flameShine(nb.propellant) : 0) * (1 - 0.6 * thin)
     if (space && p2 > 0) {
       // The upper stage's bell runs red-hot in vacuum: its glow fills the bell and spills onto the stage's tail.
       onAxis((model.upper.position.y + n2.y + n2.radius * 0.6) / H, flame.position)
@@ -392,16 +394,16 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
       flame.color.set(0xff8a3c)
       flame.distance = 0
       // In the air the fire throws warm light on the tower and the rocket's tail.
-      flame.intensity = thrust * (space ? 0.385 : 2) * (1 - 0.6 * thin)
+      flame.intensity = space ? thrust * 0.385 * (1 - 0.6 * thin) : shine * 2
     }
     // What the ground, the water and the clouds see glowing is the lower part of the flame, down to where it hits the pad.
-    fireU.value.set(flame.position.x, space || air ? flame.position.y : Math.max(flame.position.y - 0.5 * H, 0.1 * H), flame.position.z, space ? flame.intensity : thrust * 1.1 * (1 - 0.6 * thin))
+    fireU.value.set(flame.position.x, space || air ? flame.position.y : Math.max(flame.position.y - 0.8 * H, 0.1 * H), flame.position.z, space ? flame.intensity : shine * 1.2)
 
     // ---- Light.
     const sun = space ? SUN_SPACE : SUN_GROUND
     // A camera stops down for the fire: the sky deepens and the flame keeps its colour.
-    renderer.toneMappingExposure = space ? 1 : 1 - 0.22 * thrust * (1 - thin)
-    bloom.strength = space ? 0.45 : 0.45 - 0.27 * thrust * (1 - thin)
+    renderer.toneMappingExposure = 1 - 0.22 * shine
+    bloom.strength = 0.45 - 0.27 * shine
     if (space) {
       sunLight.color.set(0xfff4e6)
       sunLight.intensity = 3
@@ -650,18 +652,22 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
           if (age <= 0) continue
           const dir = i % 2 === 0 ? 1 : -1
           const out = 1 - Math.exp(-age * 0.8)
-          const size = H * (0.08 + 0.16 * Math.pow(age, 0.55)) * (0.6 + 0.8 * hash(i + 0.75))
+          const reach = pad.mount * 0.9 * clear + H * (0.15 * clear + 1.5 * hash(i)) * out
+          const size = H * (0.08 + 0.18 * Math.pow(age, 0.55)) * (0.6 + 0.8 * hash(i + 0.75))
           // Some of it piles up in towers: puffs come in groups of eight that share how high they climb.
-          const lift = H * 0.45 * hash(i + 0.25) ** 2 * (0.4 + 0.9 * hash((i >> 3) + 0.6)) * (1 - Math.exp(-age * 0.45))
-          clouds.add(dir * (pad.mount * 0.9 * clear + H * (0.15 * clear + 1.5 * hash(i)) * out), size * 0.28 + lift, (hash(i + 0.5) - 0.5) * H * (0.2 + 0.9 * (1 - Math.exp(-age * 0.35))), size, Math.min(age * 4, 1) * clamp01((14 - age) / 5), Math.exp(-age * 2.5) * 0.5, hash(i + 0.1))
+          // Under the rocket the blast keeps the bank low, so the flame shows down to the pad.
+          const lift = H * 0.5 * hash(i + 0.25) ** 2 * (0.4 + 0.9 * hash((i >> 3) + 0.6)) * (1 - Math.exp(-age * 0.45)) * (0.25 + 0.75 * smooth(0, 0.6 * H, reach))
+          clouds.add(dir * reach, size * 0.28 + lift, (hash(i + 0.5) - 0.5) * H * (0.2 + 0.9 * (1 - Math.exp(-age * 0.35))), size * (0.6 + 0.4 * smooth(0, 0.4 * H, reach)), Math.min(age * 4, 1) * clamp01((14 - age) / 5), Math.exp(-age * 2.5) * 0.25, hash(i + 0.1))
         }
       }
       if (thrust > 0 || id === 'failure' || met > 0) {
         // Exhaust trail: puffs left at fixed spots along the path, growing as they age.
         const from = air ? 5 : 0.3
         const gap = W * 1.6
-        // Solid motors lay a thick white trail; hydrogen engines leave little more than steam.
+        // Solid motors lay a thick white trail, dense enough to look solid. Liquid engines leave thin wisps,
+        // hydrogen ones little more than steam.
         const trail = Math.max(smokiness(n1.propellant), nb && sB <= 0 ? smokiness(nb.propellant) : 0)
+        const dense = trail > 0.8
         const head = id === 'failure' ? Math.min(met, missionTime(timeline, stage.start + 0.16 * (stage.end - stage.start))) : met
         if (head > from) {
           // The smoke starts where the flame ends: on the pad that is under the ground, so the flame stands clear.
@@ -674,10 +680,12 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
             const m = metAtPath(s, from, head)
             const age = met - m + 0.05
             basePos(m, p3)
-            const size = W * (3 + 4.5 * Math.sqrt(age)) * (0.8 + 0.4 * hash(first - j))
+            // The newest puffs of dense smoke are small, not thin: it is opaque from the start.
+            const young = Math.min(1, j / 3 + (dense ? 0.4 : 0.2))
+            const size = W * (3 + 4.5 * Math.sqrt(age)) * (0.8 + 0.4 * hash(first - j)) * (dense ? young : 1)
             p3.x += (hash(first - j + 0.3) - 0.5) * size * 0.5
             p3.z += (hash(first - j + 0.6) - 0.5) * size * 0.5
-            clouds.add(p3.x, p3.y, p3.z, size, trail * Math.min(1, j / 3 + 0.2) * (1 - j / 70) * lerp(1, 0.55, thin), Math.exp(-age * 5) * 0.6, hash(first - j + 0.9))
+            ;(dense ? clouds : puffs).add(p3.x, p3.y, p3.z, size, trail * (dense ? 1 : young) * (1 - j / 70) * lerp(1, 0.55, thin), Math.exp(-age * 5) * 0.6, hash(first - j + 0.9))
           }
         }
       }

@@ -333,6 +333,8 @@ const PLUME_COLORS: Record<Propellant, Look> = {
 
 export const smokiness = (p: Propellant) => PLUME_COLORS[p].smoke
 export const flameColor = (p: Propellant) => PLUME_COLORS[p].core
+/** How brightly the flame lights its surroundings in thick air, 0 to 1. */
+export const flameShine = (p: Propellant) => PLUME_COLORS[p].body / 1.2
 /** How long the flame is in thick air, as a multiple of the length makePlume was given. */
 export const flameReach = (p: Propellant) => PLUME_COLORS[p].length * PLUME_COLORS[p].reach
 
@@ -611,23 +613,28 @@ vec3 lumps(vec2 p) {
   return vec3(sum.xy / sum.z, clamp(1.0 + log(sum.z) / 12.0, 0.0, 1.0));
 }
 void main() {
+  // How much of the puff one pixel covers. Taken first: a derivative is not defined after a discard.
+  float fw = fwidth(vUv.x);
   if (dot(vUv, vUv) > 1.0) discard;
   vec2 q = vUv + vData.z * vec2(31.0, 17.0);
   // The ball is pulled out of round, a different way for every puff.
   float r2 = dot(vUv, vUv) * (0.75 + 0.9 * noise2(q * 1.1));
-  // Lobes of a different size on every puff, so the bank is not all one grain.
-  vec3 big = lumps(q * (1.25 + 0.8 * vData.z));
-  vec3 small = lumps(q * (3.4 + 1.6 * fract(vData.z * 7.3)));
-  // The finest lumps only show on a puff that fills much of the screen: skip the work on the rest.
-  float close = smoothstep(0.012, 0.005, fwidth(vUv.x));
-  vec3 fine = close > 0.0 ? lumps(q * 9.7) * close : vec3(0.0);
   // Height toward the eye, in puff radii: a few big round lobes on a ball that stops short of the quad's edge, with
   // small lumps all over them. Where it reaches zero is the puff's outline.
+  // The lobes are a different size on every puff, so the bank is not all one grain.
+  vec3 big = lumps(q * (1.25 + 0.8 * vData.z));
   float ball = sqrt(max(0.42 - r2, 0.0)) / 0.65;
-  float h = 0.35 * ball + 0.9 * big.z + 0.2 * small.z + 0.06 * fine.z - 0.6;
+  float h = 0.35 * ball + 0.85 * big.z - 0.6;
+  // Nearly half the quad is outside any outline the small lumps could reach: stop there.
+  if (h < -0.34) discard;
+  vec3 small = lumps(q * (3.4 + 1.6 * fract(vData.z * 7.3)));
+  // The finest lumps only show on a puff that fills much of the screen: skip the work on the rest.
+  float close = smoothstep(0.012, 0.005, fw);
+  vec3 fine = close > 0.0 ? lumps(q * 9.7) * close : vec3(0.0);
+  h += 0.28 * small.z + 0.06 * fine.z;
   float a = smoothstep(0.0, 0.07, h) * (1.0 - smoothstep(0.8, 1.0, dot(vUv, vUv))) * vData.x;
   if (a < 0.004) discard;
-  vec3 n = normalize(vec3(0.3 * vUv / max(0.42 * ball, 0.15) + 2.0 * big.xy + 1.3 * small.xy + 0.8 * fine.xy, 1.0));
+  vec3 n = normalize(vec3(0.12 * vUv / max(0.42 * ball, 0.15) + 1.8 * big.xy + 1.9 * small.xy + 0.8 * fine.xy, 1.0));
   vec3 up = viewMatrix[1].xyz;
   float sun = clamp(dot(n, uSunView) * 0.75 + 0.25, 0.0, 1.0);
   // The look of self-shadow: the creases between lobes are dark, and so is the foot of the whole cloud bank.
@@ -636,7 +643,7 @@ void main() {
   vec3 col = (uLit * sun * sun + uShade * (0.6 + 0.4 * dot(n, up))) * open;
   vec3 toFire = (viewMatrix * vec4(uFire.xyz, 1.0)).xyz - vAt - vec3(0.0, 0.0, h * vHalf);
   float d2 = dot(toFire, toFire);
-  col += vec3(4.5, 2.0, 0.55) * uFire.w * (0.4 + 0.6 * max(dot(n, toFire) * inversesqrt(d2), 0.0)) / (1.0 + d2 / (0.1 * uUnit * uUnit));
+  col += vec3(4.0, 2.0, 0.7) * uFire.w * (0.35 + 0.65 * max(dot(n, toFire) * inversesqrt(d2), 0.0)) / (1.0 + d2 / (0.15 * uUnit * uUnit));
   col += vec3(3.0, 1.1, 0.25) * vData.y * (1.0 - r2 * 0.6);
   gl_FragColor = vec4(col, a);
 }
@@ -737,7 +744,7 @@ void main() {
       // In space: hard white and near-black. On the ground, vapour is peach where the dawn Sun hits it and blue-grey
       // in shade; dense cloud is white to cream in the Sun, with the sky's grey-blue filling its shadows.
       if (inSpace) { uniforms.uLit.value.set(1.1, 1.05, 1.0); uniforms.uShade.value.set(0.06, 0.07, 0.1) }
-      else if (billow) { uniforms.uLit.value.set(1.35, 1.28, 1.14); uniforms.uShade.value.set(0.26, 0.25, 0.27) }
+      else if (billow) { uniforms.uLit.value.set(1.5, 1.42, 1.26); uniforms.uShade.value.set(0.26, 0.25, 0.27) }
       else { uniforms.uLit.value.set(1.0, 0.72, 0.56); uniforms.uShade.value.set(0.2, 0.23, 0.32) }
     },
   }
