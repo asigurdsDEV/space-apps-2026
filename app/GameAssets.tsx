@@ -38,14 +38,14 @@ export function GameAssets({ children }: { children: ReactNode }) {
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500&display=swap" precedence="default" />
       {ready ? (
         <section key="ready" className="ga-card ga-ready" aria-labelledby="ga-title">
-          <p className="ga-eyebrow">GO / NO-GO</p>
+          <p className="ga-eyebrow">First Light Program</p>
           <h1 id="ga-title">Ready for launch</h1>
           <p className="ga-muted">Everything is downloaded and saved for next time.</p>
           <button ref={continueButton} type="button" className="ga-primary" onClick={() => setEntered(true)}>Continue to game</button>
         </section>
       ) : (
         <section key="download" className="ga-card" aria-labelledby="ga-title">
-          <p className="ga-eyebrow">GO / NO-GO · Flight preparation</p>
+          <p className="ga-eyebrow">First Light Program · Flight preparation</p>
           <h1 id="ga-title">Prepare your mission</h1>
           <p>Download the spacecraft, rooms and cutscenes before you play.</p>
           <p className="ga-muted">Saved files are reused next time.</p>

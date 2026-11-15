@@ -185,13 +185,13 @@ Each code appears at most once. Each `message` is written for students and says 
 
 ## summary(state)
 
-`outcome`, `score` (0 to 1,000: 700 science, 100 budget left, 100 launch margin, 100 data delivered; a failed mission scores at most 690; grade A at 850), `grade` (A to F; a failed mission gets at most a C), `science_score`, `science_goal`, `cost_usd`, `budget_usd`, `mass_kg`, `mass_limit_kg`, `data_generated_gb`, `data_downlinked_gb`, `data_lost_gb`, `mission_days_flown`, and `why`: sentences explaining the result. After a flown mission the design warnings follow, one sentence each, every one introduced by "Before launch the design check said:"; a launch failure lists none, and a lost spacecraft only `radiation_risk`.
+`outcome`, `score` (0 to 1,000: 700 science, 100 budget left, 100 launch margin, 100 data delivered; science counts by its square root, budget and launch margin earn full marks at 10% spare; a failed mission scores at most 640; grade A at 800, B 650, C 500, D 400), `grade` (A to F; a failed mission gets at most a C), `science_score`, `science_goal`, `cost_usd`, `budget_usd`, `mass_kg`, `mass_limit_kg`, `data_generated_gb`, `data_downlinked_gb`, `data_lost_gb`, `mission_days_flown`, and `why`: sentences explaining the result. After a flown mission the design warnings follow, one sentence each, every one introduced by "Before launch the design check said:"; a launch failure lists none, and a lost spacecraft only `radiation_risk`.
 
 ## The demo scenario in the sim
 
 `sim/demo.test.ts` flies data's demo with `random_failures: false`:
 
 - **Starting design:** no launch blockers, flies 365 days, returns 1.7 of 30 points (`science_shortfall`, grade F). The camera makes 2.16 GB a day and the S-band radio sends 0.375 GB.
-- **Reference design** (12U, camera + IR spectrometer, large wings, X-band): no issues at all, returns 40 points against a target of 30 (`success`, score 94, grade A).
+- **Reference design** (12U, camera + IR spectrometer, large wings, X-band): no issues at all, returns 40 points against a target of 30 (`success`, grade A).
 
 Random failures are off unless the scenario sets `random_failures: true`, so the demo as shipped is decided by the design alone. Only the Hard difficulty turns them on. A scenario that does must test its seed: `tests/playthrough.test.ts` flies each reference design on Hard with the scenario's own seed.

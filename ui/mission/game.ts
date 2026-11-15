@@ -105,7 +105,7 @@ export interface ShareInfo {
 
 /** Plain-text result for a group chat (GAME_DESIGN.md §4.6). No personal data. */
 export function shareText(summary: Summary, info: ShareInfo = {}): string {
-  const head = ['GO / NO-GO', info.daily ? `Daily ${info.daily}` : null, info.title ?? null].filter(Boolean).join(' · ')
+  const head = ['First Light Program', info.daily ? `Daily ${info.daily}` : null, info.title ?? null].filter(Boolean).join(' · ')
   const score = `${starString(stars(summary, info.bonusGoal))}  ${Math.round(num(summary, 'score'))} pts (${str(summary, 'grade', '–')})`
   const tail = [outcomeLabel(str(summary, 'outcome', 'in_design')), info.anomalies ? `⚠ ${info.anomalies} anomal${info.anomalies === 1 ? 'y' : 'ies'} survived` : null]
     .filter(Boolean)

@@ -687,12 +687,15 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   }
   put(next, tint(ring(1.1, 1.1, 0.26, 0.16, 0.05, 0), 0x6c7c93), 0, HW.y, z1 + 6.3) // the far hatch, closed
   lit(1.14, 1.14, 0.02, 0x555d6b, 0, HW.y, 5.96)
-  // Brighter with distance, as a lit room is through a doorway.
+  // Dimmer than the cabin, a little brighter with distance, as a lit room is through a doorway. Full-bright paint stays:
+  // those are its light strips. Unshaded, the whole module read as flat white boxes next to the lit cabin.
   for (const g of next) {
     const at = g.getAttribute('position')
     const c = g.getAttribute('color')
     for (let i = 0; i < c.count; i++) {
-      const k = 0.8 + 0.2 * smooth(at.getZ(i), z1, z1 + 5)
+      if (c.getX(i) > 0.99 && c.getY(i) > 0.99 && c.getZ(i) > 0.99) continue
+      // Its lights are in the ceiling: darker towards the deck, so the faces read as a room and not as one flat tone.
+      const k = (0.55 + 0.25 * smooth(at.getZ(i), z1, z1 + 5)) * (0.5 + 0.5 * smooth(at.getY(i), HW.y - N, HW.y + N))
       c.setXYZ(i, c.getX(i) * k, c.getY(i) * k, c.getZ(i) * k)
     }
   }

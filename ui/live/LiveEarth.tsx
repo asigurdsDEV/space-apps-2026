@@ -33,6 +33,20 @@ export default function LiveEarth({ onClose }: { onClose: () => void }) {
   const [picked, setPicked] = useState(0)
   const [layers, setLayers] = useState<Record<Layer, boolean>>({ satellites: true, debris: true, storms: true })
   const [clock, setClock] = useState(() => Date.now())
+  // The player's place: asked for only when they press the button, kept in this page, never sent anywhere.
+  const [here, setHere] = useState<{ lat: number; lon: number } | 'asking' | 'no' | null>(null)
+  const findMe = () => {
+    if (!('geolocation' in navigator)) return setHere('no')
+    setHere('asking')
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        setHere({ lat: coords.latitude, lon: coords.longitude })
+        scene.current?.setHere(coords.latitude, coords.longitude)
+      },
+      () => setHere('no'),
+      { maximumAge: 600_000, timeout: 20_000 },
+    )
+  }
   /** null while it runs; false when the satellite itself could not be followed. */
   const [screening, setScreening] = useState<Screening | false | null>(null)
   const [screenings, setScreenings] = useState(0)
@@ -158,6 +172,18 @@ export default function LiveEarth({ onClose }: { onClose: () => void }) {
           </div>
 
           <div className="le-item">
+            <h2 className="game-eyebrow">Where you are</h2>
+            {here && typeof here === 'object' ? (
+              <p>You are at {placeText(here.lat, here.lon)}, marked in blue. It stays on this device.</p>
+            ) : (
+              <>
+                <button type="button" className="game-button" onClick={findMe} disabled={here === 'asking'}>{here === 'asking' ? 'Finding you…' : 'Show where I am'}</button>
+                <p className="le-source">{here === 'no' ? 'Location not shared, so nothing is marked.' : 'Your browser asks first. Your location stays on this device.'}</p>
+              </>
+            )}
+          </div>
+
+          <div className="le-item">
             <h2 className="game-eyebrow">Satellite</h2>
             {!sats ? <p className="game-muted">Finding the satellites…</p>
               : !sats.feed.ok ? <p className="game-muted">Satellites unavailable. {sats.feed.reason}</p>
@@ -246,6 +272,8 @@ export default function LiveEarth({ onClose }: { onClose: () => void }) {
           <ul>
             {everySatellite.map(({ name, state: at }) => <li key={name}>{name}: {at ? `${count(at.altKm)} km above ${placeText(at.lat, at.lon)}` : 'position unknown'}.</li>)}
             {storms?.ok && storms.data.map((storm) => <li key={storm.id}>{storm.name}: last reported at {placeText(storm.lat, storm.lon)} on {dayText(storm.at)}.</li>)}
+            {here && typeof here === 'object' && <li>You: {placeText(here.lat, here.lon)}.</li>}
+            <li>Continents named on the globe: North America, South America, Europe, Africa, Asia, Australia, Antarctica.</li>
             {clouds.map((cloud) => <li key={cloud.name}>{count(cloud.count!)} tracked pieces of {cloud.name} debris. {cloud.cause}</li>)}
           </ul>
         </section>

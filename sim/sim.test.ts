@@ -532,8 +532,8 @@ describe('summary', () => {
   it('scores a clean success highly and reports the numbers', () => {
     const { state } = run(init(calm(), fixtureDatasets), 400, DAY, [launch])
     const report = simCore.summary(state)
-    // 700 science + 100 launch margin + 100 data + 100 x (8.7% budget left / 20%) = 944.
-    expect(report).toMatchObject({ outcome: 'success', score: 944, grade: 'A', science_goal: 30, budget_usd: 8_000_000, mass_limit_kg: 200, data_lost_gb: 0, mission_days_flown: 365 })
+    // 700 science + 100 launch margin + 100 data + 100 x (8.75% budget left / 10%) = 987.
+    expect(report).toMatchObject({ outcome: 'success', score: 987, grade: 'A', science_goal: 30, budget_usd: 8_000_000, mass_limit_kg: 200, data_lost_gb: 0, mission_days_flown: 365 })
     expect(report.science_score).toBeCloseTo(40, 6)
     expect(report.cost_usd).toBeCloseTo(7_300_200)
     expect(report.mass_kg).toBeCloseTo(21.7)
@@ -590,7 +590,7 @@ describe('review findings', () => {
     const { state } = flyTo(calm({ battery: '' }))
     const report = summary(state)
     expect(report.science_score).toBeCloseTo(26, 6)
-    expect(report).toMatchObject({ outcome: 'science_shortfall', score: 690, grade: 'C' })
+    expect(report).toMatchObject({ outcome: 'science_shortfall', score: 640, grade: 'C' })
   })
 
   it('a spacecraft lost after the goal was reached is a success, and the report says both', () => {
@@ -609,7 +609,7 @@ describe('review findings', () => {
     // Lost before the goal: still a failure, capped at C.
     const lost = firstSeed(0, ({ state }) => state.metrics.outcome === 'spacecraft_failure')
     expect(Number(lost!.state.metrics.science_score)).toBeLessThan(30)
-    expect(Number(summary(lost!.state).score)).toBeLessThanOrEqual(690)
+    expect(Number(summary(lost!.state).score)).toBeLessThanOrEqual(640)
   })
 
   it('adding an instrument never lowers the science: the most valuable data goes home first', () => {

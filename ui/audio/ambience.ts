@@ -5,6 +5,7 @@ import type { LaunchTimeline } from '../scene3d/launch/timeline'
 import type { RocketSpec } from '../scene3d/launch/vehicles'
 import { context, heard, isMuted, onMuteChange, playSound, volumeBus } from './audio'
 import { buildPlace, output, type PlaceSound } from './engine'
+import { holdMusic } from './music'
 import { DETAILS, detailGap, launchScore, type LaunchScore, type Place } from './places'
 
 interface Want { place: Place; score?: LaunchScore }
@@ -31,6 +32,7 @@ function drop(seconds: number) {
 
 function sync() {
   pending = false
+  holdMusic(wanted?.place === 'launch')
   const hidden = document.hidden
   // Browsers only let sound start after the player has clicked, tapped or pressed a key.
   const on = !!wanted && !isMuted() && !hidden && (gesture || !!navigator.userActivation?.hasBeenActive)

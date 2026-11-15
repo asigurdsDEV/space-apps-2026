@@ -41,6 +41,27 @@ dialog.le {
 /* To the left of its dot (scene.ts), where the right side would cut the name off. */
 .le-tag--flip { margin-left: 0; translate: calc(-100% - 15px); }
 .le-tag--flip.le-tag--picked::before { left: auto; right: -26px; }
+/* Continent names and the player's own place: the name sits centred above a small dot on the ground. */
+.le-tag--place,
+.le-tag--here,
+.le-tag--flip.le-tag--place,
+.le-tag--flip.le-tag--here { margin: 0; translate: -50% calc(-100% - 8px); }
+.le-tag--place { color: rgb(255 255 255 / 0.78); font-size: 0.6875rem; letter-spacing: 0.04em; }
+.le-tag--here { color: var(--game-text); font-weight: 600; }
+.le-tag--place::after,
+.le-tag--here::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 4px);
+  width: 5px;
+  height: 5px;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgb(0 0 2 / 0.6);
+}
+.le-tag--here::after { width: 9px; height: 9px; background: #4da3ff; box-shadow: 0 0 0 2px #fff, 0 0 0 3px rgb(0 0 2 / 0.6); }
 /* The ring round the picked satellite's dot. */
 .le-tag--picked::before {
   content: "";

@@ -1,6 +1,6 @@
 {
-  "name": "Space Mission Design Game",
-  "short_name": "Mission Design",
+  "name": "First Light Program",
+  "short_name": "First Light",
   "description": "Design, launch and fly a space mission. Balance mass, power, budget and data to bring the science home.",
   "start_url": "./",
   "scope": "./",

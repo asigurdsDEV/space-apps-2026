@@ -36,7 +36,7 @@ export function LobbyScreen({ code, players, me, onClaimRole, onContinue, onLeav
     <main className="ls-root">
       <div className="ls-layout">
         <header className="ls-header">
-          <p className="ls-eyebrow">GO / NO-GO · Mission control</p>
+          <p className="ls-eyebrow">First Light Program · Mission control</p>
           <h1>Your crew. One mission.</h1>
           <div className="ls-sequence" aria-label="Mission stages"><span aria-current="step">01 / Assemble</span><span>02 / Brief</span><span>03 / Build</span><span>04 / Fly</span></div>
           <p>Pick a role and plan together. Every choice shares the same mission resources.</p>

@@ -193,7 +193,7 @@ describe('what-if + share card', () => {
 
   it('builds a share text with stars, score, grade and outcome', () => {
     const text = shareText({ outcome: 'success', score: 84, grade: 'B' }, { title: 'First Light', daily: '2026-11-14', anomalies: 2 })
-    expect(text).toBe('GO / NO-GO · Daily 2026-11-14 · First Light\n★☆  84 pts (B)\nMission success · ⚠ 2 anomalies survived')
+    expect(text).toBe('First Light Program · Daily 2026-11-14 · First Light\n★☆  84 pts (B)\nMission success · ⚠ 2 anomalies survived')
   })
 })
 
@@ -225,7 +225,7 @@ describe('debrief', () => {
     const { state } = fly({ toEnd: true, sandbox: true })
     const report = summary(state)
     const tried: string[] = []
-    const fixes = [{ change: '3 ground stations instead of 1', score: 990, grade: 'A' }, { change: 'Add the Magnetometer', score: 970 }]
+    const fixes = [{ change: '3 ground stations instead of 1', score: 998, grade: 'A' }, { change: 'Add the Magnetometer', score: 995 }]
     const element = ResultsScreen({ summary: report, onCommand: noop, bonusGoal: 'no_data_lost', fixes, onTryFix: (f) => tried.push(f.change) })
     const html = renderToStaticMarkup(element)
     expect(html).toContain('3 stars')
