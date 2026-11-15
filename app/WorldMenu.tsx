@@ -1,5 +1,7 @@
-import { useEffect, useId, useRef, type ReactNode } from 'react'
+import { lazy, Suspense, useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { SoundToggle } from '../ui/audio'
+
+const LiveEarth = lazy(() => import('../ui/live/LiveEarth'))
 
 interface WorldMenuProps {
   open: boolean
@@ -16,6 +18,7 @@ interface WorldMenuProps {
 export function WorldMenu({ open, disabled, onOpenChange, onClassic, onTraining, onExit, online, children }: WorldMenuProps) {
   const dialog = useRef<HTMLDialogElement>(null)
   const title = useId()
+  const [live, setLive] = useState(false)
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -49,6 +52,8 @@ export function WorldMenu({ open, disabled, onOpenChange, onClassic, onTraining,
         {children}
         <button type="button" className="game-button" autoFocus onClick={() => onOpenChange(false)}>Back to game</button>
         {onTraining && <button type="button" className="game-button" onClick={onTraining}>Survey the planet</button>}
+        <button type="button" className="game-button" onClick={() => setLive(true)}>Live Earth</button>
+        {live && <Suspense fallback={null}><LiveEarth onClose={() => setLive(false)} /></Suspense>}
         <SoundToggle />
         <button type="button" className="game-button" onClick={onClassic}>Classic view</button>
         <button type="button" className="game-button" onClick={onExit}>Main menu</button>

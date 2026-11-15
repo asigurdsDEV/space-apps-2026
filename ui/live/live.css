@@ -1,0 +1,107 @@
+/* Live Earth (LiveEarth.tsx): a full-window globe with two quiet glass panels, in the main menu's look. */
+dialog.le {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  background: #000002;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  /* What the panels cover; .le-free is what is left for the globe. */
+  --le-left: 362px;
+  --le-right: 332px;
+  --le-bottom: 0px;
+}
+.le-stage,
+.le-free,
+.le-tags { position: absolute; inset: 0; }
+.le-free { inset: 0 var(--le-right) var(--le-bottom) var(--le-left); pointer-events: none; }
+.le-tags { overflow: hidden; pointer-events: none; }
+.le-tag {
+  position: absolute;
+  left: 0;
+  top: 0;
+  margin: -0.8em 0 0 15px;
+  padding: 0.1em 0.5em;
+  border-radius: 999px;
+  /* A dark pill: the name must read over white cloud and ice. */
+  background: rgb(0 0 2 / 0.6);
+  white-space: nowrap;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--game-warning);
+}
+.le-tag--picked { color: var(--game-text); font-size: 0.8125rem; }
+/* To the left of its dot (scene.ts), where the right side would cut the name off. */
+.le-tag--flip { margin-left: 0; translate: calc(-100% - 15px); }
+.le-tag--flip.le-tag--picked::before { left: auto; right: -26px; }
+/* The ring round the picked satellite's dot. */
+.le-tag--picked::before {
+  content: "";
+  position: absolute;
+  left: -26px;
+  top: calc(0.8em - 11px);
+  width: 22px;
+  height: 22px;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgb(0 0 2 / 0.6), inset 0 0 0 1px rgb(0 0 2 / 0.6);
+}
+
+.le-panel {
+  border: 1px solid var(--game-line);
+  border-radius: var(--game-radius);
+  background: var(--game-glass);
+  backdrop-filter: var(--game-glass-blur);
+  padding: var(--game-space-4);
+}
+.le-side,
+.le-now { position: absolute; overflow: auto; }
+.le-side { left: 16px; top: 16px; width: 330px; max-height: calc(100% - 32px); }
+.le-now { right: 16px; bottom: 16px; width: 300px; max-height: calc(100% - 92px); }
+.le-back { position: absolute; top: 16px; right: 16px; background: var(--game-glass); backdrop-filter: var(--game-glass-blur); }
+/* Over a bright Earth the white ring alone can vanish. */
+.le-back:focus-visible { box-shadow: 0 0 0 3px rgb(0 0 2 / 0.7); }
+
+.le h1 { margin: var(--game-space-1) 0 var(--game-space-2); font-size: 1.5rem; letter-spacing: -0.02em; }
+.le p,
+.le dl,
+.le dd { margin: 0; }
+.le-note { min-height: 2.9em; color: var(--game-muted); }
+.le-item { margin-top: var(--game-space-3); padding-top: var(--game-space-3); border-top: 1px solid var(--game-line); display: grid; gap: var(--game-space-2); }
+.le-now .le-item:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+.le-item .game-field { margin-top: 0; }
+.le-source { color: var(--game-muted); font-size: 0.75rem; }
+.le-stats { display: flex; flex-wrap: wrap; gap: var(--game-space-1) var(--game-space-4); }
+.le-stats dt { color: var(--game-muted); font-size: 0.75rem; }
+.le-stats dd { font-size: 1.0625rem; }
+.le-big { font-size: 1.5rem; line-height: 1.2; }
+.le-big span { color: var(--game-muted); font-size: 0.875rem; }
+
+.le-toggles { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--game-space-2); margin-top: var(--game-space-3); }
+/* A toggle is a small label over its count, as the menu's figures are. */
+.le .le-toggles button { flex-direction: column; gap: 0; padding: var(--game-space-1) var(--game-space-2); font-size: 0.62rem; letter-spacing: 0.14em; }
+.le .le-toggles button[aria-pressed="false"] { color: var(--game-muted); border-color: var(--game-line); }
+.le .le-toggles strong { font-size: 1rem; letter-spacing: 0; }
+.le-storms { display: grid; gap: var(--game-space-2); }
+/* A storm's button holds a name and a sentence, not a label. */
+.le .le-storms button { flex-direction: column; align-items: flex-start; gap: 0; padding: var(--game-space-1) var(--game-space-3); font-size: 0.875rem; letter-spacing: 0; text-transform: none; text-align: left; }
+.le-storms small { color: var(--game-muted); font-size: 0.75rem; font-weight: 400; }
+
+/* The same things in words, for screen readers. */
+.le-list { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* A phone: the globe on top, everything else in one sheet that scrolls under it. */
+@media (max-width: 900px) {
+  dialog.le { --le-left: 0px; --le-right: 0px; --le-bottom: 50dvh; }
+  .le-sheet { position: absolute; inset: auto 0 0; height: 50dvh; overflow: auto; padding: 0 var(--game-space-2) var(--game-space-2); display: grid; gap: var(--game-space-2); align-content: start; }
+  .le-side,
+  .le-now { position: static; width: auto; max-height: none; overflow: visible; }
+  .le-back { top: 8px; right: 8px; }
+}

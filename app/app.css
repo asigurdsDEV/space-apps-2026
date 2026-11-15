@@ -254,6 +254,10 @@ h1.app-bar-title {
   padding: var(--game-space-2) var(--game-space-4);
   font-size: 0.875rem;
 }
+/* While Live Earth (ui/live) covers the window, the mission screen under it is not laid out, so its 3D view stops drawing. */
+.app-live-open ~ * {
+  display: none;
+}
 .app-training,
 .app-training-loading {
   margin: 0;

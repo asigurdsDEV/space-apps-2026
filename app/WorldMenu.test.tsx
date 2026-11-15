@@ -11,6 +11,7 @@ it('places utility controls in a labelled native dialog, leaving one gameplay me
   expect(menu).toContain('Mission menu')
   expect(menu).toContain('Back to game')
   expect(menu).toContain('Classic view')
+  expect(menu).toContain('Live Earth')
   expect(menu).toContain('crew’s mission keeps running')
   expect(menu).not.toMatch(/\sopen[=> ]/)
 })

@@ -157,6 +157,7 @@ describe('game screen', () => {
     for (let i = 0; i < 100 && session.getSnapshot().state.t_s <= 86400; i++) game.advance(1000)
     const flying = screen(session)
     expect(flying).toMatch(button)
+    expect(flying).toMatch(/<button[^>]*>Live Earth<\/button>/)
     expect(flying).toContain('the mission waits for you') // solo: the clock is held while it is open
     // Online the clock is the whole crew's, so it keeps running.
     const online = renderToStaticMarkup(<GameScreen session={session} config={config} onExit={() => {}} roomCode="ABC234" />)

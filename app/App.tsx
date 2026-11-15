@@ -536,6 +536,8 @@ const LaunchView = SceneLaunchView as ComponentType<{ state: SimState; onDone: (
 const SHOWN_BY_APP = ['launch']
 /** Survey: fly to a place on Earth, then float above that ground. Loaded only when the player opens it. */
 const Training = lazy(() => import('./Training'))
+/** Live Earth: the real planet right now, from open NASA, NOAA and CelesTrak feeds (ui/live). Loaded only when the player opens it. */
+const LiveEarth = lazy(() => import('../ui/live/LiveEarth'))
 
 /** The summary the sim sent with `scenario_ended`. */
 function finalSummary(events: readonly SimEvent[]): Summary | undefined {
@@ -599,12 +601,19 @@ function Flight({ session, config, daily, online, skipLaunch, onLaunchDone }: { 
     leftTraining.current = false
     button.focus()
   }
+  // Live Earth lies over the mission screen; the clock waits for it the same way.
+  const [live, setLive] = useState(false)
+  const showLive = (open: boolean) => {
+    setLive(open)
+    holdClock(open)
+  }
   // Online the mission runs on under the training: an anomaly card or the end of the mission brings the player back.
   const canTrain = !ended && !pendingDecision(state)
   useEffect(() => {
     if (training && !canTrain) showTraining(false)
+    if (live && !canTrain) showLive(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [training, canTrain])
+  }, [training, live, canTrain])
   // "What would have fixed it": the flown mission rerun with every single change, once, when it ends,
   // answering each anomaly card the way the player did.
   const fixes = useMemo(
@@ -663,13 +672,15 @@ function Flight({ session, config, daily, online, skipLaunch, onLaunchDone }: { 
     <>
       <WalkTo screen={ended ? 'results' : 'flight'} />
       {canTrain && (
-        <aside className="app-training-entry" aria-label="Survey the planet">
+        <aside className={live ? 'app-training-entry app-live-open' : 'app-training-entry'} aria-label="Survey the planet">
           <button type="button" className="game-button" ref={focusAfterTraining} onClick={() => showTraining(true)}>
             Survey the planet
           </button>
           <span className="game-muted">
             Fly to a place, then float above that ground. No score, and the mission {online ? 'keeps running' : 'waits for you'}.
           </span>
+          <button type="button" className="game-button" onClick={() => showLive(true)}>Live Earth</button>
+          {live && <Suspense fallback={null}><LiveEarth onClose={() => showLive(false)} /></Suspense>}
         </aside>
       )}
       <MissionScreen
