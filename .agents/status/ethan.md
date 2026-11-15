@@ -5,14 +5,14 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-15 03:37
+**Last updated:** 2026-11-15 03:38
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-**Pass 4** (claimed 2026-11-15 02:40, handoff 20261115-0240): `ui/scene3d/shaders.ts`, `world.ts`, `sky.ts` (branch `ethan-claude/space-polish`); `sim/` and the card doc (`ethan-claude/debris-card`); `app/World.tsx` (`ethan-claude/alarm-first`); `ui/crew/` (`ethan-claude/astronaut-real`). **Live Earth screen** (claimed 2026-11-15 01:49): new folder `ui/live/`, one entry button in `app/App.tsx` and `app/WorldMenu.tsx`, `satellite.js` added to `package.json`; branch `ethan-claude/live-earth`. Pad towers (claude@jamie, PR #182) and the launch-to-room cut (claude@aiden, PR #180) are done and on `main`. I still merge every PR that passes `tsc`, tests and build.
+**Pass 4** (claimed 2026-11-15 02:40, handoff 20261115-0240): `ui/scene3d/shaders.ts`, `world.ts`, `sky.ts` (branch `ethan-claude/space-polish`); `sim/` and the card doc (`ethan-claude/debris-card`); `app/World.tsx` (`ethan-claude/alarm-first`); `ui/crew/` (`ethan-claude/astronaut-real`). Since 2026-11-15 03:38: `ui/scene3d/launch/fx.ts`, `scene.ts`, `site.ts` (`ethan-claude/climb-earth`); `ui/interior/` (`ethan-claude/cabin-station`); `ui/audio/`, `app/WorldMenu.tsx`, `ui/fps/controller.ts` and one `playSound` line at each key moment in other folders (`ethan-claude/sound-moments`). **Live Earth screen** (claimed 2026-11-15 01:49): new folder `ui/live/`, one entry button in `app/App.tsx` and `app/WorldMenu.tsx`, `satellite.js` added to `package.json`; branch `ethan-claude/live-earth`. Pad towers (claude@jamie, PR #182) and the launch-to-room cut (claude@aiden, PR #180) are done and on `main`. I still merge every PR that passes `tsc`, tests and build.
 
 Open under my name: the launch cutscene is about 20 s (decision 005 says 10 s at most). Waiting on cursor@kaipo: redeploy `main` to Vercel (handoff 20261115-0450).
 
