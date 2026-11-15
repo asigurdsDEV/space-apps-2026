@@ -3,7 +3,7 @@
 **Team:** Kimchi Trenchers (Aiden, Ethan, Jamie, Sarah, Caleb — kimchi on the team page — Kaipo)
 **Event:** NASA International Space Apps Challenge 2026, Seattle, WA local event, Nov 14–15
 **Challenge:** [Space Mission Design Game](https://www.spaceappschallenge.org/2026/challenges/space-mission-design-game/)
-**Project:** Space Mission Design Game
+**Project:** First Light Program
 **Repo:** https://github.com/asigurdsDEV/space-apps-2026
 **Live link:** https://nasaspacemission.vercel.app (mirror without the online-play relay: https://asigurdsdev.github.io/space-apps-2026/)
 **License:** MIT
@@ -14,7 +14,7 @@ This page is the text to paste into the Space Apps project form. The project for
 
 | Field | What to paste |
 |---|---|
-| Project name | Space Mission Design Game |
+| Project name | First Light Program |
 | Team | Kimchi Trenchers |
 | Challenge | Space Mission Design Game |
 | Project link | https://nasaspacemission.vercel.app |
@@ -63,7 +63,7 @@ Use one of these for the project form. Do not submit the old three-minute cut.
 
 ### Slides (7, the maximum)
 
-1. Title: Space Mission Design Game, Kimchi Trenchers, Seattle 2026, link to the repo and the live site.
+1. Title: First Light Program, Kimchi Trenchers, Seattle 2026, link to the repo and the live site.
 2. Problem: naming instruments is not the same as fitting them on a mission.
 3. Loop: design, poll, launch, fly, explain. One shared sim for up to four roles, plus local play.
 4. One trade-off on screen: First Light starts with a basic camera and a radio that cannot return all of the data. Point at the warning. Do not quote a dollar or science figure the current build does not show.

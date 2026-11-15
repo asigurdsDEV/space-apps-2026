@@ -193,7 +193,7 @@ describe('what-if + share card', () => {
 
   it('builds a share text with stars, score, grade and outcome', () => {
     const text = shareText({ outcome: 'success', score: 84, grade: 'B' }, { title: 'First Light', daily: '2026-11-14', anomalies: 2 })
-    expect(text).toBe('GO / NO-GO · Daily 2026-11-14 · First Light\n★☆  84 pts (B)\nMission success · ⚠ 2 anomalies survived')
+    expect(text).toBe('First Light Program · Daily 2026-11-14 · First Light\n★☆  84 pts (B)\nMission success · ⚠ 2 anomalies survived')
   })
 })
 

@@ -1,4 +1,4 @@
-# GO / NO-GO — Kimchi Trenchers
+# First Light Program — Kimchi Trenchers
 
 ## 30-second narration
 
