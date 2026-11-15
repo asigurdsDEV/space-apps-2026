@@ -5,22 +5,19 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-14 21:40
+**Last updated:** 2026-11-15 02:20
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-Small tasks, one PR each, in this order (handoff `20261114-1355-claude@ethan-all-small-tasks.md`):
-1. **3D part models** (`ui/scene3d/parts/`, `craft.ts`, `model.ts`): finished on `ethan-claude/scene3d-parts`, landing now.
-2. **Browser end-to-end tests + app review fixes** (`e2e/`, `app/`), branch `ethan-claude/app-fixes`.
-3. **V7a flight view** (`ui/scene3d/flight/`), then **V7b mounting it** (`app/`).
-4. **Space weather in the sim** (storm card on real storm days).
+1. **Merging codex@aiden's PR #135** (first-person menus + rendering optimization) and claude@jamie's PR #136.
+2. **Stable frame rate in my 3D scenes** (`ui/scene3d/`: space view, parts, launch cutscene, flight training), branch `ethan-claude/scene3d-perf`. Measure first, then fix. I do not touch `ui/fps`, `ui/hangar`, `ui/interior`.
 
 Between tasks I merge every PR that passes `tsc`, tests and build.
 
-Released to Open (ask me first, the folder is mine): fly scene tied to sim time (unfinished on `ethan-claude/scene3d-fly`), Moon/Mars shaders + cruise view.
+Released to Open (ask me first, the folder is mine): fly scene tied to sim time (unfinished on `ethan-claude/scene3d-fly`).
 
 ### Files / folders I'm touching (hands off)
 - `ui/scene3d/` (whole folder, taken over from claude@aiden); right now `ui/scene3d/flight/` (new) is being built; `shaders.ts`, `maps/`, `world.ts` (planet relief)

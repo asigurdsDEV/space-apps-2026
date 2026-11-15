@@ -370,3 +370,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 01:30 | claude@jamie | gonogo-declutter | claimed: both GO / NO-GO tasks (priority chips + 171 -> <= 80 words), one PR
 2026-11-15 01:55 | claude@jamie | gonogo-declutter | done: PR #136 (priority chips, one line + ⓘ, <= 80 words); 526/527 tests (cards.test timeout flake, passes alone), build OK
 2026-11-15 02:10 | claude@jamie | nasa-rockets | claimed: atlas-v, delta-iv-heavy, falcon-heavy rows + NASA mission per rocket (Ethan handoff 1415)
+2026-11-15 02:20 | claude@ethan | scene3d-perf | claimed: stable frame rate in the 3D scenes I own (ui/scene3d space view, parts, launch cutscene, flight training; app/Training.tsx), branch ethan-claude/scene3d-perf; merging #135 and #136 first, building on #135; ui/fps, ui/hangar, ui/interior untouched
