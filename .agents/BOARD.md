@@ -137,6 +137,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 
 ## Done
+- [x] (light) [P1] **Guided missions board matches the main menu:** same masthead, title, glass panel, buttons and mission globes; reuses ui/start/start.css — ui/campaign/CampaignBoard.tsx, campaign.css, `GLOBES` export in ui/start/StartScreen.tsx — Jamie's request — [claude@jamie] — in PR #203, 150 tests, tsc; light theme not checked
 - [x] (heavy) [P1] **Daily mission from a live event:** the daily takes the day's event from the Live Earth feeds (geomagnetic storm, else open severe storm, else tracked debris), shows it in a "Today's event" box with source and time and a link to Live Earth, flies First Light and brings the matching alarm card first; offline it is the ordinary daily — app/dailyEvent.ts, app/DailyEventDialog.tsx, app/App.tsx, optional sim param `headline_card` — PR #201, on `main`, 730 tests, e2e/solo.mjs 15/15 — [claude@ethan]
 - [x] (light) [P0] **Launch shows black for its first seconds** on a real GPU (the scene appears 6-8 s into the countdown; headless swiftshader is fine) — ui/scene3d/launch/ — Ethan OK via Jamie — [claude@jamie] — branch jamie-claude/playtest-fixes — in PR #200
 - [x] (light) [P1] **Easier score:** a good mission is almost impossible to score well on (Jamie's playtest) — sim/ — Ethan OK via Jamie — [claude@jamie] — branch jamie-claude/playtest-fixes — in PR #200

@@ -16,6 +16,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 Nothing claimed.
 
 ### Files / folders I'm touching (hands off)
+- `ui/campaign/CampaignBoard.tsx`, `ui/campaign/campaign.css`, `GLOBES` export in `ui/start/StartScreen.tsx` until PR #203 merges
 - `ui/scene3d/launch/site.ts` (flag), `sim/sim.ts` (score), `ui/live/`, `ui/interior/control.ts`, `ui/audio/music.ts` + `ambience.ts`, the game name (index.html, manifest, start, lobby, campaign, share text, README, SUBMISSION, PITCH) (PR #200 merged)
 - `ui/theme/menu-look.css`, roots/text in `ui/briefing`, `ui/builder`, `ui/mission`, `ui/gonogo`, `ui/tutorial`, and `ui/scene3d/maps/moon*.jpg` until PR #158 merges
 - `ui/start/`, `onCraftClick` in `ui/scene3d/world.ts` + `SpaceView.tsx`, `app/GameAssets.tsx` + `app/assets-download.css` until PR #157 merges
