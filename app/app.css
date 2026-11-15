@@ -379,6 +379,9 @@ h1.app-bar-title {
 .app-world-menu h1 { margin: 0; font-size: 1.5rem; }
 /* flex, not block: the sound button's icon and label need their gap and centre line. */
 .app-world-menu button { display: flex; justify-content: center; width: 100%; margin-top: 12px; }
+.app-world-setting { display: grid; gap: 6px; margin-top: 16px; font-size: 0.85rem; color: var(--game-muted); }
+.app-world-setting input { width: 100%; margin: 0; accent-color: var(--game-accent); }
+.app-world-setting input:focus-visible { outline: 2px solid var(--game-focus, #2557c7); outline-offset: 3px; }
 .app-world-controls { margin: 20px 0 0; line-height: 1.8; color: var(--game-muted); font-size: 0.85rem; }
 .app-world-radio {
   border-radius: var(--game-radius, 22px);

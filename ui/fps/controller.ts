@@ -42,6 +42,24 @@ let current: Fps | null = null
 export const currentFps = () => current
 
 const MOUSE = 0.0022
+export const SENSITIVITY_KEY = 'smdg-mouse-sensitivity'
+/** Mouse look speed, 1 is the default feel. The menu sets it; it is remembered on this device. */
+let sensitivity = 1
+try {
+  const saved = Number(globalThis.localStorage?.getItem(SENSITIVITY_KEY))
+  if (saved >= 0.25 && saved <= 3) sensitivity = saved
+} catch {
+  // storage blocked: the default
+}
+export const mouseSensitivity = () => sensitivity
+export function setMouseSensitivity(value: number): void {
+  sensitivity = Math.min(3, Math.max(0.25, value))
+  try {
+    globalThis.localStorage?.setItem(SENSITIVITY_KEY, String(sensitivity))
+  } catch {
+    // not saved; it still lasts for this visit
+  }
+}
 const KEY_TURN = 1.9 // radians per second with the arrow keys
 /** Seconds for the walking head motion to ease in when you set off and out when you stop. */
 const SETTLE = 0.16
@@ -158,14 +176,14 @@ export function createFps(element: HTMLElement, camera: PerspectiveCamera, optio
     options.onLock?.(locked)
   }
   const onMouseMove = (e: MouseEvent) => {
-    if (locked && enabled) look(e.movementX, e.movementY)
+    if (locked && enabled) look(e.movementX * sensitivity, e.movementY * sensitivity)
   }
   const onPointerDown = (e: PointerEvent) => {
     if (!locked && enabled && e.pointerType === 'mouse') drag = { id: e.pointerId, x: e.clientX, y: e.clientY }
   }
   const onPointerMove = (e: PointerEvent) => {
     if (!enabled || !drag || drag.id !== e.pointerId) return
-    look(e.clientX - drag.x, e.clientY - drag.y)
+    look((e.clientX - drag.x) * sensitivity, (e.clientY - drag.y) * sensitivity)
     drag = { ...drag, x: e.clientX, y: e.clientY }
   }
   const onPointerUp = () => {

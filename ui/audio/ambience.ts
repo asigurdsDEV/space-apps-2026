@@ -3,7 +3,7 @@
 import { useEffect, useMemo } from 'react'
 import type { LaunchTimeline } from '../scene3d/launch/timeline'
 import type { RocketSpec } from '../scene3d/launch/vehicles'
-import { context, isMuted, onMuteChange } from './audio'
+import { context, heard, isMuted, onMuteChange, playSound, volumeBus } from './audio'
 import { buildPlace, output, type PlaceSound } from './engine'
 import { DETAILS, detailGap, launchScore, type LaunchScore, type Place } from './places'
 
@@ -38,7 +38,7 @@ function sync() {
   if (!on || live) return
   ctx = context()
   if (!ctx) return
-  out ??= output(ctx)
+  out ??= output(ctx, volumeBus()!)
   const want = wanted!
   const sound = buildPlace(ctx, out, want.place, want.score)
   graphs++
@@ -91,11 +91,24 @@ export function enter(place: Place, score?: LaunchScore): () => void {
   }
 }
 
+/** The room has not yet heard about the alarm that last sounded, so its own caution tone stays quiet for it. */
+let unheard = false
+
+/** An emergency starts (with its cutscene): the alarm, once, never looping. moments.ts calls it once per card. */
+export function alarm(): void {
+  unheard = true
+  playSound('alarm')
+}
+
 /** The caution tone for a waiting alarm in the spacecraft room: a few pulses, once. */
 export function caution(): void {
   // After this commit's effects, so an alarm already waiting when the room mounts still sounds.
   queueMicrotask(() => {
-    if (live?.want.place === 'cabin' && ctx) live.sound.cue('caution', ctx.currentTime + 0.01)
+    // The room calls this once per new card; the card whose alarm already sounded is not announced twice.
+    if (unheard) return void (unheard = false)
+    if (live?.want.place !== 'cabin' || !ctx) return
+    live.sound.cue('caution', ctx.currentTime + 0.01)
+    if (import.meta.env.DEV) heard.push({ name: 'caution (room)', at: Math.round(performance.now()) })
   })
 }
 
