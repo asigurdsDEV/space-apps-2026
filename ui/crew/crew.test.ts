@@ -80,12 +80,13 @@ describe('crew in a room', () => {
     const four = ['a', 'b', 'c', 'd'].map((player_id) => ({ ...member, player_id }))
     crew.set(four)
     expect(new Set(stripes()).size).toBe(4)
-    const [first, , third] = stripes()
+    const [first, second] = stripes()
     crew.set([{ ...four[0]!, name: 'Renamed' }, four[2]!, four[3]!])
     expect(stripes()).toContain(first)
+    expect(stripes()).not.toContain(second)
     crew.set([four[0]!, four[2]!, four[3]!, { ...member, player_id: 'e' }])
-    expect(new Set(stripes()).size).toBe(4) // the newcomer takes the colour that was freed
-    expect(stripes()).toContain(third)
+    expect(stripes()).toContain(second) // the newcomer takes the colour that was freed
+    expect(new Set(stripes()).size).toBe(4)
     crew.dispose()
   })
 

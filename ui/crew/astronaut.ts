@@ -125,7 +125,7 @@ function materials(): Looks {
       visor: named('visor', new THREE.MeshStandardMaterial({ color: 0xf2b655, roughness: 0.06, metalness: 1, envMap: sky, envMapIntensity: 1.2, emissive: 0x241503 })),
       glass: named('glass', new THREE.MeshStandardMaterial({ color: 0xcfdde2, roughness: 0.05, transparent: true, opacity: 0.3, depthWrite: false, envMap: sky, envMapIntensity: 0.8 })),
     },
-    stripes: STRIPES.map((color) => named('stripe', new THREE.MeshStandardMaterial({ color, ...woven }))),
+    stripes: STRIPES.map((hex) => named('stripe', new THREE.MeshStandardMaterial({ color: new THREE.Color(hex).multiply(bright), ...woven }))),
   }
 }
 
@@ -197,11 +197,12 @@ function tube(radius: (y: number) => number, top: number, bottom: number, folds:
   const gathered = (y: number) => folds.some(([at, half]) => Math.abs(y - at) < half)
   for (let y = top; y > bottom + 0.004; y -= gathered(y) ? 0.007 : 0.024) rings.push({ y, rx: radius(y), rz: radius(y) })
   rings.push({ y: bottom, rx: radius(bottom), rz: radius(bottom) })
-  // Rolls of cloth with a sharp crease between them, wandering a little round the limb as hand-gathered cloth does.
+  // Rolls of cloth with a sharp crease between them, wandering a little round the limb as hand-gathered cloth does;
+  // and everywhere the slight unevenness of a soft suit under pressure.
   return loft(rings, 18, (y, a) => folds.reduce((sum, [at, half, deep]) => {
     const d = Math.abs(y - at) / half
     return d < 1 ? sum + deep * (1 - d * d) ** 2 * (Math.abs(Math.sin((y * Math.PI) / 0.032 + 1.2 * Math.sin(a + at * 9))) - 0.55) : sum
-  }, 0))
+  }, 0.022 * Math.sin(y * 41 + 2 * Math.sin(2 * a + y * 7)) * Math.sin(a + y * 13)))
 }
 
 /** A ring round the body or a limb at height `y`: a band `tall` high that stands `proud` of the half-widths given. */
@@ -284,11 +285,11 @@ function shapes(): THREE.BufferGeometry {
   for (const s of [-1, 1]) {
     const side = s < 0 ? 0 : 1
 
-    // ---- Leg: one trouser leg gathered at the hip, knee and ankle, with the stripe above the knee.
+    // ---- Leg: one trouser leg gathered below the hip, at the knee and at the ankle, with the stripe above the knee.
     const leg = limb(side)
     const legCurve = along([[0.05, 0.118], [-0.06, 0.136], [-0.2, 0.13], [-0.36, 0.112], [-THIGH, 0.115], [-0.5, 0.108], [-0.62, 0.11], [-0.74, 0.096], [-0.815, 0.1]])
     const legR = (y: number) => legCurve(y)[1]!
-    add('fabric', tube(legR, 0.05, -0.815, [[-0.1, 0.05, 0.035], [-THIGH, 0.085, 0.11], [-0.77, 0.04, 0.08]]), WHITE, ZERO, ZERO, leg.soft)
+    add('fabric', tube(legR, 0.05, -0.815, [[-0.16, 0.045, 0.04], [-THIGH, 0.085, 0.11], [-0.77, 0.04, 0.08]]), WHITE, ZERO, ZERO, leg.soft)
     add('stripe', loft([-0.262, -0.29, -0.318].map((y) => ({ y, rx: legR(y) + 0.004, rz: legR(y) + 0.004 })), 18), WHITE, ZERO, ZERO, leg.soft)
     add('fabric', band(-0.8, 0.094, 0.094, 0.045, 0.014), WHITE, ZERO, ZERO, leg.lower)
     // ---- Boot, lying along the foot from the heel (top row) to the toe: [along, half-width, height]. A grey sole under it.
@@ -303,7 +304,7 @@ function shapes(): THREE.BufferGeometry {
     const armCurve = along([[0.04, 0.085], [-0.05, 0.1], [-0.17, 0.094], [-0.29, 0.084], [-ELBOW, 0.088], [-0.42, 0.082], [-0.53, 0.072], [-0.615, 0.062]])
     const armR = (y: number) => armCurve(y)[1]!
     add('fabric', tiled(new THREE.SphereGeometry(0.114, 20, 14), 2, 1), WHITE, [s * 0.272, 1.455, 0])
-    add('fabric', tube(armR, 0.04, -0.615, [[-0.06, 0.06, 0.09], [-ELBOW, 0.075, 0.12]]), WHITE, ZERO, ZERO, arm.soft)
+    add('fabric', tube(armR, 0.04, -0.615, [[-0.135, 0.05, 0.09], [-ELBOW, 0.075, 0.12]]), WHITE, ZERO, ZERO, arm.soft)
     add('metal', band(-0.225, 0.087, 0.087, 0.022, 0.008), STEEL, ZERO, ZERO, arm.upper)
     add('metal', band(-0.622, 0.056, 0.056, 0.034, 0.012), STEEL, ZERO, ZERO, arm.lower)
     // Glove: cuff, palm towards the leg with a grey grip pad, four fingers curled a little, thumb forward; grey fingertips.
