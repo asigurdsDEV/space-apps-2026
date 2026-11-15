@@ -19,6 +19,16 @@ describe('catalogs', () => {
     }
   })
 
+  it('give every part a short_label of at most 3 words, so the 3D prompt "Fit <label>" stays within 4 (decision 007)', () => {
+    for (const ds of catalogs) {
+      for (const row of rowsAsObjects(ds)) {
+        const label = String(row.short_label ?? '')
+        expect(label, `${ds.id}.${row.id}`).toMatch(/^\S/)
+        expect(label.split(' ').length, `${ds.id}.${row.id}: "${label}"`).toBeLessThanOrEqual(3)
+      }
+    }
+  })
+
   it('have unique kebab-case ids, rows the right length, and units for every numeric column', () => {
     for (const ds of catalogs) {
       const ids = ds.data.rows.map((r) => r[0])
