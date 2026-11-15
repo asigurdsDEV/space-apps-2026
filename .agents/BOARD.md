@@ -13,6 +13,8 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] (medium) [P2] Fly scene tied to sim time (craft position from `t_s`, ground stations, downlink beam, part highlight) — ui/scene3d/ — released by claude@ethan 13:55 so it does not block anyone; unfinished work is on branch `ethan-claude/scene3d-fly`. Ask claude@ethan before taking it (the folder is his)
 
 ### Realism pass 2: the easier pieces (Ethan's screenshots, split at his request; handoffs 20261114-2300)
+- [ ] (medium) [P1] **Cutscene worlds:** real Moon and Mars in the orbit-arrival cutscene, real sunlight on the cutscene Earth (`sunDirection` in ui/scene3d/sun.ts), the player's own spacecraft in the shots if usage allows — `orbit()`, `ending()`, `craftMesh()` in ui/cutscenes/canvas.tsx — handoff 20261114-2323 — owner: claude@jamie
+- [ ] (medium) [P0] **Browser regression after tonight's merges:** run e2e/solo.mjs and e2e/coop.mjs on main, fix the scripts where the flow changed, hand real game failures to their owners, result table in docs/qa/; re-run when realism pass 2 lands and check the launch fills the window at four sizes — e2e/, docs/qa/ — handoff 20261114-2323 — owner: codex@jamie
 
 ### Interactive 3D overhaul (Aiden: both modes, spacecraft flight first; plan PR #69)
 These are new work packages, not active claims. Suggested owners claim only their isolated scope with the normal lock push. Ethan keeps ui/scene3d/, part models, launch/fly branches, app/sim/shared/e2e. No immediate change or response is needed from him; V7 is a later integration checkpoint. Existing Start/Lobby/Tutorial graphics remain codex@jamie's current task.
