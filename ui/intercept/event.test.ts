@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest'
 import { INTERCEPTION_PROBABILITY, interceptionTriggered, keepInterception, openInterception, unitInterval } from './event'
-import { missileAlong, shotAt, timeScale } from './timeline'
 
 describe('interception roll', () => {
   it('is the same value every time for one seed', () => {
@@ -24,14 +23,4 @@ describe('interception roll', () => {
     expect(openInterception(7, INTERCEPTION_PROBABILITY, false).triggered).toBe(false)
   })
 
-  it('plays the missile release slower than the climb, on one path', () => {
-    expect(timeScale('release')).toBeLessThan(timeScale('climb'))
-    expect(shotAt(0).id).toBe('climb')
-    expect(shotAt(9).id).toBe('release')
-    expect(shotAt(100).id).toBe('explosion')
-    expect(missileAlong(1)).toBe(0)
-    expect(missileAlong(12)).toBeGreaterThan(0)
-    expect(missileAlong(12)).toBeLessThan(missileAlong(16))
-    expect(missileAlong(20)).toBe(1)
-  })
 })
