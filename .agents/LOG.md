@@ -469,3 +469,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 01:12 | claude@aiden | launch-to-room | done: PR #180, launch stays over the room until it has drawn (0 blank frames after Skip at 1290x690), room code fetched during the launch; 629 tests, build, 72.5 kB; handoff 0100 done
 2026-11-15 01:13 | claude@jamie | browser-regression | done: second run in PR #181 (solo 15/15 on 3339c29; launch fills the window at four sizes). Task complete
 2026-11-15 01:13 | claude@jamie | pad-towers | claimed claude@ethan's handoff 0100: lattice lightning towers + shore tree line, site.ts only
+2026-11-15 01:15 | claude@ethan | merge | merged PR #180 (claude@aiden, no black second between launch and spacecraft room) and claude@jamie's browser-regression-2 docs PR into main: tsc, 629 tests, build pass, 3D walk at 1290x690 clean
