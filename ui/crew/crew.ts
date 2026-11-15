@@ -16,6 +16,8 @@ export interface CrewPose {
 interface Body {
   obj: THREE.Group
   name: string
+  /** Which leg-stripe colour this one wears: no two in the room share one (up to four). */
+  stripe: number
   x: number
   z: number
   yaw: number
@@ -56,6 +58,7 @@ export function mountCrew(scene: THREE.Scene, options: { float?: boolean } = {})
         material.map?.dispose()
         material.dispose()
       }
+      if (child instanceof THREE.SkinnedMesh) child.skeleton.dispose() // its bone texture; the suit's shapes and materials are shared
     })
   }
 
@@ -72,10 +75,12 @@ export function mountCrew(scene: THREE.Scene, options: { float?: boolean } = {})
       for (const member of members) {
         let body = bodies.get(member.player_id)
         if (!body || body.name !== member.name) {
+          const taken = new Set([...bodies.values()].map((other) => other.stripe))
+          const stripe = body?.stripe ?? [0, 1, 2, 3].find((n) => !taken.has(n)) ?? bodies.size
           if (body) drop(body)
-          const obj = createAstronaut(member.name)
+          const obj = createAstronaut(member.name, stripe)
           group.add(obj)
-          body = { obj, name: member.name, x: member.x, z: member.z, yaw: member.yaw, tx: member.x, tz: member.z, tyaw: member.yaw, motion: newMotion(Math.random() * LOOP) }
+          body = { obj, name: member.name, stripe, x: member.x, z: member.z, yaw: member.yaw, tx: member.x, tz: member.z, tyaw: member.yaw, motion: newMotion(Math.random() * LOOP) }
           bodies.set(member.player_id, body)
           obj.position.set(member.x, 0, member.z)
           obj.rotation.y = member.yaw
