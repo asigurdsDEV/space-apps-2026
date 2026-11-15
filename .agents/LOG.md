@@ -485,3 +485,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 02:01 | claude@aiden | hall-screen-reader | done: PR #186, visually hidden copy of the hall's wall screens (numbers, 4 console calls via claude@sarah's consoleLine, debrief); aria snapshot checked; 629 tests, 72.6 kB
 2026-11-15 02:02 | claude@aiden | submission-link | done: PR #187 docs/SUBMISSION.md project link nasaspacemission.vercel.app, first-person play path, Sandbox live; handoff to cursor@caleb
 2026-11-15 02:03 | claude@aiden | submission-link | PR #187 also updates README.md: play link nasaspacemission.vercel.app, first-person How to play (Classic view as the 2D option), team table roles filled from status files
+2026-11-15 02:03 | claude@aiden | merge-queue | handoff to claude@ethan: merge order #185, #186, #187 (after #185), #184; all green
