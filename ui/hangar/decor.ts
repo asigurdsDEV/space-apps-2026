@@ -1,11 +1,11 @@
 // Set dressing for the mission control you play in (Sarah's request: "look like the inside of where the
 // mission is"). Static and decorative only: nothing here is interactable or collidable, so layout.ts,
 // the stations and the controller are unchanged. Modelled on NASA's Flight Control Room (front display
-// wall, carpeted console floor, acoustic walls, tiled ceiling) and a spacecraft integration clean room
-// (bright epoxy floor, red keep-out line, overhead gantry crane, high-bay light). claude@sarah.
+// wall, carpeted console floor, acoustic walls, tiled ceiling). claude@sarah. The clean-room crane, sign and
+// floor square went when the craft became a hologram in the middle of the hall (control.ts).
 
 import * as THREE from 'three'
-import { CALL_WALL, ROOM, STAND } from './layout'
+import { CALL_WALL, ROOM } from './layout'
 
 type Canvas = { c: HTMLCanvasElement; g: CanvasRenderingContext2D }
 
@@ -79,27 +79,6 @@ function carpetTexture(): THREE.CanvasTexture {
   g.lineWidth = 3
   g.beginPath(); g.moveTo(128, 8); g.lineTo(248, 128); g.lineTo(128, 248); g.lineTo(8, 128); g.closePath(); g.stroke()
   return texture(k, [10, 4])
-}
-
-function cleanFloorTexture(): THREE.CanvasTexture {
-  const k = canvas(512, 512)
-  const { g } = k
-  g.fillStyle = '#c9d0db'
-  g.fillRect(0, 0, 512, 512)
-  g.strokeStyle = '#b3bbc8'
-  g.lineWidth = 2
-  for (let i = 0; i <= 512; i += 64) {
-    g.beginPath(); g.moveTo(i, 0); g.lineTo(i, 512); g.stroke()
-    g.beginPath(); g.moveTo(0, i); g.lineTo(512, i); g.stroke()
-  }
-  // red keep-out line with a white border, like an integration-floor boundary
-  g.strokeStyle = '#ffffff'
-  g.lineWidth = 22
-  g.strokeRect(14, 14, 484, 484)
-  g.strokeStyle = '#d6252b'
-  g.lineWidth = 14
-  g.strokeRect(14, 14, 484, 484)
-  return texture(k)
 }
 
 function signTexture(lines: string[], w: number, h: number, bg: string, fg: string, accent: string): THREE.CanvasTexture {
@@ -190,7 +169,7 @@ function galleryTexture(): THREE.CanvasTexture {
   return texture(k)
 }
 
-/** Add the dressing to `scene`. Everything added is plain meshes and one light; `disposeObject(scene)` cleans it up. */
+/** Add the dressing to `scene`. Everything added is plain meshes; `disposeObject(scene)` cleans it up. */
 export function addMissionControlDecor(scene: THREE.Scene): void {
   const [x0, , z0] = ROOM.min
   const [x1, y1, z1] = ROOM.max
@@ -204,10 +183,9 @@ export function addMissionControlDecor(scene: THREE.Scene): void {
     return m
   }
 
-  // ---- Floors: carpet where the consoles are, a bright clean-room floor under the spacecraft.
+  // ---- Floor: carpet where the consoles are.
   const consoleDepth = -4.6 - z0
   add(new THREE.PlaneGeometry(w, consoleDepth), new THREE.MeshStandardMaterial({ map: carpetTexture(), roughness: 1 }), [0, 0.003, z0 + consoleDepth / 2], [-Math.PI / 2, 0, 0])
-  add(new THREE.PlaneGeometry(4.8, 4.8), new THREE.MeshStandardMaterial({ map: cleanFloorTexture(), roughness: 0.35, metalness: 0.05 }), [STAND[0], 0.005, STAND[2]], [-Math.PI / 2, 0, 0])
 
   // ---- Front display wall: a dark bezel behind every screen, and the ground-track display on the left.
   add(new THREE.PlaneGeometry(w - 0.2, 4.0), new THREE.MeshStandardMaterial({ color: 0x05070d, roughness: 0.5, metalness: 0.3 }), [0, 2.95, z0 + 0.012])
@@ -224,23 +202,4 @@ export function addMissionControlDecor(scene: THREE.Scene): void {
   // ---- Ceiling: cable trays running the length of the room.
   const tray = new THREE.MeshStandardMaterial({ color: 0x3a4459, metalness: 0.7, roughness: 0.4 })
   for (const x of [-6.2, 6.2]) add(new THREE.BoxGeometry(0.42, 0.08, ROOM.max[2] - z0 - 0.4), tray, [x, y1 - 0.22, (z0 + z1) / 2])
-
-  // ---- Clean area: overhead gantry crane over the stand, its hanging sign and a cool high-bay light.
-  const yellow = new THREE.MeshStandardMaterial({ color: 0xf2b705, metalness: 0.3, roughness: 0.5 })
-  const steel = new THREE.MeshStandardMaterial({ color: 0x8a93a6, metalness: 0.8, roughness: 0.3 })
-  const [sx, , sz] = STAND
-  for (const dx of [-2.3, 2.3]) add(new THREE.BoxGeometry(0.18, 0.24, 6.4), yellow, [sx + dx, y1 - 0.42, sz])
-  add(new THREE.BoxGeometry(4.8, 0.3, 0.3), yellow, [sx, y1 - 0.62, sz + 0.6])
-  add(new THREE.BoxGeometry(0.5, 0.4, 0.42), yellow, [sx, y1 - 0.95, sz + 0.6]) // hoist trolley
-  add(new THREE.CylinderGeometry(0.015, 0.015, 1.3, 6), steel, [sx, y1 - 1.8, sz + 0.6])
-  add(new THREE.TorusGeometry(0.11, 0.03, 8, 16, Math.PI * 1.4), steel, [sx, y1 - 2.5, sz + 0.6], [0, 0, Math.PI * 0.8])
-  // The sign hangs under the crane's bridge beam, high enough to clear the view of the front wall.
-  add(
-    new THREE.PlaneGeometry(2.6, 0.46),
-    basic(signTexture(['SPACECRAFT INTEGRATION', 'CLEAN AREA · GOWN UP · ESD SAFE'], 1152, 204, '#f4f6fa', '#141b2c', '#d6252b')),
-    [sx, y1 - 1.32, sz + 0.98], // just in front of the hoist, under the bridge beam
-  )
-  const bay = new THREE.PointLight(0xe8f1ff, 26, 9, 2)
-  bay.position.set(sx, y1 - 0.4, sz)
-  scene.add(bay)
 }

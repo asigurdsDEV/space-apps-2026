@@ -30,9 +30,11 @@ Preview: `npm run dev`, then `/ui/hangar/preview.html`. Next up (board, claude@a
 `<MissionControl state send players me title debrief enabled onFailed />` (lazy, from `index.tsx`): the first-person room the app shows in the design phase and the debrief (`app/World.tsx`, behind `?world=3d`). Walk with W A S D, look with the mouse or arrow keys, **E** on what you face (`ui/fps/`).
 
 - **Call wall:** mission name + budget, science goal, length. That is the whole briefing.
-- **Racks** (orbit, rocket, bus, power, battery, instruments, radio): one plate per part with its price; E fits it with the same `set_param` the 2D builder sends (instruments toggle). The fitted part has a green frame. Labels use data's `short_label` when it lands, else the name without brackets (≤ 4 words).
+- **Hologram stations** (orbit, rocket, bus, instruments, radio, power, battery): one low emitter pedestal per slot on a horseshoe around the craft, never on the centre line. Above each turns the fitted part as a hologram (its real model from `ui/scene3d/parts`, the rocket from the launch fleet, the orbit as a globe and ring) under the slot's and the part's name. **E** opens the station's menu: glass cards on an arc around you, one per part the sim offers (name, two key numbers, price, the fitted one marked). E on a card fits it with the same `set_param` the 2D builder sends and closes the menu; instruments toggle and the menu stays open. One menu at a time; it closes when you press E on the emitter again or walk 3.6 m away. Cards answer E only once the menu has opened, so a double press never picks one by accident. Card ids are still `rack:<slot>:<part>`; stations are `station:<slot>`.
+- **The spacecraft** floats dead centre, 2.3 m up in the beam of a round floor emitter, turning slowly (still under reduced motion). It is the live model of the player's choices.
+- **Light:** a dim hall. The glow comes from the holograms, the screens and teal edge lights; five point lights, no shadows. The holograms turn, so the room draws every frame (only on change under reduced motion).
 - **Gauges** on the back wall: the builder's budget bars. **Desks:** the four GO / NO-GO consoles, each with its first reason. **Launch button:** `launch`, blocked with "A console says NO-GO".
-- **Debrief:** the wall shows the grade and the best single change; E at the stand tries it, E at the launch button designs again.
-- Co-op: parts and launch owned by another player's role say "<name>'s call" and do nothing.
+- **Debrief:** the wall shows the grade and the best single change; E at the spacecraft tries it, E at the launch button designs again.
+- Co-op: menu cards and launch owned by another player's role say "<name>'s call" and do nothing.
 
 Layout and interactions are pure and tested (`layout.ts`); `control.ts` draws them.

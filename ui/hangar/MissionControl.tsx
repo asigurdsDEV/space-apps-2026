@@ -1,5 +1,6 @@
-// Mission control you play in (decision 007): walk with WASD, look with the mouse, E fits a part,
-// presses launch, tries the fix at the debrief. Sends the same Commands as the 2D builder.
+// Mission control you play in (decision 007): walk with WASD, look with the mouse, E opens a hologram
+// station's menu, fits a part from it, presses launch, tries the fix at the debrief. Sends the same
+// Commands as the 2D builder.
 // Loaded lazily from index.tsx so three.js stays out of the first download.
 
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -12,7 +13,7 @@ import { poll } from '../gonogo'
 import { sceneSpec } from '../scene3d/model'
 import type { Command, Player, SimState } from '../../shared'
 import { createControlRoom, type ControlRoom } from './control'
-import { interactables, obstacles, paramOf, racks, START, type Debrief } from './layout'
+import { interactables, menu, MENU_RANGE, obstacles, paramOf, STAND, START, stations, type Debrief } from './layout'
 import type { CrewPose } from '../crew/crew'
 
 export interface MissionControlProps {
@@ -49,6 +50,8 @@ export function MissionControl({ state, send, players = NO_PLAYERS, me, title, d
   const [failed, setFailed] = useState(false)
   const [aimed, setAimed] = useState<Interactable>()
   const [locked, setLocked] = useState(false)
+  /** The station whose menu is open, and where the player stood when they opened it (the cards face that spot). */
+  const [open, setOpen] = useState<{ key: string; from: [number, number] } | null>(null)
   const coop = players.length > 1
   const who = useRef({ players, me, coop })
   who.current = { players, me, coop }
@@ -75,7 +78,11 @@ export function MissionControl({ state, send, players = NO_PLAYERS, me, title, d
         onAim: setAimed,
         onLock: setLocked,
         blocked,
-        onPose: (pose) => poseRef.current?.(pose),
+        onPose: (pose) => {
+          poseRef.current?.(pose)
+          const { at } = menuRef.current
+          if (at && Math.hypot(pose.x - at[0], pose.z - at[2]) > MENU_RANGE) setOpen(null) // walked away
+        },
       })
       const mine = who.current.players.findIndex((p) => p.player_id === who.current.me?.player_id)
       if (mine > 0) room.current.fps.teleport([mine * 1.15, 0, START.pos[2]], START.yaw)
@@ -92,9 +99,26 @@ export function MissionControl({ state, send, players = NO_PLAYERS, me, title, d
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const rackList = useMemo(() => racks(state), [state.entities, state.params])
+  const stationList = useMemo(() => stations(state), [state.entities, state.params])
   const calls = useMemo(() => poll(state.issues), [state.issues])
-  const walls = useMemo(() => obstacles(rackList), [rackList])
+  const walls = useMemo(() => obstacles(stationList), [stationList])
+  const openStation = debrief ? undefined : stationList.find((s) => s.key === open?.key)
+  const openMenu = useMemo(() => (openStation && open ? menu(openStation, open.from, state) : undefined), [openStation, open, state.entities, state.params])
+  // Cards answer E once the menu has flown open (control.ts takes 0.45 s), at once under reduced motion.
+  const [armed, setArmed] = useState(false)
+  useEffect(() => {
+    setArmed(false)
+    if (!open) return
+    const timer = setTimeout(() => setArmed(true), media('(prefers-reduced-motion: reduce)') ? 0 : 450)
+    return () => clearTimeout(timer)
+  }, [open?.key])
+  const menuRef = useRef<{ at?: readonly number[] }>({})
+  menuRef.current = { at: openStation?.at }
+  const toggle = (key: string) => {
+    playSound('click')
+    const feet = room.current?.fps.feet()
+    setOpen((now) => (now?.key === key || !feet ? null : { key, from: [feet.x, feet.z] }))
+  }
   const sendWithSound = useRef(send)
   sendWithSound.current = (command: Command) => {
     playSound('click')
@@ -114,21 +138,27 @@ export function MissionControl({ state, send, players = NO_PLAYERS, me, title, d
       ],
       bars: budgetBars(m),
       calls,
-      racks: rackList,
+      stations: stationList,
+      menu: openMenu,
       craft: sceneSpec(state).craft,
       debrief: debrief && { grade: debrief.grade, score: debrief.score, outcome: debrief.outcome, fix: debrief.fix?.change },
     })
     const launchBlocked = calls.some((c) => c.call === 'no-go') ? 'A console says NO-GO' : undefined
-    r.fps.setPlace(interactables(rackList, { send: (c) => sendWithSound.current(c), launchBlocked, debrief }), walls)
-  }, [state, rackList, calls, walls, title, debrief])
+    r.fps.setPlace(interactables(stationList, { send: (c) => sendWithSound.current(c), launchBlocked, debrief, menu: openMenu, armed, toggle }), walls)
+    // Dev builds only: QA reads the stations and the open menu from the console (`__hall()`), next to `__fps`.
+    if (import.meta.env.DEV) Object.assign(window, { __hall: () => ({ centre: [STAND[0], STAND[2]], stations: stationList.map((s) => ({ key: s.key, at: s.at, picked: s.picked })), open: openMenu?.key ?? null, cards: (openMenu?.cards ?? []).map((c) => ({ id: c.id, at: c.at, picked: c.picked })), params: state.params }) })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state, stationList, calls, walls, title, debrief, openMenu, armed])
 
   useEffect(() => room.current?.setActive(enabled), [enabled])
 
   const part = aimed?.id.startsWith('rack:') ? state.entities.find((e) => e.id === aimed.id.split(':')[2]) : undefined
-  const help = partHelp(part) ?? (aimed?.id === 'launch'
+  const aimedStation = aimed?.id.startsWith('station:') ? stationList.find((s) => `station:${s.key}` === aimed.id) : undefined
+  const help = partHelp(part) ?? (aimedStation ? { title: aimedStation.slot.label, text: aimedStation.slot.hint ?? 'Open the menu to see the parts on offer.' }
+    : aimed?.id === 'launch'
     ? { title: 'Launch mission', text: 'Check all four consoles. A red NO-GO blocks launch; warnings may still reduce the science you bring home.' }
     : aimed?.id === 'fix' ? { title: 'Try the fix', text: 'Try the best single change on a fresh design. Your finished mission record is kept.' }
-    : aimed?.id === 'again' ? { title: 'Design again', text: 'Return to the parts racks and build another mission.' } : undefined)
+    : aimed?.id === 'again' ? { title: 'Design again', text: 'Return to the hologram stations and build another mission.' } : undefined)
 
   return (
     <div className={`mc${className ? ` ${className}` : ''}`}>
@@ -137,7 +167,7 @@ export function MissionControl({ state, send, players = NO_PLAYERS, me, title, d
         <p className="mc-fallback">This view needs WebGL, which is off in this browser.</p>
       ) : (
         enabled && <FpsPrompt aimed={aimed} blocked={aimed && blocked(aimed)} locked={locked} help={help}
-          objective={debrief ? 'Read the debrief · Try the fix at the spacecraft stand' : 'Fit parts at the racks · Check GO / NO-GO · Walk to Launch'} />
+          objective={debrief ? 'Read the debrief · Try the fix at the spacecraft' : 'Open a hologram station to fit parts · Check GO / NO-GO · Walk to Launch'} />
       )}
     </div>
   )

@@ -39,7 +39,8 @@ export interface Fps {
 
 const MOUSE = 0.0022
 const KEY_TURN = 1.9 // radians per second with the arrow keys
-const BOB = 0.035
+/** Seconds for the walking head motion to ease in when you set off and out when you stop. */
+const SETTLE = 0.16
 /** How fast walk speed and head bob catch the keys. Shorter feels snappier; this is a short glide, not a slide. */
 const GLIDE = 0.11
 /** Mouse and arrow look follow a few frames behind the input so a jumpy frame does not jerk the view. */
@@ -47,6 +48,25 @@ const LOOK = 0.04
 
 const damp = (current: number, target: number, dt: number, tau: number) =>
   current + (target - current) * (1 - Math.exp(-dt / tau))
+
+/**
+ * How the eye moves while walking, as real heads do: up and down once per step, side to side over two
+ * steps (the weight shifting from foot to foot), with a slight lean into each step and a small nod.
+ * `phase` advances by π per step; `amp` is 0 standing, 1 walking, a little more running.
+ * Metres and radians: a few centimetres and fractions of a degree, so it never reads as a shaking camera.
+ */
+export function headMotion(phase: number, amp: number): { y: number; sway: number; roll: number; nod: number } {
+  const stride = Math.sin(phase)
+  return {
+    y: 0.038 * amp * (stride * stride - 0.5),
+    sway: 0.02 * amp * stride,
+    roll: -0.0055 * amp * stride,
+    nod: 0.0035 * amp * Math.sin(2 * phase + 0.6),
+  }
+}
+
+/** Metres per step at a given speed: longer strides when running, so the cadence rises gently (about 2.4 → 3 steps a second), not in proportion. */
+const strideAt = (speed: number) => Math.max(1, Math.min(2.1, 1.3 + (speed - WALK_MS) * 0.25))
 
 const usingUi = (t: EventTarget | null) =>
   t instanceof HTMLElement && (t.isContentEditable || !!t.closest('button, a, input, textarea, select, [role="dialog"], dialog'))
@@ -64,7 +84,8 @@ export function createFps(element: HTMLElement, camera: PerspectiveCamera, optio
   let aimed: Interactable | undefined
   let enabled = true
   let locked = false
-  let walked = 0
+  let phase = 0
+  let head = headMotion(0, 0)
   let velF = 0
   let velR = 0
   let speedNow = WALK_MS
@@ -197,18 +218,21 @@ export function createFps(element: HTMLElement, camera: PerspectiveCamera, optio
       speedNow = damp(speedNow, run ? RUN_MS : WALK_MS, dt, GLIDE)
       const next = step(pos, yaw, { forward: velF, right: velR }, dt, speedNow, obstacles)
       const moved = Math.hypot(next[0] - pos[0], next[2] - pos[2])
+      // The speed actually covered, so walking into a wall does not bob on the spot.
+      const speed = dt > 0 ? moved / dt : 0
       if (moved > 0.0001) {
         pos = next
-        walked += moved
+        phase += (Math.PI * moved) / strideAt(speed)
         changed = true
       }
-      const walking = Math.hypot(velF, velR) > 0.08 && !options.reducedMotion
-      bobAmp = options.reducedMotion ? 0 : damp(bobAmp, walking ? 1 : 0, dt, 0.14)
-      if (!walking && bobAmp < 0.03) bobAmp = 0
-      const bob = BOB * bobAmp * Math.abs(Math.sin(walked * 2.4))
-      if (Math.abs(camera.position.y - (EYE + bob)) > 0.0001) changed = true
-      camera.position.set(pos[0], EYE + bob, pos[2])
-      camera.rotation.set(pitch, yaw, 0)
+      bobAmp = options.reducedMotion ? 0 : damp(bobAmp, Math.min(1.3, speed / WALK_MS), dt, SETTLE)
+      if (moved <= 0.0001 && bobAmp < 0.03) bobAmp = 0
+      const was = head
+      head = headMotion(phase, bobAmp)
+      if (head.y !== was.y || head.sway !== was.sway || Math.abs(camera.position.y - (EYE + head.y)) > 0.0001) changed = true
+      // Only the camera moves: `pos`, the aim ray and feet() stay on the walked line.
+      camera.position.set(pos[0] + Math.cos(yaw) * head.sway, EYE + head.y, pos[2] - Math.sin(yaw) * head.sway)
+      camera.rotation.set(pitch + head.nod, yaw, head.roll)
 
       const now = aimAt([pos[0], EYE, pos[2]], lookDir(yaw, pitch), items)
       if (now !== aimed) {
