@@ -1,0 +1,51 @@
+.lunar-screen {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: #000;
+  color: #f4f1ea;
+}
+.lunar-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  padding: 0.75rem 1rem;
+}
+.lunar-bar div { flex: 1 1 16rem; }
+.lunar-bar h2,
+.lunar-bar p { margin: 0; }
+.lunar-bar p { color: #c9c3b6; font-size: 0.9rem; }
+.lunar-stage {
+  position: relative;
+  flex: 1;
+  min-height: 420px;
+}
+.lunar-stage canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.lunar-readout,
+.lunar-status {
+  position: absolute;
+  z-index: 2;
+  max-width: min(28rem, calc(100% - 1.5rem));
+  margin: 0;
+  padding: 0.7rem 0.85rem;
+  background: rgba(0, 0, 0, 0.72);
+  border: 1px solid rgba(244, 241, 234, 0.18);
+  border-radius: 0.4rem;
+}
+.lunar-readout { left: 0.75rem; bottom: 0.75rem; }
+.lunar-readout p { margin: 0.25rem 0 0; }
+.lunar-status { top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+.lunar-keys {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  z-index: 2;
+  margin: 0;
+  color: #c9c3b6;
+  font-size: 0.85rem;
+}

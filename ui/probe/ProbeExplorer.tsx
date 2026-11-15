@@ -38,7 +38,7 @@ export interface ProbeExplorerProps {
 }
 
 /** Metres of clear air between your feet and the tallest ground in the patch. */
-const FLOAT_CLEAR_M = 14
+const FLOAT_CLEAR_M = 8
 
 const METRES_PER_DEG = 111_320
 
@@ -127,7 +127,8 @@ function skyTexture(top: string, horizon: string) {
 function groundMesh(grid: HeightGrid, texture: THREE.Texture | null, family: GroundCover) {
   const { width, depth } = metres(grid)
   const rise = grid.max_m - grid.min_m
-  const exaggerate = rise < 1 ? 1 : rise < 50 ? 6 : rise < 140 ? 3 : 1.6
+  // Gentle ground (deserts, plains) used to be drawn 6× taller and looked mountainous.
+  const exaggerate = rise < 1 ? 1 : rise < 50 ? 2 : rise < 140 ? 1.8 : 1.25
   const geo = new THREE.PlaneGeometry(width, depth, grid.cols - 1, grid.rows - 1)
   geo.rotateX(-Math.PI / 2)
   const pos = geo.attributes.position

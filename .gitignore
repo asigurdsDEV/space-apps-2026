@@ -14,3 +14,5 @@ build/
 Library/
 Temp/
 Logs/
+# Full NASA tiles. scripts/terrain crops a small patch into public/terrain/.
+data/terrain/raw/

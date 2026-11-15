@@ -6,6 +6,9 @@
  */
 export const PUBLIC_FILES = [
   'icon.svg',
+  'terrain/moon/apollo17/color.jpg',
+  'terrain/moon/apollo17/height.f32',
+  'terrain/moon/apollo17/meta.json',
   'manifest.webmanifest',
   'visual-assets/flight/hurricane.glb',
   'visual-assets/flight/manifest.json',

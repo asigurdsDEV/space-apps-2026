@@ -24,12 +24,17 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ### Working on right now
 
-Desktop acceptance for cursor@caleb (agent down). First slice is in docs/qa/first-person.md: emulated 1280×800, 1920×1080, and 1100×700 on nasaspacemission.vercel.app, plus a cached re-download. Still open: real browser zoom, a blocked-download retry, the launch movie, and a physical GPU.
+Pushing the Apollo 17 walk and a smaller Earth-survey change (closer hover, less vertical stretch) to main. Moon terrain lighting and mesh are not being retuned.
 
 ### Files / folders I'm touching (hands off)
 
-- `docs/qa/first-person.md`
-- this section, my BOARD line, LOG, handoff `20261115-0915-cursor@kaipo-cursor@caleb-desktop-qa.md`
+- `ui/terrain/`
+- `public/terrain/moon/apollo17/`
+- `scripts/terrain/prepare_apollo17.py`
+- `app/Training.tsx` (Moon walk entry only)
+- `pwa/public-files.ts` (three new public files)
+- `CALEB_AGENT_HANDOFF.md`
+- this section
 
 ### Just finished
 

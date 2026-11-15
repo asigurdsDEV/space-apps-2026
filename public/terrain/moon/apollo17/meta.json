@@ -1,0 +1,25 @@
+{
+  "name": "Apollo 17, Taurus-Littrow",
+  "lat": 20.1908,
+  "lon": 30.77168,
+  "cols": 256,
+  "rows": 256,
+  "south": 19.94140625,
+  "north": 20.44140625,
+  "west": 30.521484375,
+  "east": 31.021484375,
+  "min_m": -2934.8361492156982,
+  "max_m": -676.6564249992371,
+  "mean_m": -2311.604686841747,
+  "center_m": -2628.966808319092,
+  "radius_m": 1737400.0,
+  "row0": "north",
+  "encoding": "float32-le-row-major-metres",
+  "elevation": "SLDEM2015 512 ppd, LRO LOLA + Kaguya TC, km relative to 1737.4 km, stored here as metres",
+  "imagery": "USGS WMS LROC_WAC (LRO LROC Wide Angle Camera global mosaic), 768 px, same bounds",
+  "sources": [
+    "https://pgda.gsfc.nasa.gov/products/54",
+    "https://imbrium.mit.edu/DATA/SLDEM2015/TILES/FLOAT_IMG/SLDEM2015_512_00N_30N_000_045_FLOAT.IMG",
+    "https://planetarymaps.usgs.gov/cgi-bin/mapserv?map=/maps/earth/moon_simp_cyl.map"
+  ]
+}

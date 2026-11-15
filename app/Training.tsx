@@ -13,6 +13,7 @@ import { FlightView } from '../ui/scene3d'
 import type { SurveyBody, SurveyReport, SurveySpot } from './session'
 
 const ProbeExplorer = lazy(() => import('../ui/probe/ProbeExplorer'))
+const LunarExplorer = lazy(() => import('../ui/terrain/LunarExplorer'))
 
 export interface Progress {
   results: Results
@@ -68,7 +69,9 @@ export default function Training({ state, onClose, survey }: TrainingProps) {
   const spotNow = useRef(spot)
   spotNow.current = spot
   const earth = isEarthScenario(state.entities)
+  const moon = bodyOf(state) === 'moon'
   const guest = !!survey && !survey.host
+  const [onMoon, setOnMoon] = useState(false)
 
   const focusPad = () => root.current?.querySelector<HTMLElement>('.pi-pad')?.focus({ preventScroll: true })
   const close = useRef(onClose)
@@ -86,12 +89,18 @@ export default function Training({ state, onClose, survey }: TrainingProps) {
     link.current?.report({ down: false, x: 0, z: 0, yaw: 0, lat: here.lat, lon: here.lon })
   }, [])
   useEffect(() => {
-    if (drop) return
+    if (drop || onMoon) return
     root.current?.scrollIntoView()
     focusPad()
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') close.current()
-      if (event.code !== 'KeyQ' || event.repeat || !earth) return
+      if (event.code !== 'KeyQ' || event.repeat) return
+      if (moon) {
+        event.preventDefault()
+        setOnMoon(true)
+        return
+      }
+      if (!earth) return
       if (guest) {
         const here = spotNow.current
         if (!here.placed) return
@@ -105,7 +114,7 @@ export default function Training({ state, onClose, survey }: TrainingProps) {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [drop, earth, guest])
+  }, [drop, earth, guest, moon, onMoon])
   // Once the host is actually on the ground, guests already down move to that spot.
   useEffect(() => {
     if (!guest || !drop || !spot.landed) return
@@ -118,6 +127,14 @@ export default function Training({ state, onClose, survey }: TrainingProps) {
     const seat = Math.min(link.current?.seat ?? 0, 3)
     link.current?.report({ down: true, x: seat * 1.6, z: 4, yaw: 0, lat: drop.lat, lon: drop.lon })
   }, [drop])
+
+  if (onMoon) {
+    return (
+      <Suspense fallback={<p className="app-training-loading" aria-busy="true">Loading the ground…</p>}>
+        <LunarExplorer onClose={() => setOnMoon(false)} />
+      </Suspense>
+    )
+  }
 
   if (drop) {
     return (
@@ -146,6 +163,11 @@ export default function Training({ state, onClose, survey }: TrainingProps) {
                 : 'Only the host can move the landing spot. This waits until they fly to one.'}
             </p>
           </div>
+          {moon && (
+            <button type="button" className="game-button app-small" onClick={() => setOnMoon(true)}>
+              Walk Taurus-Littrow
+            </button>
+          )}
           <button type="button" className="game-button app-small" onClick={onClose}>
             Back to the mission
           </button>
@@ -165,6 +187,11 @@ export default function Training({ state, onClose, survey }: TrainingProps) {
               : 'Practice only: nothing here changes your mission or your score. Fly to a place, then press Q to float above that ground.'}
           </p>
         </div>
+        {moon && (
+          <button type="button" className="game-button app-small" onClick={() => setOnMoon(true)}>
+            Walk Taurus-Littrow
+          </button>
+        )}
         <button type="button" className="game-button app-small" onClick={onClose}>
           Back to the mission
         </button>
@@ -187,9 +214,11 @@ export default function Training({ state, onClose, survey }: TrainingProps) {
         <p className="game-muted" style={{ position: 'absolute', left: 16, bottom: 16, maxWidth: 420, margin: 0 }}>
           Ground under the craft: <strong ref={where}>—</strong>
           <br />
-          {earth
-            ? 'No storm or fire marks. W A S D fly, R up, F down. Q floats you above this spot. On the ground, Q returns to the ship.'
-            : 'NASA’s elevation grid covers Earth. Fly around, then go back to the mission.'}
+          {moon
+            ? 'Walk Taurus-Littrow opens the Apollo 17 ground from SLDEM2015. This orbit view is still here when you come back. Q on the ground returns to orbit.'
+            : earth
+              ? 'No storm or fire marks. W A S D fly, R up, F down. Q floats you above this spot. On the ground, Q returns to the ship.'
+              : 'NASA’s elevation grid covers Earth. Fly around, then go back to the mission.'}
         </p>
       </div>
       <PilotInput onIntent={setIntent} onInteract={() => {}} />
