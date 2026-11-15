@@ -102,9 +102,9 @@ export default function LiveEarth({ onClose }: { onClose: () => void }) {
   useEffect(() => {
     for (const layer of LAYERS) scene.current?.show(layer, layers[layer])
   }, [layers])
-  // Run when a satellite is picked, and again only once the pass it found is behind us: up to 0.4 s of work in small slices (README.md).
+  // Run when a satellite is picked, and again only once the pass it found is a minute behind us: up to 0.4 s of work in small slices (README.md).
   useEffect(() => {
-    if (screening && screening.closest && Date.parse(screening.closest.at) < clock) setScreenings((n) => n + 1)
+    if (screening && screening.closest && Date.parse(screening.closest.at) < clock - 60_000) setScreenings((n) => n + 1)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clock])
   useEffect(() => {
@@ -141,7 +141,7 @@ export default function LiveEarth({ onClose }: { onClose: () => void }) {
           <p className="game-eyebrow">Live Earth · {timeText(clock)}</p>
           <h1 id={title}>The Earth right now</h1>
           <p className="le-note">
-            {noGlobe ? 'This device cannot draw the 3D globe. The live data is below. '
+            {noGlobe ? 'This device cannot draw the 3D globe. The live data is still here.'
               : !imagery ? 'Loading the latest satellite picture…'
               : imagery.feed.ok && imagery.shown ? `Clouds photographed ${dayText(imagery.feed.asOf)} by VIIRS on NOAA-20 (NASA GIBS). Sunlight is as of now.`
               : `${imagery.feed.ok ? 'The picture could not be shown.' : imagery.feed.reason} Showing the bundled map, without today’s clouds.`}

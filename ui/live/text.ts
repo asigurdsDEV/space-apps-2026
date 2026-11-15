@@ -34,8 +34,9 @@ export function approachText(s: Screening, nowMs: number): { headline: string; w
   if (s.sharingAltitude === 0) return { headline: 'None at this height', when: '', detail: 'No tracked piece from these four debris clouds reaches this height.' }
   const pieces = `${count(s.sharingAltitude)} tracked ${s.sharingAltitude === 1 ? 'piece crosses' : 'pieces cross'} this height.`
   if (!s.closest) return { headline: 'No pass found', when: '', detail: pieces }
+  const minutes = Math.round((Date.parse(s.closest.at) - nowMs) / 60_000)
   const old = s.closest.elementsAgeDays >= 2 ? ` (its orbit data is ${Math.round(s.closest.elementsAgeDays)} days old)` : ''
-  return { headline: `${count(s.closest.distanceKm)} km`, when: `in ${Math.max(0, Math.round((Date.parse(s.closest.at) - nowMs) / 60_000))} min`, detail: `${debrisName(s.closest.name)}${old}. ${pieces}` }
+  return { headline: `${count(s.closest.distanceKm)} km`, when: minutes > 0 ? `in ${minutes} min` : 'now', detail: `${debrisName(s.closest.name)}${old}. ${pieces}` }
 }
 
 /** "0.67 · quiet" or "7.33 · G3 strong storm". */

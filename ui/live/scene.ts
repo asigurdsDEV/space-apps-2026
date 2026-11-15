@@ -40,22 +40,29 @@ const FOV = 38
 const RING_POINTS = 181
 const RAD = Math.PI / 180
 
-/** A soft round dot, or a ring with a dot for a storm. */
-function glyph(ring: boolean): THREE.CanvasTexture {
+/** A round dot; with `edge`, a dark rim so it shows over white cloud; with `ring`, a storm's ring round a small dot. */
+function glyph(edge: boolean, ring = false): THREE.CanvasTexture {
   const size = 64
   const canvas = document.createElement('canvas')
   canvas.width = canvas.height = size
   const g = canvas.getContext('2d')!
-  g.fillStyle = g.strokeStyle = '#fff'
-  g.beginPath()
-  g.arc(size / 2, size / 2, ring ? 7 : 26, 0, Math.PI * 2)
-  g.fill()
-  if (ring) {
-    g.lineWidth = 5
+  const disc = (radius: number, colour: string) => {
+    g.fillStyle = colour
     g.beginPath()
-    g.arc(size / 2, size / 2, 24, 0, Math.PI * 2)
-    g.stroke()
+    g.arc(size / 2, size / 2, radius, 0, Math.PI * 2)
+    g.fill()
   }
+  if (ring) {
+    for (const [width, colour] of [[11, 'rgb(0 0 2 / 0.6)'], [5, '#fff']] as const) {
+      g.strokeStyle = colour
+      g.lineWidth = width
+      g.beginPath()
+      g.arc(size / 2, size / 2, 24, 0, Math.PI * 2)
+      g.stroke()
+    }
+  }
+  if (edge) disc(ring ? 11 : 30, 'rgb(0 0 2 / 0.6)')
+  disc(ring ? 7 : edge ? 20 : 26, '#fff')
   return new THREE.CanvasTexture(canvas)
 }
 
@@ -111,8 +118,9 @@ export function createLiveScene(container: HTMLElement, options: LiveSceneOption
   scene.add(air)
 
   const dot = glyph(false)
-  const stormGlyph = glyph(true)
-  const owned: { dispose(): void }[] = [planet.geometry, planet.material, air.geometry, air.material, dot, stormGlyph]
+  const satelliteGlyph = glyph(true)
+  const stormGlyph = glyph(true, true)
+  const owned: { dispose(): void }[] = [planet.geometry, planet.material, air.geometry, air.material, dot, satelliteGlyph, stormGlyph]
   /** One draw call of screen-sized dots in the Earth's frame. */
   function cloud(positions: Float32Array, material: THREE.PointsMaterialParameters): THREE.Points {
     const geometry = new THREE.BufferGeometry()
@@ -344,7 +352,7 @@ export function createLiveScene(container: HTMLElement, options: LiveSceneOption
     },
     setSatellites(orbits) {
       const at = new Float32Array(orbits.elements.length * 3)
-      satellites = { orbits, at, points: cloud(at, { size: 7, map: dot, color: 0xffffff }) }
+      satellites = { orbits, at, points: cloud(at, { size: 10, map: satelliteGlyph, color: 0xffffff }) }
       satellites.points.visible = shown.satellites
       moveCloud(satellites)
     },
@@ -363,7 +371,7 @@ export function createLiveScene(container: HTMLElement, options: LiveSceneOption
         t.at.toArray(at, i * 3)
         return t
       })
-      stormPoints = cloud(at, { size: 16, map: stormGlyph, color: 0xf0d9a0 })
+      stormPoints = cloud(at, { size: 18, map: stormGlyph, color: 0xf0d9a0 })
       stormPoints.visible = shown.storms
     },
     pick(index, name) {

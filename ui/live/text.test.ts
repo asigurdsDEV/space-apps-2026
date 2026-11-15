@@ -36,6 +36,7 @@ describe('Live Earth wording', () => {
     expect(approachText(screening({}), NOW)).toEqual({ headline: '117 km', when: 'in 64 min', detail: 'Cosmos 2251 debris. 11 tracked pieces cross this height.' })
     // The minutes count down while the screen stays open.
     expect(approachText(screening({}), NOW + 10 * 60_000).when).toBe('in 54 min')
+    expect(approachText(screening({}), NOW + 64 * 60_000).when).toBe('now')
     expect(approachText(screening({ sharingAltitude: 1 }), NOW).detail).toBe('Cosmos 2251 debris. 1 tracked piece crosses this height.')
   })
 

@@ -27,24 +27,28 @@ dialog.le {
   position: absolute;
   left: 0;
   top: 0;
-  margin: -0.7em 0 0 14px;
+  margin: -0.8em 0 0 15px;
+  padding: 0.1em 0.5em;
+  border-radius: 999px;
+  /* A dark pill: the name must read over white cloud and ice. */
+  background: rgb(0 0 2 / 0.6);
   white-space: nowrap;
   font-size: 0.75rem;
   line-height: 1.4;
   color: var(--game-warning);
-  text-shadow: 0 0 4px #000, 0 0 2px #000;
 }
 .le-tag--picked { color: var(--game-text); font-size: 0.8125rem; }
 /* The ring round the picked satellite's dot. */
 .le-tag--picked::before {
   content: "";
   position: absolute;
-  left: -24px;
-  top: calc(0.7em - 10px);
-  width: 20px;
-  height: 20px;
+  left: -26px;
+  top: calc(0.8em - 11px);
+  width: 22px;
+  height: 22px;
   border: 1px solid #fff;
   border-radius: 50%;
+  box-shadow: 0 0 0 1px rgb(0 0 2 / 0.6), inset 0 0 0 1px rgb(0 0 2 / 0.6);
 }
 
 .le-panel {

@@ -1,6 +1,40 @@
-# Live Earth data layer
+# Live Earth
 
-Real feeds for the Live Earth screen: yesterday's Earth, real satellites, tracked debris, a close-approach screening, space weather and open storms. No React and no three.js in here; the screen imports from `ui/live` (`index.ts`). No API key, no account, nothing about the player in any request (no cookies, no referrer, fixed URLs).
+One screen: the real Earth right now. A globe carrying the latest full day of satellite imagery, lit by the Sun where it stands this minute, with real satellites and tracked debris where they are this second, a close-approach screening, space weather and open storms. No API key, no account, nothing about the player in any request (no cookies, no referrer, fixed URLs).
+
+## The screen
+
+`LiveEarth.tsx` (default export, `{ onClose }`) is a full-window modal `<dialog>` put on `document.body`, so it looks and behaves the same wherever it is opened. Back or Esc closes it and the browser gives the focus back to the button that opened it. It is imported lazily from two places and nothing else in the game knows about it:
+
+- the Classic mission screen, in the bar beside "Survey the planet" (`app/App.tsx`). Solo, the mission clock waits while it is open; the mission screen under it is not laid out, so its 3D view stops drawing.
+- the 3D game's Mission menu (`app/WorldMenu.tsx`), in every phase.
+
+Preview: `/ui/live/preview.html` (`?closed` starts with it shut).
+
+| File | What it is |
+|---|---|
+| `LiveEarth.tsx`, `live.css` | The dialog, two glass panels, the toggles, and the same things in words for screen readers |
+| `scene.ts` | Its own small three.js scene: six draw calls (globe, air, satellites, debris, storms, the picked orbit); names are HTML over the canvas |
+| `earthShader.ts` | The game's Earth shader (`ui/scene3d`) with the live picture spliced in over the bundled map |
+| `text.ts` | Every sentence and number format on the panel, tested |
+| the rest | The data layer below: no React and no three.js; import it from `index.ts` |
+
+How it behaves:
+
+- **Opens at once** with the bundled Earth; each layer appears when its feed answers and the picture fades in over 1.2 s. The globe's place and size depend only on the window, so nothing jumps as the panels fill.
+- **The Sun is fixed in the scene** at today's real height over the equator and the globe turns under it on the real clock, north up. The view drifts once round in ten minutes until the player touches it.
+- **Picking** a satellite (the list, or a click on its dot) names it, draws its orbit and glides the view to it; a storm's button glides to the storm. The view leans a little toward the Sun so a thing over the night side is seen against the lit edge.
+- **Every item says where and when it is from.** A feed that fails says so in its own item and the rest carry on; with no connection the screen says "Live data needs a connection." and shows the bundled Earth.
+- **The close-approach minutes count down** on the device clock, and the screening runs again once the pass it found is a minute behind.
+- **Reduced motion:** no drift, no glide (the view jumps to what was picked), no fade.
+- **A phone** (900 px wide or less): the globe takes the top half and everything else is one sheet that scrolls in the bottom half.
+- **No WebGL:** the panels still work and say the globe cannot be drawn.
+
+Measured in headless Chrome (Metal) on 2026-11-15 with other work running on the machine: 6 draw calls a frame, 16.6 ms a frame (the display's own rate) at 1290x690 and at 390x844 with all 2,681 debris pieces shown.
+
+## The data layer
+
+Real feeds for the screen. The screen imports from `ui/live` (`index.ts`).
 
 `docs/NASA_SOURCES.md` and `docs/CHALLENGE_OFFICIAL.md` name no live feed for these items. GIBS was already in the repo (`ui/probe/nasa.ts`); the rest are official open NASA and NOAA services, and CelesTrak for orbits.
 
@@ -146,6 +180,11 @@ Kp comes with NOAA's storm level: `g` 0 to 5 and a label. The game's storm cards
 `satellite.js` 6.0.2 (MIT), imported with `import()` inside `loadOrbits`. In a trial build it became its own chunk, 24.1 kB (11.6 kB gzipped), next to a 14 kB chunk for this folder; the first load stayed 72.5 kB. **Stay on 6.x:** 7.x also ships a WebAssembly build with a worker and top-level await, and `vite build` fails on it (`Module format "iife" does not support top-level await`).
 
 ## Not done
+
+- The screen never asks a feed again while it stays open (no fetch loop), so a screen left open for hours shows old values with their true "as of" times. Closing and reopening it refreshes whatever has passed its refresh rule.
+- The night side is as dark as it really is, so a storm or a cloud system on it cannot be seen until the Sun reaches it.
+- Storm names are not kept apart: two storms close together overlap their labels.
+- A landscape phone gets the desktop layout only above 900 px; under that the globe has half the window's height.
 
 - No check that a day's picture is complete beyond its file size; a day with one missing orbit would still be shown.
 - The Cache Storage copy of the picture and the `localStorage` copies of the feeds are never cleared except by being replaced.
