@@ -140,61 +140,6 @@ function tiledBox(w: number, h: number, d: number, u: number, v: number) {
   return geo
 }
 
-/** One service panel: a seam, corner fasteners, vent slots, a latch, scuffs, and shade baked into its edges. Light grey, so each material tints it. */
-function panelMap() {
-  return painted(512, 512, (g) => {
-    const rnd = seeded(23)
-    g.fillStyle = '#c6c9cf'
-    g.fillRect(0, 0, 512, 512)
-    for (let i = 0; i < 220; i++) {
-      g.fillStyle = rnd() < 0.5 ? 'rgba(0,0,0,0.035)' : 'rgba(255,255,255,0.045)'
-      g.fillRect(rnd() * 512, rnd() * 512, 20 + rnd() * 90, 2 + rnd() * 5)
-    }
-    for (const [x0, y0, x1, y1] of [[0, 0, 70, 0], [512, 0, 442, 0], [0, 0, 0, 70], [0, 512, 0, 442]] as const) {
-      const fade = g.createLinearGradient(x0, y0, x1, y1)
-      fade.addColorStop(0, 'rgba(0,0,0,0.42)')
-      fade.addColorStop(1, 'rgba(0,0,0,0)')
-      g.fillStyle = fade
-      g.fillRect(0, 0, 512, 512)
-    }
-    g.lineWidth = 3
-    g.strokeStyle = 'rgba(20,22,28,0.75)'
-    g.strokeRect(22, 22, 468, 468)
-    g.strokeStyle = 'rgba(255,255,255,0.3)'
-    g.strokeRect(25, 25, 462, 462)
-    for (const [x, y] of [[44, 44], [468, 44], [44, 468], [468, 468]] as const) {
-      g.fillStyle = '#4d525b'
-      g.beginPath()
-      g.arc(x, y, 7, 0, Math.PI * 2)
-      g.fill()
-      g.fillStyle = 'rgba(255,255,255,0.5)'
-      g.beginPath()
-      g.arc(x - 1.5, y - 1.5, 2.6, 0, Math.PI * 2)
-      g.fill()
-    }
-    g.fillStyle = 'rgba(18,20,26,0.8)'
-    for (let row = 0; row < 6; row++) for (let col = 0; col < 2; col++) {
-      g.beginPath()
-      if (g.roundRect) g.roundRect(84 + col * 180, 330 + row * 20, 160, 8, 4)
-      else g.rect(84 + col * 180, 330 + row * 20, 160, 8)
-      g.fill()
-    }
-    g.fillStyle = 'rgba(18,20,26,0.55)'
-    g.fillRect(330, 92, 96, 34)
-    g.fillStyle = 'rgba(255,255,255,0.35)'
-    g.fillRect(338, 106, 80, 6)
-    g.strokeStyle = 'rgba(255,255,255,0.22)'
-    g.lineWidth = 1.5
-    for (let i = 0; i < 16; i++) {
-      const x = rnd() * 512, y = rnd() * 512
-      g.beginPath()
-      g.moveTo(x, y)
-      g.lineTo(x + (rnd() - 0.5) * 90, y + (rnd() - 0.5) * 26)
-      g.stroke()
-    }
-  })
-}
-
 /** Brushed metal: fine streaks along the grain, tiling. */
 function brushedMap() {
   const map = painted(256, 256, (g) => {
@@ -408,13 +353,11 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
     m.userData.shared = true // modules are rebuilt; these outlive them
     return m
   }
-  const panel = panelMap()
   const brushed = brushedMap()
   const blob = blobMap()
   // The same grain, four times finer, for dark machined parts.
   const grain = brushed.clone()
   grain.repeat.set(4, 4)
-  const paint = keep(new THREE.MeshStandardMaterial({ map: panel, color: 0x767d89, roughness: 0.5, metalness: 0.35 }))
   const metal = keep(new THREE.MeshStandardMaterial({ map: brushed, color: 0xb4bac4, roughness: 0.36, metalness: 0.85 }))
   const gun = keep(new THREE.MeshStandardMaterial({ map: grain, color: 0x4d535d, roughness: 0.5, metalness: 0.55 }))
   const dark = keep(new THREE.MeshStandardMaterial({ color: 0x14161a, roughness: 0.5, metalness: 0.35 }))
@@ -439,11 +382,11 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   // cursor@kaipo's survey hatch: a round gold hatch in the floor (E on it goes down to the ground on Earth missions).
   const gold: Pieces = []
   put(gold, new THREE.TorusGeometry(0.45, 0.035, 10, 48).rotateX(FACING), 0, 0.02, 0)
-  put(gold, new THREE.LatheGeometry([[0.43, 0.02], [0.41, 0.034], [0.37, 0.034], [0.34, 0.022], [0.17, 0.022], [0.14, 0.036], [0, 0.036]].map(([r, y]) => new THREE.Vector2(r, y)), 48))
-  put(gold, new THREE.TorusGeometry(0.06, 0.011, 8, 24).rotateX(FACING), 0, 0.042, 0)
+  put(gold, new THREE.LatheGeometry([[0.43, 0.02], [0.41, 0.04], [0.37, 0.04], [0.345, 0.024], [0.3, 0.026], [0.2, 0.046], [0.17, 0.05], [0.14, 0.05], [0.125, 0.03], [0, 0.03]].map(([r, y]) => new THREE.Vector2(r, y)), 48))
+  put(gold, rounded(0.24, 0.022, 0.03, 0.01), 0, 0.05, 0) // a pull bar across the well in the middle
   put(gold, rounded(0.22, 0.05, 0.08, 0.02), 0, 0.025, -0.48)
   for (let i = 0; i < 6; i++) put(gold, rounded(0.08, 0.036, 0.05, 0.012).rotateY(-(i + 0.5) * (Math.PI / 3) + FACING), Math.cos((i + 0.5) * (Math.PI / 3)) * 0.47, 0.03, Math.sin((i + 0.5) * (Math.PI / 3)) * 0.47)
-  const probeHatch = new THREE.Mesh(mergeGeometries(gold), new THREE.MeshStandardMaterial({ color: 0xc9a227, emissive: 0x6a4e10, emissiveIntensity: 0.35, roughness: 0.38, metalness: 0.6 }))
+  const probeHatch = new THREE.Mesh(mergeGeometries(gold), new THREE.MeshStandardMaterial({ color: 0xc9a227, emissive: 0x6a4e10, emissiveIntensity: 0.16, roughness: 0.34, metalness: 0.7 }))
   probeHatch.position.set(HATCH[0], 0, HATCH[2])
   scene.add(probeHatch)
   fitted([tiledBox(W, 0.1, D, 2, 2).translate(0, -0.05, 0)], new THREE.MeshStandardMaterial({ map: floorMap(), color: 0x7e848e, roughness: 0.6, metalness: 0.15 }))
@@ -457,7 +400,6 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   // Fittings, merged so each material is one draw call.
   const metals: Pieces = []
   const guns: Pieces = []
-  const paints: Pieces = []
   const darks: Pieces = []
   const rails: Pieces = []
   const lamps: Pieces = []
@@ -468,6 +410,9 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   const flatOn = (w: number, d: number) => new THREE.PlaneGeometry(w, d).rotateX(-FACING)
   put(darks, new THREE.TorusGeometry(0.385, 0.007, 6, 48).rotateX(FACING), HATCH[0], 0.036, HATCH[2])
   put(shades, flatOn(1.5, 1.5), HATCH[0], 0.004, HATCH[2])
+  // Its steel collar, bolted to the deck.
+  put(metals, new THREE.LatheGeometry([[0.58, 0], [0.58, 0.006], [0.565, 0.014], [0.44, 0.014]].map(([r, y]) => new THREE.Vector2(r, y)), 48), HATCH[0], 0, HATCH[2])
+  for (let i = 0; i < 12; i++) put(darks, new THREE.CylinderGeometry(0.012, 0.012, 0.008, 6), HATCH[0] + Math.cos(i * 0.5236) * 0.53, 0.016, HATCH[2] + Math.sin(i * 0.5236) * 0.53)
 
   // A ring frame every metre: deck to crown and down again, standing proud of the lining.
   const RIB = 0.14
@@ -490,6 +435,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   }
   /** A row of n locker doors, h tall, centred at height y. */
   const lockers = (k: Kit, y: number, h: number, n = 2) => {
+    slab(k.skins, 0, y, 0.95, h, 0.045, 0.02, SKIN.back, 0.004) // dark behind the doors, so the gaps between them read as depth
     for (let c = 0; c < n; c++) {
       const w = 0.93 / n
       const u = (c - (n - 1) / 2) * w
@@ -639,7 +585,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
     }
   }
   // Two seat tracks let into the deck, running the length of the module.
-  for (const x of [-1, 1]) put(metals, new THREE.BoxGeometry(0.07, 0.008, D - 0.3), x, 0.004, 0)
+  for (const x of [-1, 1]) put(guns, new THREE.BoxGeometry(0.06, 0.008, D - 0.3), x, 0.004, 0)
   const LOW = CROWN - RIB - 0.006 // the beacon hangs under the middle ring frame
   put(shades, fadeStrip(W, 0.9).rotateX(-FACING), 0, 0.004, z1 - 0.45)
   put(shades, fadeStrip(W, 0.9).rotateX(-FACING).rotateY(Math.PI), 0, 0.004, z0 + 0.45)
@@ -744,7 +690,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   let shine = 1
 
   // ---- The console: a desk blade with a sloped control shelf and a raised instrument panel, carried on two
-  // pedestals so the deck runs on under it. Its side profile (metres in front of DASH.z, height) runs the length of the desk.
+  // turned pedestals so the deck runs on under it. Its side profile (metres in front of DASH.z, height) runs the length of the desk.
   const SHELF = Math.atan2(0.11, 0.35)
   const TILT = Math.atan2(0.14, 0.33)
   const blade = new THREE.Shape()
@@ -759,19 +705,17 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   blade.lineTo(-0.27, 0.845)
   blade.quadraticCurveTo(-0.318, 0.862, -0.3, 0.9)
   const HALF_DESK = DASH.w / 2 - 0.04
-  const leg = new THREE.Shape([[-0.2, 0.76], [0.26, 0.76], [0.26, 0.07], [-0.05, 0.07]].map(([x, y]) => new THREE.Vector2(x, y)))
-  const RAKE = Math.atan2(0.15, 0.69)
+  // A pedestal turned like the equipment mounts, drawn out to an oval twice as wide as it is deep.
+  const leg = new THREE.LatheGeometry([[0, 0], [0.15, 0], [0.15, 0.018], [0.13, 0.034], [0.085, 0.085], [0.06, 0.2], [0.052, 0.5], [0.064, 0.64], [0.1, 0.725], [0.135, 0.775]].map(([r, y]) => new THREE.Vector2(r, y)), 40).scale(2, 1, 1)
   put(guns, new THREE.ExtrudeGeometry(blade, { depth: HALF_DESK * 2 - 0.04, bevelEnabled: true, bevelSize: 0.012, bevelThickness: 0.02, bevelSegments: 2 }).rotateY(FACING), -HALF_DESK + 0.02, 0, DASH.z)
   for (const s of [-1, 1]) {
     // A bright cheek closing each end of the blade.
     put(metals, new THREE.ExtrudeGeometry(blade, { depth: 0.024, bevelEnabled: true, bevelSize: 0.03, bevelThickness: 0.008, bevelSegments: 2 }).rotateY(FACING), s * (HALF_DESK + 0.02) - 0.012, 0, DASH.z)
-    // A leg raked back towards its foot, a vented service door on its sloping face.
-    put(guns, new THREE.ExtrudeGeometry(leg, { depth: 0.44, bevelEnabled: true, bevelSize: 0.03, bevelThickness: 0.03, bevelSegments: 3 }).rotateY(FACING), s * 1.45 - 0.22, 0, DASH.z)
-    put(paints, rounded(0.4, 0.56, 0.03, 0.012), 0, 0, 0.032, new THREE.Matrix4().makeRotationX(RAKE).setPosition(s * 1.45, 0.415, DASH.z + 0.125))
-    put(darks, new THREE.BoxGeometry(0.44, 0.05, 0.26), s * 1.45, 0.025, DASH.z - 0.1)
+    put(guns, leg.clone(), s * 1.45, 0, DASH.z - 0.11)
+    put(metals, new THREE.TorusGeometry(0.058, 0.012, 8, 40).rotateX(FACING).scale(2, 1, 1), s * 1.45, 0.58, DASH.z - 0.11)
   }
   // Between the pedestals: a foot rail, an equipment box slung under the blade and its cables down to the deck.
-  put(metals, new THREE.CylinderGeometry(0.018, 0.018, 2.3, 12).rotateZ(FACING), 0, 0.17, DASH.z + 0.1)
+  put(metals, new THREE.CylinderGeometry(0.018, 0.018, 2.9, 12).rotateZ(FACING), 0, 0.17, DASH.z - 0.11)
   put(guns, rounded(1.2, 0.17, 0.22, 0.03), 0, 0.68, DASH.z - 0.17)
   for (const [x, r] of [[-0.36, 0.014], [-0.31, 0.01], [0.4, 0.012]] as const)
     put(darks, new THREE.TubeGeometry(new THREE.CatmullRomCurve3([[x, 0.6, DASH.z - 0.17], [x + 0.02, 0.36, DASH.z - 0.2], [x - 0.01, 0.12, DASH.z - 0.34], [x, 0.01, DASH.z - 0.5]].map(v3)), 16, r, 6))
@@ -861,7 +805,6 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
 
   fitted(metals, metal)
   fitted(guns, gun)
-  fitted(paints, paint)
   fitted(darks, dark)
   fitted(rails, new THREE.MeshStandardMaterial({ color: 0x29426f, roughness: 0.45, metalness: 0.5 }))
   fitted(lamps, new THREE.MeshBasicMaterial({ vertexColors: true, toneMapped: false }))
@@ -919,6 +862,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
       put(mounts.metals, new THREE.CylinderGeometry(0.035, 0.035, 0.03, 16).rotateX(FACING), 0, 0.6, -0.395, to)
       put(mounts.shades, flatOn(1.5, 1.4), 0, 0.006, 0, to)
       put(mounts.shades, flatOn(0.62, 0.56), 0, PLATE + 0.002, 0, to)
+      put(mounts.shades, new THREE.PlaneGeometry(1.5, 1.7), 0, 0.95, -0.31, to) // on the rack fronts behind it
 
       const model = m.part ? partModel(m.part) : null
       if (model) {
@@ -1116,8 +1060,8 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
       crew.dispose()
       fps.dispose()
       disposeObject(scene)
-      for (const m of [paint, metal, gun, dark, shadeMat, glowMat]) m.dispose()
-      for (const map of [panel, brushed, grain, blob]) map.dispose()
+      for (const m of [metal, gun, dark, shadeMat, glowMat]) m.dispose()
+      for (const map of [brushed, grain, blob]) map.dispose()
       worldMaps.dispose()
       envMap.dispose()
       renderer.dispose()
