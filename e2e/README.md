@@ -22,6 +22,10 @@ Any console error or uncaught page error fails the case it happened in. The scri
 
 A full run takes about three minutes.
 
+If every case shows a blank page with `504 (Outdated Optimize Dep)` or `Failed to fetch dynamically imported module`, the dev server's dependency cache is stale (for example after `npm i --no-save playwright-core`). Start a fresh one, `npx vite --port 5174 --force`, and set `E2E_URL=http://localhost:5174/?world=classic`.
+
+`coop.mjs` needs the two browsers to reach each other. A dev server has no TURN relay (`/api/ice` runs on Vercel only), so on a network that blocks direct WebRTC the guest's join reports `SKIP` with that reason, and so do the online cases after it. Run it against the Vercel site to cover them.
+
 | Variable | Default | What it is |
 |---|---|---|
 | `PW_CORE` | `playwright-core` from the repo's `node_modules` | Folder of a playwright-core install |
