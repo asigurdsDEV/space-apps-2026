@@ -110,16 +110,17 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** aiden-codex/preflight-regression
-**Last updated:** 2026-11-15 01:23
+**Branch:** aiden-codex/preflight-regression — PR #183
+**Last updated:** 2026-11-15 01:29
 
 ### Working on right now
-Review Jamie's download-screen handoff #157 and repeat current production offline preparation/guided entry after tonight's merges. Independent of Claude Aiden's app transitions and Ethan's realism/sound work.
+Completed PR #183; scope released. Selecting the next independent task.
 
 ### Files / folders I'm touching (hands off)
-`docs/qa/preflight-regression.md` (new); own coordination section/board line/log/handoffs. App/PWA/campaign are read-only for this task; report fixes to source owners. Do not touch Claude Aiden's section/branches, other QA files, e2e scripts or active 3D scopes.
+None. QA report is ready for review; no app/PWA/3D source edited.
 
 ### Just finished
+PR #183: restyled Download/Continue review and current origin-stopped solo campaign passed through 3D room/launch/cabin/anomalies, Earth win, Moon grant and reload persistence. 629 tests, build, first load72.5kB. No browser errors at checked milestones. Full limits in docs/qa/preflight-regression.md; external terrain/co-op not tested.
 Guided campaign #156 is merged: Earth $12M → Moon $300M → Mars $500M after wins; fixed retry grants and browser-local progress. Prior 578 tests and actual win/loss/retry results in docs/qa/guided-campaign.md.
 
 ### Missing / I need from someone
