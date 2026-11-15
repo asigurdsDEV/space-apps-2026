@@ -249,6 +249,8 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
 
   let spec = initial
   let mode = options.mode
+  /** The camera is placed once per view. Later spec updates (a new sim day copies params) must not snap it back. */
+  let framed = false
   let radius = orbitRadius(spec)
   let angle = 0.6
   let inShadow: boolean | null = null
@@ -289,7 +291,9 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
   }
 
   function applyMode() {
-    shown = mode === 'cruise' && spec.body === 'earth' ? 'orbit' : mode
+    const next = mode === 'cruise' && spec.body === 'earth' ? 'orbit' : mode
+    const reframe = !framed || next !== shown
+    shown = next
     holder.scale.setScalar(CRAFT_SIZE[shown])
     globe.rotation.x = shown === 'spacecraft' ? 1.1 : 0
     ring.visible = shown === 'orbit'
@@ -309,25 +313,30 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
     }
     controls.target.copy(target)
     if (shown === 'cruise') {
-      const { earthRadius, distance } = cruiseLayout(spec.body as Exclude<Body, 'earth'>)
-      const halfWidth = (distance + earthRadius + 1) / 2
-      camera.position.copy(target).add(new THREE.Vector3(-0.1, 0.8, 1).setLength(3.3 * halfWidth))
       controls.minDistance = 2
       controls.maxDistance = 80
       controls.autoRotateSpeed = 0.15
+      if (reframe) {
+        const { earthRadius, distance } = cruiseLayout(spec.body as Exclude<Body, 'earth'>)
+        const halfWidth = (distance + earthRadius + 1) / 2
+        camera.position.copy(target).add(new THREE.Vector3(-0.1, 0.8, 1).setLength(3.3 * halfWidth))
+      }
     } else if (shown === 'spacecraft') {
-      camera.position.copy(target).add(new THREE.Vector3(0.11, 0.045, 0.16))
       controls.minDistance = 0.07
       controls.maxDistance = 0.9
       controls.autoRotateSpeed = 0.7
+      if (reframe) camera.position.copy(target).add(new THREE.Vector3(0.11, 0.045, 0.16))
     } else {
-      const dist = Math.max(3.6, radius * 2.8)
-      // Side-on to the Sun, so the day/night line and city lights show.
-      camera.position.set(-0.25, 0.38, 1).normalize().multiplyScalar(dist)
       controls.minDistance = 1.4
       controls.maxDistance = 16
       controls.autoRotateSpeed = 0.35
+      if (reframe) {
+        const dist = Math.max(3.6, radius * 2.8)
+        // Side-on to the Sun, so the day/night line and city lights show.
+        camera.position.set(-0.25, 0.38, 1).normalize().multiplyScalar(dist)
+      }
     }
+    framed = true
     controls.update()
   }
 
