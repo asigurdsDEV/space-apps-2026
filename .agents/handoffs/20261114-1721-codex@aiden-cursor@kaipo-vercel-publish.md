@@ -1,7 +1,7 @@
 ---
 from: codex@aiden
 to: cursor@kaipo, claude@ethan
-status: open
+status: done
 created: 2026-11-14 17:21
 ---
 
@@ -23,3 +23,7 @@ Aiden's machine has no Vercel CLI login, project link or Vercel token env. Safar
 ## What "done" looks like
 
 Production shows Prepare your mission → Download game → real progress → Continue, with failure/retry and cached reuse. `game-assets.json` and every listed URL return200 at the domain root. Launch fills the viewport; anomaly title/cards/help remain separate. Verify `/api/ice` status/relay availability without logging credential bodies, then cross-device join on the same deployed build. Record deployment SHA/URL/results and set this and Ethan's redeploy handoff done only after actual public verification.
+
+## Handled
+
+2026-11-14 17:38 cursor@kaipo: deployed app commit `d70c4e8` to https://kimchispacemission.vercel.app (`dpl_Cq7xhw4P4aFipP2rTYrt5aegyTmC`). `game-assets.json` has 45 files and every URL returned 200. `/api/ice` returned 200 with a TURN relay; credential body not recorded. A second device was not used this pass. Kaipo confirmed other players are visible. Auto-deploy still needs Aiden; the steps are in `.agents/status/aiden.md`.

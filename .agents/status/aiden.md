@@ -7,6 +7,48 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:**
 **Last updated:** 2026-11-14 16:00
 
+## Vercel — how it is set up, and how to turn on auto-deploy
+
+Written by cursor@kaipo on 2026-11-14 17:38, because Aiden asked for pushes to show up on the live site. Aiden's own sections below are unchanged.
+
+### What is live now
+
+The production site is https://kimchispacemission.vercel.app. It is the Vercel project `kimchispacemission` on the **lit-turtle** team (Kaipo's Vercel account, CLI user Lit-Turtle). The GitHub repo is `asigurdsDEV/space-apps-2026`, a personal repository on the user assicurdsDEV, not an organization.
+
+It is the same Vite app as GitHub Pages. A build with `VERCEL=1` is served at the domain root (`/`). Pages stays at https://asigurdsdev.github.io/space-apps-2026/ with base `/space-apps-2026/`. `vercel.json` routes `/api/ice` to `api/ice.js`. That route only mints a short-lived Cloudflare TURN credential so two browsers on different networks can open a WebRTC room. The game stays host-authoritative and peer-to-peer. There is no game server.
+
+Production and Preview already have these env names set (the values stay in Vercel, not in git):
+
+- `CLOUDFLARE_TURN_KEY_ID`
+- `CLOUDFLARE_TURN_API_TOKEN`
+
+The `.vercel` link folder is gitignored. Until Git is connected, production is updated by hand from a checkout of `main` on Kaipo's machine:
+
+```
+npx vercel deploy --prod --yes --project kimchispacemission
+```
+
+Latest hand deploy, from app commit `d70c4e8` (PRs #144–#147): deployment `dpl_Cq7xhw4P4aFipP2rTYrt5aegyTmC`, alias https://kimchispacemission.vercel.app, inspector https://vercel.com/lit-turtle/kimchispacemission/Cq7xhw4P4aFipP2rTYrt5aegyTmC. `game-assets.json` listed 45 files and every one returned HTTP 200. `/api/ice` returned 200 with a TURN relay on port 443. GitHub Pages, from the same app commit, also returned 200 for all 45 of its manifest files. The manifest version strings differ (`gmvd1x` on Pages, `afgt3` on Vercel) because the base path is compiled into the scripts.
+
+### Why a push does not deploy
+
+`npx vercel git connect https://github.com/asigurdsDEV/space-apps-2026.git --yes --project kimchispacemission` fails. Vercel answers 400 and says it cannot connect the repository. The Vercel GitHub App that is installed is on **@Lit-Turtle**. That install cannot see a repository owned by **assicurdsDEV**. Kaipo is a collaborator with push, not the owner, and GitHub's approval page for the Lit-Turtle install asks for that account's password. Approving it there does not grant access to this repo.
+
+### What Aiden does (about two minutes)
+
+1. Sign in to GitHub as **assicurdsDEV** (the repository owner).
+2. Open https://github.com/apps/vercel and install the Vercel app on that user account. Choose **Only select repositories** and select `space-apps-2026`. Approve the request. Do not install it on a different account.
+3. Tell Kaipo. From a checkout of this repo, on the lit-turtle Vercel account, run:
+
+```
+npx vercel git connect https://github.com/asigurdsDEV/space-apps-2026.git --yes --project kimchispacemission
+```
+
+4. Production branch: `main`. Leave preview deployments on, so each pull request gets its own URL.
+5. After that, a push to `main` updates https://kimchispacemission.vercel.app by itself, and a Vercel check appears on the commit. GitHub Pages keeps deploying on its own. The TURN env vars are already on Production and Preview, so co-op on preview URLs can mint a relay too.
+
+Until step 2 is done, Kaipo still runs the hand-deploy command above after `main` changes.
+
 ## claude@aiden
 
 **Branch:** aiden-claude/app-walk (PR #87); aiden-claude/hangar (PR #80); aiden-claude/story-app (PR #74, after #70); aiden-claude/story-popouts (PR #70); aiden-claude/launch-visible (PR #68); aiden-claude/debrief-fixes (PR #65); aiden-claude/risk-meter (PR #57); aiden-claude/what-if (PR #55); aiden-claude/app-safety (PR #53); aiden-claude/bundle-check (PR #54); aiden-claude/briefing-bonus (PR #49); aiden-claude/mobile-budgets (PR #46); aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
