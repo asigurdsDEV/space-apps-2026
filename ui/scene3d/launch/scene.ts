@@ -368,11 +368,13 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
     if (id === 'failure') p1 *= 1 - smooth(0.1, 0.16, p), pBoost *= 1 - smooth(0.1, 0.16, p)
     for (const { plume, glow, of } of plumes) {
       const power = of === 's1' ? p1 : of === 's2' ? p2 : pBoost
-      plume.set(power, of === 's2' ? 1 : thin, t)
       const vac = of === 's2' ? 1 : thin
+      // Many strap-ons side by side: their flames and glows add up to a white-out, so each gets a share.
+      const share = of === 'booster' ? Math.min(1, 2 / model.boosters.length) : 1
+      plume.set(power * Math.sqrt(share), vac, t)
       glow.visible = power > 0.01
-      // Many strap-ons side by side: their glows add up, so each gets a share. In vacuum there is no air to light up: only a faint halo is left.
-      glow.material.opacity = power * (of === 'booster' ? Math.min(1, 2 / model.boosters.length) : 1) * lerp(1, 0.16, vac)
+      // In vacuum there is no air to light up: only a faint halo is left.
+      glow.material.opacity = power * share * lerp(1, 0.16, vac)
       model.heat[of].emissiveIntensity = power * 1.6
     }
     const thrust = Math.max(p1, pBoost)

@@ -364,9 +364,9 @@ void main() {
   vec3 p = position;
   float root = sqrt(vAlong);
   // Sea level: the air squeezes the flame into a long narrow spindle. Thin air: it fans out the moment it leaves the bell.
-  float fan = uVacuum * step(vLayer, 0.5) * 0.62;
+  float fan = uVacuum * step(vLayer, 0.5) * 0.9;
   float outer = 1.0 + (1.0 - uVacuum) * (0.9 * root - 1.2 * vAlong * vAlong) + fan * vRadii;
-  float core = mix(0.62 + 0.25 * root - 0.7 * vAlong, 0.75 + 0.2 * vRadii, uVacuum);
+  float core = mix(0.62 + 0.25 * root - 0.7 * vAlong, 0.6 + 0.2 * vRadii, uVacuum);
   float jet = 1.0 + 0.25 * root - 1.2 * vAlong * vAlong;
   p.xz *= max(vLayer < 0.5 ? outer : vLayer < 1.5 ? core : jet, 0.05);
   vec4 mv = modelViewMatrix * instanceMatrix * vec4(p, 1.0);
@@ -409,22 +409,24 @@ void main() {
     col = mix(mix(uEdge, uEdge * vec3(0.55, 0.3, 0.2), smoothstep(0.35, 1.0, vAlong)), uCore, smoothstep(0.3, 0.95, hot * 1.25));
     a = pow(facing, 1.4) * pow(1.0 - vAlong, 1.3) * uBody;
     // Vacuum: a wide bluish-white fan, brightest in a small zone behind the bell, then thinning out fast as it spreads.
-    vec3 fan = mix(vec3(0.3, 0.46, 1.0), vec3(0.62, 0.76, 1.0), pow(facing, 3.0)) + 0.05 * uCore;
-    float thin = pow(facing, 1.6) * (0.016 + 0.17 / (1.0 + 0.12 * vRadii * vRadii)) * pow(1.0 - vAlong, 1.5) * smoothstep(0.0, 0.8, vRadii);
+    vec3 fan = mix(vec3(0.3, 0.46, 1.0), vec3(0.55, 0.7, 1.0), facing) + 0.04 * uCore;
+    // Even across the cone and soft only at its outline: a peak where a wall faces the eye reads as a torch beam.
+    float thin = smoothstep(0.0, 0.5, facing) * (0.012 + 0.12 / (1.0 + 0.1 * vRadii * vRadii)) * (0.45 + 0.5 * uBody) * pow(1.0 - vAlong, 1.5) * smoothstep(0.0, 3.0, vRadii);
     col = mix(col, fan, uVacuum);
-    a = mix(a, thin, uVacuum);
+    // The flame dims faster than it widens: the same light spread over a far bigger cone.
+    a = a * air * air + thin * uVacuum;
   } else if (vLayer < 1.5) {
     // Core: too bright to have a colour at the nozzle.
     col = mix(uCore, vec3(3.6, 3.3, 2.8), (1.0 - vAlong) * air * (1.0 - 0.5 * uSolid) * 0.7);
     a = pow(facing, 2.4) * pow(1.0 - vAlong, 1.1) * (0.5 + 0.8 * uBody) * (1.0 - 0.4 * uDiamonds);
     // Vacuum: a short blue-white knot at the exit of the bell.
-    col = mix(col, vec3(1.5, 1.9, 2.8) + 0.25 * uCore, uVacuum);
-    a = mix(a, pow(facing, 2.0) * exp(-vRadii * 1.6) * 0.6, uVacuum);
+    col = mix(col, vec3(0.9, 1.3, 2.4) + 0.15 * uCore, uVacuum);
+    a = a * air * air + pow(facing, 2.0) * exp(-vRadii * 2.0) * 0.5 * uVacuum;
   } else {
     // One engine's jet. Shock diamonds: bright knots where the air squeezes it, closer and dimmer down the jet, gone in thin air.
     float knots = pow(max(sin(vAlong * 44.0 * (1.0 + 0.35 * vAlong) - 0.5), 0.0), 4.0) * (1.0 - smoothstep(0.08, 0.7, vAlong)) * uDiamonds * air;
     col = mix(uEdge, uCore, 0.85 - 0.5 * vAlong) + vec3(1.2, 1.1, 0.9) * knots;
-    a = pow(facing, 2.0) * pow(1.0 - vAlong, 1.4) * (0.3 + 0.3 * uBody + 4.5 * knots) * (1.0 - 0.9 * uVacuum);
+    a = pow(facing, 2.0) * pow(1.0 - vAlong, 1.4) * (0.3 + 0.3 * uBody + 4.5 * knots) * air;
   }
   a *= start * flick * uPower;
   // A grain finer than one colour step, so the long faint gradients do not show bands.
@@ -765,9 +767,10 @@ void main() {
   vec3 cloud = mix(vec3(0.42, 0.48, 0.62), vec3(1.0), clamp(0.7 + 0.5 * relief, 0.0, 1.0)) * (0.02 + 1.12 * smoothstep(-0.08, 0.35, d));
   lit = mix(lit, cloud, cover * 0.94);
   // The air between the ground and the eye: almost none looking straight down, a pale blue veil toward the horizon.
-  float veil = 1.0 - exp(-0.035 * (1.0 / max(dot(n, v), 0.04) - 1.0));
-  vec3 air = mix(vec3(0.16, 0.38, 0.95), vec3(0.62, 0.8, 1.0), veil) * smoothstep(-0.2, 0.35, d);
-  gl_FragColor = vec4(mix(lit, air, 0.85 * veil), 1.0);
+  // At the very limb the ground is gone behind the air and takes the colour of the sky's bright line, so the edge of the sphere does not show as a stepped line.
+  float veil = 1.0 - exp(-0.035 * (1.0 / max(dot(n, v), 0.012) - 1.0));
+  vec3 air = mix(mix(vec3(0.16, 0.38, 0.95), vec3(0.62, 0.8, 1.0), veil), vec3(0.65, 0.96, 1.3), veil * veil * veil) * smoothstep(-0.2, 0.35, d);
+  gl_FragColor = vec4(mix(lit, air, veil * (0.85 + 0.15 * veil)), 1.0);
 }
 `,
       depthTest: false,

@@ -120,7 +120,7 @@ logo, wordmark or NASA insignia is drawn anywhere.
 | Delta IV Heavy | Stringers on the centerbody between the tanks; foam spray passes and closeout seams; fastener rows on the engine section and interstage; flag on the fairing | Whether the centerbody shows ribs through its insulation. The foam charring at ignition that the real vehicle is known for is not drawn |
 | SLS Block 1 | Intertank stringers in relief; five hydrogen-tank and two oxygen-tank barrels; doors on the engine section, intertank and forward skirt; on each booster stiffener rings on the aft segment, fastener rows at the field joints, a systems tunnel and black-and-white tracking targets | Target positions and size. The boosters' red lettering and the insignia on Orion's panels are left off on purpose; no flag is drawn because its position was not checked |
 | Pad | Lift shaft and work platforms in the tower, umbilical plates and lines on the swing arms, flame-trench deflector; the rest of the complex is under "The launch site" below | A generic pad, sized to the rocket: not SLC-40, SLC-41, SLC-37, LC-39B or LC-1 |
-| Light | The Sun stands 20 degrees up so that shadows read; the scene is still dressed as dawn | A dawn Sun would be lower |
+| Light | The Sun stands 20 degrees up so that shadows read: a clear morning with warm light, and the captions say sunshine | The warm tint belongs to a lower Sun |
 | Earth below | The real Blue Marble map (`../maps`). Every vehicle is shown leaving Cape Canaveral (28.5 N, 80.6 W) heading north-east | Electron, Pegasus and others launch from elsewhere, and headings differ by mission |
 
 ## The launch site

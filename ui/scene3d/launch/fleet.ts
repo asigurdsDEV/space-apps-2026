@@ -213,7 +213,7 @@ function vulcan(spec: RocketSpec): RocketModel {
   }
 
   // Centaur V: bare stainless steel, two RL10 engines tucked inside the interstage.
-  barrel(st, upper, R, spec.s2.length, { base: '#b9bcc2', seams: [0.05, 0.55, 0.95, ...welds(0.14, 0.86, 9)], panels: 6, rivets: [0.02, 0.98], frost: [[0.12, 0.9, 0.22]], roughness: 0.34, metalness: 0.85 }, 0, 56)
+  barrel(st, upper, R, spec.s2.length, { base: '#b9bcc2', seams: [0.05, 0.55, 0.95, ...welds(0.14, 0.86, 9)], panels: 6, rivets: [0.02, 0.98], frost: [[0.12, 0.9, 0.22]], roughness: 0.5, metalness: 0.85 }, 0, 56)
   const rl10s: [number, number][] = [[-1.05, 0], [1.05, 0]]
   engines(upper, k, st.heat.s2, rl10s, 0.75, 2, -1.3, { seg: 20, vac: true })
   put(upper, new THREE.SphereGeometry(R * 0.9, 24, 10, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2).scale(1, 0.35, 1), k.metal)
