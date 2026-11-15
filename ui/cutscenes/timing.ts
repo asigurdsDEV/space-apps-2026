@@ -1,3 +1,4 @@
+import type { CraftSpec } from '../scene3d/model'
 // Decision 005 durations match CUTSCENE_MS in ui/story/model.ts. Pass durationMs from
 // CUTSCENE_MS when mounting those. enter-craft and return-control are decision 007 and
 // are not story ids yet; claude@aiden adds the ids when the frame mounts them.
@@ -18,6 +19,8 @@ export interface CutsceneCanvasProps {
   body?: 'moon' | 'mars'
   /** Defaults to CUTSCENE_SCENE_MS[kind]. The story frame should pass CUTSCENE_MS[id]. */
   durationMs?: number
+  /** The player's spacecraft (`sceneSpec(state).craft`) for the orbit, alarm and ending shots. Omitted: a default small craft. */
+  craft?: CraftSpec
 }
 
 /** Longest each scene animates. Each value is ≤ 10 s, same as the story frame. */
