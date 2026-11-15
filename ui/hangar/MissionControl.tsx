@@ -10,6 +10,7 @@ import { FpsPrompt } from '../fps/Prompt'
 import { partHelp } from '../fps/help'
 import type { Interactable } from '../fps/model'
 import { poll } from '../gonogo'
+import { consoleLine } from '../mission/walls'
 import { sceneSpec } from '../scene3d/model'
 import type { Command, Player, SimState } from '../../shared'
 import { createControlRoom, type ControlRoom } from './control'
@@ -44,6 +45,15 @@ const media = (q: string) => typeof window !== 'undefined' && !!window.matchMedi
 function lengthText(days: unknown): string {
   if (typeof days !== 'number') return '—'
   return days >= 330 ? `${Math.round(days / 365)} year${Math.round(days / 365) === 1 ? '' : 's'}` : `${Math.round(days)} days`
+}
+
+/** The call wall's three big numbers (drawn on the wall, and read out by the screen-reader copy). */
+function wallNumbers(m: SimState['metrics']): [string, string][] {
+  return [
+    ['Budget', typeof m.budget_usd === 'number' ? formatValue(m.budget_usd, 'USD') : '—'],
+    ['Science goal', typeof m.science_goal === 'number' ? `${Math.round(m.science_goal)} pts` : '—'],
+    ['Mission', lengthText(m.mission_days)],
+  ]
 }
 
 export function MissionControl({ state, send, players = NO_PLAYERS, me, title, guide, debrief, enabled = true, onFailed, className, reportPose, subscribeCrew }: MissionControlProps) {
@@ -134,11 +144,7 @@ export function MissionControl({ state, send, players = NO_PLAYERS, me, title, g
     const scene = sceneSpec(state)
     r.show({
       title,
-      numbers: [
-        ['Budget', typeof m.budget_usd === 'number' ? formatValue(m.budget_usd, 'USD') : '—'],
-        ['Science goal', typeof m.science_goal === 'number' ? `${Math.round(m.science_goal)} pts` : '—'],
-        ['Mission', lengthText(m.mission_days)],
-      ],
+      numbers: wallNumbers(m),
       bars: budgetBars(m),
       calls,
       stations: stationList,
@@ -170,6 +176,13 @@ export function MissionControl({ state, send, players = NO_PLAYERS, me, title, g
   return (
     <div className={`mc${className ? ` ${className}` : ''}`}>
       <div ref={host} className="mc-canvas" role="application" aria-label="Mission control. W A S D to walk, arrow keys or mouse to look, E to use what you face." tabIndex={0} />
+      {/* The wall screens are drawn on the canvas; screen readers get the same words here. */}
+      <section className="mc-screens" aria-label="Mission control screens">
+        <h2>{title}</h2>
+        <ul>{wallNumbers(state.metrics).map(([label, value]) => <li key={label}>{label}: {value}</li>)}</ul>
+        <ul aria-label="GO / NO-GO">{calls.map((c) => <li key={c.id}>{c.label}: {consoleLine(state.issues, c.id)}</li>)}</ul>
+        {debrief && <p>Debrief: grade {debrief.grade}, {debrief.outcome}, {debrief.score} points.{debrief.fix && ` One change that would have helped: ${debrief.fix.change}.`}</p>}
+      </section>
       {failed ? (
         <p className="mc-fallback">This view needs WebGL, which is off in this browser.</p>
       ) : (
