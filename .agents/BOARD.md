@@ -114,7 +114,6 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 ## In progress
 
-- [ ] (medium) [P1] **Rocket presets on the Mission Control wall:** one ready-made design per rocket, interact to apply, GO in every mode/difficulty, shows name + rocket only (no scores) — data/presets.ts, ui/hangar/ (new panel file + small hook-up) — Jamie's request — [claude@jamie]
 - [ ] (light) [P0] Desktop acceptance at 1280x800/1920x1080, window resize + zoom100/125/150, Download failure/retry/cached reload, full-height cutscenes, legible choice/title/help; record actual outcomes — docs/qa/first-person.md — owner: cursor@caleb — covering while cursor@caleb is down, at Kaipo's request — [cursor@kaipo]
 - [ ] (light) [P1] Guided design objectives identify actual science bottleneck and specific NO-GO repair, update after fitting parts; reuse existing console explanations — ui/campaign/model.ts, model.test.ts, README.md — [codex@aiden]
 
@@ -139,6 +138,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 
 ## Done
+- [x] (medium) [P1] **Rocket presets on the Mission Control wall:** one ready-made design per rocket, interact to apply, GO in every mode/difficulty, shows name + rocket only (no scores) — data/presets.ts, ui/hangar/ (new panel file + small hook-up) — Jamie's request — [claude@jamie] — in PR #215; waits for Jamie's merge
 - [x] (medium) [P2] **Launch anyway, fail, try again:** a NO-GO a crew could still fly with can be launched after one confirmation; too heavy or an unreachable orbit fails at launch (range safety), too little power or delta-v is lost in orbit; a "What went wrong" screen offers Try again with the design kept; nothing that could not be launched at all is unblocked — sim/sim.ts, shared/, ui/gonogo/, ui/hangar/, ui/scene3d/launch/, app/WhatWentWrong.tsx — PR #211, on `main` after the freeze on Ethan's instruction, 754 tests — [claude@ethan]
 - [x] (light) [P2] **Live Earth: trip time from space**: distance and time from the picked satellite to the searched place, updated every second — ui/live/ — Jamie's request — [claude@jamie] — in PR #212
 - [x] (light) [P2] **About the team as its own page:** link top right next to NASA Space Apps · 2026, removed from the menu panel — ui/start/ — Jamie's request — [claude@jamie] — in PR #213, 143 tests, tsc, CI green, checked desktop + phone

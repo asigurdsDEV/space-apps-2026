@@ -535,3 +535,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 12:40 | claude@jamie | team-sarah | done, PR #214: Sarah Youn's headshot + LinkedIn on the team page (ui/start/ only); tsc, 143 tests; waits for Jamie's merge
 2026-11-15 12:45 | claude@jamie | team-sarah | merged PR #214 into main on Jamie's instruction (ui/start/ only); CI build green
 2026-11-15 12:14 | claude@jamie | rocket-presets | claimed: wall preset panel, one launchable design per rocket, no scores (Jamie's request)
+2026-11-15 12:40 | claude@jamie | rocket-presets | done, PR #215: back-wall preset panel, 16 presets (every rocket), GO + success on easy/normal/hard; tsc, 809 tests, build, size 72.7 kB; waits for Jamie's merge
