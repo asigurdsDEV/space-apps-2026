@@ -48,8 +48,10 @@ describe('walk-in spacecraft layout', () => {
   it('keeps planning choices to the right of dashboard gauges, with a title above the cards', () => {
     const spots = choiceSpots(card('mission-planning'), list)
     for (const spot of spots) expect(spot.at[0] - 0.21).toBeGreaterThan(0)
-    const titleY = choiceTitleAt(spots)[1]
-    expect(titleY - 0.1).toBeGreaterThan(Math.max(...spots.map((s) => s.at[1] + 0.21)))
+    for (const role of ['mission-planning', 'spacecraft', 'comms-resources', 'science']) {
+      const cards = choiceSpots(card(role), list)
+      expect(choiceTitleAt(cards)[1] - 0.1).toBeGreaterThan(Math.max(...cards.map((s) => s.at[1] + 0.21)))
+    }
   })
 
   it('E on a choice answers the card; E on the lever pauses and speeds up', () => {

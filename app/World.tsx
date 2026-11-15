@@ -27,7 +27,6 @@ import { WorldMenu } from './WorldMenu'
 /** First-person 3D, unless the address says `?world=classic` or the browser can't draw it. */
 export const WORLD_3D = typeof location !== 'undefined' && new URLSearchParams(location.search).get('world') !== 'classic' && hasWebGL()
 
-
 function finalSummary(events: readonly SimEvent[]): Summary | undefined {
   for (let i = events.length - 1; i >= 0; i--) {
     const e = events[i]!

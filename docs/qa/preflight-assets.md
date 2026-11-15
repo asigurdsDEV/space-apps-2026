@@ -4,15 +4,15 @@
 
 ## Executed checks
 
-- Fresh build inventory: 46 files, including generated-model JavaScript, CSS, data and public GLBs. All 46 responses present in the versioned cache, none missing.
-- Throttled download with an intercepted model request: progress reached 43/46 (91%); Continue remained disabled. Failed that request: error + Retry, no entry into the game. Retry reused completed files and reached 100%; entering still required Continue.
+- Fresh build inventory: 47 files, including generated-model JavaScript, CSS, data and public GLBs. All 47 responses present in the versioned cache, none missing.
+- Throttled download with an intercepted model request: progress reached 43/47 (89%); Continue remained disabled. Failed that request: error + Retry, no entry into the game. Retry reused completed files and reached 100%; entering still required Continue.
 - Stopped the preview origin, reloaded, verified cached preparation and played Start → arrival → mission control → launch → spacecraft → planning choice. No browser exceptions. This also exercises lazy imports after offline reload, previously failing with preview's Vary: Origin headers.
 - Launch wrapper AND WebGL canvas fill the viewport: 1280×1000 and 1920×1080, with no leftover page below. Existing renderer handles the changed aspect; no scene3d model/camera edits.
 - Planning choice cards moved right of the dashboard. Title bottom has an 8 cm gap above card tops; layout assertions cover planning and module cards. Viewed an actual planning anomaly: title, gauges and choices are separate.
 - Aiming at parts shows full catalog descriptions; aiming at anomaly choices shows the full choice and effect. Role/disabled action remains respected. E action moved below the scene rather than across a card's letter.
 - Actual fit interaction displayed CAPCOM confirmation plus inspection help. At 1280×800 and 756×469, measured help/radio/prompt/hint/menu bounds do not overlap and the page has no horizontal overflow. Visually checked screenshots.
 - Classic URL and simulated no-WebGL browser both reach Start without the 3D download gate.
-- 542 tests / 69 files passed with four workers. Typecheck and production build passed. Initial entry approximately 72 kB gzip against the existing 150 kB budget; room modules download during preparation.
+- 550 tests / 71 files passed with four workers. Typecheck and production build passed. Initial entry approximately 72 kB gzip against the existing 150 kB budget; room modules download during preparation.
 
 ## Team acceptance still needed
 
