@@ -70,11 +70,11 @@ it('walking moves the eye like a head: a bob per step, a sway over two steps, al
     expect(next.roll).toBeCloseTo(-m.roll)
     top = { y: Math.max(top.y, Math.abs(m.y)), sway: Math.max(top.sway, Math.abs(m.sway)), roll: Math.max(top.roll, Math.abs(m.roll)), nod: Math.max(top.nod, Math.abs(m.nod)) }
   }
-  expect(top.y).toBeGreaterThan(0.01)
-  expect(top.y).toBeLessThan(0.03) // centimetres
-  expect(top.sway).toBeLessThan(0.03)
-  expect(top.roll).toBeLessThan(0.0087) // under half a degree
-  expect(top.nod).toBeLessThan(0.0087)
+  expect(top.y).toBeGreaterThan(0.02) // enough to see on a screen
+  expect(top.y).toBeLessThan(0.04) // centimetres
+  expect(top.sway).toBeLessThan(0.04)
+  expect(top.roll).toBeLessThan(0.0131) // under three quarters of a degree, running
+  expect(top.nod).toBeLessThan(0.0087) // under half a degree
 })
 
 it('head motion follows the speed actually walked, leaves aim and feet alone, and is off under reduced motion', () => {

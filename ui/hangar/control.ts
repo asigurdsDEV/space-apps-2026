@@ -426,25 +426,28 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
 
   // ---- The open station's menu: glass cards that fly out of its emitter onto an arc around the player.
   const cardGeo = new THREE.PlaneGeometry(0.6, 0.4)
-  interface Card { id: string; mesh: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>; screen: ReturnType<typeof canvasScreen>; drawn: string; to: THREE.Vector3 }
+  interface Card { id: string; mesh: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>; screen: ReturnType<typeof canvasScreen>; drawn: string; to: THREE.Vector3; data?: MenuCard }
   const cards: Card[] = []
   let cardCount = 0
   let menuView: StationView | undefined
   /** 0 closed … 1 open, and where it is heading. */
   let menuK = 0
   let menuGoal = 0
-  /** The card you are looking at comes forward a little, so you see what E will pick. */
+  /** The card you are looking at lights up and comes forward a little, so you see what E will pick. */
   let aimedId: string | undefined
 
-  const drawCard = (card: Card, c: MenuCard) => {
-    const sig = `${c.part.id}|${c.picked}|${c.stats.join()}|${c.cost}|${fontTick}`
+  const drawCard = (card: Card) => {
+    const c = card.data!
+    const aimed = card.id === aimedId
+    const sig = `${c.part.id}|${c.picked}|${c.stats.join()}|${c.cost}|${fontTick}|${aimed}`
     if (sig === card.drawn) return
     card.drawn = sig
     const { g } = card.screen
     g.clearRect(0, 0, 384, 256)
     g.beginPath()
     g.roundRect(2, 2, 380, 252, 14)
-    g.fillStyle = 'rgba(7,11,18,0.74)'
+    // Nearly opaque: a wall screen behind a card must not read through its text.
+    g.fillStyle = aimed ? 'rgba(30,42,58,0.94)' : 'rgba(7,11,18,0.92)'
     g.fill()
     g.save()
     g.clip()
@@ -456,8 +459,8 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
     g.fillStyle = 'rgba(255,255,255,0.03)'
     for (let y = 0; y < 256; y += 4) g.fillRect(0, y, 384, 1)
     g.restore()
-    g.lineWidth = c.picked ? 4 : 1.5
-    g.strokeStyle = c.picked ? '#ffffff' : 'rgba(255,255,255,0.34)'
+    g.lineWidth = c.picked ? 4 : aimed ? 2.5 : 1.5
+    g.strokeStyle = c.picked || aimed ? '#ffffff' : 'rgba(255,255,255,0.34)'
     g.stroke()
     g.textBaseline = 'middle'
     g.textAlign = 'left'
@@ -534,9 +537,10 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
         }
         const card = cards[i]!
         card.id = c.id
+        card.data = c
         card.to.set(...c.at)
         card.mesh.rotation.y = c.yaw
-        drawCard(card, c)
+        drawCard(card)
       })
     }
     if (still) menuK = menuGoal
@@ -649,6 +653,7 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
     if (!still) animate(dt)
     if (fps.aimed?.id !== aimedId) {
       aimedId = fps.aimed?.id
+      for (let i = 0; i < cardCount; i++) drawCard(cards[i]!)
       placeCards()
       dirty = true
     }

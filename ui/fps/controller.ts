@@ -53,15 +53,16 @@ const damp = (current: number, target: number, dt: number, tau: number) =>
  * How the eye moves while walking, as real heads do: up and down once per step, side to side over two
  * steps (the weight shifting from foot to foot), with a slight lean into each step and a small nod.
  * `phase` advances by π per step; `amp` is 0 standing, 1 walking, a little more running.
- * Metres and radians: a few centimetres and fractions of a degree, so it never reads as a shaking camera.
+ * Metres and radians: about 5 cm of bob and half a degree of lean at a walk. Less than that is not noticed
+ * on a screen (a real eye steadies itself; a camera has to show the step); more starts to feel like a shaking camera.
  */
 export function headMotion(phase: number, amp: number): { y: number; sway: number; roll: number; nod: number } {
   const stride = Math.sin(phase)
   return {
-    y: 0.038 * amp * (stride * stride - 0.5),
-    sway: 0.02 * amp * stride,
-    roll: -0.0055 * amp * stride,
-    nod: 0.0035 * amp * Math.sin(2 * phase + 0.6),
+    y: 0.052 * amp * (stride * stride - 0.5),
+    sway: 0.028 * amp * stride,
+    roll: -0.008 * amp * stride,
+    nod: 0.0055 * amp * Math.sin(2 * phase + 0.6),
   }
 }
 
@@ -302,6 +303,6 @@ export function createFps(element: HTMLElement, camera: PerspectiveCamera, optio
     },
   }
   // Dev builds only: QA can read and move the player from the console (`__fps.where()`, `__fps.teleport([x, 0, z], yaw)`).
-  if (import.meta.env.DEV) Object.assign(window, { __fps: { ...api, get aimed() { return aimed }, where: () => ({ pos, yaw, pitch }) } })
+  if (import.meta.env.DEV) Object.assign(window, { __fps: { ...api, get aimed() { return aimed }, where: () => ({ pos, yaw, pitch, head }) } })
   return api
 }

@@ -5,6 +5,7 @@
 // control.ts (screens.ts); the layout, and what blocks the player, is layout.ts.
 
 import * as THREE from 'three'
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js'
 import { fuse } from '../scene3d/parts/kit'
 import { CALL_WALL, DESK, DESK_ROWS, DESK_XS, ROOM, SIDE_WALL, STAND, deskPoint, type DeskRow } from './layout'
 import { CALL_GRID, TILE_GRID } from './screens'
@@ -192,16 +193,27 @@ function showing(screen: THREE.BufferGeometry, index: number, grid: { cols: numb
 const FABRIC = 0x0b0c0f
 const STEEL = 0x30343a
 
-/** A high-backed swivel chair on a five-star base: the back and headrest wrap round the sitter. It stands on the floor at the origin, facing -z. */
+/** A cushion: a box with its edges rounded off, `seg` cuts per corner. Indexed, so it merges with the plain boxes. */
+function pad(w: number, h: number, d: number, r: number, seg = 2): THREE.BufferGeometry {
+  const geo = new RoundedBoxGeometry(w, h, d, seg, r)
+  return geo.setIndex([...Array(geo.attributes.position!.count).keys()])
+}
+
+/** A high-backed swivel chair on a five-star base: padded seat, back and headrest that wrap round the sitter. It stands on the floor at the origin, facing -z. */
 function chair(): THREE.BufferGeometry {
-  const wrapped = (w: number, y0: number, y1: number) => along({ x: 0, z: 0, len: w, r: 0.5, chairs: [] }, -w / 2, w / 2, -0.035, 0.035, y0, y1).rotateY(Math.PI).rotateX(0.14).translate(0, 0.5, 0.25)
+  // A back cushion standing on y = 0, its sides curved forward round the sitter, leaning back on the seat.
+  const back = (w: number, h: number, y: number) => {
+    const geo = pad(w, h, 0.09, 0.04).translate(0, y + h / 2, 0)
+    const pos = geo.attributes.position!
+    for (let i = 0; i < pos.count; i++) pos.setZ(i, pos.getZ(i) - 1.1 * pos.getX(i) ** 2)
+    geo.computeVertexNormals()
+    return geo.rotateX(0.14).translate(0, 0.5, 0.27)
+  }
   return fuse([
-    paint(box(0.5, 0.06, 0.48, 0, 0.455, 0), FABRIC),
-    paint(box(0.45, 0.04, 0.43, 0, 0.5, -0.01), FABRIC),
-    paint(wrapped(0.46, 0, 0.6), FABRIC),
-    paint(wrapped(0.3, 0.63, 0.8), FABRIC),
-    paint(box(0.06, 0.07, 0.03, 0, 0.6, 0).rotateX(0.14).translate(0, 0.5, 0.29), STEEL),
-    ...[-1, 1].flatMap((side) => [paint(box(0.06, 0.03, 0.28, side * 0.28, 0.7, 0.02), FABRIC), paint(box(0.03, 0.22, 0.04, side * 0.28, 0.58, 0.1), STEEL)]),
+    paint(pad(0.5, 0.1, 0.48, 0.045).translate(0, 0.47, 0), FABRIC),
+    paint(back(0.46, 0.6, 0), FABRIC),
+    paint(back(0.3, 0.17, 0.63), FABRIC),
+    ...[-1, 1].flatMap((side) => [paint(pad(0.07, 0.04, 0.28, 0.018, 1).translate(side * 0.28, 0.7, 0.02), FABRIC), paint(box(0.03, 0.22, 0.04, side * 0.28, 0.58, 0.1), STEEL)]),
     paint(new THREE.CylinderGeometry(0.028, 0.028, 0.36, 8).translate(0, 0.25, 0), STEEL),
     ...[0, 1, 2, 3, 4].flatMap((k) => [paint(box(0.3, 0.03, 0.05, 0.15, 0.075, 0).rotateY((k * Math.PI * 2) / 5), STEEL), paint(new THREE.CylinderGeometry(0.03, 0.03, 0.04, 8).rotateZ(Math.PI / 2).translate(0.29, 0.03, 0).rotateY((k * Math.PI * 2) / 5), FABRIC)]),
   ])
