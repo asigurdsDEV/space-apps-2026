@@ -13,7 +13,7 @@ Written by cursor@kaipo on 2026-11-14 17:38, because Aiden asked for pushes to s
 
 ### What is live now
 
-The production site is https://kimchispacemission.vercel.app. It is the Vercel project `kimchispacemission` on the **lit-turtle** team (Kaipo's Vercel account, CLI user Lit-Turtle). The GitHub repo is `asigurdsDEV/space-apps-2026`, a personal repository on the user assicurdsDEV, not an organization.
+The production site is https://kimchispacemission.vercel.app. It is the Vercel project `kimchispacemission` on the **lit-turtle** team (Kaipo's Vercel account, CLI user Lit-Turtle). The GitHub repo is `asigurdsDEV/space-apps-2026`, a personal repository on the user asigurdsDEV, not an organization.
 
 It is the same Vite app as GitHub Pages. A build with `VERCEL=1` is served at the domain root (`/`). Pages stays at https://asigurdsdev.github.io/space-apps-2026/ with base `/space-apps-2026/`. `vercel.json` routes `/api/ice` to `api/ice.js`. That route only mints a short-lived Cloudflare TURN credential so two browsers on different networks can open a WebRTC room. The game stays host-authoritative and peer-to-peer. There is no game server.
 
@@ -32,11 +32,11 @@ Latest hand deploy, from app commit `d70c4e8` (PRs #144–#147): deployment `dpl
 
 ### Why a push does not deploy
 
-`npx vercel git connect https://github.com/asigurdsDEV/space-apps-2026.git --yes --project kimchispacemission` fails. Vercel answers 400 and says it cannot connect the repository. The Vercel GitHub App that is installed is on **@Lit-Turtle**. That install cannot see a repository owned by **assicurdsDEV**. Kaipo is a collaborator with push, not the owner, and GitHub's approval page for the Lit-Turtle install asks for that account's password. Approving it there does not grant access to this repo.
+`npx vercel git connect https://github.com/asigurdsDEV/space-apps-2026.git --yes --project kimchispacemission` fails. Vercel answers 400 and says it cannot connect the repository. The Vercel GitHub App that is installed is on **@Lit-Turtle**. That install cannot see a repository owned by **asigurdsDEV**. Kaipo is a collaborator with push, not the owner, and GitHub's approval page for the Lit-Turtle install asks for that account's password. Approving it there does not grant access to this repo.
 
 ### What Aiden does (about two minutes)
 
-1. Sign in to GitHub as **assicurdsDEV** (the repository owner).
+1. Sign in to GitHub as **asigurdsDEV** (the repository owner).
 2. Open https://github.com/apps/vercel and install the Vercel app on that user account. Choose **Only select repositories** and select `space-apps-2026`. Approve the request. Do not install it on a different account.
 3. Tell Kaipo. From a checkout of this repo, on the lit-turtle Vercel account, run:
 
@@ -54,7 +54,7 @@ Until step 2 is done, Kaipo still runs the hand-deploy command above after `main
 **Branch:** aiden-claude/app-walk (PR #87); aiden-claude/hangar (PR #80); aiden-claude/story-app (PR #74, after #70); aiden-claude/story-popouts (PR #70); aiden-claude/launch-visible (PR #68); aiden-claude/debrief-fixes (PR #65); aiden-claude/risk-meter (PR #57); aiden-claude/what-if (PR #55); aiden-claude/app-safety (PR #53); aiden-claude/bundle-check (PR #54); aiden-claude/briefing-bonus (PR #49); aiden-claude/mobile-budgets (PR #46); aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
 
 ### Working on right now
-Nothing claimed (Aiden's usage limit). Open PRs, merge in order: #107 → #114 → #120. The 3D game plays start → debrief behind `?world=3d`; what's left is listed in `ui/interior/README.md` (handoff section): module-placed choices browser check, 3D default by Sun 08:00, space weather + leaderboard in 3D, Kaipo's time lever, Caleb's enter-craft cutscenes.
+Nothing claimed. #107, #114, #120 and #124 are merged: the first-person 3D game is the default (`?world=classic` for 2D). Leftovers are in `ui/interior/README.md` (handoff section). Vercel auto-deploy still waits on Aiden installing the Vercel GitHub app (steps above).
 
 ### Files / folders I'm touching (hands off)
 PR #87: `app/Walk.tsx`, `app/Walk.test.tsx`, the `<Walk>` / `<WalkTo>` lines in `app/App.tsx`, the walk block in `app/app.css`. Otherwise none outside my open PRs #65 (`sim/analysis.ts`, one argument in `app/App.tsx` Flight) #68 (`ui/builder/builder.css`) #70 (`ui/story/`) and #80 (`ui/hangar/`), #74 (`app/StoryLayer.tsx`, `<StoryLayer>` lines + `online`/clock hold in `app/App.tsx`).
