@@ -7,9 +7,18 @@ import { CUTSCENE_MS, LINES, type CutsceneId, type LineId } from './model'
 import './story.css'
 
 /** CAPCOM's line, one at a time. Announced politely to screen readers. `text` overrides `line` (live callouts). */
-export function CapcomPopout({ line, text, onClose }: { line?: LineId; text?: string; onClose?: () => void }) {
+export function CapcomPopout({ line, text, onClose, onHold }: { line?: LineId; text?: string; onClose?: () => void; /** The pointer is over it or focus is in it (true), or left (false): the owner keeps it open meanwhile. */ onHold?: (held: boolean) => void }) {
   return (
-    <aside className="st-pop st-capcom" role="status" aria-live="polite" aria-label="CAPCOM">
+    <aside
+      className="st-pop st-capcom"
+      role="status"
+      aria-live="polite"
+      aria-label="CAPCOM"
+      onMouseEnter={() => onHold?.(true)}
+      onMouseLeave={() => onHold?.(false)}
+      onFocus={() => onHold?.(true)}
+      onBlur={() => onHold?.(false)}
+    >
       <span className="st-speaker" aria-hidden="true">CAPCOM</span>
       <p className="st-line">{text ?? (line ? LINES[line] : '')}</p>
       {onClose && (

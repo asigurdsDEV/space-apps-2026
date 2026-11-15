@@ -39,3 +39,17 @@ describe('StoryLayer', () => {
     expect(renderToStaticMarkup(<StoryLayer screen="flight" events={[end]} scenarioId="demo" />)).toContain(LINES['ending-success'])
   })
 })
+
+// Timers need a DOM to mount in; the hold is covered by reading the wiring: the pop-out must offer the hooks.
+describe('CAPCOM pop-out', () => {
+  it('reports hover and focus so the layer can keep it open', async () => {
+    const { CapcomPopout } = await import('../ui/story')
+    const holds: boolean[] = []
+    const el = CapcomPopout({ line: 'call-moon', onHold: (h) => holds.push(h) }) as { props: Record<string, () => void> }
+    el.props.onMouseEnter!()
+    el.props.onFocus!()
+    el.props.onBlur!()
+    el.props.onMouseLeave!()
+    expect(holds).toEqual([true, true, false, false])
+  })
+})

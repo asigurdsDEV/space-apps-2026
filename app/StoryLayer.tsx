@@ -42,13 +42,15 @@ export interface StoryLayerProps {
 const CALLOUT_MS = 5000
 
 export function StoryLayer({ screen, events = NO_EVENTS, scenarioId, onCutscene, shown, immersive = false, callout }: StoryLayerProps) {
+  /** The pointer is over CAPCOM's pop-out or focus is in it: don't close it under the player. */
+  const [held, setHeld] = useState(false)
   const [calloutClosed, setCalloutClosed] = useState<string | null>(null)
   const calloutKey = callout?.key ?? null
   useEffect(() => {
-    if (!calloutKey) return
+    if (!calloutKey || held) return
     const timer = setTimeout(() => setCalloutClosed(calloutKey), CALLOUT_MS)
     return () => clearTimeout(timer)
-  }, [calloutKey])
+  }, [calloutKey, held])
   /** Beats whose cutscene has played on this screen. */
   const [played, setPlayed] = useState<string[]>([])
   /** The beat whose line was closed (or timed out). */
@@ -68,10 +70,10 @@ export function StoryLayer({ screen, events = NO_EVENTS, scenarioId, onCutscene,
 
   const key = beat.key
   useEffect(() => {
-    if (playing) return
+    if (playing || held) return // hovered or focused: it stays; the timer starts again when the player lets go
     const timer = setTimeout(() => setClosed(key), LINE_MS)
     return () => clearTimeout(timer)
-  }, [key, playing])
+  }, [key, playing, held])
 
   if (cutscene) {
     return (
@@ -88,6 +90,7 @@ export function StoryLayer({ screen, events = NO_EVENTS, scenarioId, onCutscene,
       <span>CAPCOM</span><p>{live?.text ?? LINES[beat.line]}</p>
     </aside>
   )
-  if (live) return <CapcomPopout key={live.key} text={live.text} onClose={() => setCalloutClosed(live.key)} />
-  return <CapcomPopout key={key} line={beat.line} onClose={() => setClosed(key)} />
+  // Closing unmounts it with no mouseleave / blur, so let go of the hold too.
+  if (live) return <CapcomPopout key={live.key} text={live.text} onHold={setHeld} onClose={() => (setHeld(false), setCalloutClosed(live.key))} />
+  return <CapcomPopout key={key} line={beat.line} onHold={setHeld} onClose={() => (setHeld(false), setClosed(key))} />
 }
