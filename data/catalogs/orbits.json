@@ -20,13 +20,13 @@
     "solar_flux_factor": ""
   },
   "data": {
-    "columns": ["id", "name", "central_body", "altitude_m", "inclination_rad", "period_s", "launch_capacity_column", "delta_v_required_ms", "eclipse_fraction", "contact_s_per_day", "comm_range_m", "radiation_factor", "max_lifetime_s", "coverage_fraction", "description", "cruise_days", "solar_flux_factor"],
+    "columns": ["id", "name", "central_body", "altitude_m", "inclination_rad", "period_s", "launch_capacity_column", "delta_v_required_ms", "eclipse_fraction", "contact_s_per_day", "comm_range_m", "radiation_factor", "max_lifetime_s", "coverage_fraction", "description", "cruise_days", "solar_flux_factor", "short_label"],
     "rows": [
-      ["leo-iss", "Low Earth orbit (ISS-like)", "earth", 400000, 0.9006, 5550, "payload_leo_kg", 50, 0.38, 2400, 1000000, 1, 63115200, 0.8, "Close to Earth: cheap to reach, great for sharp pictures, but air drag pulls you down within a couple of years.", 0, 1],
-      ["sso", "Sun-synchronous orbit", "earth", 600000, 1.7064, 5800, "payload_sso_kg", 20, 0.35, 3000, 1500000, 1.5, 788940000, 1, "Passes over every place on Earth at the same local time each day. The favorite orbit for Earth-observing satellites.", 0, 1],
-      ["geo", "Geostationary orbit", "earth", 35786000, 0, 86164, "payload_gto_kg", 1500, 0.01, 86400, 37000000, 3, 3155760000, 0.42, "Hovers over one spot on the equator. Always in contact and always sees the same half of Earth, but it's far away.", 0, 1],
-      ["lunar", "Low lunar orbit", "moon", 100000, 1.5708, 7080, "payload_tli_kg", 900, 0.4, 43200, 384400000, 4, 94672800, 1, "Circling the Moon. Needs a big engine burn to get captured, and Earth is 384,000 km away for your radio.", 5, 1],
-      ["low-mars-orbit", "Low Mars orbit", "mars", 400000, 1.618, 7080, "payload_tmi_kg", 1000, 0.38, 28800, 225000000000, 3.0, 315576000, 1.0, "Circling Mars, 225 million km from home on average. Getting captured takes a big burn, and your radio has a very long way to shout.", 210, 0.43]
+      ["leo-iss", "Low Earth orbit (ISS-like)", "earth", 400000, 0.9006, 5550, "payload_leo_kg", 50, 0.38, 2400, 1000000, 1, 63115200, 0.8, "Close to Earth: cheap to reach, great for sharp pictures, but air drag pulls you down within a couple of years.", 0, 1, "Low Earth orbit"],
+      ["sso", "Sun-synchronous orbit", "earth", 600000, 1.7064, 5800, "payload_sso_kg", 20, 0.35, 3000, 1500000, 1.5, 788940000, 1, "Passes over every place on Earth at the same local time each day. The favorite orbit for Earth-observing satellites.", 0, 1, "Sun-synchronous orbit"],
+      ["geo", "Geostationary orbit", "earth", 35786000, 0, 86164, "payload_gto_kg", 1500, 0.01, 86400, 37000000, 3, 3155760000, 0.42, "Hovers over one spot on the equator. Always in contact and always sees the same half of Earth, but it's far away.", 0, 1, "Geostationary orbit"],
+      ["lunar", "Low lunar orbit", "moon", 100000, 1.5708, 7080, "payload_tli_kg", 900, 0.4, 43200, 384400000, 4, 94672800, 1, "Circling the Moon. Needs a big engine burn to get captured, and Earth is 384,000 km away for your radio.", 5, 1, "Low lunar orbit"],
+      ["low-mars-orbit", "Low Mars orbit", "mars", 400000, 1.618, 7080, "payload_tmi_kg", 1000, 0.38, 28800, 225000000000, 3.0, 315576000, 1.0, "Circling Mars, 225 million km from home on average. Getting captured takes a big burn, and your radio has a very long way to shout.", 210, 0.43, "Low Mars orbit"]
     ]
   }
 }
