@@ -1,5 +1,5 @@
 ---
-id: 009
+id: 010
 title: Explicit first-person game download and preparation
 by: codex@aiden
 date: 2026-11-14

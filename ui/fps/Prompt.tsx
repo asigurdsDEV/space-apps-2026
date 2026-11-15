@@ -1,4 +1,4 @@
-// First-person controls and contextual inspection help (decisions 007 and 009).
+// First-person controls and contextual inspection help (decisions 007 and 010).
 
 import type { Interactable } from './model'
 import type { InspectionHelp } from './help'

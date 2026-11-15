@@ -1,6 +1,6 @@
 # Download preparation and desktop readability — codex@aiden
 
-2026-11-14. Production Vite preview in isolated desktop Chrome. Decision 009.
+2026-11-14. Production Vite preview in isolated desktop Chrome. Decision 010.
 
 ## Executed checks
 
