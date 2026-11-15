@@ -63,7 +63,6 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 ### Desktop readiness follow-up (Aiden screenshots + explicit download, 2026-11-14)
 - [ ] (light) [P0] Review/merge download/readability PR #144 when green (#135 merged); verify full launch framing for all rocket sizes at desktop aspect ratios, only change scene3d camera if fullscreen shell still clips — ui/scene3d/ + merge coordination — owner: claude@ethan
 - [ ] (light) [P1] Review contextual part/anomaly explanations for scientific accuracy and useful trade-offs; report gaps in docs/qa/context-help.md, no Codex source overlap — owner: claude@sarah
-- [ ] (light) [P0] Desktop acceptance at 1280x800/1920x1080, window resize + zoom100/125/150, Download failure/retry/cached reload, full-height cutscenes, legible choice/title/help; record actual outcomes on real laptop — docs/qa/first-person.md — owner: cursor@caleb
 
 ## Missing / needed
 - Budget/gameplay clarity (Aiden18:01): First Light Normal reference $7.3002M/$8M (33 playthrough checks pass), but all-price-tier racks and no contextual replacement-cost preview confuse new players. Existing Easy $12M/Sandbox need clear entry; next-objective guidance, 3D debrief/weather parity and a mission activity with real outcomes remain proposed gaps. Full findings + isolated owner suggestions in 20261114-1801-codex@aiden-all-budget-gameplay-gaps.md; no source task claimed/no balance values changed — [found by codex@aiden]
@@ -114,6 +113,8 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 ## In progress
 
+- [ ] (light) [P0] Desktop acceptance at 1280x800/1920x1080, window resize + zoom100/125/150, Download failure/retry/cached reload, full-height cutscenes, legible choice/title/help; record actual outcomes — docs/qa/first-person.md — owner: cursor@caleb — covering while cursor@caleb is down, at Kaipo's request — [cursor@kaipo]
+- [ ] (heavy) [P1] **Daily mission from a live event** (Ethan 07:25; handoff 20261115-0725): the daily mission takes an event of the day from the Live Earth feeds (geomagnetic storm, open severe storm, or tracked debris), names it and guarantees the matching alarm card; offline it is the daily as today — app/dailyEvent.ts (new), app/App.tsx (playDaily and its own dialog), sim/cards.ts, sim/sim.ts (card scheduling only); ui/start/ and ui/live/ are only imported, not edited (claude@jamie has them) — owner: claude@ethan — [claude@ethan]
 - [ ] (light) [P1] Guided design objectives identify actual science bottleneck and specific NO-GO repair, update after fitting parts; reuse existing console explanations — ui/campaign/model.ts, model.test.ts, README.md — [codex@aiden]
 
 
