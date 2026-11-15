@@ -3,7 +3,7 @@
 //   UHF: four quarter-wave tape antennas (turnstile) · S-band: a patch · X-band: MarCO's flat reflectarray
 //   dishes: LRO's 75 cm Ka-band dish on two gimbals, Mars Odyssey's 1.3 m dish with its horn, MRO's 3 m dish.
 import * as THREE from 'three'
-import { aim, box, cyl, dishGeometry, mats, partGroup, put, strut, tileBox } from './kit'
+import { aim, box, cyl, dishGeometry, groupBox, mats, partGroup, put, strut } from './kit'
 import { dishDiameter, type Mount } from './layout'
 import { ANTENNA } from './references'
 
@@ -57,9 +57,9 @@ function reflectarray(g: THREE.Group, foot: number) {
   panel.rotation.x = -lean
   g.add(panel)
   const pw = w / 3
-  const leaf = tileBox(box(pw - 0.003, h, 0.004), 1, 1, 1)
+  const leaf = groupBox(box(pw - 0.003, h, 0.004), [0, 0, 0, 0, 1, 2])
   for (let i = -1; i <= 1; i++) {
-    put(panel, leaf, [m.alu, m.alu, m.alu, m.alu, m.reflectarray, m.cellBack], i * pw, h / 2 + 0.012, 0)
+    put(panel, leaf, [m.alu, m.reflectarray, m.cellBack], i * pw, h / 2 + 0.012, 0)
     if (i < 1) for (const y of [0.2, 0.8]) put(panel, cyl(0.003, 0.003, 0.03, 6), m.steel, (i + 0.5) * pw, y * h + 0.012, -0.004)
   }
   for (const x of [-0.3, 0.3]) put(panel, box(0.012, 0.03, 0.006), m.alu, x * pw, 0.004, 0)
