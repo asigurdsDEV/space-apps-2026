@@ -1,7 +1,9 @@
 // Other players in a first-person room. Poses arrive a few times a second; the bodies ease toward them.
+// They walk on Earth and float in the spacecraft (`./motion`), unless the player asked for reduced motion.
 
 import * as THREE from 'three'
-import { createAstronaut } from './astronaut'
+import { createAstronaut, poseAstronaut } from './astronaut'
+import { advance, LOOP, newMotion, pose, type Motion, type MoveMode } from './motion'
 
 export interface CrewPose {
   player_id: string
@@ -20,11 +22,12 @@ interface Body {
   tx: number
   tz: number
   tyaw: number
+  motion: Motion
 }
 
 export interface CrewView {
   set(members: readonly CrewPose[]): void
-  /** Move toward the latest poses. True while someone is still catching up, so the room keeps drawing. */
+  /** Move toward the latest poses. True while someone is catching up or animating, so the room keeps drawing. */
   update(dt: number): boolean
   dispose(): void
 }
@@ -36,7 +39,10 @@ function yawDelta(from: number, to: number): number {
   return d
 }
 
-export function mountCrew(scene: THREE.Scene): CrewView {
+/** `float` is for microgravity (the spacecraft); the default is walking under gravity. */
+export function mountCrew(scene: THREE.Scene, options: { float?: boolean } = {}): CrewView {
+  const mode: MoveMode = options.float ? 'float' : 'walk'
+  const animate = !(typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches)
   const group = new THREE.Group()
   scene.add(group)
   const bodies = new Map<string, Body>()
@@ -69,7 +75,7 @@ export function mountCrew(scene: THREE.Scene): CrewView {
           if (body) drop(body)
           const obj = createAstronaut(member.name)
           group.add(obj)
-          body = { obj, name: member.name, x: member.x, z: member.z, yaw: member.yaw, tx: member.x, tz: member.z, tyaw: member.yaw }
+          body = { obj, name: member.name, x: member.x, z: member.z, yaw: member.yaw, tx: member.x, tz: member.z, tyaw: member.yaw, motion: newMotion(Math.random() * LOOP) }
           bodies.set(member.player_id, body)
           obj.position.set(member.x, 0, member.z)
           obj.rotation.y = member.yaw
@@ -83,7 +89,8 @@ export function mountCrew(scene: THREE.Scene): CrewView {
     },
     update(dt) {
       let moving = false
-      const k = 1 - Math.exp(-Math.min(dt, 0.1) * 12)
+      const step = Math.min(dt, 0.1)
+      const k = 1 - Math.exp(-step * 12)
       for (const body of bodies.values()) {
         const dx = body.tx - body.x
         const dz = body.tz - body.z
@@ -94,8 +101,16 @@ export function mountCrew(scene: THREE.Scene): CrewView {
         body.yaw += dy * k
         body.obj.position.set(body.x, 0, body.z)
         body.obj.rotation.y = body.yaw
+        if (animate && step > 0) {
+          // Speed in the body's own frame: it faces -Z turned by yaw.
+          const vx = (dx * k) / step, vz = (dz * k) / step
+          const sin = Math.sin(body.yaw), cos = Math.cos(body.yaw)
+          advance(body.motion, mode, step, -vx * sin - vz * cos, vx * cos - vz * sin, (dy * k) / step)
+          poseAstronaut(body.obj, pose(mode, body.motion))
+        }
       }
-      const show = dirty || moving
+      // A walking idle breathes and a floating one drifts, so with crew in the room every frame is new.
+      const show = dirty || moving || (animate && bodies.size > 0)
       dirty = false
       if (show) group.updateMatrixWorld(true)
       return show

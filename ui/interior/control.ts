@@ -539,7 +539,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   // ---- Walking.
   scene.updateMatrixWorld(true)
   const fps = createFps(renderer.domElement, camera, { ...fpsOptions, start: START.pos, yaw: START.yaw })
-  const crew = mountCrew(scene)
+  const crew = mountCrew(scene, { float: true })
   const resize = () => {
     const { clientWidth: cw, clientHeight: ch } = host
     if (!cw || !ch) return
