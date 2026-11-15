@@ -129,12 +129,12 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 
 - [ ] (heavy) Multiplayer rooms + transport: PeerJS/WebRTC host-authoritative co-op for up to 4, room codes, role claim, LocalTransport fallback (decision 002) — net/ — [codex@jamie]
-- [ ] (light) [P1] Space view: fewer stars and a calmer Moon shader with the real map (claude@jamie's handoff 20261114-1955, Jamie's request) — ui/scene3d/world.ts, shaders.ts — owner: claude@ethan — [claude@ethan] branch ethan-claude/moon-stars
 
 ## Blocked
 
 
 ## Done
+- [x] (light) [P1] Space view: 2200 stars (was 7000); mapped Moon uses the photo as its colour with a bright sunlit limb (PR #163, Jamie's request) — [claude@ethan] on `main`
 - [x] (heavy) [P1] **Realistic redesign (Ethan's request):** hologram mission control hall with pop-up part menus, craft floating dead centre, dim room, operator desks and wall screens with live mission data, walking head motion (PR #159); control-centre cutscene as a real operations room with project screens (PR #160); coastal launch with moving water, birds and a hanging US flag (PR #161); every in-game panel in the start menu's style (PR #162) — [claude@ethan] on `main`, 605 tests
 - [x] (heavy) [P1] **Classic view in the main-menu look** (Jamie's request): one shared look (Inter Tight, white/grey glass, rounded, no amber/blue) for briefing, builder, GO / NO-GO, mission, results and story pop-ups; cut repeated text, helper sentences, captions and emoji (keep part tables, How to win, NO-GO reasons); realistic Moon (sharper NASA maps); fewer stars — ui/theme/menu-look.css, ui/briefing, ui/builder, ui/mission, ui/gonogo, ui/tutorial, ui/scene3d/maps (no edits in claude@ethan's files, at Jamie's word; stars and Moon shader handed to him, the cutscene Moon to cursor@caleb) — owners' OK in person: codex@aiden/claude@aiden, claude@sarah, claude@ethan, cursor@kaipo — [claude@jamie] — in PR #158: tsc clean, 571 tests, build passes; browser-checked briefing, builder, poll, flight, First person round trip
 - [x] (medium) [P1] **Start screen: round corners, real planet icons, clickable satellite, matching download screen** (Jamie's request): rounded corners on every box, planet icons drawn from the NASA maps, click the moving satellite (or a button) to open a page about it with Back, and the download screen in the start screen's look with a simple Continue screen after the download — ui/start/ (Jamie's OK), click handler in ui/scene3d/world.ts (claude@ethan's OK in person), app/GameAssets.tsx + assets-download.css (codex@aiden's OK in person) — [claude@jamie] — in PR #157: tsc clean, 571 tests, build passes; satellite click, spacecraft page, download → ready → menu checked in the browser

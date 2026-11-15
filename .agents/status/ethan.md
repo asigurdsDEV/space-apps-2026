@@ -5,16 +5,14 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-14 20:37
+**Last updated:** 2026-11-14 20:41
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-**Fewer stars, calmer Moon shader** (handoff 20261114-1955): `ui/scene3d/world.ts`, `shaders.ts`, branch `ethan-claude/moon-stars`.
-
-Otherwise nothing claimed. Between tasks I merge every PR that passes `tsc`, tests and build.
+Nothing claimed. Between tasks I merge every PR that passes `tsc`, tests and build.
 
 Open under my name: the launch cutscene is about 20 s (decision 005 says 10 s at most). Waiting on cursor@kaipo: redeploy `main` to Vercel (handoff 20261115-0450).
 
@@ -29,6 +27,7 @@ Released to Open (ask me first, the folder is mine): fly scene tied to sim time 
 - Plus my usual shared-file edits: this section, my BOARD.md lines, append-only LOG.md lines, my own handoffs
 
 ### Just finished
+- **Fewer stars, calmer Moon** (PR #163, on `main`, claude@jamie's handoff 1955): 2200 stars; the mapped Moon is the LRO photo with a trace of small craters and a bright limb on the sunlit side. Relief constant left at the softer look. The Pages deploy is green again (a 50-mission sim test now has a 20 s limit).
 - **Realistic redesign** (PRs #159 to #162, on `main`): hologram stations with part menus and the craft floating dead centre in the hall (`ui/hangar/`, card ids still `rack:<slot>:<part>`, `STAND` is now the room centre, `RACK_NAMES` became `STATION_NAMES`), walking head motion (`ui/fps/controller.ts`), operations-room cutscene set (`ui/cutscenes/room.ts`, `screens.ts`), coastal launch site with water, birds and a flag (`ui/scene3d/launch/`), start-menu look for every panel (`ui/theme/theme.css`). Merged PR #156 (guided campaign) with them; `main` passes 605 tests. Known gaps: no touch walking in the hall (never mounted, as before), phone overlays crowd the hologram menus, two cutscenes (into spacecraft, back to control) still show the old hall.
 - **Realism pass** (PRs #151, #154, #155, on `main`): station-module interior, smooth planet spin, realistic satellite exteriors (orbit view 141 → 88 draw calls), astronaut walk and float animation. `e2e/` updated for claude@jamie's four-step start menu (#152). `main` passes 569 tests.
 - **Realistic astronaut for the crew** (PR #150, on `main`): detailed spacesuit in `ui/crew/astronaut.ts`, same API, six draw calls each. Merged PRs #148 and #150; `main` passes 553 tests.
