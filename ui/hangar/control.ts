@@ -16,6 +16,7 @@ import { buildBus, buildPart, busKey, modelKey, SLOT, type Mount } from '../scen
 import type { Entity } from '../../shared'
 import { CALL_WALL, DESK_XS, DESK_Z, GAUGES, LAUNCH, ROOM, START, STAND, shortLabel, type Debrief, type Rack } from './layout'
 import { gridTexture } from './world'
+import { addMissionControlDecor, ceilingMaterial, wallMaterial } from './decor'
 
 export interface RoomScreens {
   title: string
@@ -145,7 +146,7 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.85 }))
   floor.rotation.x = -Math.PI / 2
   floor.position.set(cx, 0, cz)
-  const wallMat = new THREE.MeshStandardMaterial({ color: 0x1a2133, roughness: 0.9 })
+  const wallMat = wallMaterial() // acoustic panels (decor.ts)
   const plane = (pw: number, ph: number, pos: [number, number, number], rotY: number, mat: THREE.Material = wallMat) => {
     const m = new THREE.Mesh(new THREE.PlaneGeometry(pw, ph), mat)
     m.position.set(...pos)
@@ -158,8 +159,10 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
   plane(w, y1, [cx, y1 / 2, z1], Math.PI)
   plane(d, y1, [x0, y1 / 2, cz], Math.PI / 2)
   plane(d, y1, [x1, y1 / 2, cz], -Math.PI / 2)
-  const ceiling = plane(w, d, [cx, y1, cz], 0)
+  const ceiling = plane(w, d, [cx, y1, cz], 0, ceilingMaterial())
   ceiling.rotation.x = Math.PI / 2
+  // Flight Control Room + clean-room dressing: static, not interactable or collidable (decor.ts).
+  addMissionControlDecor(scene)
   const strip = new THREE.MeshBasicMaterial({ color: 0xcfe0ff })
   for (let z = z0 + 2; z < z1; z += 4) {
     const lamp = new THREE.Mesh(new THREE.BoxGeometry(w - 4, 0.05, 0.2), strip)
