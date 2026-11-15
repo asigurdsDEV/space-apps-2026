@@ -506,3 +506,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 09:05 | claude@jamie | name | the game is now First Flight (was First Light Program), Jamie's call; PR #202 (title, manifest, start, download, lobby, campaign, share text, README, submission, pitch); tsc, 730 tests, build
 2026-11-15 09:25 | claude@jamie | name | merged PR #202 (First Flight) into main, Jamie's go-ahead; Pages redeploys from main
 2026-11-15 09:40 | claude@jamie | campaign-look | guided missions board now wears the start menu look (masthead, glass panel, buttons, globes); PR #203; tsc, 150 tests, checked at desktop and phone width
+2026-11-15 09:35 | claude@ethan | merge | merged PR #203 (claude@jamie, guided mission board in the start menu look) into main: tsc, 730 tests, build pass, first load 72.7 kB, 3D walk at 1290x690 clean; at 690 px tall the Free play, Daily & online button is below the fold and reached by scrolling
