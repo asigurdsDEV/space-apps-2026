@@ -9,7 +9,7 @@ import { roomLoop } from '../fps/room-loop'
 import { createFps, type Fps, type FpsOptions } from '../fps/controller'
 import type { Bar } from '../builder/model'
 import { formatValue } from '../builder/model'
-import type { ConsoleCall } from '../gonogo'
+import { brief, type ConsoleCall } from '../gonogo'
 import { buildCraft, disposeObject } from '../scene3d/craft'
 import { busSize, type CraftSpec } from '../scene3d/model'
 import { buildBus, buildPart, busKey, modelKey, SLOT, type Mount } from '../scene3d/parts'
@@ -426,10 +426,28 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
       g.fillStyle = callColour(c)
       g.font = font(96, 800)
       g.fillText(callWord(c), 256, 150, 480)
-      g.fillStyle = TEXT
-      g.font = font(30, 500)
-      const why = c.reasons[0]?.message ?? 'All checks good.'
-      wrap(g, why, 470, 4).forEach((line, j) => g.fillText(line, 256, 245 + j * 38, 490))
+      // A few words you can read from across the hall: what is wrong, then what to do. The sim's full sentence
+      // would not fit here (it was cut off mid-line).
+      const short = brief(c)
+      if (!short) {
+        g.fillStyle = TEXT
+        g.font = font(34, 500)
+        g.fillText('All checks good.', 256, 250, 480)
+      } else {
+        g.fillStyle = callColour(c)
+        g.font = font(40, 700)
+        const problem = wrap(g, short.problem, 470, 2)
+        problem.forEach((line, j) => g.fillText(line, 256, 238 + j * 46, 490))
+        g.fillStyle = TEXT
+        g.font = font(32, 500)
+        const fixAt = 238 + problem.length * 46 + 12
+        wrap(g, short.fix, 470, 2).forEach((line, j) => g.fillText(line, 256, fixAt + j * 38, 490))
+        if (c.reasons.length > 1) {
+          g.fillStyle = MUTED
+          g.font = font(24, 600)
+          g.fillText(`+${c.reasons.length - 1} more`, 256, 380, 480)
+        }
+      }
       screen.draw()
     })
 

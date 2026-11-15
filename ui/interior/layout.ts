@@ -60,13 +60,14 @@ export function moduleFor(console: string, list: readonly Module[]): Module | un
   return undefined // mission planning: mid-room
 }
 
-/** Where the choice buttons for a card stand: in front of its module, or (mission planning) floating mid-room in front of the dashboard. */
+/** Where the choice buttons for a card stand: in front of its module, or (mission planning) floating mid-room in front of the dashboard's right half. */
 export function choiceSpots(decision: Decision, list: readonly Module[]): { at: Vec3; along: [number, number] }[] {
   const m = moduleFor(decision.console, list)
   const n = decision.options.length
   return decision.options.map((_, i) => {
     const off = (i - (n - 1) / 2) * 0.45
-    if (!m) return { at: [off, 1.45, -1.1] as Vec3, along: [1, 0] as [number, number] }
+    // Right of centre: the gauges are on the dashboard's left, and the cards must not cover their numbers.
+    if (!m) return { at: [0.55 + off, 1.45, -1.1] as Vec3, along: [1, 0] as [number, number] }
     const along: [number, number] = [-m.face[1], m.face[0]]
     return { at: [m.at[0] + m.face[0] * 0.75 + along[0] * off, 1.2, m.at[2] + m.face[1] * 0.75 + along[1] * off] as Vec3, along }
   })
