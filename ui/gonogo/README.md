@@ -13,6 +13,8 @@ import { GoNoGoPoll } from '../ui/gonogo'
 ```
 
 - Four consoles (PLAN, SPACECRAFT, SCIENCE, COMMS) named after `shared/net.ts` `ROLES`. Each is **GO**, **GO, with concerns** (only warnings) or **NO-GO** (any error), and its reasons are the sim's own issue messages.
+- **Few words** (`docs/game-design/UX_DECLUTTER.md`, ≤ 80 words): each console shows one line, the first sentence of its worst issue (`headline()`), and the rest behind an ⓘ fold (`hasMore()`).
+- **Priority chip** (GAME_DESIGN §4.7): each console's own goal, `CONSOLES[].priority` ("Keep 10% mass margin", "No power warnings", "Beat science goal by 25%", "No data lost, on budget"), the same goals the debrief's team card scores (`ui/mission/game.ts` `teamPriorities`). Keep the two in sync.
 - Calls are revealed one at a time (`stepMs`, default 700). "Skip the poll" shows them all; with `prefers-reduced-motion` they appear at once.
 - **Launch** unlocks when no console is NO-GO. The sim refuses `launch` on errors anyway; this just says why before you press it.
 - Issue → console mapping is in `model.ts`: by code first, then by slot (`missing_/unknown_/wrong_type_<slot>`), then by `resource`. Keep it in sync with the codes in `sim/README.md`.

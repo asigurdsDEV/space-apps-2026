@@ -6,11 +6,12 @@ import type { Role } from '../../shared/net'
 export type ConsoleId = 'plan' | 'spacecraft' | 'science' | 'comms'
 export type Call = 'go' | 'go-concerns' | 'no-go'
 
-export const CONSOLES: { id: ConsoleId; label: string; role: Role }[] = [
-  { id: 'plan', label: 'PLAN', role: 'mission-planning' },
-  { id: 'spacecraft', label: 'SPACECRAFT', role: 'spacecraft' },
-  { id: 'science', label: 'SCIENCE', role: 'science' },
-  { id: 'comms', label: 'COMMS', role: 'comms-resources' },
+/** `priority` is each console's own goal (GAME_DESIGN §4.7), the same ones the debrief's team card scores. */
+export const CONSOLES: { id: ConsoleId; label: string; role: Role; priority: string }[] = [
+  { id: 'plan', label: 'PLAN', role: 'mission-planning', priority: 'Keep 10% mass margin' },
+  { id: 'spacecraft', label: 'SPACECRAFT', role: 'spacecraft', priority: 'No power warnings' },
+  { id: 'science', label: 'SCIENCE', role: 'science', priority: 'Beat science goal by 25%' },
+  { id: 'comms', label: 'COMMS', role: 'comms-resources', priority: 'No data lost, on budget' },
 ]
 
 // Keep in sync with the issue codes in sim/README.md. Slot codes (missing_/unknown_/wrong_type_<slot>) go by slot.
@@ -39,6 +40,7 @@ export interface ConsoleCall {
   id: ConsoleId
   label: string
   role: Role
+  priority: string
   call: Call
   reasons: Issue[]
 }
@@ -50,6 +52,15 @@ export function poll(issues: Issue[]): ConsoleCall[] {
     return { ...c, call, reasons }
   })
 }
+
+/** The one line a console shows: the first sentence of its worst issue. The rest goes behind ⓘ. */
+export function headline(call: ConsoleCall): string {
+  const first = (call.reasons.find((r) => r.severity === 'error') ?? call.reasons[0])?.message ?? ''
+  return /^.*?[.!?](?=\s|$)/.exec(first)?.[0] ?? first
+}
+
+/** True when the console has more to say than its headline. */
+export const hasMore = (call: ConsoleCall) => call.reasons.length > 1 || (call.reasons.length === 1 && headline(call) !== call.reasons[0].message)
 
 /** Launch unlocks when no console is NO-GO. Concerns are a judgement call, not a block. */
 export const canLaunch = (calls: ConsoleCall[]) => calls.every((c) => c.call !== 'no-go')

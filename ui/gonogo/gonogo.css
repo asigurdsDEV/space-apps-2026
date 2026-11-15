@@ -10,8 +10,12 @@
 .gng-no-go { border-color: var(--game-danger, #c62828); }
 .gng-no-go .gng-call { color: var(--game-danger, #c62828); }
 .gng-waiting { opacity: 0.6; }
-.gng-reasons { margin: var(--game-space-2, 8px) 0 0; padding-left: 1.1em; font-size: 0.9rem; }
-p.gng-reasons { padding-left: 0; }
+.gng-priority { display: inline-block; margin-top: var(--game-space-1, 4px); padding: 2px 8px; border-radius: 999px; font-size: 0.75rem; background: var(--game-surface-2, rgba(127, 127, 127, 0.15)); color: var(--game-muted, #666); }
+.gng-line { margin: var(--game-space-2, 8px) 0 0; font-size: 0.9rem; }
+.gng-more { margin-top: var(--game-space-1, 4px); font-size: 0.85rem; }
+.gng-more summary { cursor: pointer; display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; font-size: 1.1rem; }
+.gng-more ul { margin: 0; padding-left: 1.1em; }
 .gng-actions { display: flex; flex-wrap: wrap; gap: var(--game-space-3, 12px); align-items: center; }
 .gng-verdict { flex-basis: 100%; margin: 0; }
 @media (prefers-reduced-motion: no-preference) { .gng-console { transition: border-color 0.2s, opacity 0.2s; } }
+.gng-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
