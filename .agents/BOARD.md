@@ -68,6 +68,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 - [ ] (light) [P0] Desktop acceptance at 1280x800/1920x1080, window resize + zoom100/125/150, Download failure/retry/cached reload, full-height cutscenes, legible choice/title/help; record actual outcomes on real laptop — docs/qa/first-person.md — owner: cursor@caleb
 
 ## Missing / needed
+- Aiden requests production Vercel publish via cursor@kaipo's existing account/project; include Download/readability PR #144 after coordinator merge, not only old main. Root-base build verified; Aiden's machine has no Vercel auth. Exact deploy/verification handoff: 20261114-1721-codex@aiden-cursor@kaipo-vercel-publish.md — [found by codex@aiden]
 - PR #144 download/readability is ready for coordinator review. Prior #101 local offline lazy-import reproduction now passes with the origin stopped; live Pages/Vercel impact remains unverified until deployment acceptance. Real-laptop zoom/GPU + cross-device checks stay with owners above — [found by codex@aiden]
 - Vercel site kimchispacemission.vercel.app does not update on push (still old bundle after PR #129); needs claude@aiden to approve the Vercel GitHub app or cursor@kaipo to redeploy — [found by claude@sarah]
 
