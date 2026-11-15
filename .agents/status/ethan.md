@@ -5,14 +5,14 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-15 03:38
+**Last updated:** 2026-11-15 03:42
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-**Pass 4** (claimed 2026-11-15 02:40, handoff 20261115-0240): `ui/scene3d/shaders.ts`, `world.ts`, `sky.ts` (branch `ethan-claude/space-polish`); `sim/` and the card doc (`ethan-claude/debris-card`); `app/World.tsx` (`ethan-claude/alarm-first`); `ui/crew/` (`ethan-claude/astronaut-real`). Since 2026-11-15 03:38: `ui/scene3d/launch/fx.ts`, `scene.ts`, `site.ts` (`ethan-claude/climb-earth`); `ui/interior/` (`ethan-claude/cabin-station`); `ui/audio/`, `app/WorldMenu.tsx`, `ui/fps/controller.ts` and one `playSound` line at each key moment in other folders (`ethan-claude/sound-moments`). **Live Earth screen** (claimed 2026-11-15 01:49): new folder `ui/live/`, one entry button in `app/App.tsx` and `app/WorldMenu.tsx`, `satellite.js` added to `package.json`; branch `ethan-claude/live-earth`. Pad towers (claude@jamie, PR #182) and the launch-to-room cut (claude@aiden, PR #180) are done and on `main`. I still merge every PR that passes `tsc`, tests and build.
+**Pass 4, second half** (since 2026-11-15 03:38): `ui/scene3d/launch/fx.ts`, `scene.ts`, `site.ts` (`ethan-claude/climb-earth`); `ui/interior/` (`ethan-claude/cabin-station`); `ui/audio/`, `app/WorldMenu.tsx`, `ui/fps/controller.ts` and one `playSound` line at each key moment in other folders (`ethan-claude/sound-moments`). **Live Earth screen** (claimed 2026-11-15 01:49): new folder `ui/live/`, one entry button in `app/App.tsx` and `app/WorldMenu.tsx`, `satellite.js` added to `package.json`; branch `ethan-claude/live-earth`. Pad towers (claude@jamie, PR #182) and the launch-to-room cut (claude@aiden, PR #180) are done and on `main`. I still merge every PR that passes `tsc`, tests and build.
 
 Open under my name: the launch cutscene is about 20 s (decision 005 says 10 s at most). Waiting on cursor@kaipo: redeploy `main` to Vercel (handoff 20261115-0450).
 
@@ -27,6 +27,11 @@ Released to Open (ask me first, the folder is mine): fly scene tied to sim time 
 - Plus my usual shared-file edits: this section, my BOARD.md lines, append-only LOG.md lines, my own handoffs
 
 ### Just finished
+- **Pass 4, first half** (PRs #192 to #195, on `main`; each built on Fable and reviewed once on Opus):
+  - `ui/scene3d/`: aurora ovals during a G3+ storm (`SpaceView` now also reads `state.metrics`), a thin sunset band, 300 real bright stars with a test, a faint Milky Way. Known: the storm card covers the Earth while the aurora is on, so players may rarely see it; showing G1 and G2 needs `ui/mission/MissionView.tsx` (claude@sarah's).
+  - `sim/cards.ts`: card `debris-pass`, Earth orbit and buses with a thruster only, so starting designs draw the same cards as before. Known: option A (dodge, 1 day) is almost always right; one non-default seed changed outcome.
+  - `app/World.tsx`: on the first alarm the launch stays up until the alarm cutscene starts. Known: co-op guests not run in a browser.
+  - `ui/crew/`: new astronaut, same exports and rig, 7 draw calls and about 26,000 triangles each. Known: no shoulder flag; a ragged edge at the shoulder up close; very bright on the survey ground (`ui/probe/ProbeExplorer.tsx` has no tone mapping).
 - **Realism pass 3** (PRs #189, #190, #191, on `main`; each built, then reviewed twice by separate helpers):
   - Lift-off (`ui/scene3d/launch/fx.ts`, `scene.ts`): a white-hot flame column per propellant, dense lit exhaust and steam billows, hazy horizon and a calm inlet. Space shots match the earlier build to within 1/255. Known: the flame is whiter and narrower than Ethan's photo; clouds are smooth, not cauliflower-grained; no fire visible in the trench at ignition (needs pad geometry in `site.ts`).
   - Spacecraft room (`ui/interior/`): arched ceiling with ring frames, stand-off corners, racks with relief, a console on two pedestals; cursor@kaipo's hatch is a round gold lid at the same place; alarm lights hold steady under reduced motion. Known: 213,000 triangles from the door (95,000 before), measured on one Mac only.
