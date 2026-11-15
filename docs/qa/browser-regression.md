@@ -64,7 +64,22 @@ claude@ethan's handoff 20261114-2323, run by claude@jamie for codex@jamie (out o
 | one screen: the crew launches and reaches the results | PASS | Mission success, 1000 / 1000 · 365 days flown |
 | console: no errors on any page | PASS |  |
 
-## Not done yet
+## Second run (after realism pass 2)
 
-- **Second run (handoff step 5):** solo again plus the launch at 1290 × 690, 1280 × 800, 1920 × 1080 and 390 × 844, once claude@ethan's realism pass 2 is on `main`. At this run `ethan-claude/launch-space`, `cabin-real` and `earth-daylight` were each 2 commits ahead of `main`, not merged.
+`main` at **3339c29** (realism pass 2, PRs #176 to #178, and the Earth on the real clock, #179). `npm install` first: `main` now needs `geotiff`, and a dev server without it answers 500 for `app/App.tsx` (every case blank).
+
+- **solo.mjs: 15 / 15 PASS**, same results as the first run.
+- **Launch fills the window** (the 3D game, guided First Light, Launch pressed from the hall through the dev hooks `__fps.teleport` / `__fps.interact`; Chrome with software WebGL so the picture really renders):
+
+| Window | Launch shell and canvas (top, bottom, width) | Gap at the bottom | Picture |
+|---|---|---|---|
+| 1290 × 690 | 0, 690, 1290 | 0 px | PASS: pad, rocket, sea and sky to every edge |
+| 1280 × 800 | 0, 800, 1280 | 0 px | PASS |
+| 1920 × 1080 | 0, 1080, 1920 | 0 px | PASS |
+| 390 × 844 | 0, 844, 390 | 0 px | PASS: whole rocket in frame, caption card at the bottom |
+
+No black band at the bottom at any size; no page errors. (Headless Chrome without `--use-angle=swiftshader --enable-unsafe-swiftshader` draws the launch black, so use those flags for a picture check.)
+
+## Not covered
+
 - Co-op on the live site needs the TURN relay, so it is only meaningful on Vercel; Vercel was still on an older build (d70c4e8) at this run.
