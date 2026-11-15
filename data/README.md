@@ -108,6 +108,7 @@ The reference win earns the bonus on Normal (tested). `mass_margin_10` isn't use
 - `launch-vehicles.payload_tmi_kg`: mass to a Mars transfer.
 - `orbits.cruise_days`: trip time, which the sim spends before operations start.
 - `orbits.solar_flux_factor`: sunlight relative to Earth (1 / distance², Mars 0.43). The sim multiplies solar power by it; an RTG is unaffected.
+- `short_label` (every catalog): the part's name in at most 3 words, for the 3D game's prompts ("E · Fit 6U CubeSat", decision 007, read by `ui/hangar/layout.ts` `shortLabel`). `data.test.ts` checks the length.
 
 ## Adding to the catalogs
 

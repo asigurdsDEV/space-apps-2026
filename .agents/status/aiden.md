@@ -54,20 +54,20 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** aiden-codex/desktop-polish (based on #124)
-**Last updated:** 2026-11-14 15:54
+**Branch:** main (completion coordination); aiden-codex/desktop-polish (PR #135)
+**Last updated:** 2026-11-14 16:24
 
 ### Working on right now
-Aiden authorized finishing Claude's first-person optimization and overlapping-menu fixes after Claude usage limit. Preserve #124 default/preload/render improvements, consolidate utility UI in one game menu, keep radio/prompt clear, suspend covered rooms, repair input recovery and verify a full desktop run. No edits to Claude branches or section.
+First-person desktop polish complete in PR #135. No new source work claimed. Ethan remains merge coordinator; #132 training needs adaptation inside the new menu, with shared clock hold. Claude branches/section untouched.
 
 ### Files / folders I'm touching (hands off)
-`app/App.tsx` + `app/App.test.tsx` only for additive skip-already-watched-launch prop (no V7 edits); `app/World.tsx`, new `app/WorldMenu.tsx` + `app/WorldMenu.test.tsx` and `app/World.test.tsx`, `app/StoryLayer.tsx` + test, `app/app.css`; `ui/fps/controller.ts`, `Prompt.tsx`, `fps.css`, new controller tests; `ui/hangar/control.ts`, `MissionControl.tsx`; `ui/interior/control.ts`, `SpacecraftRoom.tsx`; `docs/qa/desktop-world.md`. May add a focused render-loop helper/test under ui/fps if shared by both rooms. #124 inherited changes retained. Ethan scene3d, V7 App.tsx work, Caleb cutscenes and other owners' UI untouched.
+PR #135 app/World + WorldMenu, StoryLayer, additive App skipLaunch prop/test, app.css; ui/fps input + room-loop/tests; hangar/interior control loop changes; docs/qa/desktop-world.md. Released for integration on merge. Did not create app/World.test.tsx (Ethan #132 owns that file), edit scene3d, other owners' branches, or docs/CHALLENGE 2.md.
 
 ### Just finished
-Desktop QA PR #118 merged: initial design→flight→debrief→fix passed, findings recorded. #120 now merged; #124 green but not merged at claim.
+One Menu/Escape dialog and noninteractive radio subtitle; #133 live replies preserved in that same radio. Both rooms suspend callbacks under menus/cutscenes/hidden tabs. Cabin does not rebuild unchanged craft each sim tick. Input release/focus/pointer cancellation and final bob frame fixed. Classic switch skips an already-watched launch. 3D scores saved with separate Daily keys. Full first-person regular 26/0 stars and Daily 25/0 runs; planning/radio/power module choices answered. Production default3D, menu, Classic/no-WebGL checks pass. 529 tests/typecheck/build pass, 146.0/150 kB. Local sample 60 FPS, renderer mean1.41ms; 4x CPU sample p95 interval17.9ms. Full limits in report.
 
 ### Missing / I need from someone
-Ethan remains merge coordinator: review/merge green #124, then Codex follow-up when ready. Actual low-end laptop/native Escape still require real hardware checks. Personal-best saving and radio rendering will be considered within the World integration scope.
+Ethan: merge ready #135, adapt #132 Flight training to WorldMenu (do not restore app-world-bar or removed holdClock callback); include training in shared hold condition and close menu when starting it. Physical low-end laptop/GPU, native pointer-locked Escape and cross-device co-op remain checks for the team. Actual 3D weather/leaderboard display is separate; persistence is fixed. Vercel auto-link still needs the account-owner action.
 
 ### Heads up for other agents
-This is a user-authorized takeover of Claude Aiden's unfinished desktop polish, not a takeover of scene3d/V7/other screens. No model creation; Sol is suitable. Desktop only, no new mobile development.
+#124 is now merged; its defaults/preloading/resolution/culling/gauge fixes are preserved. #133 was integrated normally, maintaining Sarah's source and theme. No dependencies, model assets, sim/shared changes or mobile work. Sol remains suitable.

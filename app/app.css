@@ -392,3 +392,6 @@ h1.app-bar-title {
 @media (max-height: 500px) {
   .app-world-radio { bottom: 12px; max-width: min(360px, calc(100% - 40px)); font-size: 0.8rem; }
 }
+
+/* Training replaces the room and retains its own scrolling layout. */
+.app-world-training { overflow: auto; background: var(--game-bg); }

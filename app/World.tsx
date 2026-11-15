@@ -5,7 +5,7 @@
 // over: back to mission control for the debrief. Same Session and Commands as the 2D screens, so
 // co-op works unchanged.
 
-import { useEffect, useMemo, useRef, useState, type ComponentType } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, type ComponentType } from 'react'
 import { getDatasets } from '../data'
 import type { Config, SimEvent, SimState, Summary } from '../shared'
 import { canSend, ROLES } from '../shared'
@@ -52,12 +52,14 @@ export interface WorldProps {
 }
 
 const LaunchView = SceneLaunchView as ComponentType<{ state: SimState; onDone: () => void }>
+const Training = lazy(() => import('./Training'))
 
 export function World({ active, config, onExit }: WorldProps) {
   const { session, roomCode, daily } = active
   const { state, events, players, me, paused, speed } = useSession(session)
   const [classic, setClassic] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [training, setTraining] = useState(false)
   const [cutscene, setCutscene] = useState(false)
   // CAPCOM answers every design choice in the hall (ui/story fitCallout).
   const [callout, setCallout] = useState<{ key: string; text: string } | null>(null)
@@ -120,7 +122,8 @@ export function World({ active, config, onExit }: WorldProps) {
   const heldClock = useRef(false)
   /** A late joiner skips the launch sequence. */
   const [launched, setLaunched] = useState(() => session.getSnapshot().state.t_s > 86400)
-  const hold = !classic && (menuOpen || cutscene || (flying && !launched))
+  const canTrain = flying && launched && !cutscene && !pendingDecision(state)
+  const hold = !classic && (menuOpen || cutscene || (training && canTrain) || (flying && !launched))
   useEffect(() => {
     if (roomCode !== null) return
     if (hold && !session.getSnapshot().paused) {
@@ -137,6 +140,10 @@ export function World({ active, config, onExit }: WorldProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [flying])
 
+  useEffect(() => {
+    if (training && !canTrain) setTraining(false)
+  }, [training, canTrain])
+
   if (classic) return <GameScreen session={session} config={config} onExit={onExit} roomCode={roomCode} daily={daily} skipLaunch={launched} />
 
   const onCutscene = (playing: boolean) => {
@@ -147,6 +154,7 @@ export function World({ active, config, onExit }: WorldProps) {
   const menu = (
     <WorldMenu open={menuOpen} disabled={cutscene} onOpenChange={setMenuOpen}
       online={roomCode !== null}
+      onTraining={canTrain ? () => { setMenuOpen(false); setTraining(true) } : undefined}
       onClassic={() => { setMenuOpen(false); setClassic(true) }}
       onExit={onExit} />
   )
@@ -160,6 +168,16 @@ export function World({ active, config, onExit }: WorldProps) {
           setLaunched(true)
         }}
       />
+    )
+  }
+
+  if (training && canTrain) {
+    return (
+      <div className="app-world app-world-training game-theme" data-theme="dark">
+        <Suspense fallback={<p className="app-training-loading" aria-busy="true">Loading flight training…</p>}>
+          <Training state={state} onClose={() => setTraining(false)} />
+        </Suspense>
+      </div>
     )
   }
 

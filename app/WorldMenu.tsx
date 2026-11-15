@@ -6,12 +6,13 @@ interface WorldMenuProps {
   disabled: boolean
   onOpenChange: (open: boolean) => void
   onClassic: () => void
+  onTraining?: () => void
   onExit: () => void
   online: boolean
 }
 
 /** One deliberate menu; the native dialog contains focus and makes the room inert. */
-export function WorldMenu({ open, disabled, onOpenChange, onClassic, onExit, online }: WorldMenuProps) {
+export function WorldMenu({ open, disabled, onOpenChange, onClassic, onTraining, onExit, online }: WorldMenuProps) {
   const dialog = useRef<HTMLDialogElement>(null)
   const title = useId()
 
@@ -45,6 +46,7 @@ export function WorldMenu({ open, disabled, onOpenChange, onClassic, onExit, onl
         <h1 id={title}>Mission menu</h1>
         <p className="game-muted">{online ? 'Your crew’s mission keeps running.' : 'Take a breath. Your mission is held.'}</p>
         <button type="button" className="game-button" autoFocus onClick={() => onOpenChange(false)}>Back to game</button>
+        {onTraining && <button type="button" className="game-button" onClick={onTraining}>Flight training</button>}
         <SoundToggle />
         <button type="button" className="game-button" onClick={onClassic}>Classic view</button>
         <button type="button" className="game-button" onClick={onExit}>Main menu</button>

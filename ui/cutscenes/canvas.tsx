@@ -143,23 +143,25 @@ function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t
 }
 
+/**
+ * Mission control, modeled on NASA's Flight Control Room in Houston (MCC-H, FCR-1): tiered rows of
+ * consoles facing a wall of big displays. First person: you walk in at the back and take the flight
+ * director's seat in the last row, as the CAPCOM line welcomes you.
+ */
 function arrival(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Shot {
-  scene.background = new THREE.Color(0x070b14)
-  lights(scene, 0xd7e4ff, 0x8aa4d4)
-  scene.add(new THREE.Mesh(new THREE.BoxGeometry(16, 0.12, 12), new THREE.MeshStandardMaterial({ color: 0x141a28, roughness: 0.9 })))
-  const wall = new THREE.Mesh(new THREE.BoxGeometry(16, 6, 0.2), new THREE.MeshStandardMaterial({ color: 0x101622, roughness: 0.8 }))
-  wall.position.set(0, 2.4, -4.2)
-  scene.add(wall)
-  const screens = SCREENS.map((draw, i) => {
+  scene.background = new THREE.Color(0x05080f)
+  scene.fog = new THREE.Fog(0x05080f, 12, 28)
+  scene.add(new THREE.HemisphereLight(0x9fb6e0, 0x0a0d14, 0.35))
+
+  // Displays: one canvas per picture, shared by the front wall and the console monitors.
+  const textures = new Map<(ctx: Ctx, t?: number) => void, { paint: (t: number) => void; texture: THREE.CanvasTexture }>()
+  for (const draw of SCREENS) {
     const canvas = document.createElement('canvas')
     canvas.width = 512
     canvas.height = 288
     const texture = new THREE.CanvasTexture(canvas)
     texture.colorSpace = THREE.SRGBColorSpace
     texture.anisotropy = 4
-    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1.7, 0.95), new THREE.MeshBasicMaterial({ map: texture, toneMapped: false }))
-    mesh.position.set(-2.1 + (i % 3) * 2.1, 3.15 - Math.floor(i / 3) * 1.25, -4.05)
-    scene.add(mesh)
     const ctx = canvas.getContext('2d')
     const paint = (t: number) => {
       if (!ctx) return
@@ -167,29 +169,182 @@ function arrival(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Shot {
       texture.needsUpdate = true
     }
     paint(0)
-    return { mesh, paint, live: draw !== status && draw !== goNoGo }
-  })
-  let painted = 0
-  for (const x of [-2.2, 0, 2.2]) {
-    const desk = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.72, 0.7), new THREE.MeshStandardMaterial({ color: 0x1c2436, metalness: 0.2, roughness: 0.6 }))
-    desk.position.set(x, 0.36, 1.15)
-    scene.add(desk)
+    textures.set(draw, { paint, texture })
   }
-  return {
-    update(progress, _elapsed, aspect) {
-      camera.position.set(0, lerp(1.7, 1.55, progress), lerp(distance(aspect, 5.4), distance(aspect, 2.7), progress))
-      camera.lookAt(0, 1.7, -4)
-      // Redraw the moving screens about 12 times a second; uploading a canvas every frame is wasted work on phones.
-      const t = _elapsed / 1000
-      const repaint = t - painted > 0.08
-      if (repaint) painted = t
-      screens.forEach(({ mesh, paint, live }, i) => {
-        if (repaint && live) paint(t)
-        ;(mesh.material as THREE.MeshBasicMaterial).color.setScalar(0.82 + 0.18 * (0.5 + 0.5 * Math.sin(progress * 8 + i)))
+  const screenMat = (draw: (ctx: Ctx, t?: number) => void) => new THREE.MeshBasicMaterial({ map: textures.get(draw)!.texture, toneMapped: false, fog: false })
+  const black = new THREE.MeshStandardMaterial({ color: 0x08090c, roughness: 0.5, metalness: 0.3 })
+
+  // Room shell: carpet, acoustic side walls, dark ceiling with light panels.
+  const carpet = patternTexture(256, (ctx) => {
+    ctx.fillStyle = '#1a2030'
+    ctx.fillRect(0, 0, 256, 256)
+    for (let i = 0; i < 2600; i++) {
+      ctx.fillStyle = `rgba(${Math.random() < 0.5 ? '90,110,150' : '5,8,14'},${0.18 + Math.random() * 0.2})`
+      ctx.fillRect(Math.random() * 256, Math.random() * 256, 2, 2)
+    }
+  }, 10)
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(18, 15), new THREE.MeshStandardMaterial({ map: carpet, roughness: 1 }))
+  floor.rotation.x = -Math.PI / 2
+  floor.position.z = 0.75
+  scene.add(floor)
+  const slats = patternTexture(128, (ctx) => {
+    ctx.fillStyle = '#1b2232'
+    ctx.fillRect(0, 0, 128, 128)
+    ctx.fillStyle = '#121826'
+    for (let x = 0; x < 128; x += 16) ctx.fillRect(x, 0, 5, 128)
+  }, 1)
+  slats.repeat.set(30, 1)
+  for (const side of [-1, 1]) {
+    const wall = new THREE.Mesh(new THREE.PlaneGeometry(15, 5), new THREE.MeshStandardMaterial({ map: slats, roughness: 0.95 }))
+    wall.rotation.y = -side * Math.PI / 2
+    wall.position.set(side * 9, 2.5, 0.75)
+    scene.add(wall)
+  }
+  const back = new THREE.Mesh(new THREE.PlaneGeometry(18, 5), new THREE.MeshStandardMaterial({ color: 0x141a28, roughness: 0.95 }))
+  back.rotation.y = Math.PI
+  back.position.set(0, 2.5, 8.2)
+  scene.add(back)
+  const front = new THREE.Mesh(new THREE.PlaneGeometry(18, 5), new THREE.MeshStandardMaterial({ color: 0x0b0f18, roughness: 0.9 }))
+  front.position.set(0, 2.5, -6.7)
+  scene.add(front)
+  const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(18, 15), new THREE.MeshStandardMaterial({ color: 0x0c1019, roughness: 1 }))
+  ceiling.rotation.x = Math.PI / 2
+  ceiling.position.set(0, 5, 0.75)
+  scene.add(ceiling)
+  const panels: Place[] = []
+  for (let x = -6; x <= 6; x += 3) for (let z = -3; z <= 7; z += 2.5) panels.push([x, 4.99, z, 0, Math.PI / 2])
+  instanced(scene, new THREE.PlaneGeometry(1.4, 0.5), new THREE.MeshBasicMaterial({ color: 0x5d6a85 }), panels)
+  for (const x of [-4, 4]) {
+    const down = new THREE.SpotLight(0xdfe6ff, 30, 12, 0.9, 0.7)
+    down.position.set(x, 4.9, 2)
+    down.target.position.set(x, 0, 1)
+    scene.add(down, down.target)
+  }
+
+  // Front display wall: the big ground track in the middle, two screens stacked on each side.
+  const wallScreens: [(ctx: Ctx, t?: number) => void, number, number, number, number][] = [
+    [groundTrack, 0, 2.95, 6.2, 3.49],
+    [clock, -5.5, 3.75, 3.2, 1.8],
+    [telemetry, -5.5, 1.8, 3.2, 1.8],
+    [earthFeed, 5.5, 3.75, 3.2, 1.8],
+    [status, 5.5, 1.8, 3.2, 1.8],
+  ]
+  for (const [draw, x, y, w, h] of wallScreens) {
+    const bezel = new THREE.Mesh(new THREE.BoxGeometry(w + 0.12, h + 0.12, 0.08), black)
+    bezel.position.set(x, y, -6.62)
+    const screen = new THREE.Mesh(new THREE.PlaneGeometry(w, h), screenMat(draw))
+    screen.position.set(x, y, -6.57)
+    scene.add(bezel, screen)
+  }
+  const glow = new THREE.PointLight(0x6f9cff, 14, 10, 1.6)
+  glow.position.set(0, 3, -5.4)
+  scene.add(glow)
+
+  // Four tiered rows of consoles, each on a riser 30 cm above the one in front, like the real room.
+  const desk = new THREE.MeshStandardMaterial({ color: 0x262b35, roughness: 0.55, metalness: 0.15 })
+  const top = new THREE.MeshStandardMaterial({ color: 0x5a5148, roughness: 0.45 })
+  const riser = new THREE.MeshStandardMaterial({ color: 0x161c2a, roughness: 0.9 })
+  const seat = new THREE.MeshStandardMaterial({ color: 0x0e1016, roughness: 0.7 })
+  const strip = new THREE.MeshBasicMaterial({ color: 0x3f6fe0 })
+  const bezels: Place[] = []
+  const chairs: Place[] = []
+  const backs: Place[] = []
+  const keyboards: Place[] = []
+  const monitors = new Map<(ctx: Ctx, t?: number) => void, Place[]>()
+  const rows = 4
+  const LAST = rows - 1
+  for (let r = 0; r < rows; r++) {
+    const h = r * 0.3
+    const z = -3 + r * 2.2
+    if (r > 0) {
+      const end = r === LAST ? 8.2 : z + 1.6
+      const deck = new THREE.Mesh(new THREE.BoxGeometry(14, h, end - (z - 0.6)), riser)
+      deck.position.set(0, h / 2, (end + z - 0.6) / 2)
+      const edge = new THREE.Mesh(new THREE.BoxGeometry(14, 0.025, 0.025), strip)
+      edge.position.set(0, h - 0.02, z - 0.6)
+      scene.add(deck, edge)
+    }
+    const counter = new THREE.Mesh(new THREE.BoxGeometry(12, 0.72, 0.7), desk)
+    counter.position.set(0, h + 0.36, z)
+    const surface = new THREE.Mesh(new THREE.BoxGeometry(12.1, 0.04, 0.85), top)
+    surface.position.set(0, h + 0.74, z + 0.05)
+    scene.add(counter, surface)
+    for (let c = 0; c < 6; c++) {
+      const x = -4.75 + c * 1.9
+      ;[-0.55, 0, 0.55].forEach((dx, m) => {
+        const turn = -dx * 0.5 // outer monitors angle in toward the seat
+        const draw = r === LAST && c >= 2 && c <= 3 ? [telemetry, goNoGo, status][m] : SCREENS[(r * 7 + c * 3 + m) % SCREENS.length]
+        const list = monitors.get(draw) ?? []
+        list.push([x + dx, h + 1.03, z - 0.13, turn])
+        monitors.set(draw, list)
+        bezels.push([x + dx, h + 1.03, z - 0.155, turn])
       })
+      keyboards.push([x, h + 0.77, z + 0.2])
+      if (r === LAST && (c === 2 || c === 3)) continue // your seat: the camera sits here
+      chairs.push([x, h + 0.48, z + 0.85])
+      backs.push([x, h + 0.86, z + 1.12, 0, 0.12])
+    }
+  }
+  instanced(scene, new THREE.BoxGeometry(0.53, 0.34, 0.035), black, bezels)
+  for (const [draw, places] of monitors) instanced(scene, new THREE.PlaneGeometry(0.49, 0.3), screenMat(draw), places)
+  instanced(scene, new THREE.BoxGeometry(0.46, 0.02, 0.15), black, keyboards)
+  instanced(scene, new THREE.BoxGeometry(0.52, 0.09, 0.5), seat, chairs)
+  instanced(scene, new THREE.BoxGeometry(0.5, 0.6, 0.07), seat, backs)
+
+  // Mission plaques along the side walls (the real room hangs one per flown mission).
+  const plaques: Place[] = []
+  for (const side of [-1, 1]) for (let z = -4.5; z <= 6.5; z += 1.6) plaques.push([side * 8.96, 3.9, z, side * Math.PI / 2, Math.PI / 2])
+  const plaqueMesh = instanced(scene, new THREE.CylinderGeometry(0.3, 0.3, 0.04, 28), new THREE.MeshStandardMaterial({ roughness: 0.4, metalness: 0.5 }), plaques)
+  const plaqueColors = [0xc9a24a, 0x3a64c8, 0xb8403a, 0xd0d4dc]
+  plaques.forEach((_, i) => plaqueMesh.setColorAt(i, new THREE.Color(plaqueColors[i % plaqueColors.length])))
+
+  let painted = -1
+  const deckTop = LAST * 0.3
+  return {
+    update(progress, elapsedMs, aspect) {
+      // Walk in from the back door and sit down: eye height drops from standing (1.65 m) to seated (1.2 m).
+      const e = progress * progress * (3 - 2 * progress)
+      const sway = 0.015 * Math.sin(elapsedMs / 380) * (1 - e)
+      camera.fov = aspect < 0.9 ? 66 : 50
+      camera.updateProjectionMatrix()
+      camera.position.set(lerp(0.9, 0, e) + sway, deckTop + lerp(1.65, 1.28, e), lerp(7.6, 5.55, e))
+      camera.lookAt(0, lerp(2.6, 2.45, e), -6.5)
+      // Redraw the moving pictures about 12 times a second; uploading canvases every frame is wasted work on phones.
+      const t = elapsedMs / 1000
+      if (t - painted < 0.08) return
+      painted = t
+      for (const [draw, { paint }] of textures) if (draw !== status && draw !== goNoGo) paint(t)
     },
     dispose() {},
   }
+}
+
+/** [x, y, z, turn about y, tilt about x] */
+type Place = [number, number, number, number?, number?]
+
+function instanced(scene: THREE.Scene, geometry: THREE.BufferGeometry, material: THREE.Material, places: Place[]) {
+  const mesh = new THREE.InstancedMesh(geometry, material, places.length)
+  const o = new THREE.Object3D()
+  places.forEach(([x, y, z, turn = 0, tilt = 0], i) => {
+    o.position.set(x, y, z)
+    o.rotation.set(tilt, turn, 0, 'YXZ')
+    o.updateMatrix()
+    mesh.setMatrixAt(i, o.matrix)
+  })
+  scene.add(mesh)
+  return mesh
+}
+
+function patternTexture(size: number, draw: (ctx: Ctx) => void, repeat: number) {
+  const canvas = document.createElement('canvas')
+  canvas.width = canvas.height = size
+  const ctx = canvas.getContext('2d')
+  if (ctx) draw(ctx)
+  const texture = new THREE.CanvasTexture(canvas)
+  texture.colorSpace = THREE.SRGBColorSpace
+  texture.wrapS = texture.wrapT = THREE.RepeatWrapping
+  texture.repeat.set(repeat, repeat)
+  return texture
 }
 
 // ---- Mission-control screens for the arrival wall: drawn in 2D, no image files.

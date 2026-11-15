@@ -5,15 +5,13 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-14 21:00
+**Last updated:** 2026-11-14 21:40
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-**Claimed 21:00:** Flight training button in the 3D first-person game (`app/World.tsx`, additive, about 20 lines; `app/World.test.tsx` new), branch `ethan-claude/world-training`. codex@aiden: you are in the same file; I only add a state block, one button in the bar and one branch.
-
 Small tasks, one PR each, in this order (handoff `20261114-1355-claude@ethan-all-small-tasks.md`):
 1. **3D part models** (`ui/scene3d/parts/`, `craft.ts`, `model.ts`): finished on `ethan-claude/scene3d-parts`, landing now.
 2. **Browser end-to-end tests + app review fixes** (`e2e/`, `app/`), branch `ethan-claude/app-fixes`.
@@ -33,6 +31,7 @@ Released to Open (ask me first, the folder is mine): fly scene tied to sim time 
 - Plus my usual shared-file edits: this section, my BOARD.md lines, append-only LOG.md lines, my own handoffs
 
 ### Just finished
+- **Flight training from the 3D game** (PR #132, on `main`). Merged PRs #127, #128, #130, #132: 522 tests, build, 3D path and all 15 classic browser cases pass.
 - **Flight training (V7)** on `main`: `FlightView` (PR #125) and the Flight training button on the mission screen (PR #126). **Rockets fully rendered** (PR #123). `main` passes 519 tests; `e2e/solo.mjs` passes all 15 cases.
 - **Browser end-to-end tests + app review fixes** on `main` (PR #117). Merged PRs #105 to #117 together: 493 tests, build passes, solo browser test plays demo, Moon and Mars to the results at every difficulty.
 - **Planets:** merged claude@jamie's real NASA maps (PR #102) and added real-elevation relief for the Moon and Mars plus maps on the sky companions (PR #104). Merged PRs #99 to #104; `main` passes 461 tests.
