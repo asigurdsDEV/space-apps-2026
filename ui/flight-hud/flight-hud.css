@@ -12,26 +12,25 @@
 .fh-panel {
   position: absolute;
   margin: 0;
-  background: color-mix(in srgb, var(--game-panel, #141b33) 82%, transparent);
-  border: 1px solid var(--game-border, #26304f);
-  border-radius: var(--game-radius, 12px);
-  padding: 8px 12px;
-  backdrop-filter: blur(4px);
+  border: 1px solid var(--game-line, rgb(255 255 255 / 0.14));
+  background: var(--game-glass, rgb(10 12 16 / 0.6));
+  backdrop-filter: var(--game-glass-blur, blur(18px));
+  border-radius: var(--game-radius, 0);
+  padding: 10px 14px;
 }
 .fh button {
   pointer-events: auto;
-  font: inherit;
   color: inherit;
-  background: var(--game-surface, #0b1020);
-  border: 1px solid var(--game-border, #26304f);
-  border-radius: var(--game-radius-control, 8px);
-  padding: 8px 12px;
-  min-height: 40px;
+  background: transparent;
+  border: 1px solid var(--game-border, #6c7078);
+  border-radius: var(--game-radius-control, 0);
+  padding: 8px 14px;
+  min-height: 44px;
   cursor: pointer;
 }
 .fh button:focus-visible {
-  outline: 2px solid var(--game-focus, #5b8cff);
-  outline-offset: 2px;
+  outline: 2px solid var(--game-focus, #fff);
+  outline-offset: 3px;
 }
 .fh button:disabled {
   opacity: 0.45;
@@ -53,7 +52,7 @@
 }
 .fh-objective {
   margin: 0 0 6px;
-  font-weight: 700;
+  font-weight: 500;
 }
 .fh-targets {
   list-style: none;
@@ -70,7 +69,7 @@
   color: var(--game-muted, #9aa5c4);
 }
 .fh-target.is-next {
-  font-weight: 700;
+  font-weight: 600;
 }
 
 /* focused target: centre, below the crosshair */
@@ -85,7 +84,7 @@
   margin: 0;
 }
 .fh-focus__name {
-  font-weight: 700;
+  font-weight: 500;
 }
 .fh-focus__line {
   margin-top: 2px !important;
@@ -93,9 +92,8 @@
 }
 .fh-scan {
   margin-top: 8px;
-  height: 8px;
-  border-radius: 999px;
-  background: var(--game-border, #26304f);
+  height: 2px;
+  background: var(--game-line, rgb(255 255 255 / 0.14));
   overflow: hidden;
 }
 .fh-scan__fill {
@@ -109,7 +107,6 @@
   left: 50%;
   transform: translateX(-50%);
   width: min(520px, calc(100% - 24px));
-  border-left: 4px solid var(--game-accent, #5b8cff);
 }
 .fh-fact {
   display: block;
@@ -122,13 +119,13 @@
   color: var(--game-accent, #5b8cff);
 }
 .fh-message--done {
-  border-left-color: var(--game-success, #34c38f);
+  border-left: 2px solid var(--game-success, #34c38f);
 }
 .fh-message--partial {
-  border-left-color: var(--game-warning, #f5a524);
+  border-left: 2px solid var(--game-warning, #f5a524);
 }
 .fh-message--blocked {
-  border-left-color: var(--game-danger, #f0506e);
+  border-left: 2px solid var(--game-danger, #f0506e);
 }
 
 /* controls: bottom strip */
@@ -164,7 +161,6 @@
 .fh-scan-btn {
   background: var(--game-accent, #5b8cff) !important;
   color: var(--game-on-accent, #fff) !important;
-  font-weight: 700;
   touch-action: none;
 }
 

@@ -1,9 +1,9 @@
 .wt-controls { display: grid; grid-template-columns: 112px minmax(72px, 160px) max-content; align-items: end; justify-content: space-between; gap: .5rem; padding: .5rem max(.5rem, env(safe-area-inset-right)) max(.5rem, env(safe-area-inset-bottom)) max(.5rem, env(safe-area-inset-left)); pointer-events: none; }
 .wt-pad, .wt-interact { pointer-events: auto; touch-action: none; user-select: none; -webkit-user-select: none; }
-.wt-pad { box-sizing: border-box; height: 112px; border: 2px solid var(--game-border, #8295ac); border-radius: 16px; color: var(--game-text, #fff); background: var(--game-panel, #172334); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; font: 600 14px system-ui; }
+.wt-pad { box-sizing: border-box; height: 112px; border: 1px solid rgb(255 255 255 / 0.3); color: var(--game-text, #fff); background: var(--game-glass, rgb(10 12 16 / 0.6)); backdrop-filter: var(--game-glass-blur, blur(18px)); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; font: 500 0.7rem var(--game-font, system-ui); letter-spacing: 0.2em; text-transform: uppercase; }
 .wt-move { border-radius: 50%; }
 .wt-stick { font-size: 24px; line-height: 1; }
-.wt-pad:focus-visible { outline: 3px solid var(--game-accent, #78d7ff); outline-offset: 2px; }
+.wt-pad:focus-visible { outline: 2px solid var(--game-focus, #fff); outline-offset: 3px; }
 .wt-pad[aria-disabled="true"] { opacity: .5; }
 .wt-interact { min-height: 52px; max-width: 100%; white-space: nowrap; padding-inline: .75rem; }
 .wt-help { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }

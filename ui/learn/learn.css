@@ -6,7 +6,8 @@
   max-width: 100%;
 }
 
-.learn-term-trigger {
+/* .learn-term in front: a term sits inside a sentence, so it must outrank the theme's button label. */
+.learn-term .learn-term-trigger {
   margin: 0;
   padding: 0 0.15em;
   border: none;
@@ -15,16 +16,18 @@
   background: transparent;
   color: var(--game-accent, #2557c7);
   font: inherit;
-  font-weight: 650;
+  letter-spacing: inherit;
+  text-transform: inherit;
   line-height: inherit;
   cursor: help;
   text-align: inherit;
 }
 
-.learn-term-trigger:hover,
-.learn-term-trigger:focus-visible {
+.learn-term .learn-term-trigger:hover,
+.learn-term .learn-term-trigger:focus-visible {
+  border-bottom-color: var(--game-accent, #2557c7);
   background: var(--game-selected, #e1eaff);
-  outline: 3px solid var(--game-focus, #2557c7);
+  outline: 2px solid var(--game-focus, #2557c7);
   outline-offset: 2px;
 }
 
@@ -37,12 +40,13 @@
   width: min(22rem, 70vw);
   max-width: calc(100vw - 1rem);
   padding: 0.65rem 0.75rem;
-  border: 1px solid var(--game-border, #75839a);
+  border: 1px solid var(--game-line, #75839a);
   border-radius: var(--game-radius, 0.75rem);
   background: var(--game-panel, #ffffff);
   color: var(--game-text, #17243c);
-  font: 0.92rem/1.45 var(--game-font, system-ui, sans-serif);
-  font-weight: 450;
+  font: 400 0.88rem/1.5 var(--game-font, system-ui, sans-serif);
+  letter-spacing: 0.005em;
+  text-transform: none;
   box-shadow: 0 8px 24px rgb(16 27 50 / 18%);
   text-align: left;
   pointer-events: none;
@@ -63,7 +67,7 @@
   display: block;
   margin-bottom: 0.2rem;
   color: var(--game-text, #17243c);
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .learn-term-tip-body {

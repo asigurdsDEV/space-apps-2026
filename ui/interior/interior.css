@@ -2,5 +2,5 @@
 .sc { position: relative; overflow: hidden; background: #01030a; font-family: var(--game-font, system-ui, sans-serif); }
 .sc-canvas { position: absolute; inset: 0; }
 .sc-canvas canvas { display: block; width: 100%; height: 100%; }
-.sc-canvas:focus-visible { outline: 3px solid var(--game-focus, #ffda8a); outline-offset: -3px; }
-.sc-fallback { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; color: #edf1fa; }
+.sc-canvas:focus-visible { outline: 1px solid var(--game-focus, #fff); outline-offset: -1px; }
+.sc-fallback { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; color: #f5f6f8; }

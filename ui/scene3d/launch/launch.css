@@ -6,8 +6,8 @@
   margin: 0;
   overflow: hidden;
   background: #000002;
-  color: #eef2fc;
-  font: 1rem/1.4 var(--game-font, system-ui, sans-serif);
+  color: #f5f6f8;
+  font: 1rem/1.45 var(--game-font, system-ui, sans-serif);
   isolation: isolate;
 }
 .s3d-launch-canvas { position: absolute; inset: 0; }
@@ -22,28 +22,32 @@
   text-shadow: 0 1px 3px rgb(0 0 0 / 0.9);
 }
 .s3d-launch-clock {
-  padding: 4px 10px;
-  border-radius: 8px;
-  background: rgb(4 8 18 / 0.6);
-  font: 700 1.15rem/1.3 ui-monospace, SFMono-Regular, Menlo, monospace;
+  padding: 6px 12px;
+  border: 1px solid var(--game-line, rgb(255 255 255 / 0.14));
+  background: var(--game-glass, rgb(10 12 16 / 0.6));
+  backdrop-filter: var(--game-glass-blur, blur(18px));
+  font: 500 1.1rem/1.3 var(--game-font, system-ui, sans-serif);
   font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  text-shadow: none;
 }
-.s3d-launch-name { font-weight: 600; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.s3d-launch-name { font-weight: 500; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .s3d-launch-buttons { margin-left: auto; display: flex; gap: 8px; }
 .s3d-launch-button {
   min-height: 44px;
   min-width: 64px;
   padding: 6px 14px;
-  border: 1px solid rgb(238 242 252 / 0.5);
-  border-radius: 999px;
-  background: rgb(4 8 18 / 0.6);
+  border: 1px solid rgb(255 255 255 / 0.3);
+  background: var(--game-glass, rgb(10 12 16 / 0.6));
+  backdrop-filter: var(--game-glass-blur, blur(18px));
   color: inherit;
-  font: 600 0.95rem/1 var(--game-font, system-ui, sans-serif);
+  font: 500 0.78rem/1 var(--game-font, system-ui, sans-serif);
+  text-shadow: none;
   cursor: pointer;
 }
-.s3d-launch-button:hover { background: rgb(40 52 80 / 0.8); }
-.s3d-launch-button:focus-visible { outline: 3px solid #ffd47a; outline-offset: 2px; }
-.s3d-launch-button.is-primary { background: #ffd47a; border-color: #ffd47a; color: #141820; }
+.s3d-launch-button:hover { border-color: rgb(255 255 255 / 0.6); }
+.s3d-launch-button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.s3d-launch-button.is-primary { background: #fff; border-color: #fff; color: #0b0c0e; }
 .s3d-launch-caption {
   position: absolute;
   left: 12px;
@@ -51,16 +55,17 @@
   bottom: 12px;
   max-width: 760px;
   margin: 0 auto;
-  padding: 10px 14px 12px;
-  border-radius: 12px;
-  background: rgb(4 8 18 / 0.68);
+  padding: 14px 18px 16px;
+  border: 1px solid var(--game-line, rgb(255 255 255 / 0.14));
+  background: var(--game-glass, rgb(10 12 16 / 0.6));
+  backdrop-filter: var(--game-glass-blur, blur(18px));
 }
 .s3d-launch-caption p { margin: 0; font-size: 1.05rem; }
-.s3d-launch-caption strong { display: block; color: #ffd47a; font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; }
-.s3d-launch-steps { display: flex; gap: 4px; margin: 0 0 8px; padding: 0; list-style: none; }
-.s3d-launch-steps li { flex: 1; height: 3px; border-radius: 2px; background: rgb(238 242 252 / 0.22); }
-.s3d-launch-steps li.is-done { background: rgb(238 242 252 / 0.6); }
-.s3d-launch-steps li.is-now { background: #ffd47a; }
+.s3d-launch-caption strong { display: block; margin-bottom: 2px; color: var(--game-muted, #a0a3a8); font-size: 0.68rem; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; }
+.s3d-launch-steps { display: flex; gap: 4px; margin: 0 0 12px; padding: 0; list-style: none; }
+.s3d-launch-steps li { flex: 1; height: 2px; background: rgb(255 255 255 / 0.16); }
+.s3d-launch-steps li.is-done { background: rgb(255 255 255 / 0.45); }
+.s3d-launch-steps li.is-now { background: #fff; }
 .s3d-launch.is-text { height: auto; padding: 16px 20px; overflow: auto; }
 .s3d-launch.is-text li { margin-bottom: 8px; }
 @media (max-width: 600px) {

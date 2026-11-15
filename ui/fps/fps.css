@@ -5,7 +5,7 @@
   pointer-events: none;
   display: grid;
   place-items: center;
-  color: #edf1fa;
+  color: #f5f6f8;
   font-family: var(--game-font, system-ui, sans-serif);
 }
 .fps-dot {
@@ -24,24 +24,26 @@
   height: 14px;
   margin: -7px 0 0 -7px;
   background: transparent;
-  border: 2px solid #ffda8a;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.5);
 }
 .fps-prompt {
   position: absolute;
   bottom: 16px;
   margin: 0;
-  padding: 4px 12px;
-  border-radius: 8px;
-  font-size: 1.05rem;
-  font-weight: 600;
-  background: rgb(0 0 0 / 0.55);
+  padding: 8px 16px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border: 1px solid var(--game-line, rgb(255 255 255 / 0.14));
+  background: var(--game-glass, rgb(10 12 16 / 0.6));
+  backdrop-filter: var(--game-glass-blur, blur(18px));
 }
 .fps-prompt:empty {
   display: none;
 }
 .fps-why {
-  color: #c9d3ea;
-  font-weight: 500;
+  color: var(--game-muted, #a0a3a8);
+  font-weight: 400;
 }
 .fps-hint {
   position: absolute;
@@ -49,9 +51,10 @@
   left: 20px;
   max-width: calc(100% - 180px);
   margin: 0;
-  padding: 6px 12px;
-  border-radius: 8px;
-  background: rgb(0 0 0 / 0.55);
+  padding: 10px 16px;
+  border: 1px solid var(--game-line, rgb(255 255 255 / 0.14));
+  background: var(--game-glass, rgb(10 12 16 / 0.6));
+  backdrop-filter: var(--game-glass-blur, blur(18px));
   font-size: 0.9rem;
 }
 .fps-overlay kbd {
@@ -59,27 +62,27 @@
   min-width: 1.4em;
   margin: 0 1px;
   padding: 0 4px;
-  border: 1px solid rgb(255 255 255 / 0.5);
-  border-radius: 4px;
+  border: 1px solid rgb(255 255 255 / 0.3);
   font: inherit;
   font-size: 0.85em;
   text-align: center;
 }
-.fps-objective { display: block; margin-top: 4px; color: #b5c2df; font-size: 0.8rem; }
+.fps-objective { display: block; margin-top: 4px; color: var(--game-muted, #a0a3a8); font-size: 0.8rem; }
 .fps-help {
   position: absolute;
   right: 20px;
   bottom: 64px;
   width: min(340px, calc((100% - 60px) / 2));
   box-sizing: border-box;
-  padding: 12px 14px;
-  border-right: 3px solid var(--game-accent, #ffb547);
-  background: rgb(4 9 20 / 0.94);
-  color: #edf1fa;
+  padding: 14px 16px;
+  border: 1px solid var(--game-line, rgb(255 255 255 / 0.14));
+  background: var(--game-glass, rgb(10 12 16 / 0.6));
+  backdrop-filter: var(--game-glass-blur, blur(18px));
+  color: #f5f6f8;
   font-size: 0.85rem;
   line-height: 1.5;
 }
-.fps-help strong { display: block; color: var(--game-accent, #ffb547); }
+.fps-help strong { display: block; font-weight: 500; }
 .fps-help p { margin: 5px 0 0; }
 .app-world .app-world-radio { bottom: 64px; max-width: min(440px, calc((100% - 60px) / 2)); }
 @media (max-height: 500px) { .fps-help { padding: 8px 12px; font-size: 0.75rem; line-height: 1.35; } }

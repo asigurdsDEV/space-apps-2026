@@ -6,10 +6,10 @@
   padding: 6px 12px;
   border: 1px solid var(--game-border, #75839a);
   border-radius: var(--game-radius-control, 8px);
-  background: var(--game-panel, #fff);
+  background: transparent;
   color: var(--game-text, #17243c);
-  font: 600 0.9rem/1.2 var(--game-font, system-ui, sans-serif);
+  font: 500 0.9rem/1.2 var(--game-font, system-ui, sans-serif);
   cursor: pointer;
 }
 .snd-toggle[aria-pressed='false'] { color: var(--game-muted, #4b5c78); }
-.snd-toggle:focus-visible { outline: 3px solid var(--game-focus, #2557c7); outline-offset: 2px; }
+.snd-toggle:focus-visible { outline: 2px solid var(--game-focus, #2557c7); outline-offset: 3px; }

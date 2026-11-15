@@ -2,7 +2,7 @@
 .pi-heading, .pi-footer { display: flex; align-items: center; justify-content: space-between; gap: .75rem; flex-wrap: wrap; }
 .pi-heading span, .pi-help, .pi-intent { color: var(--game-muted); }
 .pi-help { font-size: .9rem; }
-.pi-pad { border: 1px solid var(--game-border); border-radius: var(--game-radius); padding: .75rem; }
+.pi-pad { border: 1px solid var(--game-line); border-radius: var(--game-radius); padding: .75rem; }
 .pi-buttons { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .5rem; }
 .pi-buttons button { flex-direction: column; min-height: 64px; }
 .pi-buttons kbd { font: .75rem var(--game-font-mono); }

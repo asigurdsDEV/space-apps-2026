@@ -2,21 +2,24 @@
 :root,
 [data-theme="dark"] {
   color-scheme: dark;
-  /* GO / NO-GO mission-control palette: night-shift navy, telemetry cyan, flight-director amber. */
-  --game-bg: #0a0f1c;
-  --game-panel: #111a2e;
-  --game-surface: #172440;
-  --game-text: #eef3ff;
-  --game-muted: #9eb0cf;
-  --game-border: #4a6c9b;
-  --game-accent: #ffb547;
-  --game-on-accent: #1a1206;
-  --game-selected: #2a2a24;
+  /* The start menu's look (ui/start): near-black, white and grey. Colour only carries status.
+     Solid hex values, so check-contrast.mjs can read them. */
+  --game-bg: #07090c;
+  --game-panel: #101216;
+  --game-surface: #171a1f;
+  --game-text: #f5f6f8;
+  --game-muted: #a0a3a8;
+  /* Control outlines keep 3:1 against the page; panels and dividers use the fainter --game-line. */
+  --game-border: #6c7078;
+  --game-accent: #ffffff;
+  --game-on-accent: #0b0c0e;
+  --game-selected: #1c1f24;
   --game-success: #5ee0a8;
   --game-warning: #ffd479;
   --game-danger: #ff7a7a;
-  --game-focus: #ffd479;
-  --game-telemetry: #5fd4ff;
+  --game-focus: #ffffff;
+  --game-telemetry: #a0a3a8;
+  --game-line: rgb(255 255 255 / 0.14);
 }
 
 
@@ -35,13 +38,15 @@
   --game-warning: #805200;
   --game-danger: #b32341;
   --game-focus: #2557c7;
+  --game-telemetry: #4b5c78;
+  --game-line: rgb(23 36 60 / 0.16);
 }
 
 :root {
-  --game-font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --game-font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
-  /* Pixel display font for headings, buttons and labels; body text stays readable. */
-  --game-font-display: "Rajdhani", "Segoe UI", system-ui, sans-serif;
+  --game-font: "Inter Tight", "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+  /* One face everywhere: numbers line up through tabular figures, not a second font. */
+  --game-font-mono: var(--game-font);
+  --game-font-display: var(--game-font);
   --game-space-1: 0.25rem;
   --game-space-2: 0.5rem;
   --game-space-3: 0.75rem;
@@ -50,17 +55,20 @@
   --game-space-8: 2rem;
   --game-radius: 0;
   --game-radius-control: 0;
+  /* Panels laid over the 3D game, which is dark in both themes. The backdrop is blurred and dimmed,
+     so grey text stays AA even over the launch sky and the day side of the Earth.
+     Write only `backdrop-filter`: the build adds -webkit- itself, and when a rule has both it keeps only
+     the prefixed one, which Chrome ignores. */
+  --game-glass: rgb(10 12 16 / 0.6);
+  --game-glass-blur: blur(18px) brightness(0.45);
 }
 
 .game-theme {
   background-color: var(--game-bg);
-  /* faint mission-control floor grid */
-  background-image:
-    linear-gradient(rgb(95 212 255 / 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(95 212 255 / 0.04) 1px, transparent 1px);
-  background-size: 48px 48px;
   color: var(--game-text);
-  font: 1rem/1.5 var(--game-font);
+  font: 400 1rem/1.55 var(--game-font);
+  letter-spacing: 0.005em;
+  -webkit-font-smoothing: antialiased;
   overflow-wrap: anywhere;
 }
 
@@ -69,15 +77,23 @@
 .game-theme *::before,
 .game-theme *::after { box-sizing: border-box; }
 
-.game-theme :where(h1, h2, h3) { line-height: 1.2; text-wrap: balance; }
+/* :where keeps these weak, so a screen's own heading size wins. */
+.game-theme :where(h1, h2, h3) { line-height: 1.2; font-weight: 500; text-wrap: balance; }
+.game-theme :where(h1) { font-size: clamp(2rem, 4.5vw, 3rem); letter-spacing: -0.03em; }
+.game-theme :where(h2) { font-size: clamp(1.3rem, 3vw, 1.75rem); letter-spacing: -0.02em; }
+.game-theme :where(h3) { font-size: 1.05rem; letter-spacing: -0.01em; }
+.game-theme :where(summary, th, legend) { font-weight: 500; }
+/* 600 is the heaviest weight index.html loads. */
+.game-theme :where(strong, b) { font-weight: 600; }
 .game-theme :where(a) { color: var(--game-accent); text-underline-offset: 0.2em; }
 .game-theme :where(button, input, select, textarea) { font: inherit; accent-color: var(--game-accent); }
-.game-theme :where(:focus-visible) { outline: 3px solid var(--game-focus); outline-offset: 3px; }
+.game-theme :where(:focus-visible) { outline: 2px solid var(--game-focus); outline-offset: 3px; }
+.game-theme :where(kbd) { display: inline-block; min-width: 1.5em; padding: 0 0.35em; border: 1px solid var(--game-line); font: inherit; font-size: 0.85em; letter-spacing: 0.04em; text-align: center; }
 
 .game-panel {
   min-width: 0;
   padding: var(--game-space-6);
-  border: 1px solid var(--game-border);
+  border: 1px solid var(--game-line);
   border-radius: var(--game-radius);
   background: var(--game-panel);
 }
@@ -88,27 +104,18 @@
   justify-content: center;
   gap: var(--game-space-2);
   min-height: 44px;
-  padding: var(--game-space-2) var(--game-space-4);
+  padding: var(--game-space-2) var(--game-space-6);
   border: 1px solid var(--game-border);
   border-radius: var(--game-radius-control);
-  background: var(--game-panel);
+  background: transparent;
   color: var(--game-text);
   font: inherit;
-  font-weight: 600;
   line-height: 1.4;
   cursor: pointer;
+  transition: background-color 300ms ease, border-color 300ms ease;
 }
-.game-button--primary {
-  background: var(--game-panel);
-  color: var(--game-text);
-  border: 3px solid var(--game-accent);
-  box-shadow: 0 0 0 3px var(--game-bg), 0 0 0 5px rgb(77 227 255 / 0.35);
-  font-size: 1.35em;
-  letter-spacing: 0.22em;
-}
-.game-button:not(:disabled):hover { outline: 1px solid var(--game-accent); outline-offset: 1px; }
-.game-button[aria-pressed="true"] { background: var(--game-selected); color: var(--game-text); border-color: var(--game-accent); }
-.game-button:disabled { opacity: 0.55; cursor: not-allowed; }
+.game-button[aria-pressed="true"] { background: var(--game-selected); border-color: var(--game-accent); }
+.game-button:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .game-field {
   display: block;
@@ -118,15 +125,15 @@
   padding: var(--game-space-2) var(--game-space-3);
   border: 1px solid var(--game-border);
   border-radius: var(--game-radius-control);
-  background: var(--game-bg);
+  background: transparent;
   color: var(--game-text);
   font: inherit;
 }
 .game-field::placeholder { color: var(--game-muted); opacity: 1; }
 .game-field[aria-invalid="true"] { border-color: var(--game-danger); }
-.game-field:disabled { opacity: 0.55; cursor: not-allowed; }
+.game-field:disabled { opacity: 0.45; cursor: not-allowed; }
 .game-muted { color: var(--game-muted); }
-.game-eyebrow { color: var(--game-accent); font-family: var(--game-font-display); font-size: 1rem; letter-spacing: 0.22em; text-transform: uppercase; }
+.game-eyebrow { margin: 0; color: var(--game-muted); font-size: 0.7rem; letter-spacing: 0.32em; text-transform: uppercase; }
 .game-stat { font-variant-numeric: tabular-nums; }
 .game-success { color: var(--game-success); }
 .game-warning { color: var(--game-warning); }
@@ -140,54 +147,31 @@
   }
 }
 
-/* ---------- GO / NO-GO console layer (claude@sarah, Sarah's request: our own look) ---------- */
-/* Headings, buttons and labels in the console face; numbers in mono telemetry. */
-.game-theme :is(h1, h2, h3, summary, th, legend),
+/* ---------- The start menu's controls, for every screen ---------- */
+/* Every button is a small tracked label; a button that holds sentences (a role card, an alarm option)
+   resets this in its own file. */
 .game-theme button,
 .game-theme .game-button {
-  font-family: var(--game-font-display);
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  font-family: var(--game-font);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
 }
-.game-theme .game-stat,
-.game-theme .game-eyebrow { font-family: var(--game-font-mono); }
-.game-theme :is(h1, h2) { text-transform: uppercase; }
-.game-theme h1 { font-size: clamp(2.4rem, 6vw, 3.8rem); letter-spacing: 0.08em; color: var(--game-text); }
-.game-theme h1::after { content: ""; display: block; width: 3.5rem; height: 4px; margin-top: 0.35rem; background: var(--game-accent); }
-.game-theme h2 { font-size: clamp(1.4rem, 3.4vw, 2rem); }
-.game-theme h3 { font-size: 1.05rem; text-transform: uppercase; letter-spacing: 0.14em; color: var(--game-telemetry); }
-.game-theme button,
-.game-theme .game-button { font-size: 1.05em; text-transform: uppercase; }
-.game-theme .game-button:not(:disabled):hover { outline: none; border-color: var(--game-telemetry); }
-.game-theme .game-eyebrow { color: var(--game-telemetry); letter-spacing: 0.18em; }
+.game-theme :is(button, .game-button):not(:disabled):hover { border-color: color-mix(in srgb, var(--game-text) 60%, transparent); }
+.game-theme .game-button:not(:disabled):hover { background-color: color-mix(in srgb, var(--game-text) 5%, transparent); }
 
-/* Square consoles. */
+/* Square, as the start menu is. */
 .game-theme :is(input, select, textarea, button, fieldset, form, section, details, dialog, figure, dl > div, .game-panel, [class$="-panel"], [class*="card"], [class*="tile"], [class*="art"], [class*="stat"], [class*="fact"]) {
   border-radius: 0 !important;
 }
-/* Signature: HUD corner brackets on panels. */
-.game-theme :is(.game-panel, [class$="-panel"], [class*="card"]) {
-  background-image:
-    linear-gradient(var(--game-telemetry), var(--game-telemetry)), linear-gradient(var(--game-telemetry), var(--game-telemetry)),
-    linear-gradient(var(--game-telemetry), var(--game-telemetry)), linear-gradient(var(--game-telemetry), var(--game-telemetry)),
-    linear-gradient(var(--game-telemetry), var(--game-telemetry)), linear-gradient(var(--game-telemetry), var(--game-telemetry)),
-    linear-gradient(var(--game-telemetry), var(--game-telemetry)), linear-gradient(var(--game-telemetry), var(--game-telemetry));
-  background-size: 14px 2px, 2px 14px, 14px 2px, 2px 14px, 14px 2px, 2px 14px, 14px 2px, 2px 14px;
-  background-position: top left, top left, top right, top right, bottom left, bottom left, bottom right, bottom right;
-  background-repeat: no-repeat;
-}
-/* Signature: the main action is an amber "mission patch" button with chamfered corners. */
+/* The main action: white, dark text. */
 .game-theme :is([class*="primary"], button[type="submit"]):not(:disabled) {
   background: var(--game-accent);
   color: var(--game-on-accent);
-  border: 0;
-  clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
-  font-family: var(--game-font-display);
-  font-size: 1.3rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  border-color: var(--game-accent);
+  letter-spacing: 0.24em;
   padding-inline: 1.5em;
 }
-.game-theme :is([class*="primary"], button[type="submit"]):not(:disabled):hover { filter: brightness(1.08); }
+.game-theme :is([class*="primary"], button[type="submit"]):not(:disabled):hover { background: color-mix(in srgb, var(--game-accent) 86%, transparent); border-color: transparent; }
 .game-theme :is([class*="primary"], button[type="submit"]):focus-visible { outline-offset: 4px; }
