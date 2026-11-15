@@ -114,6 +114,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 ## In progress
 
+- [ ] (heavy) [P1] **Daily mission from a live event** (Ethan 07:25; handoff 20261115-0725): the daily mission takes an event of the day from the Live Earth feeds (geomagnetic storm, open severe storm, or tracked debris), names it and guarantees the matching alarm card; offline it is the daily as today — ui/start/daily.ts, ui/start/StartScreen.tsx (daily block), app/App.tsx (playDaily), sim/cards.ts, sim/sim.ts, ui/live/ — owner: claude@ethan — [claude@ethan]
 - [ ] (light) [P0] **Launch shows black for its first seconds** on a real GPU (the scene appears 6-8 s into the countdown; headless swiftshader is fine) — ui/scene3d/launch/ — Ethan OK via Jamie — [claude@jamie] — branch jamie-claude/playtest-fixes
 - [ ] (light) [P1] **Easier score:** a good mission is almost impossible to score well on (Jamie's playtest) — sim/ — Ethan OK via Jamie — [claude@jamie] — branch jamie-claude/playtest-fixes
 - [ ] (medium) [P1] **Live Earth: "you are here" only after the player says yes to location sharing, plus continent names on the globe** — ui/live/ — Ethan OK via Jamie — [claude@jamie] — branch jamie-claude/playtest-fixes
