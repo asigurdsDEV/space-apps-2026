@@ -73,6 +73,7 @@ async function check(name, fn, { needed = false, local = false } = {}) {
   try {
     report('PASS', name, await fn())
   } catch (error) {
+    if (blocked && !local) return report('SKIP', name, blocked) // the case found the network blocked, not a game fault
     report('FAIL', name, String(error.message).split('\n')[0])
     if (SHOTS) {
       const file = name.replace(/[^a-z0-9]+/gi, '-').toLowerCase()
@@ -180,6 +181,29 @@ async function fastest(page, players = [page]) {
 }
 
 /**
+ * Answer any anomaly card with its first option (and skip a story cutscene) until none is open. A card stops the
+ * clock and turns Pause and the speed buttons off, so the flight cases clear it before they press anything.
+ */
+async function clearCards(players, ms = 20_000) {
+  const end = Date.now() + ms
+  while (Date.now() < end) {
+    let open = false
+    for (const player of players) {
+      for (const button of [player.locator('.st-skip'), player.locator('.mv-decision__option:enabled').first()]) {
+        if (await button.count()) {
+          open = true
+          await button.click({ timeout: 500 }).catch(() => {})
+        }
+      }
+      if (await player.locator('.mv-decision').count()) open = true
+    }
+    if (!open) return
+    await players[0].waitForTimeout(250)
+  }
+  throw new Error('an anomaly card stayed open')
+}
+
+/**
  * Wait for the results on `page`. An anomaly card stops the mission clock until it is answered,
  * so every card that shows is answered with its first option, by whichever of `players` may answer it.
  */
@@ -235,7 +259,11 @@ await check(
   async () => {
     await join(guest, 'Gus', code.toLowerCase()) // typed in lower case: the app says any case works
     await guest.waitForSelector('.ls-root', { timeout: 30_000 }).catch(async () => {
-      throw new Error(`no lobby after 30 s; the Start screen says: ${(await text(guest, '.ss-error')) || 'nothing, still "Connecting…"'}`)
+      const said = await text(guest, '.ss-error')
+      // The broker answered (the host got a code), but the two browsers never reached each other: direct WebRTC is
+      // blocked on this network, and a dev server has no TURN relay (/api/ice runs on Vercel only).
+      if (/did not answer/.test(said)) blocked = 'host and guest could not connect: direct WebRTC is blocked on this network and this server has no TURN relay; run against the Vercel site'
+      throw new Error(`no lobby after 30 s; the Start screen says: ${said || 'nothing, still "Connecting…"'}`)
     })
     for (const page of [host, guest]) {
       await until(() => page.locator('.ls-crew li').allInnerTexts(), (names) => names.length === 2 && /Hana/.test(names[0]) && /Gus/.test(names[1]), 'the lobby does not list Hana then Gus')
@@ -339,6 +367,7 @@ await check(
 )
 
 await check('flight: a player who is not the mission planner cannot pause, and is told why', async () => {
+  await clearCards([host, guest]) // a real storm day can open a card on day 1, and Pause is off until it is answered
   await guest.getByRole('button', { name: /Pause/ }).click()
   const notice = await until(() => text(guest, '.app-notice'), (t) => t !== '', 'the guest got no message')
   must(/Only Hana \(Mission planning\) can pause the mission/.test(notice), `the message is "${notice}"`)
@@ -346,13 +375,14 @@ await check('flight: a player who is not the mission planner cannot pause, and i
 })
 
 await check('flight: the mission keeps running for the guest while the host’s page is hidden', async () => {
+  await clearCards([host, guest])
   await host.evaluate(() => window.__e2eHide(true))
   try {
     must((await host.evaluate(() => document.visibilityState)) === 'hidden', 'the host page did not turn hidden')
-    const seen = [await text(guest, '.mv-head .mv-muted')]
+    const seen = [await text(guest, '.mv-day')]
     for (let i = 0; i < 2; i++) {
       // 1x is one mission day a second; a hidden tab's timers run about once a second.
-      seen.push(await until(() => text(guest, '.mv-head .mv-muted'), (t) => t !== seen.at(-1), `the guest’s mission clock stopped at "${seen.at(-1)}"`, 6000))
+      seen.push(await until(() => text(guest, '.mv-day'), (t) => t !== seen.at(-1), `the guest’s mission clock stopped at "${seen.at(-1)}"`, 6000))
     }
     return seen.join(' -> ')
   } finally {
@@ -372,7 +402,7 @@ await check('results: both players reach the same results', async () => {
 await check('leave: the guest leaves and the host keeps playing', async () => {
   await guest.getByRole('button', { name: 'Main menu' }).click()
   await guest.waitForSelector('.ss-root')
-  await until(() => text(host, '.app-crew-menu summary'), (t) => t.startsWith('Crew (1)'), 'the host still counts the guest in the crew')
+  await until(() => text(host, '.app-crew-menu summary'), (t) => /^crew \(1\)/i.test(t), 'the host still counts the guest in the crew')
   await host.getByRole('button', { name: /Design a new mission/ }).click()
   await host.waitForSelector('.mb')
   // Science is free again, so the host can pick instruments now.
@@ -388,7 +418,7 @@ await check('room: a third and a fourth player join', async () => {
       throw new Error(`${name} did not get in after 30 s; the Start screen says: ${(await text(page, '.ss-error')) || 'nothing, still "Connecting…"'}`)
     })
   }
-  await until(() => text(host, '.app-crew-menu summary'), (t) => t.startsWith('Crew (4)'), 'the host does not count four players')
+  await until(() => text(host, '.app-crew-menu summary'), (t) => /^crew \(4\)/i.test(t), 'the host does not count four players')
 })
 
 await check('room: a fifth player is told the room is full', async () => {
@@ -421,10 +451,10 @@ await check('join: a wrong room code shows a clear error', async () => {
 // No `leave` message is sent here, as when a tab is closed, a phone sleeps or the Wi-Fi drops.
 await check('leave: a guest who closes the tab is dropped from the crew', async () => {
   const fourth = pages.find(([who]) => who === 'fourth')?.[1]
-  must(fourth && (await text(host, '.app-crew-menu summary')).startsWith('Crew (4)'), 'needs four players in the room')
+  must(fourth && /^crew \(4\)/i.test(await text(host, '.app-crew-menu summary')), 'needs four players in the room')
   const closed = Date.now()
   await fourth.context().close()
-  await until(() => text(host, '.app-crew-menu summary'), (t) => t.startsWith('Crew (3)'), '45 s later the host still counts the closed tab in the crew', 45_000)
+  await until(() => text(host, '.app-crew-menu summary'), (t) => /^crew \(3\)/i.test(t), '45 s later the host still counts the closed tab in the crew', 45_000)
   return `after ${Math.round((Date.now() - closed) / 1000)} s`
 })
 
