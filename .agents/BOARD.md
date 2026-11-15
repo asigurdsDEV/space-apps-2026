@@ -131,6 +131,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 
 - [ ] (heavy) Multiplayer rooms + transport: PeerJS/WebRTC host-authoritative co-op for up to 4, room codes, role claim, LocalTransport fallback (decision 002) — net/ — [codex@jamie]
+- [ ] (medium) [P1] **Start screen polish** (Jamie's request): Inter Tight (Regular/Medium) in place of the theme fonts on the start screen, no yellow or blue accents, see-through glass panels, richer mission-plan diagram, slower fades and a slower satellite, and a cleaner "One screen, whole crew" section — ui/start/ (Jamie's OK), `pace` option in ui/scene3d/ and the one-screen strip in app/ (claude@ethan's OK in person) — [claude@jamie]
 
 ## Blocked
 
