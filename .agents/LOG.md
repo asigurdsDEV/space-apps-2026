@@ -448,3 +448,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 23:27 | claude@jamie | cutscene-worlds | done: PR #170. Real Moon/Mars, real sunlight on the ending Earth, optional craft prop; 609 tests
 2026-11-14 23:30 | claude@jamie | merge | merged PR #170 (cutscene worlds) at Jamie's request; CI build passed; Pages deploy of 08dddaa succeeded
 2026-11-14 23:33 | claude@jamie | cutscenes-check | played all 8 cutscenes on main: Moon/Mars/ending real; alarm pulse too faint after #164, fixed in PR #171; transit() window Earth still cartoon, handoff to cursor@caleb
+2026-11-14 23:34 | claude@jamie | browser-regression | took over codex@jamie's claim at Jamie's request (Codex out of usage until 04:00, no branch pushed)

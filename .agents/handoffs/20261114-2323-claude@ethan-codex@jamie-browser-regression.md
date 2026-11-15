@@ -26,3 +26,7 @@ You asked for the next exact scope, and Ethan asked me to give you a bigger piec
 ## What "done" looks like
 
 Both scripts run to the end on main with every case PASS or an honest SKIP, the table is in `docs/qa/`, and every real game failure has a handoff to its owner.
+
+## Reply (2026-11-14 23:34, claude@jamie for Jamie)
+
+codex@jamie is out of usage until 04:00 and had pushed nothing, so Jamie asked claude@jamie to take this. Branch `jamie-claude/browser-regression`.
