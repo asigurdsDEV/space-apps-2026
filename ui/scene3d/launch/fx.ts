@@ -733,7 +733,7 @@ void main() {
   float r = length(vUv);
   // Two octaves only: dozens of puffs overlap at ignition, and this runs for every layer.
   float n = 0.62 * noise2(vUv * 1.7 + vData.z * 31.0) + 0.38 * noise2(vUv * 4.1 + vData.z * 17.0);
-  float a = smoothstep(1.0, 0.25, r + (n - 0.5) * 0.9);
+  float a = smoothstep(1.0, 0.25, r + (n - 0.5) * 0.9) * smoothstep(1.0, 0.8, r); // never a straight cut at the quad's side
   if (a * vData.x < 0.004) discard;
   vec3 nrm = normalize(vec3(vUv, 0.6 + n * 0.6));
   float l = clamp(dot(nrm, uSunView) * 0.6 + 0.45, 0.0, 1.0);
@@ -821,12 +821,49 @@ void main() {
 }
 `
 
+// Burning propellant: a churning ball whose middle is white-hot, cooling through yellow and orange to deep red at its
+// edges, and to sooty black-brown where it has burnt out (heat, vData.y, falls as it ages). Brighter than 1 where hot,
+// so the bloom makes it glare.
+const FIRE = /* glsl */ `
+uniform vec3 uSunView;
+varying vec2 vUv;
+varying vec3 vData;
+${NOISE2}
+float fbm(vec2 p) {
+  float s = 0.0;
+  float a = 0.5;
+  for (int i = 0; i < 4; i++) {
+    s += a * noise2(p);
+    p = p * 2.07 + 17.0;
+    a *= 0.5;
+  }
+  return s;
+}
+void main() {
+  float r = length(vUv);
+  float n = fbm(vUv * 1.5 + vData.z * 23.0);
+  // The ragged edge never reaches the quad's sides, so no straight cut shows.
+  float a = smoothstep(1.0, 0.4, r + (n - 0.5) * 1.1) * smoothstep(1.0, 0.8, r) * vData.x;
+  if (a < 0.004) discard;
+  // Hottest in the middle and on the noise's crests, so the fire breaks up into tongues and the soot shows between them.
+  float t = clamp(vData.y * (1.25 - r) * (0.35 + 1.3 * n), 0.0, 1.6);
+  vec3 hot = mix(vec3(0.45, 0.05, 0.0), vec3(1.0, 0.36, 0.04), smoothstep(0.1, 0.55, t));
+  hot = mix(hot, vec3(1.0, 0.78, 0.36), smoothstep(0.65, 1.3, t));
+  vec3 nrm = normalize(vec3(vUv, 0.7));
+  float lit = clamp(dot(nrm, uSunView) * 0.5 + 0.5, 0.0, 1.0);
+  vec3 soot = mix(vec3(0.04, 0.032, 0.028), vec3(0.3, 0.25, 0.21), lit) * (0.55 + 0.9 * n);
+  float burning = smoothstep(0.12, 0.45, t);
+  gl_FragColor = vec4(mix(soot, hot * (0.85 + 1.9 * t * t), burning), a);
+}
+`
+
 /**
  * Camera-facing smoke puffs, drawn in one instanced call. Stateless: the scene refills them every frame.
  * Without `billow` they are thin wisps of vapour. With it they are dense, solid-looking clouds, drawn far ones first:
  * `fire` is where the engines' flame is (xyz) and how bright (w), `unit` the size of the site its glow is measured in.
+ * With `burning` (and no `billow`) they are balls of fire turning to soot, for an explosion, drawn far ones first.
  */
-export function makePuffs(capacity: number, billow?: { fire: { value: THREE.Vector4 }; unit: number }): Puffs {
+export function makePuffs(capacity: number, billow?: { fire: { value: THREE.Vector4 }; unit: number }, burning = false): Puffs {
   const base = new THREE.PlaneGeometry(1, 1)
   const geo = new THREE.InstancedBufferGeometry()
   geo.index = base.index
@@ -876,14 +913,14 @@ void main() {
   gl_Position = projectionMatrix * mv;
 }
 `,
-      fragmentShader: billow ? BILLOW : WISP,
+      fragmentShader: billow ? BILLOW : burning ? FIRE : WISP,
       transparent: true,
       // Billows are solid and drawn far ones first, so they can hide the flame and the vapour behind them.
       depthWrite: !!billow,
     }),
   )
   mesh.frustumCulled = false
-  mesh.renderOrder = billow ? 4 : 5
+  mesh.renderOrder = billow ? 4 : burning ? 6 : 5
   let n = 0
   return {
     mesh,

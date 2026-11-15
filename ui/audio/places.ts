@@ -41,8 +41,30 @@ export const CUES: Record<CueName, CuePart[]> = {
   click: [burst('lowpass', 900, 0, 0.03, 0.12), tone(170, 0, 0.05, 0.02)],
   // The carrier aircraft's hooks let go.
   clunk: [tone(196, 0, 0.11, 0.05, 'triangle', 150), tone(318, 0, 0.07, 0.025, 'triangle'), burst('lowpass', 900, 0, 0.05, 0.14)],
-  // The vehicle breaks up: a sharp crack, then at once a low boom as loud as the roar was, rolling away.
-  crack: [burst('highpass', 700, 0, 0.07, 0.3, 0.001), burst('lowpass', 2500, 0, 0.16, 0.5, 0.001), tone(62, 0.02, 1.4, 0.3, 'sine', 27), burst('lowpass', 700, 0.02, 1.2, 2.2, 0.03), burst('bandpass', 70, 0.02, 1.55, 6.8, 0.03, 0.6)],
+  // Range safety blows the vehicle up: the shock's crack, the blast, a chest-deep boom with a sub-bass kick under it,
+  // the tanks going up one after another, burning debris popping and fizzing, the fire's roar, and the boom rolling
+  // back off the ground and the clouds for seconds. The engine also sends it through a long echo and a hard limiter.
+  crack: [
+    burst('highpass', 1800, 0, 0.05, 0.9, 0.0005),
+    burst('lowpass', 7000, 0, 0.3, 1.1, 0.001),
+    burst('lowpass', 1300, 0.004, 1.1, 2.4, 0.002),
+    burst('lowpass', 190, 0.01, 4.8, 7, 0.01),
+    tone(58, 0.006, 2.4, 0.75, 'sine', 21),
+    tone(96, 0.006, 0.9, 0.4, 'triangle', 38),
+    // Secondary blasts: the other tanks rupture.
+    ...[0.38, 0.86, 1.45].flatMap((at, i) => [burst('lowpass', 1100 - i * 250, at, 0.8, 1.5 - i * 0.35, 0.003), tone(72 - i * 8, at, 1.2, 0.35 - i * 0.08, 'sine', 30)]),
+    // The fire roars, then dies down.
+    burst('bandpass', 380, 0.08, 5.5, 2.2, 0.25, 0.5),
+    // The boom rolls back: low thunder off the ground and the cloud deck, later and duller each time.
+    burst('bandpass', 85, 0.35, 6.5, 7, 0.3, 0.7),
+    burst('lowpass', 320, 0.9, 4, 2.4, 0.15),
+    burst('lowpass', 230, 2.1, 4.5, 1.9, 0.2),
+    // Burning debris: sharp pops and crackles scattered over a few seconds, thinning out.
+    ...Array.from({ length: 26 }, (_, i) => {
+      const at = 0.25 + 3.6 * Math.pow((i + ((i * 0.618) % 1)) / 26, 1.5)
+      return burst(i % 3 ? 'bandpass' : 'highpass', 900 + ((i * 1777) % 2600), at, 0.025 + 0.03 * ((i * 0.37) % 1), 0.5 * (1 - i / 32), 0.0008, 1.4)
+    }),
+  ],
   // Spacecraft room: a relay closes behind a panel.
   relay: [burst('bandpass', 3000, 0, 0.02, 0.07, 0.001), burst('bandpass', 1500, 0.012, 0.03, 0.07, 0.001), tone(150, 0, 0.03, 0.006)],
   // Spacecraft room: a valve ticks over, with a breath of gas.
@@ -141,7 +163,7 @@ export function launchScore(spec: RocketSpec, timeline: LaunchTimeline): LaunchS
     if (s.id === 'fairing') score.cues.push({ t: event(EVENT_AT.fairing), cue: 'thud' })
     if (s.id === 'burn') score.seco = event(EVENT_AT.burn)
     if (s.id === 'deploy') score.cues.push({ t: event(EVENT_AT.deploy), cue: 'click' })
-    if (s.id === 'failure') score.cues.push({ t: (score.lostAt = event(0.13)), cue: 'crack' })
+    if (s.id === 'failure') score.cues.push({ t: (score.lostAt = event(EVENT_AT.failure)), cue: 'crack' })
   }
   return score
 }
@@ -189,7 +211,7 @@ export function mixAt(score: LaunchScore, t: number, out: LaunchMix = { roar: 0,
   out.roar = power * Math.exp(-km / 18)
   out.cutoff = 9000 / (1 + 2.5 * Math.max(0, km - (air ? 12 : 0)))
   out.crackle = met < 0 ? score.coreCrackle : score.crackle
-  out.hiss = lost ? 0.7 * Math.exp(-(t - score.lostAt) / 0.9) : id === 'ignition' ? ramp(s, 0, 0.3) : id === 'liftoff' && !air ? 1 - ramp(s, 0.6, 2.4) : 0
+  out.hiss = lost ? 0.7 * Math.exp(-(t - score.lostAt) / 1.4) : id === 'ignition' ? ramp(s, 0, 0.3) : id === 'liftoff' && !air ? 1 - ramp(s, 0.6, 2.4) : 0
   // The push of the air peaks at max-Q and is gone on either side of it.
   out.buffet = power * Math.exp(-(((met - score.maxq) / 18) ** 2))
   out.hum = !space ? 0 : t < score.meco ? 0.85 : t >= score.ses && t < score.seco ? 0.6 : 0

@@ -31,7 +31,7 @@ export interface LaunchTimeline {
 }
 
 /** Where in its shot each key event happens, 0 to 1. The scene and the clock both use these. */
-export const EVENT_AT = { maxq: 0.5, boosters: 0.35, staging: 0.15, fairing: 0.35, burn: 0.8, deploy: 0.3, drop: 1 / 6 } as const
+export const EVENT_AT = { maxq: 0.5, boosters: 0.35, staging: 0.15, fairing: 0.35, burn: 0.8, deploy: 0.3, drop: 1 / 6, failure: 0.22 } as const
 
 interface Shot { id: StageId; seconds: number; met: [number, number]; title: string; caption: string; detail: string }
 
@@ -62,7 +62,7 @@ function shots(spec: RocketSpec, failed: boolean, cause?: string): Shot[] {
     // The sim reports that the launch failed (outcome "launch_failure"), not when; `cause` says why when the crew launched against a NO-GO.
     const pct = Math.round(spec.reliability * 100)
     return [...start, ...climb, {
-      id: 'failure', seconds: 4.5, met: [ev.maxq + 4, ev.maxq + 14], title: 'Launch failure',
+      id: 'failure', seconds: 8, met: [ev.maxq + 4, ev.maxq + 14], title: 'Launch failure',
       caption: cause ?? 'The rocket did not reach orbit. The spacecraft is lost.',
       detail: cause ? `${cause} The spacecraft is lost.` : `The rocket did not reach orbit, and the spacecraft is lost. ${name} succeeds about ${pct}% of the time: even good rockets sometimes fail, so reliability is part of choosing one.`,
     }]

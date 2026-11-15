@@ -26,6 +26,29 @@ function whiteNoise(ctx: BaseAudioContext): AudioBuffer {
   return buffer
 }
 
+const echoBuffers = new WeakMap<BaseAudioContext, AudioBuffer>()
+/** A big outdoor echo for the explosion: silence for the sound's trip to the ground and back, then a dark tail rolling on for seconds. */
+function echoes(ctx: BaseAudioContext): AudioBuffer {
+  let buffer = echoBuffers.get(ctx)
+  if (!buffer) {
+    const rate = ctx.sampleRate
+    buffer = ctx.createBuffer(2, rate * 4, rate)
+    for (let c = 0; c < 2; c++) {
+      const data = buffer.getChannelData(c)
+      let seed = 0x51ed27 + c * 977 // fixed, as whiteNoise
+      let dark = 0
+      for (let i = 0; i < data.length; i++) {
+        const t = i / rate
+        seed = (Math.imul(seed, 1664525) + 1013904223) | 0
+        dark += (seed / 2147483648 - dark) * 0.08
+        data[i] = t < 0.09 ? 0 : dark * Math.exp(-t * 1.2) * Math.min(1, (t - 0.09) / 0.05)
+      }
+    }
+    echoBuffers.set(ctx, buffer)
+  }
+  return buffer
+}
+
 function curve(f: (x: number) => number): Float32Array<ArrayBuffer> {
   const out = new Float32Array(4097)
   for (let i = 0; i < out.length; i++) out[i] = f(i / 2048 - 1)
@@ -153,7 +176,7 @@ function kit(ctx: BaseAudioContext, dest: AudioNode) {
       for (const n of nodes) n.disconnect()
     },
   }
-  return { ctx, sound, cue, out, white, gain, filter, shape, osc, chain, level, drift }
+  return { ctx, sound, cue, out, white, gain, filter, shape, osc, chain, level, drift, add }
 }
 type Kit = ReturnType<typeof kit>
 
@@ -248,7 +271,13 @@ function launch(k: Kit, score: LaunchScore) {
   // Bigger vehicles thump harder.
   const events = k.gain(score.loudness)
   events.connect(k.out)
-  k.sound.cue = (name, when, rand) => k.cue(name, when, rand, events)
+  // The explosion is driven into soft clipping for grit, and sent into a long echo off the ground and the clouds.
+  const blast = k.gain(score.loudness)
+  k.chain(blast, k.shape(SATURATE), k.gain(0.9), k.out)
+  const echo = k.add(k.ctx.createConvolver())
+  echo.buffer = echoes(k.ctx)
+  k.chain(blast, k.filter('lowpass', 1800), echo, k.gain(0.7), k.out)
+  k.sound.cue = (name, when, rand) => k.cue(name, when, rand, name === 'crack' ? blast : events)
 
   const mix: LaunchMix = mixAt(score, 0)
   let last = -1

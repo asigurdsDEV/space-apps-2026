@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { launchTimeline, type StageId } from '../scene3d/launch/timeline'
+import { EVENT_AT, launchTimeline, type StageId } from '../scene3d/launch/timeline'
 import { rocketSpec } from '../scene3d/launch/vehicles'
 import { CUES, DETAILS, cueLength, detailGap, launchScore, mixAt, thrustKN, type CueName } from './places'
 
@@ -93,8 +93,8 @@ describe('launch mix', () => {
   it('failure: the engines stop at the crack, debris hiss dies away', () => {
     const s = score('falcon-9', true)
     expect(at(s, 'failure', 0.05).roar).toBeGreaterThan(0)
-    expect(at(s, 'failure', 0.2).roar).toBe(0)
-    expect(at(s, 'failure', 0.2).hiss).toBeGreaterThan(at(s, 'failure', 0.9).hiss)
+    expect(at(s, 'failure', EVENT_AT.failure + 0.02).roar).toBe(0)
+    expect(at(s, 'failure', EVENT_AT.failure + 0.02).hiss).toBeGreaterThan(at(s, 'failure', 0.9).hiss)
     expect(at(s, 'failure', 0.9).hiss).toBeLessThan(0.02)
   })
 })
@@ -128,7 +128,8 @@ describe('cues and room details', () => {
         expect(p.gain, name).toBeGreaterThan(0)
         expect(p.freq, name).toBeGreaterThan(20)
       }
-      expect(cueLength(name as CueName), name).toBeLessThan(1.6)
+      // The explosion rolls on through the failure shot; every other cue is short.
+      expect(cueLength(name as CueName), name).toBeLessThan(name === 'crack' ? 8 : 1.6)
     }
     // The alarm is a few pulses, then quiet: it never loops.
     expect(cueLength('caution')).toBeLessThan(1.2)
