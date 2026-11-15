@@ -41,7 +41,7 @@ import { useChance } from './useChance'
 import { useSession } from './useSession'
 import './app.css'
 
-export const GAME_NAME = 'First Light Program'
+export const GAME_NAME = 'First Flight'
 
 // Each scenario as written first, then its easier and harder versions.
 const LEVELS: Difficulty[] = ['normal', ...(Object.keys(DIFFICULTIES) as Difficulty[]).filter((level) => level !== 'normal')]

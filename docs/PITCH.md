@@ -1,4 +1,4 @@
-# First Light Program — Kimchi Trenchers
+# First Flight — Kimchi Trenchers
 
 ## 30-second narration
 
