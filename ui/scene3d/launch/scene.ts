@@ -12,6 +12,7 @@ import { buildCraft, disposeObject } from '../craft'
 import { planetMaps } from '../maps'
 import { steadyResolution } from '../steady'
 import type { CraftSpec } from '../model'
+import { addBlast, blastGlow, FIREBALL, PIECES, SHELL, TRAIL } from './blast'
 import { makeBirds } from './birds'
 import { altitudeM, downrangeM, pitchRad, vacuum } from './flight'
 import { AIR, CLOUD_DECK_M, flameColor, flameReach, flameShine, makeCloudDeck, makeEarthBelow, makeGlow, makeGround, makePlume, makePuffs, makeSky, makeSpaceSky, makeStars, smokiness, type Plume } from './fx'
@@ -215,7 +216,14 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
   // Thin vapour (boil-off, frost, the fog at Max-Q, gas at separation) and the dense clouds of smoke and steam.
   const puffs = makePuffs(160)
   const clouds = makePuffs(340, { fire: fireU, unit: siteUnit(H) })
-  scene.add(puffs.mesh, clouds.mesh)
+  // A launch failure: the fireball, and the smoke trails of the burning pieces.
+  const fireball = makePuffs(FIREBALL + PIECES + 1, undefined, true)
+  const debris = makePuffs(SHELL + PIECES * TRAIL)
+  scene.add(puffs.mesh, clouds.mesh, fireball.mesh, debris.mesh)
+  /** Where the failure shot blows the vehicle up (its middle) and the way it was flying, set each frame of that shot. */
+  const blastAt = new THREE.Vector3()
+  const blastUp = new THREE.Vector3()
+  const BLAST = EVENT_AT.failure
 
   const composer = new EffectComposer(renderer)
   composer.addPass(new RenderPass(scene, camera))
@@ -291,16 +299,22 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
     model.root.rotation.set(0, 0, 0)
     if (space) model.root.position.set(0, 0, 0)
     else basePos(met, model.root.position)
-    let lost = 0
+    /** Seconds since the vehicle blew up, in the failure shot; negative before. */
+    let boom = -1
     if (id === 'failure') {
-      // The sim reports only that the launch failed, not how: engines out, a tumble, then the flight is ended.
-      lost = Math.max(0, p - 0.15)
-      tilt += lost * lost * 9
-      model.root.rotation.x = lost * 1.4
+      // It veers off course, engines still burning, and range safety blows it up.
+      const veer = smooth(0.02, BLAST, Math.min(p, BLAST))
+      tilt += veer * veer * 0.55
+      model.root.rotation.x = veer * veer * 0.3
+      boom = (p - BLAST) * (stage.end - stage.start)
+      const m = missionTime(timeline, stage.start + BLAST * (stage.end - stage.start))
+      const lean = tiltAt(m) + 0.55
+      blastUp.set(Math.sin(lean), Math.cos(lean), 0)
+      basePos(m, blastAt).addScaledVector(blastUp, 0.5 * H)
     }
     model.root.rotation.z = -tilt
     axis.set(Math.sin(tilt), Math.cos(tilt), 0)
-    model.root.visible = !(id === 'failure' && p > 0.42)
+    model.root.visible = !(id === 'failure' && boom >= 0)
 
     // ---- Pieces that come off.
     const sB = since('boosters')
@@ -369,7 +383,7 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
     pBoost = (nb?.propellant === 'solid' ? (met >= 0 ? 1 : 0) : p1) * (1 - smooth(-0.5, -0.1, sB))
     p1 *= 1 - smooth(-0.3, -0.1, sS)
     p2 = smooth(0.5, 0.9, sS) * (1 - smooth(-0.05, 0.15, since('burn')))
-    if (id === 'failure') p1 *= 1 - smooth(0.1, 0.16, p), pBoost *= 1 - smooth(0.1, 0.16, p)
+    if (id === 'failure' && boom >= 0) p1 = pBoost = 0
     for (const { plume, glow, of } of plumes) {
       const power = of === 's1' ? p1 : of === 's2' ? p2 : pBoost
       const vac = of === 's2' ? 1 : thin
@@ -399,6 +413,15 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
     }
     // What the ground, the water and the clouds see glowing is the lower part of the flame, down to where it hits the pad.
     fireU.value.set(flame.position.x, space || air ? flame.position.y : Math.max(flame.position.y - 0.8 * H, 0.1 * H), flame.position.z, space ? flame.intensity : shine * 1.2)
+    if (boom >= 0) {
+      // The fireball lights the smoke round it, and the ground, orange.
+      const glow = blastGlow(boom)
+      flame.position.copy(blastAt)
+      flame.color.setRGB(1, 0.5, 0.18)
+      flame.distance = 0
+      flame.intensity = 9 * glow
+      fireU.value.set(blastAt.x, blastAt.y, blastAt.z, 5 * glow)
+    }
 
     // ---- Light.
     const sun = space ? SUN_SPACE : SUN_GROUND
@@ -487,16 +510,16 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
         fov = 38
         shake = 0.45
         break
-      case 'failure':
-        // Follow the rocket until the flight ends, then hold on the spot.
-        if (p < 0.36) onAxis(0.4, target)
-        else {
-          const m = missionTime(timeline, stage.start + 0.36 * (stage.end - stage.start))
-          basePos(m, target).add(tmp.set(Math.sin(tiltAt(m)), Math.cos(tiltAt(m)), 0).multiplyScalar(0.4 * H))
-        }
-        eye.copy(target).add(tmp.set(1.5 * H, -1.2 * H, lerp(4.5, 6.5, p) * H))
+      case 'failure': {
+        // Follow the rocket until it blows up, then hold on the spot and back away as the cloud grows; the blast shakes the camera.
+        if (boom < 0) onAxis(0.4, target)
+        else target.copy(blastAt)
+        const back = smooth(0, 2.5, boom)
+        eye.copy(target).add(tmp.set(lerp(1.5, 2.6, back) * H, lerp(-1.2, -2.2, back) * H, lerp(4.5, 9.5, back) * H))
         fov = 40
+        shake = boom < 0 ? 0.25 : 0.25 + 2.4 * Math.exp(-boom * 1.6)
         break
+      }
       case 'boosters':
         onAxis(0.45, target)
         eye.copy(target).add(tmp.set(-0.3 * H, 0.55 * H, lerp(2.5, 2.9, p) * H))
@@ -610,6 +633,8 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
     // ---- Smoke.
     puffs.begin()
     clouds.begin()
+    fireball.begin()
+    debris.begin()
     const R = spec.s1.radius
     if (!space) {
       if (pad && met < 0.5) {
@@ -671,7 +696,7 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
         // hydrogen ones little more than steam.
         const trail = Math.max(smokiness(n1.propellant), nb && sB <= 0 ? smokiness(nb.propellant) : 0)
         const dense = trail > 0.8
-        const head = id === 'failure' ? Math.min(met, missionTime(timeline, stage.start + 0.16 * (stage.end - stage.start))) : met
+        const head = id === 'failure' ? Math.min(met, missionTime(timeline, stage.start + BLAST * (stage.end - stage.start))) : met
         if (head > from) {
           // The smoke starts where the flame ends: on the pad that is under the ground, so the flame stands clear.
           const s0 = pathS(head) - H * 0.55 * Math.max(0.85 * flameReach(n1.propellant), nb && sB <= 0 ? 0.95 * flameReach(nb.propellant) : 0)
@@ -692,17 +717,7 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
           }
         }
       }
-      if (id === 'failure' && p > 0.3) {
-        const s = (p - 0.3) * (stage.end - stage.start)
-        basePos(missionTime(timeline, stage.start + 0.36 * (stage.end - stage.start)), p3)
-        for (let i = 0; i < 40; i++) {
-          const a = hash(i) * Math.PI * 2
-          const b = hash(i + 0.5) * 2 - 1
-          const r = H * (0.25 + 1.3 * hash(i + 0.2)) * (1 - Math.exp(-s * 1.2))
-          const flat = Math.sqrt(1 - b * b)
-          clouds.add(p3.x + Math.cos(a) * flat * r, p3.y + H * 0.4 + b * r - s * H * 0.12, p3.z + Math.sin(a) * flat * r, H * (0.3 + 0.35 * Math.sqrt(s)), 0.8 * Math.min(s * 5, 1), Math.exp(-s * 1.6), hash(i + 0.7))
-        }
-      }
+      if (boom >= 0) addBlast(boom, blastAt, blastUp, H, fireball, debris)
     } else {
       // Thin gas puffs where a stage or the boosters let go; they spread fast and vanish in the vacuum.
       const burst = (s: number, f: number, n: number, radius: number) => {
@@ -722,6 +737,8 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
     sunView.copy(sun).transformDirection(camera.matrixWorldInverse)
     puffs.commit(sunView, 1, space)
     clouds.commit(sunView, 1, space, camera.matrixWorldInverse)
+    fireball.commit(sunView, 1, space, camera.matrixWorldInverse)
+    debris.commit(sunView, 1, space)
 
     composer.render()
     options.onFrame?.(t)

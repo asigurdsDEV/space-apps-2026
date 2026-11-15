@@ -28,7 +28,7 @@ for (const key of ['bus', 'solar', 'comms', 'instruments', 'orbit'] as const) {
 }
 params.launch_vehicle = query.get('vehicle') ?? String(params.launch_vehicle ?? 'falcon-9')
 const vehicles = entities.filter((e) => e.kind === 'launch_vehicle')
-const shot = launchTimeline(rocketSpec(vehicles.find((v) => v.id === params.launch_vehicle))).stages.find((s) => s.id === query.get('stage'))
+const shot = launchTimeline(rocketSpec(vehicles.find((v) => v.id === params.launch_vehicle)), { failed: query.get('failed') === '1' }).stages.find((s) => s.id === query.get('stage'))
 const startAt = shot ? shot.start + (shot.end - shot.start) * Number(query.get('p') ?? 0.5) : Number(query.get('t') ?? 0) || 0
 
 function Preview() {
