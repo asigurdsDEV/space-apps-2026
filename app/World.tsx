@@ -219,7 +219,7 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
           seat={Math.max(0, players.findIndex((p) => p.player_id === me.player_id))}
         />
         {menu}
-        <StoryLayer immersive screen="flight" events={events} scenarioId={state.scenario_id} onCutscene={onCutscene} shown={['launch']} />
+        <StoryLayer immersive screen="flight" events={events} scenarioId={state.scenario_id} design={state} onCutscene={onCutscene} shown={['launch']} />
       </div>
     )
   }
@@ -246,6 +246,7 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
         screen={ended ? 'flight' : arrived ? 'design' : 'briefing'}
         events={ended ? events : undefined}
         scenarioId={state.scenario_id}
+        design={state}
         onCutscene={onCutscene}
         callout={ended ? null : callout}
       />

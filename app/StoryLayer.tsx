@@ -2,21 +2,23 @@
 // the beat's cutscene once, with its 3D scene from ui/cutscenes (cursor@caleb) inside the frame.
 // Written by claude@aiden at Aiden's request ("wire it now").
 
-import { useEffect, useRef, useState } from 'react'
-import type { SimEvent } from '../shared'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import type { SimEvent, SimState } from '../shared'
 // The index, not ./canvas: three.js stays out of the first download.
 import { AnomalyScene, ArrivalScene, EndingScene, OrbitArrivalScene } from '../ui/cutscenes'
+import { sceneSpec, type CraftSpec } from '../ui/scene3d/model'
 import { Scenery } from './Walk'
 import { CapcomPopout, Cutscene, CUTSCENE_MS, LINES, storyBeat, worldOf, type CutsceneId, type StoryScreen } from '../ui/story'
 
 /** The 3D scene for a cutscene. Launch has none here: the app plays ui/scene3d's own (see `shown`), so its frame keeps the still. */
-function sceneFor(id: CutsceneId, scenarioId: string) {
+/** The 3D scene for a cutscene, with the player's own spacecraft where the scene shows one. */
+function sceneFor(id: CutsceneId, scenarioId: string, craft?: CraftSpec) {
   const durationMs = CUTSCENE_MS[id]
   if (id === 'arrival') return <ArrivalScene durationMs={durationMs} />
-  if (id === 'orbit') return <OrbitArrivalScene body={worldOf(scenarioId) === 'mars' ? 'mars' : 'moon'} durationMs={durationMs} />
-  if (id === 'anomaly') return <AnomalyScene durationMs={durationMs} />
-  if (id === 'ending-success') return <EndingScene outcome="success" durationMs={durationMs} />
-  if (id === 'ending-loss') return <EndingScene outcome="loss" durationMs={durationMs} />
+  if (id === 'orbit') return <OrbitArrivalScene body={worldOf(scenarioId) === 'mars' ? 'mars' : 'moon'} durationMs={durationMs} craft={craft} />
+  if (id === 'anomaly') return <AnomalyScene durationMs={durationMs} craft={craft} />
+  if (id === 'ending-success') return <EndingScene outcome="success" durationMs={durationMs} craft={craft} />
+  if (id === 'ending-loss') return <EndingScene outcome="loss" durationMs={durationMs} craft={craft} />
   return null
 }
 
@@ -29,6 +31,8 @@ export interface StoryLayerProps {
   screen: StoryScreen
   events?: readonly SimEvent[]
   scenarioId: string
+  /** The design flown (parts and params): the orbit, alarm and ending cutscenes show this spacecraft. Default: a small generic craft. */
+  design?: Pick<SimState, 'entities' | 'params'>
   /** Told when a cutscene starts (true) and ends (false), e.g. to hold the mission clock. */
   onCutscene?: (playing: boolean) => void
   /** Cutscenes the app already showed itself (the 3D launch), so the plain one is not played again. */
@@ -41,7 +45,9 @@ export interface StoryLayerProps {
 
 const CALLOUT_MS = 5000
 
-export function StoryLayer({ screen, events = NO_EVENTS, scenarioId, onCutscene, shown, immersive = false, callout }: StoryLayerProps) {
+export function StoryLayer({ screen, events = NO_EVENTS, scenarioId, design, onCutscene, shown, immersive = false, callout }: StoryLayerProps) {
+  // Parts don't change in flight; the state object does, every sim step.
+  const craft = useMemo(() => (design ? sceneSpec(design).craft : undefined), [design?.entities, design?.params])
   /** The pointer is over CAPCOM's pop-out or focus is in it: don't close it under the player. */
   const [held, setHeld] = useState(false)
   const [calloutClosed, setCalloutClosed] = useState<string | null>(null)
@@ -79,7 +85,7 @@ export function StoryLayer({ screen, events = NO_EVENTS, scenarioId, onCutscene,
     return (
       <Cutscene key={key} id={cutscene} caption={LINES[beat.line]} onDone={() => setPlayed((p) => [...p, key])}>
         {/* A scene that cannot load leaves the caption and Skip working. */}
-        <Scenery>{sceneFor(cutscene, scenarioId)}</Scenery>
+        <Scenery>{sceneFor(cutscene, scenarioId, craft)}</Scenery>
       </Cutscene>
     )
   }
