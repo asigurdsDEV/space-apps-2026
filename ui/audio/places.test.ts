@@ -119,6 +119,11 @@ describe('launch cues', () => {
     // The sandbox's interception: the jet roars past, fires, then the blast.
     const shot = launchScore(rocketSpec(undefined), launchTimeline(rocketSpec(undefined), { intercepted: true }))
     expect(shot.cues.slice(-3).map((c) => c.cue)).toEqual(['flyby', 'missile', 'crack'])
+    // The lightning strike: thunder rolls through the countdown, then the bolt cracks just before the blast, and rain all along.
+    const storm = launchScore(rocketSpec(undefined), launchTimeline(rocketSpec(undefined), { struck: true }))
+    expect(storm.cues.filter((c) => c.cue === 'thunder').length).toBeGreaterThan(3)
+    expect(storm.cues.slice(-2).map((c) => c.cue)).toEqual(['zap', 'crack'])
+    expect(mixAt(storm, 1).hiss).toBeGreaterThan(0.4)
   })
 })
 

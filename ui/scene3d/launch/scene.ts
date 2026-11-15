@@ -20,7 +20,8 @@ import { siteUnit } from './layout'
 import { buildRocket, type Nozzle } from './rocket'
 import { buildCarrier, buildPad } from './site'
 import { buildMissile, buildRaptor, makeRibbon } from './raptor'
-import { EVENT_AT, INTERCEPT, missionTime, stageAt, stageProgress, type LaunchTimeline, type StageId } from './timeline'
+import { makeStorm } from './storm'
+import { EVENT_AT, INTERCEPT, STORM, missionTime, stageAt, stageProgress, type LaunchTimeline, type StageId } from './timeline'
 import type { RocketSpec } from './vehicles'
 
 export interface LaunchSceneOptions {
@@ -282,6 +283,14 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
   const bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), 0.45, 0.5, 1.5)
   composer.addPass(bloom)
   composer.addPass(new OutputPass())
+  // The sandbox's lightning strike: the launch goes up into a thunderstorm (storm.ts).
+  const storm = timeline.struck ? makeStorm() : null
+  if (storm) {
+    scene.add(storm.group)
+    composer.insertPass(storm.grade, 1)
+  }
+  const nose = new THREE.Vector3()
+  const tail = new THREE.Vector3()
 
   // ---- Timeline bookkeeping: when each event happens on screen, and when its shot ends.
   const eventAt = new Map<StageId, number>()
@@ -354,12 +363,12 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
     let boom = -1
     if (id === 'failure') {
       // It veers off course, engines still burning, and range safety blows it up.
-      const veer = timeline.intercepted ? 0 : smooth(0.02, BLAST, Math.min(p, BLAST))
+      const veer = timeline.intercepted || timeline.struck ? 0 : smooth(0.02, BLAST, Math.min(p, BLAST))
       tilt += veer * veer * 0.55
       model.root.rotation.x = veer * veer * 0.3
       boom = (p - BLAST) * (stage.end - stage.start)
       const m = missionTime(timeline, stage.start + BLAST * (stage.end - stage.start))
-      const lean = tiltAt(m) + (timeline.intercepted ? 0 : 0.55)
+      const lean = tiltAt(m) + (timeline.intercepted || timeline.struck ? 0 : 0.55)
       blastUp.set(Math.sin(lean), Math.cos(lean), 0)
       basePos(m, blastAt).addScaledVector(blastUp, 0.5 * H)
     }
@@ -824,6 +833,19 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
       burst(sB, 0.3, 10, W)
       // The fairing's pushers vent along the split line.
       burst(sF * 2, 1 - (0.8 * spec.fairing.length) / H, 6, spec.fairing.radius * 0.35)
+    }
+    if (storm) {
+      camera.updateMatrixWorld()
+      // The rocket's ends where it is now; where it blew up, after.
+      if (boom < 0) onAxis(1, nose), onAxis(0, tail)
+      else nose.copy(blastAt).addScaledVector(blastUp, 0.5 * H), tail.copy(blastAt).addScaledVector(blastUp, -0.5 * H)
+      const lit = storm.update(t, camera, blastT - STORM.strikeLead, nose, tail)
+      // Overcast: no hard sunlight, a grey wash of sky light, and lightning lighting everything up for an instant.
+      sunLight.intensity *= 0.3
+      hemi.color.set(0x8a93a3)
+      hemi.groundColor.set(0x3a3c40)
+      hemi.intensity = 0.55 + 2.5 * lit
+      scene.environmentIntensity *= 0.5
     }
     sunView.copy(sun).transformDirection(camera.matrixWorldInverse)
     puffs.commit(sunView, 1, space)

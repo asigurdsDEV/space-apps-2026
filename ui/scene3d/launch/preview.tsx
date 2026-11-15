@@ -1,5 +1,5 @@
 // Dev-only preview: `npm run dev`, then open /ui/scene3d/launch/preview.html. Not part of the build.
-// Query: ?vehicle=<id>&t=<seconds>&paused=1 freezes the sequence at a screen time; &failed=1 plays the failure (&intercepted=1: the sandbox's F-22 interception)
+// Query: ?vehicle=<id>&t=<seconds>&paused=1 freezes the sequence at a screen time; &failed=1 plays the failure (&intercepted=1: the sandbox's F-22 interception; &struck=1: its lightning strike)
 // ending; &still=1 forces the reduced-motion stepper; &bus=, &solar=, &comms=, &instruments=a,b, &orbit= pick the spacecraft.
 // &w=390&h=780 draws the view in a box that size (headless Chrome cannot make a window narrower than about 500 px).
 // ?lineup=all (or a list of ids) shows the rockets side by side at true scale instead; &yaw=, &pitch= (degrees),
@@ -28,7 +28,7 @@ for (const key of ['bus', 'solar', 'comms', 'instruments', 'orbit'] as const) {
 }
 params.launch_vehicle = query.get('vehicle') ?? String(params.launch_vehicle ?? 'falcon-9')
 const vehicles = entities.filter((e) => e.kind === 'launch_vehicle')
-const shot = launchTimeline(rocketSpec(vehicles.find((v) => v.id === params.launch_vehicle)), { failed: query.get('failed') === '1', intercepted: query.get('intercepted') === '1' }).stages.find((s) => s.id === query.get('stage'))
+const shot = launchTimeline(rocketSpec(vehicles.find((v) => v.id === params.launch_vehicle)), { failed: query.get('failed') === '1', intercepted: query.get('intercepted') === '1', struck: query.get('struck') === '1' }).stages.find((s) => s.id === query.get('stage'))
 const startAt = shot ? shot.start + (shot.end - shot.start) * Number(query.get('p') ?? 0.5) : Number(query.get('t') ?? 0) || 0
 
 function Preview() {
@@ -44,6 +44,7 @@ function Preview() {
         state={{ entities, params }}
         failed={query.get('failed') === '1'}
         intercepted={query.get('intercepted') === '1'}
+        struck={query.get('struck') === '1'}
         paused={query.get('paused') === '1'}
         startAt={startAt}
         reducedMotion={query.get('still') === '1' ? true : undefined}

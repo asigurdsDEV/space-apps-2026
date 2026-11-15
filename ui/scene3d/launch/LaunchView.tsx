@@ -19,6 +19,8 @@ export interface LaunchViewProps {
   failed?: boolean
   /** The sandbox's fictional interception: an F-22 shoots the rocket down (ui/intercept decides when). */
   intercepted?: boolean
+  /** The sandbox's lightning strike: it launches into a thunderstorm and a bolt hits it (ui/intercept decides when). */
+  struck?: boolean
   /** With `failed`: why it was lost, one sentence for the failure shot's caption (a launch against a NO-GO). */
   cause?: string
   /** Sizes the view; the default height is in launch.css. */
@@ -33,7 +35,7 @@ export interface LaunchViewProps {
 
 const media = (q: string) => typeof window !== 'undefined' && window.matchMedia(q).matches
 
-export function LaunchView({ state, onDone, failed = false, intercepted = false, cause, className, reducedMotion, startAt = 0, paused = false }: LaunchViewProps) {
+export function LaunchView({ state, onDone, failed = false, intercepted = false, struck = false, cause, className, reducedMotion, startAt = 0, paused = false }: LaunchViewProps) {
   const host = useRef<HTMLDivElement>(null)
   const clock = useRef<HTMLSpanElement>(null)
   const scene = useRef<LaunchScene | null>(null)
@@ -44,7 +46,7 @@ export function LaunchView({ state, onDone, failed = false, intercepted = false,
   const rocketKey = JSON.stringify(rocketSpec(vehicle))
   const craftKey = JSON.stringify(sceneSpec(state).craft)
   const rocket = useMemo(() => rocketSpec(vehicle), [rocketKey])
-  const timeline = useMemo(() => launchTimeline(rocket, { failed, cause, intercepted }), [rocket, failed, cause, intercepted])
+  const timeline = useMemo(() => launchTimeline(rocket, { failed, cause, intercepted, struck }), [rocket, failed, cause, intercepted, struck])
   const craft = useMemo(() => sceneSpec(state).craft, [craftKey])
   const stages = timeline.stages
 

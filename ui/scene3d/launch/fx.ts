@@ -7,7 +7,7 @@ import { ASSEMBLY, COAST_GLSL, CRAWLER_TURN } from './layout'
 import type { Nozzle } from './stack'
 import type { Propellant } from './vehicles'
 
-const NOISE2 = /* glsl */ `
+export const NOISE2 = /* glsl */ `
 float hash2(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float noise2(vec2 x) {
   vec2 i = floor(x);

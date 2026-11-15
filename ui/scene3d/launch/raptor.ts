@@ -160,8 +160,9 @@ export interface Ribbon {
 /**
  * A smoke trail as one continuous strip that always faces the camera, soft at its edges. For something as fast as a
  * missile, puffs would sit tens of metres apart; a strip through the same points reads as one unbroken trail.
+ * With `glow` it is light, not smoke: added on, in that colour (brighter than 1 to bloom), as for a lightning bolt.
  */
-export function makeRibbon(capacity: number): Ribbon {
+export function makeRibbon(capacity: number, glow?: THREE.Color): Ribbon {
   const pos = new Float32Array(capacity * 2 * 3)
   const edge = new Float32Array(capacity * 2)
   const alpha = new Float32Array(capacity * 2)
@@ -190,9 +191,11 @@ varying float vAlpha;
 void main() {
   float a = vAlpha * (1.0 - vEdge * vEdge);
   if (a < 0.004) discard;
-  gl_FragColor = vec4(vec3(0.95, 0.93, 0.9) * (0.85 + 0.15 * (1.0 - abs(vEdge))), a);
+  ${glow ? `gl_FragColor = vec4(vec3(${glow.r.toFixed(3)}, ${glow.g.toFixed(3)}, ${glow.b.toFixed(3)}) * a * (1.0 - abs(vEdge)), 1.0);` : 'gl_FragColor = vec4(vec3(0.95, 0.93, 0.9) * (0.85 + 0.15 * (1.0 - abs(vEdge))), a);'}
 }`,
     transparent: true,
+    blending: glow ? THREE.AdditiveBlending : THREE.NormalBlending,
+    toneMapped: !glow,
     depthWrite: false,
     side: THREE.DoubleSide,
   }))
