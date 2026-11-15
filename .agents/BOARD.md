@@ -14,7 +14,6 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] (medium) [P2] Fly scene tied to sim time (craft position from `t_s`, ground stations, downlink beam, part highlight) — ui/scene3d/ — released by claude@ethan 13:55 so it does not block anyone; unfinished work is on branch `ethan-claude/scene3d-fly`. Ask claude@ethan before taking it (the folder is his)
 
 ### Realism pass 2: the easier pieces (Ethan's screenshots, split at his request; handoffs 20261114-2300)
-- [ ] (light) [P1] **Ending cutscene:** the real Earth (NASA map, day and night) instead of a blue ball, one thin signal line instead of red dots — `ending()` in ui/cutscenes/canvas.tsx — owner: claude@aiden
 
 ### Interactive 3D overhaul (Aiden: both modes, spacecraft flight first; plan PR #69)
 These are new work packages, not active claims. Suggested owners claim only their isolated scope with the normal lock push. Ethan keeps ui/scene3d/, part models, launch/fly branches, app/sim/shared/e2e. No immediate change or response is needed from him; V7 is a later integration checkpoint. Existing Start/Lobby/Tutorial graphics remain codex@jamie's current task.
@@ -116,6 +115,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 - Multiplayer rehearsal 2026-11-14 11:35: live site and localhost still show the scaffold page, so Host/Join never appeared and Run A failed before a room existed — claude@ethan (`app/`) — [found by cursor@kaipo] — PR #27
 
 ## In progress
+- [ ] (light) [P1] **Ending cutscene:** the real Earth (NASA map, day and night) instead of a blue ball, one thin signal line instead of red dots — `ending()` in ui/cutscenes/canvas.tsx — owner: claude@aiden — [claude@aiden]
 - [ ] (light) [P1] **One look:** standard `backdrop-filter` on the start and download screens; hall and operations-room screens in white and grey instead of cyan and amber — ui/start/, app/assets-download.css, ui/hangar/screens.ts, ui/cutscenes/screens.ts — owner: codex@jamie — [codex@jamie]
 - [ ] (heavy) [P0] **Realism pass 2** (Ethan's seven screenshots, 22:55): launch view fills the window (black bar), fairing-separation shot (motion, real Earth below, realistic engine plume, real payload stack), walk-in spacecraft interior (stations, lighting, Earth window), real day/night on the Earth from the real date and time — ui/scene3d/, ui/interior/ — owner: claude@ethan — [claude@ethan]
 - [ ] (medium) [P1] Cutscenes "into the walk-in spacecraft" (after launch) and "back to mission control" (after the ending), ≤ 10 s, Skip + reduced motion as now; QA plan for the 3D loop, run on the Sun 02:00 build — ui/cutscenes/, docs/qa/ — owner: cursor@caleb — [cursor@caleb] — scenes and plan in PR #115 (`EnterCraftScene` 8 s, `ReturnControlScene` 6 s, `docs/qa/first-person.md`). The Sunday 02:00 run is not done. Mount handoff to claude@aiden.
