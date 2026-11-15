@@ -106,7 +106,7 @@ export function MissionControl({ state, send, players = NO_PLAYERS, me, title, d
     r.fps.setPlace(interactables(rackList, { send: (c) => sendWithSound.current(c), launchBlocked, debrief }), walls)
   }, [state, rackList, calls, walls, title, debrief])
 
-  useEffect(() => room.current?.fps.setEnabled(enabled), [enabled])
+  useEffect(() => room.current?.setActive(enabled), [enabled])
 
   return (
     <div className={`mc${className ? ` ${className}` : ''}`}>

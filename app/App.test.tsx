@@ -97,6 +97,16 @@ describe('game screen', () => {
     }
   })
 
+  it('does not replay the launch when switching from an already-launched 3D room', () => {
+    const { session } = soloSession()
+    designCommands.forEach(session.send)
+    session.send({ type: 'launch', payload: {} })
+    expect(screen(session)).toContain('s3d-launch')
+    const html = renderToStaticMarkup(<GameScreen session={session} config={config} onExit={() => {}} skipLaunch />)
+    expect(html).not.toContain('s3d-launch')
+    expect(html).toContain('mv-hud')
+  })
+
   it('puts save, share and compare under the builder', () => {
     const html = screen(soloSession().session)
     expect(html).toContain('Save, share and compare designs')

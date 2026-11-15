@@ -70,3 +70,40 @@ At a 756×469 window, the top-right Sound / Classic / Main menu bar covers the r
 - After stopping browser and server: focused `sim/cards.test.ts` **13/13 pass**; repeat full suite **477/477 pass**. No timeout setting or production source was changed. One passing retry does not erase the intermittent timing risk.
 
 No claim is made about source changes after the pinned head, default-3D readiness, a fully 3D flight run, or public deployment behavior. Caleb's first-person QA plan and Ethan's e2e files were not edited.
+
+## Desktop polish follow-up — 2026-11-14 (codex@aiden)
+
+Implementation snapshot **52c3748**, branch `aiden-codex/desktop-polish`, on main **12f9735** (includes merged default-3D #124, V7 and the new theme). Aiden authorized continuing Claude's work after the usage limit. Claude's branches/section and scene3d source were not edited.
+
+Changes:
+
+- One **Menu / Esc** trigger replaces the permanent Sound / Classic / Main menu strip. A native dialog contains focus; the room cannot move/interact behind it. Back/Escape restores room focus. Cutscenes take precedence over the menu.
+- CAPCOM is a six-second, noninteractive radio subtitle in first-person play. It does not put a Got it menu over the room. The input hint is top-left, Menu top-right, radio bottom-left, and E prompt stays at the crosshair.
+- Both rooms cancel their animation callbacks under menus/cutscenes and in hidden tabs, then restart with a fresh frame clock. Gauge throttling, resolution cap and rack-model culling from #124 are preserved.
+- Cabin craft geometry is compared by its values, not object identity. The sim clones params on each step; that previously made an unchanged craft rebuild repeatedly.
+- Escape clears held input even without pointer lock; focused buttons/fields/dialogs do not drive the room. Disable/blur/cancellation clear queued look and dragging. The final frame settles head bob when walking stops.
+- The 3D end path saves score, flown design and stars through the existing personal-best helper. Daily seed is preserved. It does not add a leaderboard panel over gameplay.
+- Switching to Classic passes an already-watched-launch flag, avoiding a second 20-second launch on day 1. The flag resets with the World flight lifecycle, so later missions still have their launch.
+
+### Executed browser checks
+
+Chrome 157 on this Mac; CDP keyboard/mouse and existing development teleport fixture placement as described above. Screenshots inspected at **1280×800** and **756×469**. This is not an unaided-navigation or low-end-GPU claim.
+
+- Single visible gameplay menu button; menu focuses Back to game, keeps Tab inside, ignores movement/turning behind it, closes with Escape and restores movement/focus. Hint, radio and menu do not overlap at the tested desktop sizes.
+- Full first-person First Light: launch → cabin → real storm planning panel → radio module's station-bumped choice → power module's radiation choice → 3D debrief. All choices answered with E. Saved regular record **26 points / 0 stars**, with the flown design; no browser exceptions.
+- Daily First Light, UTC **2026-11-15**, seed **20261115**: radiation/reaction-wheel panels answered; debrief saved **25 points / 0 stars** under `daily-best:v1:demo:20261115`. Existing regular 26-point record was unchanged.
+- Real World + session fixture: opening the menu paused a running solo mission; manually paused stayed paused after closing. In the online-shaped fixture, opening the menu did not pause the shared clock. This is not a network-transport test.
+- Steady cabin sample, 1280×800: **132 renders / 2.2 s (60 FPS)**, **164 draw calls**, renderer CPU submission **1.41 ms mean / 2.20 ms p95**. No geometry buffer uploads after warm-up. Menu-covered renderer produced **0 frames** during a 300 ms check and resumed afterward. These measurements preceded the later main/theme integration; they are local evidence, not an all-hardware guarantee.
+- Direct cabin regression: 12 `.show()` calls with fresh but identical craft objects produced **0 new buffer uploads**. Changing the bus produced **228 uploads**, confirming a real design change still rebuilds it.
+- Separate cabin fixture at **4× CPU throttling**: **150 renders / 2.5 s**, frame-interval **17.9 ms p95**, **173 draw calls**. CPU emulation does not emulate a slow GPU or thermal limits.
+- Built production preview, fresh cache: plain URL entered mission control then cabin in first person; Menu/Escape worked. First-person script requests did not load SpaceView. Classic menu switched without replaying launch; `?world=classic` and simulated no-WebGL both reached the classic briefing. Background service-worker precaching is not included in that script-request statement.
+
+### Validation and remaining limits
+
+After integrating current main: **525 tests pass**, TypeScript/production build pass, first load **144.5 / 150 kB gzipped**. Added regression tests cover room suspension/restart/disposal, input cleanup/UI focus, radio/menu structure and watched-launch handoff. No dependencies added.
+
+Not checked: physical lower-end laptop/GPU, native browser Escape while pointer-locked, Safari/Firefox, screen reader, fresh cross-device co-op, or offline behavior of this new build. Weather/leaderboard visualization in the 3D room remains separate; score persistence is now implemented. Public availability depends on merging the follow-up and the deployment completing; local production preview is not proof of a deployed build.
+
+Final integration **8110b85** preserves newly merged #133 (Sarah's theme + live fit replies). Live replies use the same noninteractive radio subtitle, never a second CapcomPopout. Browser E on body panels produced “Body-mounted solar cells fitted. Heads up, Flight: Not enough power”; no st-capcom popup existed. Menu/focus/hint layout was rechecked with the new theme. Combined validation: **529 tests**, build/typecheck pass, **146.0 / 150 kB** first load. Ethan's still-open #132 training integration must put its control inside WorldMenu and add training to the shared clock-hold condition; do not restore app-world-bar.
+
+Final training integration **44a88d7** supersedes the pending-#132 handoff above: #132 merged during publication, and its feature is now preserved inside WorldMenu. A single clock-hold condition covers menu, training, launch and cutscene. Real World/session browser fixtures verified Menu → Flight training → Back to the mission for initially running and manually paused missions; both restored the initial pause state, with the cabin unmounted while training was open. Combined validation: **532 tests**, typecheck/build pass, **146.3 / 150 kB**. No change to Ethan's training source or World test file.

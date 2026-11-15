@@ -21,7 +21,7 @@ function sceneFor(id: CutsceneId, scenarioId: string) {
 }
 
 /** CAPCOM's line hides itself after this, so it never sits on top of a control for long. */
-const LINE_MS = 9000
+const LINE_MS = 6000
 
 const NO_EVENTS: readonly SimEvent[] = []
 
@@ -33,14 +33,15 @@ export interface StoryLayerProps {
   onCutscene?: (playing: boolean) => void
   /** Cutscenes the app already showed itself (the 3D launch), so the plain one is not played again. */
   shown?: readonly string[]
-  /** CAPCOM's live reply to the player's last design choice (ui/story fitCallout); wins over the beat line. */
+  /** First-person radio subtitle, with no menu/button over the scene. */
+  immersive?: boolean
+  /** CAPCOM's live reply to the last design choice; wins over the beat line. */
   callout?: { key: string; text: string } | null
 }
 
-/** A live callout hides itself sooner than a story line. */
 const CALLOUT_MS = 5000
 
-export function StoryLayer({ screen, events = NO_EVENTS, scenarioId, onCutscene, shown, callout }: StoryLayerProps) {
+export function StoryLayer({ screen, events = NO_EVENTS, scenarioId, onCutscene, shown, immersive = false, callout }: StoryLayerProps) {
   const [calloutClosed, setCalloutClosed] = useState<string | null>(null)
   const calloutKey = callout?.key ?? null
   useEffect(() => {
@@ -80,9 +81,13 @@ export function StoryLayer({ screen, events = NO_EVENTS, scenarioId, onCutscene,
       </Cutscene>
     )
   }
-  if (callout && calloutClosed !== callout.key) {
-    return <CapcomPopout key={callout.key} text={callout.text} onClose={() => setCalloutClosed(callout.key)} />
-  }
-  if (closed === key) return null
+  const live = callout && calloutClosed !== callout.key ? callout : null
+  if (!live && closed === key) return null
+  if (immersive) return (
+    <aside key={live?.key ?? key} className="app-world-radio" role="status" aria-live="polite" aria-label="CAPCOM">
+      <span>CAPCOM</span><p>{live?.text ?? LINES[beat.line]}</p>
+    </aside>
+  )
+  if (live) return <CapcomPopout key={live.key} text={live.text} onClose={() => setCalloutClosed(live.key)} />
   return <CapcomPopout key={key} line={beat.line} onClose={() => setClosed(key)} />
 }

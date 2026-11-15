@@ -10,7 +10,9 @@ import { getDatasets } from '../data'
 import type { Config, SimEvent, SimState, Summary } from '../shared'
 import { canSend, ROLES } from '../shared'
 import { choicesOf, pendingDecision, whatIf } from '../sim'
-import { playSound, SoundToggle } from '../ui/audio'
+import { playSound } from '../ui/audio'
+import { savePersonalBest } from '../ui/leaderboard/storage'
+import { stars } from '../ui/mission'
 import { MissionControl, type Debrief } from '../ui/hangar'
 import { SpacecraftRoom } from '../ui/interior'
 import { LaunchView as SceneLaunchView } from '../ui/scene3d'
@@ -20,6 +22,7 @@ import { StoryLayer } from './StoryLayer'
 import { fitCallout } from '../ui/story'
 import { useSession } from './useSession'
 import { hasWebGL } from './Walk'
+import { WorldMenu } from './WorldMenu'
 
 /** First-person 3D, unless the address says `?world=classic` or the browser can't draw it. */
 export const WORLD_3D = typeof location !== 'undefined' && new URLSearchParams(location.search).get('world') !== 'classic' && hasWebGL()
@@ -49,13 +52,14 @@ export interface WorldProps {
 }
 
 const LaunchView = SceneLaunchView as ComponentType<{ state: SimState; onDone: () => void }>
-/** Flight training (decision 006): the same lazy chunk the classic mission screen opens. */
 const Training = lazy(() => import('./Training'))
 
 export function World({ active, config, onExit }: WorldProps) {
   const { session, roomCode, daily } = active
   const { state, events, players, me, paused, speed } = useSession(session)
   const [classic, setClassic] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [training, setTraining] = useState(false)
   const [cutscene, setCutscene] = useState(false)
   // CAPCOM answers every design choice in the hall (ui/story fitCallout).
   const [callout, setCallout] = useState<{ key: string; text: string } | null>(null)
@@ -79,6 +83,15 @@ export function World({ active, config, onExit }: WorldProps) {
     [ended],
   )
   const summary = ended ? finalSummary(events) : undefined
+  const bonusGoal = typeof config.params.bonus_goal === 'string' ? config.params.bonus_goal : undefined
+  useEffect(() => {
+    if (summary && typeof summary.score === 'number') {
+      savePersonalBest(state.scenario_id, summary.score, state.params, {
+        dailySeed: daily?.seed,
+        stars: stars(summary, bonusGoal).filter((star) => star.earned).length,
+      })
+    }
+  }, [summary, state.scenario_id, state.params, daily?.seed, bonusGoal])
   const debrief = useMemo((): Debrief | undefined => {
     if (!ended) return undefined
     const best = fixes?.[0]
@@ -107,7 +120,11 @@ export function World({ active, config, onExit }: WorldProps) {
   // Cutscenes and the launch hold the mission clock in solo, so nothing happens unseen (as the 2D flight does).
   // Online the clock is shared by the whole crew, so it keeps running there.
   const heldClock = useRef(false)
-  const holdClock = (hold: boolean) => {
+  /** A late joiner skips the launch sequence. */
+  const [launched, setLaunched] = useState(() => session.getSnapshot().state.t_s > 86400)
+  const canTrain = flying && launched && !cutscene && !pendingDecision(state)
+  const hold = !classic && (menuOpen || cutscene || (training && canTrain) || (flying && !launched))
+  useEffect(() => {
     if (roomCode !== null) return
     if (hold && !session.getSnapshot().paused) {
       heldClock.current = true
@@ -116,61 +133,38 @@ export function World({ active, config, onExit }: WorldProps) {
       heldClock.current = false
       session.send({ type: 'resume', payload: {} })
     }
-  }
-  /** The launch sequence has played for this flight. A late joiner or a reload mid-mission skips it. */
-  const [launched, setLaunched] = useState(() => session.getSnapshot().state.t_s > 86400)
+  }, [hold, roomCode, session])
   useEffect(() => {
-    if (!flying) return setLaunched(session.getSnapshot().state.t_s > 86400)
-    if (!launched) {
-      playSound('launch')
-      holdClock(true)
-    }
+    if (!flying) setLaunched(session.getSnapshot().state.t_s > 86400)
+    else if (!launched) playSound('launch')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [flying])
 
-  // Flight training takes the spacecraft room's place while it is open. Practice only: it sends no commands.
-  // Solo, the clock waits for it like for a cutscene; an anomaly card or the end of the mission brings the player back.
-  const [training, setTraining] = useState(false)
-  const canTrain = flying && launched && !cutscene && !pendingDecision(state)
-  const showTraining = (open: boolean) => {
-    setTraining(open)
-    holdClock(open)
-  }
   useEffect(() => {
-    if (training && !canTrain) showTraining(false)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (training && !canTrain) setTraining(false)
   }, [training, canTrain])
 
-  if (classic) return <GameScreen session={session} config={config} onExit={onExit} roomCode={roomCode} daily={daily} />
+  if (classic) return <GameScreen session={session} config={config} onExit={onExit} roomCode={roomCode} daily={daily} skipLaunch={launched} />
 
   const onCutscene = (playing: boolean) => {
     setCutscene(playing)
-    if (flying) holdClock(playing)
+    if (playing) setMenuOpen(false)
     if (!playing) setArrived(true)
   }
-  const bar = (
-    <div className="app-world-bar">
-      <SoundToggle />
-      {canTrain && (
-        <button type="button" className="game-button app-small" onClick={() => showTraining(true)}>
-          Flight training
-        </button>
-      )}
-      <button type="button" className="game-button app-small" onClick={() => setClassic(true)}>
-        Classic view
-      </button>
-      <button type="button" className="game-button app-small" onClick={onExit}>
-        Main menu
-      </button>
-    </div>
+  const menu = (
+    <WorldMenu open={menuOpen} disabled={cutscene} onOpenChange={setMenuOpen}
+      online={roomCode !== null}
+      onTraining={canTrain ? () => { setMenuOpen(false); setTraining(true) } : undefined}
+      onClassic={() => { setMenuOpen(false); setClassic(true) }}
+      onExit={onExit} />
   )
+  const enabled = !cutscene && !menuOpen
 
   if (flying && !launched) {
     return (
       <LaunchView
         state={state}
         onDone={() => {
-          holdClock(false)
           setLaunched(true)
         }}
       />
@@ -181,7 +175,7 @@ export function World({ active, config, onExit }: WorldProps) {
     return (
       <div className="app-world app-world-training game-theme" data-theme="dark">
         <Suspense fallback={<p className="app-training-loading" aria-busy="true">Loading flight training…</p>}>
-          <Training state={state} onClose={() => showTraining(false)} />
+          <Training state={state} onClose={() => setTraining(false)} />
         </Suspense>
       </div>
     )
@@ -193,7 +187,7 @@ export function World({ active, config, onExit }: WorldProps) {
     const may = canSend(me.role, { type: 'resolve_decision', payload: { decision_id: '', option_id: '' } }, players.map((p) => p.role), console)
     const holder = players.find((p) => p.role === console)
     return (
-      <div className="app-world game-theme" data-theme="dark">
+      <div className={`app-world game-theme${menuOpen ? ' is-menu-open' : ''}`} data-theme="dark">
         <SpacecraftRoom
           className="app-world-view"
           state={state}
@@ -202,17 +196,17 @@ export function World({ active, config, onExit }: WorldProps) {
           speed={speed}
           decision={decision}
           decisionBlocked={may ? undefined : `${holder?.name ?? 'Another player'}'s call`}
-          enabled={!cutscene}
+          enabled={enabled}
           onFailed={() => setClassic(true)}
         />
-        {bar}
-        <StoryLayer screen="flight" events={events} scenarioId={state.scenario_id} onCutscene={onCutscene} shown={['launch']} />
+        {menu}
+        <StoryLayer immersive screen="flight" events={events} scenarioId={state.scenario_id} onCutscene={onCutscene} shown={['launch']} />
       </div>
     )
   }
 
   return (
-    <div className="app-world game-theme" data-theme="dark">
+    <div className={`app-world game-theme${menuOpen ? ' is-menu-open' : ''}`} data-theme="dark">
       <MissionControl
         className="app-world-view"
         state={state}
@@ -221,11 +215,12 @@ export function World({ active, config, onExit }: WorldProps) {
         me={me}
         title={config.title}
         debrief={debrief}
-        enabled={!cutscene}
+        enabled={enabled}
         onFailed={() => setClassic(true)}
       />
-      {bar}
+      {menu}
       <StoryLayer
+        immersive
         screen={ended ? 'flight' : arrived ? 'design' : 'briefing'}
         events={ended ? events : undefined}
         scenarioId={state.scenario_id}

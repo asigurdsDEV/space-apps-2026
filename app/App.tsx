@@ -352,10 +352,12 @@ export interface GameScreenProps {
   roomCode?: string | null
   /** Set when this game is today's daily mission: its record and share card are kept apart. */
   daily?: DailyMission
+  /** Switching from the 3D room after watching this flight's launch. */
+  skipLaunch?: boolean
 }
 
 /** The builder while the mission is being designed, the flight once it has launched. */
-export function GameScreen({ session, config, onExit, roomCode, daily }: GameScreenProps) {
+export function GameScreen({ session, config, onExit, roomCode, daily, skipLaunch = false }: GameScreenProps) {
   const snapshot = useSession(session)
   const { state, notice, players, me } = snapshot
   const designing = state.metrics.phase === 'design'
@@ -397,7 +399,7 @@ export function GameScreen({ session, config, onExit, roomCode, daily }: GameScr
         ) : (
           // Unmounts on reset, so every launch starts it fresh.
           <main>
-            <Flight session={session} config={config} daily={daily} online={roomCode != null} />
+            <Flight session={session} config={config} daily={daily} online={roomCode != null} skipLaunch={skipLaunch} />
           </main>
         )}
       </ErrorBoundary>
@@ -513,10 +515,10 @@ export function weatherStart(config: Config, seed: number): string {
 }
 
 /** Everything after launch: (the launch sequence,) cruise and operations, then the results with the personal best. */
-function Flight({ session, config, daily, online }: { session: Session; config: Config; daily?: DailyMission; online?: boolean }) {
+function Flight({ session, config, daily, online, skipLaunch }: { session: Session; config: Config; daily?: DailyMission; online?: boolean; skipLaunch?: boolean }) {
   const { state, events, paused, speed, players, me } = useSession(session)
   // A late joiner or a reload lands mid-mission: no launch to watch.
-  const [launchDone, setLaunchDone] = useState(() => session.getSnapshot().state.t_s > 86400)
+  const [launchDone, setLaunchDone] = useState(() => skipLaunch || session.getSnapshot().state.t_s > 86400)
   const [weather, setWeather] = useState(weatherData)
   useEffect(() => {
     // Flight mounts when the mission leaves design, but also for a late joiner and after a crash screen: those are not a launch.

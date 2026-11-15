@@ -5,6 +5,7 @@
 import * as THREE from 'three'
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
+import { roomLoop } from '../fps/room-loop'
 import { createFps, type Fps, type FpsOptions } from '../fps/controller'
 import { canvasScreen, font, partModel } from '../hangar/control'
 import { buildCraft, disposeObject } from '../scene3d/craft'
@@ -267,15 +268,9 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   let screensKey = ''
   let screensAt = 0
   let latest: CabinScreens | null = null
-  let active = true
-  let lastCraft: CraftSpec | null | undefined
+  let craftKey = ''
   let alarmKey: string | null = null
-  let last = performance.now()
-  let frame = requestAnimationFrame(function loop(now) {
-    const dt = Math.min((now - last) / 1000, 0.1)
-    last = now
-    frame = requestAnimationFrame(loop)
-    if (!active) return
+  const loop = roomLoop((now, dt) => {
     fps.update(dt)
     world.rotation.y = worldTurn
     craftHolder.rotation.y += dt * 0.4
@@ -301,8 +296,8 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   return {
     fps,
     setActive(on) {
-      active = on
       fps.setEnabled(on)
+      loop.setActive(on)
     },
     show(s) {
       const mk = s.modules.map((m) => `${m.key}:${m.part?.id ?? ''}`).join('|')
@@ -330,8 +325,10 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
       worldMat.color.setHex(WORLD_COLOUR[s.body] ?? WORLD_COLOUR.earth!)
       atmosphere.visible = s.body !== 'moon'
       worldTurn = (s.day / 365) * Math.PI * 2 * 6 // a few turns over a year: you can see it move at speed
-      if (s.craft !== lastCraft) {
-        lastCraft = s.craft
+      // Sim steps clone params; equal craft values must not rebuild GPU geometry every tick.
+      const nextCraftKey = JSON.stringify(s.craft)
+      if (nextCraftKey !== craftKey) {
+        craftKey = nextCraftKey
         for (const c of [...craftHolder.children]) {
           craftHolder.remove(c)
           disposeObject(c)
@@ -361,7 +358,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
     },
     dispose() {
       disposed = true
-      cancelAnimationFrame(frame)
+      loop.dispose()
       observer.disconnect()
       fps.dispose()
       disposeObject(scene)
