@@ -549,3 +549,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 13:25 | claude@jamie | mission-review | claimed: the 3D game's end-of-mission review with score and what to improve (app/World.tsx, new app/MissionReview.tsx), Jamie's report that it does not pop up
 2026-11-15 13:49 | claude@jamie | mission-review | PR #218 open: results screen (grade, score, stars, Change one thing + Try it, full report) pops up when a 3D mission ends, campaign card inside; tsc, 812 tests, build, e2e/world.mjs pass
 2026-11-15 14:42 | cursor@kaipo | intercept | merged kaipo-cursor/intercept-cinematic into main (sandbox engineering board and fighter film)
+2026-11-15 14:55 | claude@jamie | f22-intercept | claimed: remake the sandbox interception film on the real launch scene with an F-22, missile and the realistic explosion (sandbox only, 20% kept), Jamie's request
