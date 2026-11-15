@@ -212,7 +212,7 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
       // Only the Earth (from lunar orbit) turns on its own axis.
       if (c.turnsPerSpin) mesh.quaternion.setFromAxisAngle(Y, planet.rotation.y * c.turnsPerSpin).premultiply(earthInSky)
       else {
-        mesh.lookAt(sky.getWorldPosition(pos)) // one face always towards the planet
+        mesh.lookAt(0, 0, 0) // one face always towards the planet, which sits at the origin (and `pos` stays the craft's, for the click test)
         if (c.look !== 'rock') mesh.rotateY(-Math.PI / 2) // lookAt aims +z; a mapped body's near side (longitude 0) is +x
       }
     }

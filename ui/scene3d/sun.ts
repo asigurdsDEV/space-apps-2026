@@ -1,5 +1,5 @@
 // Where the real Sun stands over the Earth at a moment, so every view of the Earth can light the side that really has daylight.
-import { cross, without } from './sky'
+import { cross, unit, without } from './sky'
 
 const RAD = Math.PI / 180
 type Vec3 = [number, number, number]
@@ -30,11 +30,15 @@ export function sunDirection(date: Date): Vec3 {
  */
 export function earthOrientation(sunInMap: Vec3, sunInScene: Vec3, poleHint: Vec3 = [0, 1, 0]): [number, number, number, number] {
   // The Sun, the pole's side of it, and the third axis: the rotation carries the map's three onto the scene's three.
-  const axes = (sun: Vec3, pole: Vec3) => [sun, without(pole, sun), cross(sun, without(pole, sun))]
+  // unit(): a Sun vector typed to four decimals is off by 2e-5, enough to turn the globe 28 degrees wrong near a half turn.
+  const axes = (anySun: Vec3, pole: Vec3) => {
+    const sun = unit(anySun)
+    return [sun, without(pole, sun), cross(sun, without(pole, sun))]
+  }
   const from = axes(sunInMap, [0, 1, 0])
   const to = axes(sunInScene, poleHint)
   const m = (row: number, col: number) => to[0][row] * from[0][col] + to[1][row] * from[1][col] + to[2][row] * from[2][col]
-  // shortcut: loses the signs at an exact half turn, which needs the Sun and the hint lined up to 1e-8; use the four-branch form if that can happen.
+  // shortcut: can lose the signs at an exact half turn, a moment that comes once a day and lasts under a microsecond; use the four-branch form if that matters.
   const half = (a: number, b: number, c: number) => Math.sqrt(Math.max(0, 1 + a * m(0, 0) + b * m(1, 1) + c * m(2, 2))) / 2
   const sign = (x: number) => (x < 0 ? -1 : 1)
   return [half(1, -1, -1) * sign(m(2, 1) - m(1, 2)), half(-1, 1, -1) * sign(m(0, 2) - m(2, 0)), half(-1, -1, 1) * sign(m(1, 0) - m(0, 1)), half(1, 1, 1)]

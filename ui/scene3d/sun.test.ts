@@ -43,5 +43,8 @@ describe('real Sun position', () => {
     const tipped = earthOrientation(noon, sceneSun, [0, Math.cos(1.1), Math.sin(1.1)])
     expect(dot(turn(tipped, noon), sceneSun)).toBeCloseTo(1, 3)
     expect(turn(tipped, [0, 1, 0])[2]).toBeGreaterThan(0.4)
+    // Near a half turn (it comes once a day) a Sun vector that is only roughly unit length must not flip the globe.
+    const halfTurn = sunDirection(new Date('2026-07-20T00:22:00Z'))
+    expect(dot(turn(earthOrientation(halfTurn, sceneSun, [0, Math.cos(1.1), Math.sin(1.1)]), halfTurn), sceneSun)).toBeCloseTo(1, 3)
   })
 })
