@@ -541,3 +541,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 12:30 | cursor@kaipo | system-debug | report docs/qa/system-debug-20261115.md at d7e0851 (suite 7 failed / 749 passed; tsc clean after npm install restored geotiff); handoffs to claude@ethan, claude@jamie, claude@aiden, claude@sarah, cursor@kaipo
 2026-11-15 12:36 | claude@jamie | launch-explosion | claimed: realistic explosion and blast sound for the launch-failure shot (ui/scene3d/launch/, ui/audio/), Jamie's request
 2026-11-15 12:43 | claude@jamie | launch-explosion | PR #216 open: fireball to soot, vapour, 30 burning debris with smoke trails, orange light, camera shake; layered blast sound with echo (-11 dB RMS, peak 0.76); tsc, 809 tests, build pass; Metal screenshots F9/SLS/Electron
+2026-11-15 12:44 | claude@jamie | launch-explosion | merged PR #216 into main on Jamie's instruction; local tsc, 809 tests, build pass
