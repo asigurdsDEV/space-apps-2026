@@ -449,13 +449,17 @@ void main() {
   float start = smoothstep(0.0, 0.015, vAlong);
   vec3 col;
   float a;
+  float rim = 1.0;
   if (vLayer < 0.5) {
     // Outer flame. Low down it is thick with glowing soot, so it is bright right across with a soft rim: white-yellow
     // in the middle, the edge colour outside, cooling to the tail colour where it breaks up into ragged tongues.
     float tongues = noise2(vec2(vAlong * 9.0 - uTime * 13.0, vAround * 2.0 + uSeed * 13.0));
     float fine = noise2(vec2(vAlong * 38.0 - uTime * 29.0, vAround * 7.0 + uSeed * 7.0));
-    float hot = facing * (1.0 - 0.75 * vAlong);
-    col = mix(mix(uEdge, uTail, smoothstep(0.3, 0.9, vAlong)) * (0.7 + 0.3 * facing), uCore, smoothstep(0.4, 0.9, hot));
+    // A solid motor's flame is white-hot across most of its width and length; only its rim and last tongues show
+    // colour. A liquid engine's keeps more of its own colour.
+    float hot = facing * (1.0 - 0.5 * vAlong * vAlong);
+    col = mix(mix(uEdge, uTail, smoothstep(0.45, 0.95, vAlong)) * (0.7 + 0.3 * facing), uCore * (1.0 + 0.5 * hot * uSolid), smoothstep(mix(0.4, 0.2, uSolid), mix(0.9, 0.65, uSolid), hot));
+    rim = 0.35 + 0.65 * smoothstep(0.1, 0.5, facing);
     a = smoothstep(0.0, 0.25, facing) * (1.0 - smoothstep(0.65, 1.0, vAlong + (tongues - 0.5) * 0.5)) * uBody * (0.7 + 0.5 * tongues) * (0.85 + 0.3 * fine);
     // High up, a thin spindle: white-yellow where it leaves the engines, orange further down, dull red at its tip.
     col = mix(mix(mix(uEdge, uEdge * vec3(0.55, 0.3, 0.2), smoothstep(0.35, 1.0, vAlong)), uCore, smoothstep(0.3, 0.95, facing * facing * left * 1.25)), col, thick);
@@ -485,7 +489,8 @@ void main() {
   a *= 0.97 + 0.06 * hash2(gl_FragCoord.xy + uSeed);
   // In thick air the sooty flame also hides what is behind it, so its orange edge keeps its colour against a bright
   // sky and the layers settle at the flame's own brightness instead of adding up. In vacuum it only adds light.
-  float solid = min(a, 1.0) * thick * step(vLayer, 1.5);
+  // Its thin rim only adds light, so two flames side by side run together without a seam.
+  float solid = min(a, 1.0) * thick * step(vLayer, 1.5) * rim;
   gl_FragColor = vec4(col * mix(a, min(a, 1.0), thick), solid);
 }
 `,
@@ -506,6 +511,8 @@ void main() {
   nozzle.engines.forEach(([x, z], i) => mesh.setMatrixAt(i + 2, m.makeScale(nozzle.exit * 0.8, jet, nozzle.exit * 0.8).setPosition(x, 0, z)))
   mesh.frustumCulled = false
   mesh.visible = false
+  // After the dense clouds, which write depth: the flame shows over the bank behind it and sinks into the bank in front.
+  mesh.renderOrder = 4.5
   return {
     mesh,
     propellant: nozzle.propellant,
@@ -538,6 +545,7 @@ export function makeGlow(propellant: Propellant, radius: number): THREE.Sprite {
   const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowMap, color: new THREE.Color(...PLUME_COLORS[propellant].core), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }))
   sprite.scale.setScalar(radius * 5)
   sprite.visible = false
+  sprite.renderOrder = 4.5
   return sprite
 }
 
@@ -584,8 +592,9 @@ void main() {
 }
 `
 
-// Dense smoke and steam: every puff is a solid ball covered in round lumps, like a cauliflower, with a crisp outline.
-// It is shaded as that shape: bright where a lump faces the Sun, grey in the creases and underneath, orange toward the fire.
+// Dense smoke and steam: every puff is a solid ball covered in mounds of every size, each mound covered in smaller
+// ones, with creases between them. The ball's own roundness carries the light and shade; the mounds only ripple it,
+// so a bank of puffs reads as a few big lit masses, not as a pile of equal beads.
 const BILLOW = /* glsl */ `
 uniform vec3 uSunView;
 uniform vec3 uLit;
@@ -597,55 +606,63 @@ varying vec3 vData;
 varying vec3 vAt;
 varying float vHalf;
 ${NOISE2}
-// One layer of lumps: xy points away from the nearest lump's middle, z is 1 on its crown and falls to 0 around it.
-// The lumps are blended (a smooth "highest one wins"), so the creases between them are rounded, not cut with a knife.
-vec3 lumps(vec2 p) {
-  vec2 i = floor(p);
-  vec2 f = fract(p);
+// Value noise (x) and its slope (yz).
+vec3 noised(vec2 x) {
+  vec2 i = floor(x);
+  vec2 f = fract(x);
+  vec2 u = f * f * (3.0 - 2.0 * f);
+  float a = hash2(i);
+  float b = hash2(i + vec2(1, 0));
+  float c = hash2(i + vec2(0, 1));
+  float k = a - b - c + hash2(i + vec2(1, 1));
+  return vec3(a + (b - a) * u.x + (c - a) * u.y + k * u.x * u.y, 6.0 * f * (1.0 - f) * (vec2(b - a, c - a) + k * u.yx));
+}
+// The relief: x is the height (0 in a crease, up to about 1 on a crown), yz its slope.
+vec3 mounds(vec2 p) {
+  const mat2 turn = mat2(1.84, 1.38, -1.38, 1.84);
   vec3 sum = vec3(0.0);
-  for (int y = -1; y <= 1; y++) {
-    for (int x = -1; x <= 1; x++) {
-      vec2 g = vec2(float(x), float(y));
-      vec2 o = f - g - 0.15 - 0.7 * vec2(hash2(i + g), hash2(i + g + 57.0));
-      sum += vec3(o, 1.0) * exp(-12.0 * dot(o, o));
-    }
+  float amp = 0.58;
+  // The small mounds ripple the outline but tilt the surface less than their size says: a cloud is soft, not rock.
+  float soft = 1.0;
+  mat2 back = mat2(1.0);
+  for (int i = 0; i < 3; i++) {
+    vec3 n = noised(p);
+    float s = 2.0 * n.x - 1.0;
+    float m = abs(s);
+    // Round on top, a sharp fold where two mounds meet.
+    sum += amp * vec3(m * (2.0 - m), back * n.yz * (4.0 * (1.0 - m) * sign(s) * soft));
+    p = turn * p + 19.0;
+    back = back * transpose(turn);
+    amp *= 0.45;
+    soft *= 0.5;
   }
-  return vec3(sum.xy / sum.z, clamp(1.0 + log(sum.z) / 12.0, 0.0, 1.0));
+  return sum;
 }
 void main() {
-  // How much of the puff one pixel covers. Taken first: a derivative is not defined after a discard.
-  float fw = fwidth(vUv.x);
-  if (dot(vUv, vUv) > 1.0) discard;
-  vec2 q = vUv + vData.z * vec2(31.0, 17.0);
-  // The ball is pulled out of round, a different way for every puff.
-  float r2 = dot(vUv, vUv) * (0.75 + 0.9 * noise2(q * 1.1));
-  // Height toward the eye, in puff radii: a few big round lobes on a ball that stops short of the quad's edge, with
-  // small lumps all over them. Where it reaches zero is the puff's outline.
-  // The lobes are a different size on every puff, so the bank is not all one grain.
-  vec3 big = lumps(q * (1.25 + 0.8 * vData.z));
-  float ball = sqrt(max(0.42 - r2, 0.0)) / 0.65;
-  float h = 0.35 * ball + 0.85 * big.z - 0.6;
-  // Nearly half the quad is outside any outline the small lumps could reach: stop there.
-  if (h < -0.34) discard;
-  vec3 small = lumps(q * (3.4 + 1.6 * fract(vData.z * 7.3)));
-  // The finest lumps only show on a puff that fills much of the screen: skip the work on the rest.
-  float close = smoothstep(0.012, 0.005, fw);
-  vec3 fine = close > 0.0 ? lumps(q * 9.7) * close : vec3(0.0);
-  h += 0.28 * small.z + 0.06 * fine.z;
-  float a = smoothstep(0.0, 0.07, h) * (1.0 - smoothstep(0.8, 1.0, dot(vUv, vUv))) * vData.x;
+  float r2 = dot(vUv, vUv);
+  if (r2 > 1.0) discard;
+  // Every puff has its own grain, so the bank is not all one size of lump.
+  float grain = 1.0 + 0.7 * vData.z;
+  vec3 m = mounds(vUv * grain + vData.z * vec2(31.0, 17.0));
+  // Height toward the eye: a dome that stops short of the quad's edge, pushed out by the mounds and cut into by the
+  // creases. Where it reaches zero is the puff's outline.
+  float dome = 1.0 - r2 / 0.74;
+  float h = dome + 1.1 * (m.x - 0.62);
+  float a = smoothstep(0.0, 0.1, h) * vData.x;
   if (a < 0.004) discard;
-  vec3 n = normalize(vec3(0.12 * vUv / max(0.42 * ball, 0.15) + 1.8 * big.xy + 1.9 * small.xy + 0.8 * fine.xy, 1.0));
+  vec3 n = normalize(vec3(vUv * 1.1 - 0.42 * grain * m.yz, sqrt(max(dome, 0.0)) + 0.25));
   vec3 up = viewMatrix[1].xyz;
-  float sun = clamp(dot(n, uSunView) * 0.75 + 0.25, 0.0, 1.0);
-  // The look of self-shadow: the creases between lobes are dark, and so is the foot of the whole cloud bank.
+  float sun = clamp(dot(n, uSunView) * 0.7 + 0.3, 0.0, 1.0);
+  // The look of self-shadow: the creases are dark, and so are the underside of each puff and the foot of the whole bank.
   float height = dot(up, vAt) + cameraPosition.y;
-  float open = (0.5 + 0.5 * smoothstep(0.0, 0.5, big.z)) * (0.55 + 0.45 * smoothstep(0.0, 0.35 * uUnit, height)) * (0.8 + 0.2 * smoothstep(-0.6, 0.3, dot(vUv, up.xy)));
+  float open = (0.5 + 0.5 * smoothstep(0.05, 0.55, m.x)) * (0.6 + 0.4 * smoothstep(0.0, 0.35 * uUnit, height)) * (0.72 + 0.28 * smoothstep(-0.7, 0.4, dot(vUv, up.xy)));
   vec3 col = (uLit * sun * sun + uShade * (0.6 + 0.4 * dot(n, up))) * open;
   vec3 toFire = (viewMatrix * vec4(uFire.xyz, 1.0)).xyz - vAt - vec3(0.0, 0.0, h * vHalf);
   float d2 = dot(toFire, toFire);
-  col += vec3(4.0, 2.0, 0.7) * uFire.w * (0.35 + 0.65 * max(dot(n, toFire) * inversesqrt(d2), 0.0)) / (1.0 + d2 / (0.15 * uUnit * uUnit));
-  col += vec3(3.0, 1.1, 0.25) * vData.y * (1.0 - r2 * 0.6);
-  gl_FragColor = vec4(col, a);
+  col += vec3(7.0, 2.9, 0.8) * uFire.w * (0.3 + 0.7 * max(dot(n, toFire) * inversesqrt(d2), 0.0)) / (1.0 + d2 / (0.2 * uUnit * uUnit));
+  col += vec3(3.0, 1.1, 0.25) * vData.y * dome;
+  // Where the bank lies on the ground it thins out, instead of ending in a ruled line.
+  gl_FragColor = vec4(col, a * smoothstep(0.0, 0.03 * uUnit, height));
 }
 `
 
@@ -706,7 +723,8 @@ void main() {
 `,
       fragmentShader: billow ? BILLOW : WISP,
       transparent: true,
-      depthWrite: false,
+      // Billows are solid and drawn far ones first, so they can hide the flame and the vapour behind them.
+      depthWrite: !!billow,
     }),
   )
   mesh.frustumCulled = false
@@ -744,7 +762,7 @@ void main() {
       // In space: hard white and near-black. On the ground, vapour is peach where the dawn Sun hits it and blue-grey
       // in shade; dense cloud is white to cream in the Sun, with the sky's grey-blue filling its shadows.
       if (inSpace) { uniforms.uLit.value.set(1.1, 1.05, 1.0); uniforms.uShade.value.set(0.06, 0.07, 0.1) }
-      else if (billow) { uniforms.uLit.value.set(1.5, 1.42, 1.26); uniforms.uShade.value.set(0.26, 0.25, 0.27) }
+      else if (billow) { uniforms.uLit.value.set(1.6, 1.52, 1.38); uniforms.uShade.value.set(0.25, 0.25, 0.28) }
       else { uniforms.uLit.value.set(1.0, 0.72, 0.56); uniforms.uShade.value.set(0.2, 0.23, 0.32) }
     },
   }
