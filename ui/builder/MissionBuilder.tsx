@@ -29,6 +29,7 @@ import '../learn/learn.css'
 import { SpaceView } from '../scene3d'
 import '../theme/theme.css'
 import './builder.css'
+import '../theme/menu-look.css' // Classic view in the main menu's look
 
 export interface MissionBuilderProps {
   /** Latest SimState. The builder reads entities (the parts), params, metrics and issues; it never changes state itself. */
@@ -80,13 +81,12 @@ export function MissionBuilder({ state, send, slots = DEFAULT_SLOTS, players = N
   // Phones: the budgets fold away so the parts stay visible (console lights and Launch always show).
   const [panelOpen, setPanelOpen] = useState(false)
   const problems = bars.filter((b) => b.bad).length + errors.length
-  const objective = state.params.objective_text
 
   return (
-    <div className="mb">
+    // .menu-look sits on a wrapper so the builder keeps its plain class="mb" (app tests look for it).
+    <div className="menu-look"><div className="mb">
       <div className="mb-parts">
         <h1 className="mb-title">Design your mission</h1>
-        {typeof objective === 'string' && <p className="mb-objective">{objective}</p>}
         <SpaceView state={state} mode="spacecraft" className="mb-hero" />
         {slots.map((slot) => {
           const parts = slotParts(state.entities, slot)
@@ -106,7 +106,6 @@ export function MissionBuilder({ state, send, slots = DEFAULT_SLOTS, players = N
                   </span>
                 )}
               </legend>
-              {slot.hint && <p className="mb-hint">{slot.hint}</p>}
               {locked && (
                 <p className="mb-lock">
                   Only {access.holder?.name} ({ROLE_TITLES[access.role]}) can change this. Talk it over with them!
@@ -276,6 +275,6 @@ export function MissionBuilder({ state, send, slots = DEFAULT_SLOTS, players = N
           <p className="mb-muted">{launch.holder?.name} ({ROLE_TITLES[launch.role]}) launches when the team is ready.</p>
         )}
       </aside>
-    </div>
+    </div></div>
   )
 }

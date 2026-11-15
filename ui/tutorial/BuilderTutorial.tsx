@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { rememberTutorial, tutorialDismissed, TUTORIAL_STEPS, type TutorialStepId } from './model'
 import './tutorial.css'
+import '../theme/menu-look.css' // Classic view in the main menu's look
 
 export interface BuilderTutorialProps {
   /** Optional focus/scroll callback, invoked after closing the tour. */
@@ -34,7 +35,7 @@ export function BuilderTutorial({ onShowStep }: BuilderTutorialProps) {
     rememberTutorial(reason)
     setDismissed(true)
   }
-  return <>
+  return <div className="menu-look">
     <button ref={replay} type="button" className="bt-replay" onClick={() => { setIndex(0); setDismissed(false) }}>Builder tips <span aria-hidden="true">↗</span></button>
     {!dismissed && <dialog ref={dialog} className="bt-root" aria-labelledby={`${id}-heading`} aria-describedby={`${id}-description`}
       onCancel={event => { event.preventDefault(); finish('skipped') }}
@@ -63,5 +64,5 @@ export function BuilderTutorial({ onShowStep }: BuilderTutorialProps) {
       </nav>
       <p className="bt-footer">Press Escape to skip. Reopen with Builder tips anytime.</p>
     </dialog>}
-  </>
+  </div>
 }
