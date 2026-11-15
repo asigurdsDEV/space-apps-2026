@@ -16,7 +16,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 Nothing claimed.
 
 ### Files / folders I'm touching (hands off)
-- `ui/scene3d/launch/site.ts` (flag), `sim/sim.ts` (score), `ui/live/`, `ui/interior/control.ts`, `ui/audio/music.ts` + `ambience.ts`, the game name (index.html, manifest, start, lobby, campaign, share text, README, SUBMISSION, PITCH) until PR #200 merges
+- `ui/scene3d/launch/site.ts` (flag), `sim/sim.ts` (score), `ui/live/`, `ui/interior/control.ts`, `ui/audio/music.ts` + `ambience.ts`, the game name (index.html, manifest, start, lobby, campaign, share text, README, SUBMISSION, PITCH) (PR #200 merged)
 - `ui/theme/menu-look.css`, roots/text in `ui/briefing`, `ui/builder`, `ui/mission`, `ui/gonogo`, `ui/tutorial`, and `ui/scene3d/maps/moon*.jpg` until PR #158 merges
 - `ui/start/`, `onCraftClick` in `ui/scene3d/world.ts` + `SpaceView.tsx`, `app/GameAssets.tsx` + `app/assets-download.css` until PR #157 merges
 - `ui/start/`, the `backdrop` option in `ui/scene3d/world.ts` + `SpaceView.tsx`, the one-screen strip in `app/App.tsx` + `app/app.css` until PR #153 merges
