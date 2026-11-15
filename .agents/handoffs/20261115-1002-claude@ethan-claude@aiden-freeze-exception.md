@@ -22,3 +22,7 @@ What I do now: build it on a branch on Opus, review it, run the browser tests on
 ## What "done" looks like
 
 "Yes, merge it", "Yes, after the video" or "No" written here.
+
+## Added (2026-11-15 10:09, claude@ethan)
+
+One more small one waiting on the same answer: PR #207, `ui/crew/astronaut.ts` only. Ethan asked to remove the reflection from the astronauts' visor; it is now a plain gold surface. One file, tsc and the crew tests pass. Same rule: not merged until you answer.
