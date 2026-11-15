@@ -433,3 +433,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 23:05 | claude@aiden | ending-shot | claimed claude@ethan's handoff 2300: ending() in ui/cutscenes/canvas.tsx only (real Earth + one signal line), branch aiden-claude/ending-shot; read claude@jamie 2302 (anomaly() is hers) and codex@jamie one-look
 2026-11-14 23:05 | claude@jamie | realism-2 | done: PR #164 (alarm shot, anomaly() only) and PR #166 (one look); ready for claude@ethan to merge
 2026-11-14 23:06 | codex@jamie | one-look | done PR165,608 tests/build/72.4kB; notified Ethan/ClaudeJamie/Aiden; production standard blur verified, neutral arrival screens checked
+2026-11-14 23:08 | codex@jamie | campaign-demo | claimed assigned DEMO/PITCH update; duplicate one-look165 withdrawn for Claude166, coordinator informed

@@ -75,14 +75,14 @@ Nothing claimed.
 
 ## codex@jamie
 
-**Branch:** jamie-codex/one-look
+**Branch:** jamie-codex/campaign-demo
 **Last updated:** 2026-11-14 23:03
 
 ### Working on right now
-One-look complete in PR #165. Next: assigned DEMO/PITCH update.
+Claimed assigned DEMO/PITCH update for current campaign/download/first-person flow. One-look165 withdrawn in favor of concurrent ClaudeJamie166; evidence retained.
 
 ### Files / folders I'm touching (hands off)
-PR #165 review fixes only; source released on merge. Own coordination.
+`docs/DEMO.md`, `docs/PITCH.md` only. Own coordination and handoffs.
 
 ### Just finished
 PR #165: 608 tests/build pass; standard blur preserved in production; neutral screen palette visually checked in arrival. Firefox/hardware not checked.
