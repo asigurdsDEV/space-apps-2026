@@ -24,10 +24,15 @@ it('releases all input on Escape/disable, ignores UI keys and cancels a drag on 
   const event = (target: EventTarget, type: string, props: object) => target.dispatchEvent(Object.assign(new Event(type, { cancelable: true }), props))
   const key = (code: string) => event(win, 'keydown', { code })
   key('KeyW'); fps.update(0.1)
-  expect(camera.position.z).toBeCloseTo(-0.32)
+  const z1 = camera.position.z
+  expect(z1).toBeLessThan(-0.08)
+  expect(z1).toBeGreaterThan(-0.32) // speed eases in, so the first step is shorter than a full stride
+  fps.update(0.1)
+  const z2 = camera.position.z
+  expect(z1 - z2).toBeGreaterThan(-z1) // the second step is longer: still speeding up
   key('Escape')
   expect(fps.update(0.1)).toBe(true) // draw the final frame that settles the walking bob
-  expect(camera.position.z).toBeCloseTo(-0.32)
+  expect(camera.position.z).toBeCloseTo(z2)
   // A focused menu/control must not rotate the room or trigger E.
   const button = new Element(true)
   const input = Object.assign(new Event('keydown'), { code: 'ArrowRight' })
@@ -43,7 +48,7 @@ it('releases all input on Escape/disable, ignores UI keys and cancels a drag on 
   fps.setEnabled(true)
   fps.update(0.1)
   expect(camera.rotation.y).toBe(0)
-  expect(camera.position.z).toBeCloseTo(-0.32)
+  expect(camera.position.z).toBeCloseTo(z2)
   event(el, 'pointerdown', { pointerType: 'mouse', pointerId: 1, clientX: 0, clientY: 0 })
   event(win, 'pointercancel', {})
   event(win, 'pointermove', { pointerId: 1, clientX: 100, clientY: 0 })
@@ -51,5 +56,5 @@ it('releases all input on Escape/disable, ignores UI keys and cancels a drag on 
   expect(camera.rotation.y).toBe(0)
   fps.dispose()
   key('KeyW'); fps.update(0.1)
-  expect(camera.position.z).toBeCloseTo(-0.32)
+  expect(camera.position.z).toBeCloseTo(z2)
 })

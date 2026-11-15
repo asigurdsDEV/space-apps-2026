@@ -145,6 +145,12 @@ function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t
 }
 
+/** Slow at both ends so a shot does not start or stop with a jerk. */
+function ease(t: number) {
+  const u = Math.min(1, Math.max(0, t))
+  return u * u * (3 - 2 * u)
+}
+
 /**
  * Mission control, modeled on NASA's Flight Control Room in Houston (MCC-H, FCR-1): tiered rows of
  * consoles facing a wall of big displays. First person: you walk in at the back and take the flight
@@ -544,11 +550,12 @@ function orbit(scene: THREE.Scene, camera: THREE.PerspectiveCamera, body: 'moon'
   scene.add(craft)
   return {
     update(progress, _elapsed, aspect) {
+      const e = ease(progress)
       planet.rotation.y = progress * 0.6
-      craft.position.set(lerp(3.4, 1.65, progress), lerp(0.55, 0.2, progress), lerp(1.4, 0.35, progress))
+      craft.position.set(lerp(3.4, 1.65, e), lerp(0.55, 0.2, e), lerp(1.4, 0.35, e))
       craft.lookAt(planet.position)
-      camera.position.set(lerp(0.2, 0.8, progress), 1.15, distance(aspect, 4.3))
-      camera.lookAt(lerp(1.2, 0.4, progress), 0.2, 0)
+      camera.position.set(lerp(0.2, 0.8, e), 1.15, distance(aspect, 4.3))
+      camera.lookAt(lerp(1.2, 0.4, e), 0.2, 0)
     },
     dispose() {},
   }
@@ -573,8 +580,9 @@ function anomaly(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Shot {
       const blink = Math.abs(Math.sin(elapsedMs / 160))
       alarm.intensity = blink * 8
       beacon.scale.setScalar(1 + blink * 0.45)
-      craft.rotation.y = 0.7 + progress * 0.25
-      camera.position.set(0.35, 0.7, lerp(distance(aspect, 3.2), distance(aspect, 2.3), progress))
+      const e = ease(progress)
+      craft.rotation.y = 0.7 + e * 0.25
+      camera.position.set(0.35, 0.7, lerp(distance(aspect, 3.2), distance(aspect, 2.3), e))
       camera.lookAt(0, 0, 0)
     },
     dispose() {},
@@ -791,7 +799,7 @@ function transit(scene: THREE.Scene, camera: THREE.PerspectiveCamera, entering: 
   scene.add(air)
   return {
     update(progress, _elapsed, aspect) {
-      const travel = entering ? progress : 1 - progress
+      const travel = ease(entering ? progress : 1 - progress)
       const z = lerp(distance(aspect, 4.6), -6.2, travel)
       // End a little to the left so the window and the equipment on the right wall are both in frame.
       camera.position.set(lerp(0, -0.7, travel), lerp(1.7, 1.55, travel), z)
@@ -845,7 +853,7 @@ function ending(scene: THREE.Scene, camera: THREE.PerspectiveCamera, success: bo
       })
       glow.position.copy(earth.position)
       glow.intensity = success ? progress * 3 : fade * 1.2
-      camera.position.set(0, 0.7, lerp(distance(aspect, 4.4), distance(aspect, 3.5), progress))
+      camera.position.set(0, 0.7, lerp(distance(aspect, 4.4), distance(aspect, 3.5), ease(progress)))
       camera.lookAt(0, 0.15, 0)
     },
     dispose() {},
