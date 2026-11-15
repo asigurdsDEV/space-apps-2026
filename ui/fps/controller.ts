@@ -40,6 +40,13 @@ export interface Fps {
 const MOUSE = 0.0022
 const KEY_TURN = 1.9 // radians per second with the arrow keys
 const BOB = 0.035
+/** How fast walk speed and head bob catch the keys. Shorter feels snappier; this is a short glide, not a slide. */
+const GLIDE = 0.11
+/** Mouse and arrow look follow a few frames behind the input so a jumpy frame does not jerk the view. */
+const LOOK = 0.04
+
+const damp = (current: number, target: number, dt: number, tau: number) =>
+  current + (target - current) * (1 - Math.exp(-dt / tau))
 
 const usingUi = (t: EventTarget | null) =>
   t instanceof HTMLElement && (t.isContentEditable || !!t.closest('button, a, input, textarea, select, [role="dialog"], dialog'))
@@ -58,6 +65,12 @@ export function createFps(element: HTMLElement, camera: PerspectiveCamera, optio
   let enabled = true
   let locked = false
   let walked = 0
+  let velF = 0
+  let velR = 0
+  let speedNow = WALK_MS
+  let bobAmp = 0
+  let yawTo = yaw
+  let pitchTo = 0
   let touch = { forward: 0, right: 0 }
   let pendingLook: [number, number] = [0, 0]
   let dirty = true
@@ -68,8 +81,8 @@ export function createFps(element: HTMLElement, camera: PerspectiveCamera, optio
   camera.rotation.order = 'YXZ'
 
   const look = (dx: number, dy: number) => {
-    yaw -= dx * MOUSE
-    pitch = clampPitch(pitch - dy * MOUSE)
+    yawTo -= dx * MOUSE
+    pitchTo = clampPitch(pitchTo - dy * MOUSE)
     dirty = true
   }
 
@@ -96,6 +109,10 @@ export function createFps(element: HTMLElement, camera: PerspectiveCamera, optio
     tapped.clear()
     touch = { forward: 0, right: 0 }
     pendingLook = [0, 0]
+    velF = 0
+    velR = 0
+    speedNow = WALK_MS
+    bobAmp = 0
     drag = null
   }
   const onVisibility = () => document.hidden && release()
@@ -153,8 +170,8 @@ export function createFps(element: HTMLElement, camera: PerspectiveCamera, optio
       const axis = (i: 0 | 1) => [...down].reduce((sum, k) => sum + (MOVE_KEYS[k]?.[i] ?? 0), 0)
       const turn = [...down].reduce<[number, number]>((t, k) => [t[0] + (TURN_KEYS[k]?.[0] ?? 0), t[1] + (TURN_KEYS[k]?.[1] ?? 0)], [0, 0])
       if (turn[0] || turn[1]) {
-        yaw += turn[0] * KEY_TURN * dt
-        pitch = clampPitch(pitch + turn[1] * KEY_TURN * 0.6 * dt)
+        yawTo += turn[0] * KEY_TURN * dt
+        pitchTo = clampPitch(pitchTo + turn[1] * KEY_TURN * 0.6 * dt)
         changed = true
       }
       if (pendingLook[0] || pendingLook[1]) {
@@ -162,17 +179,34 @@ export function createFps(element: HTMLElement, camera: PerspectiveCamera, optio
         pendingLook = [0, 0]
         changed = true
       }
-      const move = { forward: Math.max(-1, Math.min(1, axis(0) + touch.forward)), right: Math.max(-1, Math.min(1, axis(1) + touch.right)) }
+      yaw = damp(yaw, yawTo, dt, LOOK)
+      pitch = damp(pitch, pitchTo, dt, LOOK)
+      if (Math.abs(yaw - yawTo) < 0.0004 && Math.abs(pitch - pitchTo) < 0.0004) {
+        yaw = yawTo
+        pitch = pitchTo
+      } else changed = true
+      const wishF = Math.max(-1, Math.min(1, axis(0) + touch.forward))
+      const wishR = Math.max(-1, Math.min(1, axis(1) + touch.right))
+      const wishLen = Math.hypot(wishF, wishR)
+      const scale = wishLen > 1 ? 1 / wishLen : 1
+      velF = damp(velF, wishF * scale, dt, GLIDE)
+      velR = damp(velR, wishR * scale, dt, GLIDE)
+      if (wishF === 0 && Math.abs(velF) < 0.02) velF = 0
+      if (wishR === 0 && Math.abs(velR) < 0.02) velR = 0
       const run = down.has('ShiftLeft') || down.has('ShiftRight')
-      const next = step(pos, yaw, move, dt, run ? RUN_MS : WALK_MS, obstacles)
+      speedNow = damp(speedNow, run ? RUN_MS : WALK_MS, dt, GLIDE)
+      const next = step(pos, yaw, { forward: velF, right: velR }, dt, speedNow, obstacles)
       const moved = Math.hypot(next[0] - pos[0], next[2] - pos[2])
-      if (moved > 0) {
+      if (moved > 0.0001) {
         pos = next
         walked += moved
         changed = true
       }
-      const bob = options.reducedMotion || moved === 0 ? 0 : BOB * Math.abs(Math.sin(walked * 2.4))
-      if (camera.position.y !== EYE + bob) changed = true
+      const walking = Math.hypot(velF, velR) > 0.08 && !options.reducedMotion
+      bobAmp = options.reducedMotion ? 0 : damp(bobAmp, walking ? 1 : 0, dt, 0.14)
+      if (!walking && bobAmp < 0.03) bobAmp = 0
+      const bob = BOB * bobAmp * Math.abs(Math.sin(walked * 2.4))
+      if (Math.abs(camera.position.y - (EYE + bob)) > 0.0001) changed = true
       camera.position.set(pos[0], EYE + bob, pos[2])
       camera.rotation.set(pitch, yaw, 0)
 
@@ -198,8 +232,11 @@ export function createFps(element: HTMLElement, camera: PerspectiveCamera, optio
     },
     teleport(p, y = yaw, pt = 0) {
       pos = [p[0], EYE, p[2]]
-      yaw = y
-      pitch = clampPitch(pt)
+      yaw = yawTo = y
+      pitch = pitchTo = clampPitch(pt)
+      velF = 0
+      velR = 0
+      bobAmp = 0
       dirty = true
     },
     setMove(forward, right) {
