@@ -4,6 +4,7 @@
 import type { Summary } from '../../shared'
 import { matchMission, teamPriorities, type RealMission } from './game'
 import './mission.css'
+import '../theme/menu-look.css' // Classic view in the main menu's look
 import { MissionView, type MissionViewProps } from './MissionView'
 import { ResultsScreen, type ResultsScreenProps } from './ResultsScreen'
 
@@ -25,7 +26,7 @@ export function MissionScreen(props: MissionScreenProps) {
     const summary = props.summary ?? lastSummary(events)
     if (summary) {
       return (
-        <div className="mv-root">
+        <div className="mv-root menu-look">
           <ResultsScreen
             summary={summary}
             onCommand={onCommand}
@@ -50,7 +51,7 @@ export function MissionScreen(props: MissionScreenProps) {
     }
   }
   return (
-    <div className="mv-root">
+    <div className="mv-root menu-look">
       <MissionView {...props} />
     </div>
   )

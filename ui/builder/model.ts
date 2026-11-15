@@ -16,7 +16,6 @@ export interface Slot {
   /** Part props to show as stats, in order. `ORBIT_CAPACITY` = the launcher's payload to the picked orbit. */
   columns: string[]
   /** One-line explainer for students. */
-  hint?: string
 }
 
 /** Stands in for the launch-vehicle column that matches the picked orbit (orbit.props.launch_capacity_column). */
@@ -24,13 +23,13 @@ export const ORBIT_CAPACITY = '@orbit_capacity'
 
 // Keys follow data/README.md (claude@jamie); kinds follow sim/README.md (claude@ethan).
 export const DEFAULT_SLOTS: Slot[] = [
-  { key: 'orbit', label: 'Orbit', kind: 'orbit', columns: ['altitude_m', 'eclipse_fraction', 'contact_s_per_day', 'radiation_factor'], hint: 'Sets sunlight, contact time and which rockets fit.' },
-  { key: 'bus', label: 'Spacecraft bus', kind: 'bus', columns: ['dry_mass_kg', 'max_added_mass_kg', 'max_instruments', 'base_power_w', 'cost_usd'], hint: 'The body. Everything bolts onto it.' },
-  { key: 'instruments', label: 'Science instruments', kind: 'instrument', multi: true, columns: ['mass_kg', 'power_w', 'data_rate_bps', 'science_value', 'cost_usd'], hint: 'More science, but more mass, power and data.' },
-  { key: 'solar', label: 'Power source', kind: 'power_system', where: { prop: 'type', values: ['solar', 'rtg'] }, columns: ['mass_kg', 'power_w', 'cost_usd'], hint: 'Power in must beat power out.' },
-  { key: 'battery', label: 'Battery', kind: 'power_system', where: { prop: 'type', values: ['battery'] }, columns: ['mass_kg', 'capacity_wh', 'cost_usd'], hint: 'Runs everything in the shadow.' },
-  { key: 'comms', label: 'Radio', kind: 'comms_system', columns: ['mass_kg', 'power_w', 'data_rate_bps', 'cost_usd'], hint: 'Gets your data home.' },
-  { key: 'launch_vehicle', label: 'Launch vehicle', kind: 'launch_vehicle', columns: [ORBIT_CAPACITY, 'cost_usd', 'reliability'], hint: 'Lifts it all. Often the biggest bill.' },
+  { key: 'orbit', label: 'Orbit', kind: 'orbit', columns: ['altitude_m', 'eclipse_fraction', 'contact_s_per_day', 'radiation_factor'] },
+  { key: 'bus', label: 'Spacecraft bus', kind: 'bus', columns: ['dry_mass_kg', 'max_added_mass_kg', 'max_instruments', 'base_power_w', 'cost_usd'] },
+  { key: 'instruments', label: 'Science instruments', kind: 'instrument', multi: true, columns: ['mass_kg', 'power_w', 'data_rate_bps', 'science_value', 'cost_usd'] },
+  { key: 'solar', label: 'Power source', kind: 'power_system', where: { prop: 'type', values: ['solar', 'rtg'] }, columns: ['mass_kg', 'power_w', 'cost_usd'] },
+  { key: 'battery', label: 'Battery', kind: 'power_system', where: { prop: 'type', values: ['battery'] }, columns: ['mass_kg', 'capacity_wh', 'cost_usd'] },
+  { key: 'comms', label: 'Radio', kind: 'comms_system', columns: ['mass_kg', 'power_w', 'data_rate_bps', 'cost_usd'] },
+  { key: 'launch_vehicle', label: 'Launch vehicle', kind: 'launch_vehicle', columns: [ORBIT_CAPACITY, 'cost_usd', 'reliability'] },
 ]
 
 /** Ids picked in a multi slot. */

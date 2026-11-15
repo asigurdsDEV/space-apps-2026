@@ -38,10 +38,10 @@ export function briefingFacts(config: Pick<Config, 'params' | 'duration_s'>): Fa
 }
 
 export const HOW_TO_WIN: string[] = [
-  '📡 Science only counts once data gets home',
-  '💰 Stay in budget. The rocket costs most',
-  '🔋 Keep power on, even in the shadow',
-  '🚦 Fix every NO-GO, then launch',
+  'Science only counts once data gets home',
+  'Stay in budget. The rocket costs most',
+  'Keep power on, even in the shadow',
+  'Fix every NO-GO, then launch',
 ]
 
 /** Glossary ids (ui/learn, cursor@kaipo) shown under "Words you'll see". The definitions live in the glossary only. */

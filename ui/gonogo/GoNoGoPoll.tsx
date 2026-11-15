@@ -3,6 +3,7 @@ import type { Issue } from '../../shared'
 import { playSound } from '../audio'
 import { canLaunch, hasMore, headline, poll, soundFor, type Call } from './model'
 import './gonogo.css'
+import '../theme/menu-look.css' // Classic view in the main menu's look
 
 export interface GoNoGoPollProps {
   /** `state.issues` from the sim, after the last design step. */
@@ -44,10 +45,9 @@ export function GoNoGoPoll({ issues, onLaunch, onBack, stepMs = 700 }: GoNoGoPol
   const blockers = calls.filter((c) => c.call === 'no-go').map((c) => c.label)
 
   return (
-    <section className="gng game-panel" aria-labelledby="gng-title">
+    <section className="gng game-panel menu-look" aria-labelledby="gng-title">
       <p className="game-eyebrow">Flight director</p>
       <h2 id="gng-title">GO / NO-GO poll</h2>
-      <p className="game-muted">Every console must be GO to launch.</p>
 
       <ol className="gng-consoles">
         {calls.map((c, i) => {

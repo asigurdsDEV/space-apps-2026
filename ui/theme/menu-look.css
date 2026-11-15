@@ -1,0 +1,90 @@
+/* The main menu's look (ui/start), for the Classic screens whose root carries `.menu-look` (briefing, builder,
+   GO / NO-GO poll, mission and results; each imports this file). The app's top bar is claude@ethan's and keeps its own look. black space, quiet glass, hairlines,
+   rounded corners, white and grey with green / soft yellow / red kept only for GO, concerns and NO-GO.
+   Font: Inter Tight Regular/Medium (a free stand-in for Ferrari Sans), loaded by ui/start's <link>.
+   It sets the shared --game-* tokens (and ui/mission's --mv-* ones) locally, and `.menu-look.menu-look`
+   rules outrank this file's console layer (amber, corner brackets, chamfered buttons, display caps). */
+.menu-look {
+  --ml-font: "Inter Tight", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ml-line: rgb(255 255 255 / 0.14);
+  --game-font: var(--ml-font);
+  --game-font-display: var(--ml-font);
+  --game-font-mono: var(--ml-font);
+  --game-bg: #000002;
+  --game-panel: rgb(255 255 255 / 0.035);
+  --game-surface: rgb(255 255 255 / 0.06);
+  --game-text: #f5f6f8;
+  --game-muted: rgb(245 246 248 / 0.6);
+  --game-border: var(--ml-line);
+  --game-accent: #ffffff;
+  --game-on-accent: #0b0c0e;
+  --game-selected: rgb(255 255 255 / 0.08);
+  --game-success: #8fe0b8;
+  --game-warning: #f0d9a0;
+  --game-danger: #ff9f9f;
+  --game-focus: #ffffff;
+  --game-telemetry: rgb(245 246 248 / 0.6);
+  --game-radius: 18px;
+  --game-radius-control: 12px;
+  color-scheme: dark;
+  color: var(--game-text);
+  font-family: var(--ml-font);
+  letter-spacing: 0.005em;
+  -webkit-font-smoothing: antialiased;
+}
+/* ui/mission keeps its own palette; point it at the same tokens. */
+.mv-root.menu-look {
+  --mv-bg: #000002;
+  --mv-card: var(--game-panel);
+  --mv-line: var(--ml-line);
+  --mv-text: var(--game-text);
+  --mv-muted: var(--game-muted);
+  --mv-info: rgb(245 246 248 / 0.85);
+  --mv-good: var(--game-success);
+  --mv-warn: var(--game-warning);
+  --mv-bad: var(--game-danger);
+  --mv-amber: #ffffff;
+  --mv-display: var(--ml-font);
+  font-family: var(--ml-font);
+}
+
+/* Type: medium weight, no shouting capitals, no amber underline. */
+.menu-look.menu-look :is(h1, h2, h3, h4, legend, summary, th, button, .game-button, .mv-title) { font-family: var(--ml-font); font-weight: 500; letter-spacing: 0.01em; text-transform: none; }
+.menu-look.menu-look :is(h1, h2, h4, .mv-title) { color: inherit; }
+.menu-look.menu-look h1 { font-size: clamp(1.9rem, 4vw, 2.8rem); font-weight: 400; line-height: 1.1; letter-spacing: -0.025em; }
+.menu-look.menu-look h1::after { content: none; }
+.menu-look.menu-look h2 { font-size: clamp(1.15rem, 2.2vw, 1.4rem); letter-spacing: -0.01em; }
+.menu-look.menu-look :is(h3, legend, th, .game-eyebrow) { color: var(--game-muted); font-size: 0.68rem; letter-spacing: 0.24em; text-transform: uppercase; }
+
+/* Glass panels with hairlines, no corner brackets, rounded. */
+.menu-look.menu-look:is(.game-panel, [class$="-panel"]), .menu-look.menu-look :is(.game-panel, [class$="-panel"], [class*="card"]) { background-image: none; }
+.menu-look.menu-look:is(section, .game-panel),
+.menu-look.menu-look :is(input, select, textarea, button, fieldset, section, details, dialog, figure, dl > div, .game-panel, [class$="-panel"], [class*="card"], [class*="tile"], [class*="stat"], [class*="fact"], .s3d, .mv-stage, .mv-gauge, .mv-phase, .mv-weather) { border-radius: 14px !important; }
+.menu-look .s3d { border: 1px solid var(--ml-line); }
+.menu-look .s3d-hint { display: none; } /* "Drag to look around": the cursor already says so */
+
+/* Buttons: white for the main action, hairline outlines for the rest. */
+.menu-look.menu-look :is(button, .game-button) { border-color: rgb(255 255 255 / 0.28); }
+.menu-look.menu-look :is([class*="primary"], button[type="submit"]):not(:disabled) { clip-path: none; border: 0; background: #fff; color: #0b0c0e; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; padding-inline: 1.6em; box-shadow: none; }
+.menu-look.menu-look :is([class*="primary"], button[type="submit"]):not(:disabled):hover { filter: none; background: rgb(255 255 255 / 0.86); }
+.menu-look.menu-look .game-button:not(:disabled):hover { border-color: rgb(255 255 255 / 0.6); background: rgb(255 255 255 / 0.04); outline: none; }
+.menu-look :focus-visible { outline: 1px solid #fff !important; outline-offset: 3px; }
+.menu-look [tabindex="-1"]:focus { outline: none !important; } /* headings that take focus on a screen change */
+
+@media (prefers-reduced-motion: no-preference) {
+  .menu-look :is(button, .game-button, [class*="card"]) { transition: background 300ms ease, border-color 300ms ease; }
+}
+
+/* Word tooltips (ui/learn) inside table headers and section names read like the other headers. */
+.menu-look.menu-look :is(th, legend) :is(button, .learn-term) { font: inherit; color: inherit; letter-spacing: inherit; text-transform: inherit; }
+
+/* The builder's side panel sticks over the part tables, so it needs a solid backing. */
+.menu-look .mb-side { --mb-panel: rgb(12 13 16 / 0.94); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+
+
+/* ui/mission: white fills get dark text; round gauges; calmer button text. */
+.menu-look .mv-phase--current, .menu-look .mv-speeds button.is-active, .menu-look .mv button.mv-primary { color: #0b0c0e; }
+.menu-look .mv-gauge { background: rgb(12 13 16 / 0.7); }
+.menu-look .mv-gauge__ring { border-radius: 50% !important; }
+.menu-look.menu-look .mv button { font-size: 0.92rem; border-width: 1px; }
+.menu-look .mv :is(.mv-card, .mv-more, .mv-results__head, .mv-decision, .mv-stage) { border-width: 1px; }

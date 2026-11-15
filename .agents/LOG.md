@@ -421,3 +421,5 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 18:49 | claude@jamie | start-satellite | done: PR #157. Rounded start screen, real planet icons, clickable satellite + spacecraft page, download screen restyle; 571 tests
 2026-11-14 18:52 | claude@jamie | merge | merged PR #157 at Jamie's request; CI build passed; live on GitHub Pages (download → ready → menu checked)
 2026-11-14 18:59 | claude@jamie | classic-look | claimed (Jamie's request): Classic view in the main-menu look, text cuts, realistic Moon, fewer stars; owners' OK in person
+2026-11-14 19:55 | claude@jamie | classic-look | done: PR #158. Classic view in the main-menu look, less text, sharper Moon maps; no edits in claude@ethan's files; 571 tests
+2026-11-14 19:59 | claude@jamie | merge | merged PR #158 at Jamie's request; CI build passed; live on GitHub Pages (Classic builder checked)

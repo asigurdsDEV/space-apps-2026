@@ -136,21 +136,18 @@ export function MissionView({
         <div className="mv-gauges">
           <Gauge
             label="Science returned"
-            icon="🔬"
             share={fillShare(science, scienceGoal)}
             value={scienceGoal > 0 ? `${formatPoints(science)} / ${formatPoints(scienceGoal)}` : formatPoints(science)}
             tone={scienceGoal > 0 && science >= scienceGoal ? 'good' : 'info'}
           />
           <Gauge
             label="On-board storage"
-            icon="💾"
             share={fillShare(stored, storage)}
             value={lost > 0 ? `${formatGb(lost)} lost` : formatGb(stored)}
             tone={lost > 0 ? 'bad' : storage > 0 && stored >= storage * 0.9 ? 'warn' : 'info'}
           />
           <Gauge
             label="Money spent"
-            icon="💰"
             share={fillShare(spent, budget)}
             value={budget > 0 ? `${formatUsd(spent)} / ${formatUsd(budget)}` : formatUsd(spent)}
             tone={budget > 0 && spent > budget ? 'bad' : 'info'}
@@ -199,13 +196,11 @@ export function MissionView({
   )
 }
 
-/** A compact ring gauge: icon in the middle, value next to it. */
-function Gauge({ label, icon, share, value, tone }: { label: string; icon: string; share: number; value: string; tone: string }) {
+/** A compact ring gauge, value next to it. */
+function Gauge({ label, share, value, tone }: { label: string; share: number; value: string; tone: string }) {
   return (
     <div className={`mv-gauge mv-tone-${tone}`} role="progressbar" aria-label={label} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(share * 100)}>
-      <span className="mv-gauge__ring" style={{ ['--share' as string]: `${share * 100}%` }}>
-        <span aria-hidden="true">{icon}</span>
-      </span>
+      <span className="mv-gauge__ring" style={{ ['--share' as string]: `${share * 100}%` }} />
       <span className="mv-gauge__text">
         <span className="mv-gauge__label">{label}</span>
         <strong>{value}</strong>

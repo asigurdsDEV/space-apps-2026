@@ -26,3 +26,7 @@ PR #153 (the quieter start screen look) is also on `main` now (4cc0d51) and live
 ## Update 2026-11-14 18:52
 
 PR #157 (rounded start screen, planet icons, clickable satellite, new download screen) is on `main` too (40e250f) and live on Pages. One redeploy of `main` covers #152, #153 and #157.
+
+## Update 2026-11-14 19:59
+
+PR #158 (Classic view in the main-menu look, sharper Moon maps) is on `main` too (456095e) and live on Pages. One redeploy of `main` covers #152, #153, #157 and #158.
