@@ -557,3 +557,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 15:13 | claude@jamie | team-on-board | done, PR #220: About the team link + panel on the guided missions board; team list shared in ui/start/Team.tsx; tsc, 157 tests; waits for Jamie's merge
 2026-11-15 15:14 | claude@jamie | team-on-board | merged PR #220 into main on Jamie's instruction (ui/start/, ui/campaign/CampaignBoard.tsx); CI build green
 2026-11-15 15:18 | claude@jamie | lightning | PR #223 open: sandbox lightning strike (own 20% band, ?lightning=1): storm grade, cloud dome, rain, background bolts, strike on the rocket, blast; rain/thunder/zap sounds; tsc, 820 tests, build pass; played in browser
+2026-11-15 15:23 | claude@jamie | lightning | merged PR #223 into main on Jamie's instruction after showing it in the browser; fixed ?lightning=1 losing to the interception roll and a clash with main's new scene.ts tail; CI build green, 824 tests
