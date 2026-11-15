@@ -100,7 +100,7 @@ export function SpacecraftRoom({ state, send, paused, speed, decision, decisionB
       playSound('click')
       send(command)
     }
-    c.fps.setPlace(interactables(list, { send: sendWithSound, paused, speed, decision, decisionBlocked, onProbe }), walls)
+    c.fps.setPlace(interactables({ send: sendWithSound, paused, speed, decision, decisionBlocked, onProbe }), walls)
   }, [state, list, walls, craft, body, paused, speed, decision, decisionBlocked, send, onProbe])
 
   useEffect(() => cabin.current?.setActive(enabled), [enabled])
@@ -109,7 +109,7 @@ export function SpacecraftRoom({ state, send, paused, speed, decision, decisionB
     <div className={`sc${className ? ` ${className}` : ''}`}>
       <div ref={host} className="sc-canvas" role="application" aria-label="Your spacecraft. W A S D to walk, arrow keys or mouse to look, E to use what you face." tabIndex={0} />
       {failed ? <p className="sc-fallback">This view needs WebGL, which is off in this browser.</p> : enabled && <FpsPrompt aimed={aimed} locked={locked}
-        help={flightHelp(aimed?.id, decision)} objective={decision ? 'Alarm · Walk to the red choice panels · Look to inspect · E to choose' : onProbe ? 'Gold hatch · E to survey the ground' : 'Read the gauges · E on the clock or speed control'} />}
+        help={flightHelp(aimed?.id, decision)} objective={decision ? 'Alarm · Choices on the window · Aim at one · E to choose' : onProbe ? 'Gold hatch · E to survey the ground' : 'Read the gauges · E on the clock or speed control'} />}
     </div>
   )
 }

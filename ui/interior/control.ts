@@ -16,7 +16,7 @@ import { atmosphereShader, cloudShader, planetShader, toScreen } from '../scene3
 import { sunDirection } from '../scene3d/sun'
 import type { CraftSpec } from '../scene3d/model'
 import type { Decision } from '../../shared'
-import { choiceSpots, choiceTitleAt, DASH, dialAngle, HATCH, HATCHWAY, moduleFor, ROOM, section, SPEEDS, STANDOFF, START, WINDOW, type Gauge, type Module } from './layout'
+import { ALARM_SCREEN, ALARM_SPAN, choiceSpots, DASH, dialAngle, HATCH, HATCHWAY, moduleFor, ROOM, section, SPEEDS, STANDOFF, START, WINDOW, type Gauge, type Module } from './layout'
 import { mountCrew, type CrewPose } from '../crew/crew'
 
 export interface CabinScreens {
@@ -1001,29 +1001,50 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
     fitted(mounts.shades, shadeMat, moduleGroup).renderOrder = 1
   }
 
+  // The anomaly card as a hologram on the window: the screen, a light beam up from the console, a scan line, and a glow
+  // on the choice you aim at.
+  let holo: { screen: THREE.Mesh; mat: THREE.MeshBasicMaterial; sweep: THREE.Mesh; glows: { id: string; mat: THREE.MeshBasicMaterial }[]; born: number } | null = null
+  const holoAdd = (opacity: number, map?: THREE.Texture) =>
+    new THREE.MeshBasicMaterial({ color: 0x7fe3ff, map, transparent: true, opacity, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false })
+  const beamFade = painted(4, 64, (g) => {
+    const fade = g.createLinearGradient(0, 64, 0, 0)
+    fade.addColorStop(0, 'rgba(255,255,255,1)')
+    fade.addColorStop(1, 'rgba(255,255,255,0.15)')
+    g.fillStyle = fade
+    g.fillRect(0, 0, 4, 64)
+  })
   const buildChoices = (decision: Decision | null, list: Module[]) => {
     for (const c of [...choiceGroup.children]) {
       choiceGroup.remove(c)
       disposeObject(c)
     }
+    holo = null
     if (!decision) return
-    const spots = choiceSpots(decision, list)
-    const m = moduleFor(decision.console, list)
-    const facing = m?.face ?? ([0, 1] as [number, number])
-    const rot = Math.atan2(facing[0], facing[1])
-    decision.options.forEach((o, i) => {
-      const s = spots[i]!
-      const btn = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.42), new THREE.MeshBasicMaterial({ map: optionTexture(String.fromCharCode(65 + i), o.label, o.effect_text), toneMapped: false }))
-      btn.position.set(...s.at)
-      btn.rotation.y = rot
-      choiceGroup.add(btn)
+    const { w, h, y, z } = ALARM_SCREEN
+    const mat = new THREE.MeshBasicMaterial({ map: alarmScreenMap(decision, moduleFor(decision.console, list)?.name), transparent: true, depthWrite: false, toneMapped: false })
+    const screen = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat)
+    screen.position.set(0, y, z)
+    screen.renderOrder = 3 // over the window glass
+    // The projector's beam: from a slot along the back of the console up to the screen's lower edge.
+    const back = DASH.z - DASH.depth / 2 + 0.03
+    const beam = new THREE.BufferGeometry()
+    beam.setAttribute('position', new THREE.Float32BufferAttribute([-0.5, DASH.top + 0.02, back, 0.5, DASH.top + 0.02, back, -w * 0.48, y - h / 2, z, w * 0.48, y - h / 2, z], 3))
+    beam.setAttribute('uv', new THREE.Float32BufferAttribute([0, 0, 1, 0, 0, 1, 1, 1], 2))
+    beam.setIndex([0, 1, 2, 1, 3, 2])
+    const ray = new THREE.Mesh(beam, holoAdd(0.2, beamFade))
+    ray.material.side = THREE.DoubleSide
+    const sweep = new THREE.Mesh(new THREE.PlaneGeometry(w * 0.98, 0.06), holoAdd(0.35, blob))
+    sweep.position.set(0, y, z + 0.01)
+    const n = decision.options.length
+    const glows = choiceSpots(decision).map((spot, i) => {
+      const glow = new THREE.Mesh(new THREE.PlaneGeometry((w * ALARM_SPAN) / n - 0.04, h * 0.58), holoAdd(0))
+      glow.position.set(spot.at[0], spot.at[1], z + 0.005)
+      choiceGroup.add(glow)
+      return { id: `option:${decision.decision_id}:${decision.options[i]!.id}`, mat: glow.material }
     })
-    // The card's title over the choices.
-    const mid = choiceTitleAt(spots)
-    const title = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 0.2), new THREE.MeshBasicMaterial({ map: label(decision.title.toUpperCase(), undefined, 768, 140, BAD), toneMapped: false }))
-    title.position.set(mid[0], mid[1], mid[2])
-    title.rotation.y = rot
-    choiceGroup.add(title)
+    for (const m of [ray, sweep, ...glows]) (m as THREE.Mesh).renderOrder = 4
+    choiceGroup.add(screen, ray, sweep)
+    holo = { screen, mat, sweep, glows, born: performance.now() }
   }
 
   // ---- Walking.
@@ -1084,6 +1105,16 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
     const flash = alarmKey && lights.get(alarmKey)
     if (flash) flash.emissiveIntensity = 0.3 + 2.5 * pulse
     washMat.opacity = flash ? 0.45 * pulse : 0
+    if (holo) {
+      // Powers on with a quick vertical unfold, then a faint flicker and a scan line rolling down (none under reduced motion).
+      const calm = options.reducedMotion
+      holo.screen.scale.y = calm ? 1 : Math.max(0.02, smooth(now - holo.born, 0, 350))
+      holo.mat.opacity = calm ? 1 : 0.92 + 0.05 * Math.sin(now / 53) + 0.03 * Math.sin(now / 17)
+      holo.sweep.visible = !calm
+      holo.sweep.position.y = ALARM_SCREEN.y + ALARM_SCREEN.h * (0.47 - 0.94 * ((now / 2600) % 1))
+      const aimed = fps.aimed?.id
+      for (const g of holo.glows) g.mat.opacity = g.id === aimed ? 0.32 : 0
+    }
     renderer.render(scene, camera)
   })
 
@@ -1263,38 +1294,98 @@ function controlPlate() {
   return map
 }
 
-function optionTexture(letter: string, text: string, effect: string) {
-  const s = canvasScreen(512, 512)
+/** The anomaly card on the window screen: an alarm bar naming the module, the title, and the choices side by side (letter, label, effect). */
+function alarmScreenMap(decision: Decision, from: string | undefined) {
+  const W = 2048
+  const H = Math.round((W * ALARM_SCREEN.h) / ALARM_SCREEN.w)
+  const CYAN = '#7fe3ff'
+  const s = canvasScreen(W, H)
   const { g } = s
-  g.fillStyle = GLASS
-  g.fillRect(0, 0, 512, 512)
-  g.strokeStyle = HAIR
-  g.lineWidth = 4
-  g.strokeRect(4, 4, 504, 504)
-  g.fillStyle = BAD
-  g.fillRect(4, 4, 504, 10)
-  g.textAlign = 'center'
-  g.textBaseline = 'middle'
-  g.fillStyle = TEXT
-  g.font = face(104, 500)
-  g.fillText(letter, 256, 96)
-  const wrap = (str: string, size: number, y0: number, lines: number, colour: string) => {
-    g.fillStyle = colour
-    g.font = face(size, size > 40 ? 500 : 400)
+  const box = (x: number, y: number, w: number, h: number, r: number) => {
+    g.beginPath()
+    g.roundRect(x, y, w, h, r)
+  }
+  const wrap = (str: string, x: number, y: number, maxW: number, size: number, lines: number) => {
     const out: string[] = []
     let line = ''
-    for (const w of str.split(/\s+/)) {
-      const next = line ? `${line} ${w}` : w
-      if (g.measureText(next).width > 460 && line) {
+    for (const word of str.split(/\s+/)) {
+      const next = line ? `${line} ${word}` : word
+      if (g.measureText(next).width > maxW && line) {
         out.push(line)
-        line = w
+        line = word
       } else line = next
     }
     if (line) out.push(line)
-    out.slice(0, lines).forEach((l, i) => g.fillText(l, 256, y0 + i * size * 1.2, 480))
+    out.slice(0, lines).forEach((l, i) => g.fillText(l, x, y + i * size * 1.22, maxW))
   }
-  wrap(text, 46, 200, 3, TEXT)
-  wrap(effect, 32, 390, 3, MUTED)
+  // Tinted glass, darker at the top so the title reads over the planet, with scanlines and a glowing edge.
+  const tint = g.createLinearGradient(0, 0, 0, H)
+  tint.addColorStop(0, 'rgba(3,12,22,0.88)')
+  tint.addColorStop(1, 'rgba(3,16,26,0.66)')
+  g.fillStyle = tint
+  box(8, 8, W - 16, H - 16, 36)
+  g.fill()
+  g.fillStyle = 'rgba(127,227,255,0.045)'
+  for (let y = 0; y < H; y += 6) g.fillRect(0, y, W, 2)
+  g.save()
+  g.shadowColor = CYAN
+  g.shadowBlur = 28
+  g.strokeStyle = CYAN
+  g.lineWidth = 5
+  box(10, 10, W - 20, H - 20, 34)
+  g.stroke()
+  g.restore()
+  // The alarm bar.
+  const bar = H * 0.13
+  g.fillStyle = 'rgba(235,52,44,0.9)'
+  box(40, 36, W - 80, bar, 18)
+  g.fill()
+  g.fillStyle = '#ffffff'
+  g.textBaseline = 'middle'
+  g.textAlign = 'left'
+  g.font = face(bar * 0.5, 700)
+  g.fillText('⚠  ANOMALY', 80, 36 + bar / 2)
+  g.textAlign = 'right'
+  g.font = face(bar * 0.36, 600)
+  g.fillText(from ? `${from.toUpperCase()}  ·  CHOOSE ONE` : 'CHOOSE ONE', W - 80, 36 + bar / 2)
+  // The card's title, glowing.
+  g.textAlign = 'center'
+  g.save()
+  g.shadowColor = 'rgba(255,110,100,0.85)'
+  g.shadowBlur = 22
+  g.font = face(H * 0.095, 700)
+  g.fillText(decision.title.toUpperCase(), W / 2, H * 0.275, W - 160)
+  g.restore()
+  // The choices, centred where layout.ts choiceSpots aims.
+  const n = decision.options.length
+  const pitch = (W * ALARM_SPAN) / n
+  const top = H * 0.36
+  const tall = H * 0.58
+  decision.options.forEach((o, i) => {
+    const bw = pitch - 40
+    const x = W / 2 + (i - (n - 1) / 2) * pitch - bw / 2
+    g.fillStyle = 'rgba(14,46,64,0.78)'
+    box(x, top, bw, tall, 24)
+    g.fill()
+    g.strokeStyle = 'rgba(127,227,255,0.75)'
+    g.lineWidth = 4
+    g.stroke()
+    g.fillStyle = CYAN
+    g.beginPath()
+    g.arc(x + 82, top + 82, 50, 0, Math.PI * 2)
+    g.fill()
+    g.fillStyle = '#04121c'
+    g.textAlign = 'center'
+    g.font = face(62, 800)
+    g.fillText(String.fromCharCode(65 + i), x + 82, top + 85)
+    g.textAlign = 'left'
+    g.fillStyle = TEXT
+    g.font = face(54, 700)
+    wrap(o.label, x + 158, top + 60, bw - 190, 54, 2)
+    g.fillStyle = '#b6d6e2'
+    g.font = face(42, 400)
+    wrap(o.effect_text, x + 46, top + 180, bw - 92, 42, 4)
+  })
   s.draw()
   return s.texture
 }

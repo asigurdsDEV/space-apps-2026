@@ -92,29 +92,18 @@ export function moduleFor(console: string, list: readonly Module[]): Module | un
   if (role === 'spacecraft') return list.find((m) => m.key === 'solar')
   if (role === 'comms-resources') return list.find((m) => m.key === 'comms')
   if (role === 'science') return list.find((m) => m.key.startsWith('instrument:')) ?? list.find((m) => m.key === 'storage')
-  return undefined // mission planning: mid-room
+  return undefined // mission planning: no module, only the window screen
 }
 
-/** Where the choice buttons for a card stand: in front of its module, or (mission planning) floating mid-room in front of the dashboard's right half. */
-export function choiceSpots(decision: Decision, list: readonly Module[]): { at: Vec3; along: [number, number] }[] {
-  const m = moduleFor(decision.console, list)
+/** The anomaly screen: a holographic display across the window, in front of the glass, the choices side by side on it. */
+export const ALARM_SCREEN = { y: WINDOW.y, z: ROOM.min[2] - 0.1, w: 4.4, h: 1.48 } as const
+/** The middle band of the screen, as a share of its width, that the choice boxes share evenly. */
+export const ALARM_SPAN = 0.92
+/** Where each choice of an anomaly card is on the window screen: A on the left. Aimed at from anywhere in the room. */
+export function choiceSpots(decision: Decision): { at: Vec3 }[] {
   const n = decision.options.length
-  return decision.options.map((_, i) => {
-    const off = (i - (n - 1) / 2) * 0.45
-    if (!m) return { at: [1.5 + off, 1.45, -1.1] as Vec3, along: [1, 0] as [number, number] }
-    const along: [number, number] = [m.face[1], -m.face[0]] // your right as you face the module, so A is on the left
-    return { at: [m.at[0] + m.face[0] * 0.75 + along[0] * off, 1.2, m.at[2] + m.face[1] * 0.75 + along[1] * off] as Vec3, along }
-  })
-}
-
-/** Keep the header physically above the choice planes, never coplanar with their top edges. */
-export function choiceTitleAt(spots: readonly { at: Vec3 }[]): Vec3 {
-  const count = Math.max(1, spots.length)
-  return [
-    spots.reduce((sum, s) => sum + s.at[0], 0) / count,
-    Math.max(1.2, ...spots.map((s) => s.at[1])) + 0.39,
-    spots.reduce((sum, s) => sum + s.at[2], 0) / count,
-  ]
+  const pitch = (ALARM_SCREEN.w * ALARM_SPAN) / n
+  return decision.options.map((_, i) => ({ at: [(i - (n - 1) / 2) * pitch, ALARM_SCREEN.y - 0.15 * ALARM_SCREEN.h, ALARM_SCREEN.z] as Vec3 })) // y: the boxes' middle (0.36h..0.94h from the top)
 }
 
 export interface Gauge {
@@ -179,7 +168,7 @@ export interface FlightOptions {
 }
 
 /** What E does in the spacecraft: the pause button and the speed switch on the console, the floor hatch on Earth missions, and the anomaly card's choices when one is waiting. */
-export function interactables(list: readonly Module[], { send, paused, speed, decision, decisionBlocked, onProbe }: FlightOptions): Interactable[] {
+export function interactables({ send, paused, speed, decision, decisionBlocked, onProbe }: FlightOptions): Interactable[] {
   const next = SPEEDS.find((s) => s > speed) ?? SPEEDS[0]
   const out: Interactable[] = [
     { id: 'pause', at: [1.4, 1, DASH.z + 0.1], label: paused ? 'Resume time' : 'Pause time', disabled: decision ? 'Answer the alarm first' : undefined, use: () => send({ type: paused ? 'resume' : 'pause', payload: {} }) },
@@ -195,12 +184,12 @@ export function interactables(list: readonly Module[], { send, paused, speed, de
     })
   }
   if (decision) {
-    const spots = choiceSpots(decision, list)
+    const spots = choiceSpots(decision)
     decision.options.forEach((o, i) =>
       out.push({
         id: `option:${decision.decision_id}:${o.id}`,
         at: spots[i]!.at,
-        reach: 2.4,
+        reach: 7, // the whole room: you answer by looking at the window
         label: words(o.label, 4),
         disabled: decisionBlocked,
         use: () => send({ type: 'resolve_decision', payload: { decision_id: decision.decision_id, option_id: o.id } }),

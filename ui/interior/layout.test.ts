@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest'
 import { getDatasets, getScenario } from '../../data'
 import { catalogEntities } from '../../sim'
 import type { Command, Decision } from '../../shared'
-import { CEILING, choiceSpots, choiceTitleAt, DASH, dialAngle, gauges, HATCHWAY, interactables, modules, obstacles, ROOM, section, SPEEDS, STANDOFF, WINDOW } from './layout'
+import { ALARM_SCREEN, CEILING, choiceSpots, DASH, dialAngle, gauges, HATCHWAY, interactables, modules, obstacles, ROOM, section, SPEEDS, STANDOFF, START, WINDOW } from './layout'
+import { aimAt, type Vec3 } from '../fps/model'
 
 const config = getScenario('demo')!
 const state = { entities: catalogEntities(getDatasets(config.datasets)), params: { ...config.params, instruments: 'camera-basic,magnetometer' } as typeof config.params }
@@ -30,35 +31,29 @@ describe('walk-in spacecraft layout', () => {
     expect(list.find((m) => m.key === 'solar')!.part?.id).toBe(state.params.solar)
   })
 
-  it('puts an anomaly card’s choices at its console’s module, apart from each other', () => {
-    const radio = list.find((m) => m.key === 'comms')!
-    const spots = choiceSpots(card('comms-resources'), list)
-    expect(spots).toHaveLength(2)
-    for (const s of spots) expect(Math.hypot(s.at[0] - radio.at[0], s.at[2] - radio.at[2])).toBeLessThan(1.2)
-    expect(Math.hypot(spots[0]!.at[0] - spots[1]!.at[0], spots[0]!.at[2] - spots[1]!.at[2])).toBeGreaterThan(0.4)
-    // The radio faces -x, so you face +x and your right is +z: A stands left of B.
-    expect(spots[0]!.at[2]).toBeLessThan(spots[1]!.at[2])
-  })
-
-  it('choices at a module are not inside its pedestal (planning cards use the dashboard desk)', () => {
-    const boxes = obstacles(list).slice(4)
-    for (const role of ['spacecraft', 'comms-resources', 'science'])
-      for (const s of choiceSpots(card(role), list))
-        for (const b of boxes) expect(s.at[0] > b.min[0] && s.at[0] < b.max[0] && s.at[2] > b.min[2] && s.at[2] < b.max[2]).toBe(false)
-  })
-
-  it('keeps planning choices to the right of dashboard gauges, with a title above the cards', () => {
-    const spots = choiceSpots(card('mission-planning'), list)
-    for (const spot of spots) expect(spot.at[0] - 0.21).toBeGreaterThan(0)
-    for (const role of ['mission-planning', 'spacecraft', 'comms-resources', 'science']) {
-      const cards = choiceSpots(card(role), list)
-      expect(choiceTitleAt(cards)[1] - 0.1).toBeGreaterThan(Math.max(...cards.map((s) => s.at[1] + 0.21)))
+  it('puts an anomaly card’s choices on the window screen, A to the left, each one aimable from the door end of the room', () => {
+    for (const role of ['spacecraft', 'comms-resources', 'science', 'mission-planning']) {
+      const spots = choiceSpots(card(role))
+      for (const s of spots) {
+        expect(Math.abs(s.at[0] - WINDOW.x) + ALARM_SCREEN.w * 0.15).toBeLessThan(WINDOW.w / 2)
+        expect(Math.abs(s.at[1] - WINDOW.y)).toBeLessThan(WINDOW.h / 2)
+        expect(s.at[2]).toBeLessThan(DASH.z - DASH.depth / 2) // past the console, on the window
+      }
+      for (let i = 1; i < spots.length; i++) expect(spots[i]!.at[0] - spots[i - 1]!.at[0]).toBeGreaterThan(0.8)
+    }
+    const items = interactables({ send: () => {}, paused: false, speed: 1, decision: card('comms-resources') })
+    for (const id of ['option:d1:a', 'option:d1:b']) {
+      const it = items.find((i) => i.id === id)!
+      const eye: Vec3 = [START.pos[0], 1.7, START.pos[2] + 1]
+      const v = [it.at[0] - eye[0], it.at[1] - eye[1], it.at[2] - eye[2]]
+      const flat = Math.hypot(v[0]!, v[2]!)
+      expect(aimAt(eye, [v[0]! / flat, v[1]! / flat, v[2]! / flat], items)?.id).toBe(id)
     }
   })
 
   it('E on a choice answers the card; E on the lever pauses and speeds up', () => {
     const sent: Command[] = []
-    const items = interactables(list, { send: (c) => sent.push(c), paused: false, speed: 5, decision: card('comms-resources') })
+    const items = interactables({ send: (c) => sent.push(c), paused: false, speed: 5, decision: card('comms-resources') })
     items.find((i) => i.id === 'option:d1:b')!.use()
     expect(sent.at(-1)).toEqual({ type: 'resolve_decision', payload: { decision_id: 'd1', option_id: 'b' } })
     expect(items.find((i) => i.id === 'option:d1:a')!.label).toBe('Rent time on commercial')
@@ -74,7 +69,7 @@ describe('walk-in spacecraft layout', () => {
     expect(stops[0]).toBeCloseTo(-stops.at(-1)!)
     expect(Math.abs(stops[0]!)).toBeLessThan(Math.PI / 2) // every number stays on the far side of the knob, where it can be read
     for (const id of ['pause', 'speed']) {
-      const at = interactables(list, { send: () => {}, paused: false, speed: 1, decision: null }).find((i) => i.id === id)!.at
+      const at = interactables({ send: () => {}, paused: false, speed: 1, decision: null }).find((i) => i.id === id)!.at
       expect(Math.abs(at[0])).toBeLessThan(DASH.w / 2)
       expect(Math.abs(at[2] - DASH.z)).toBeLessThan(DASH.depth / 2)
     }
