@@ -39,10 +39,16 @@ const daily = dailyMissionForDate(now, configs.map(c => c.scenario_id))
   }} onStart={handleOrdinaryStart} />
 ```
 
-Daily button appears only in Solo mode when both descriptor and callback are supplied and the scenario exists. It validates/trims the same name, emits a separate DailyMissionRequest, and honors busy state. No new StartRequest variant or net/sim command was added. App must apply the specified seed before init; rendering the button alone does not establish daily gameplay. Selection is stable for an identical set of base scenario IDs; adding/removing IDs can change that day's chosen scenario, so ship one catalog revision for all players. This is a shared challenge, not a verified global leaderboard. Program progression/unlocks require scenario-order and star-progress inputs and are not invented here.
+Daily button appears on the menu step when both descriptor and callback are supplied and the scenario exists. It validates/trims the same name, emits a separate DailyMissionRequest, and honors busy state. No new StartRequest variant or net/sim command was added. App must apply the specified seed before init; rendering the button alone does not establish daily gameplay. Selection is stable for an identical set of base scenario IDs; adding/removing IDs can change that day's chosen scenario, so ship one catalog revision for all players. This is a shared challenge, not a verified global leaderboard. Program progression/unlocks require scenario-order and star-progress inputs and are not invented here.
 
-## Mission entry graphics
+## One choice per screen (claude@jamie, Jamie's request)
 
-The illustrated spacecraft/planet changes with the selected scenario. All artwork is local SVG/CSS; it is a conceptual illustration, not a physical orbit or NASA image. The mission program buttons and native scenario selector share the same selection. Order follows PROGRAM; unknown supplied scenarios remain available after the known program, in their original order. There are no fabricated completion stars or locked missions. Join mode disables local destination changes because the host owns the mission.
+The screen is four steps that fade into each other: **menu** (Start, daily mission) → **mission setup** (solo / host / join, name; joining ends here with the room code) → **mission** (one card per scenario with its Normal budget and goal; picking one moves on) → **difficulty** (three buttons, the level's budget and goal, Start mission). There are no dropdowns. Back returns one step and keeps every choice. `StartRequest`, the daily callback, `busy` and `error` are unchanged. `initialStep` opens a later step for previews and tests.
 
-Both light and dark themes use shared tokens. Mobile shows a compact version of the illustration and the same controls. No external image requests, new packages, app props, or integration changes are required.
+**Background:** the whole page sits on `SpaceView` from `ui/scene3d` in orbit mode (real NASA maps, the scenario's own spacecraft flying its starting orbit). It needs `entities` on the scenario, which is now an optional field of `StartScenario`; without it (or without WebGL) the page is plain black. The view ignores the pointer so the page scrolls as before. Text straight on the background is light in both themes; panels use the theme.
+
+**Diagrams:** `Diagram.tsx` shows one small moving diagram per step (mission plan, the four consoles, the trip, budget and goal bars). They are `aria-hidden` because the step's text says the same; hidden under 760 px.
+
+**Reduced motion:** steps swap with no fade and the diagrams hold still (the 3D view already stops turning). After each step change, focus moves to the new step's heading.
+
+The old SVG mission patch (`MissionArt`) is removed; the 3D view replaces it.
