@@ -9,6 +9,8 @@ import { roomLoop } from '../fps/room-loop'
 import { createFps, type Fps, type FpsOptions } from '../fps/controller'
 import { canvasScreen, font, partModel } from '../hangar/control'
 import { buildCraft, disposeObject } from '../scene3d/craft'
+import { planetMaps } from '../scene3d/maps'
+import { atmosphereShader, cloudShader, planetShader, toScreen } from '../scene3d/shaders'
 import type { CraftSpec } from '../scene3d/model'
 import type { Decision } from '../../shared'
 import { choiceSpots, DASH, moduleFor, ROOM, START, WINDOW, type Gauge, type Module } from './layout'
@@ -41,7 +43,8 @@ const MUTED = '#9fb0d4'
 const GOOD = '#63dbad'
 const BAD = '#ff6b5a'
 const GOLD = '#ffda8a'
-const WORLD_COLOUR: Record<string, number> = { earth: 0x2f6fd6, moon: 0x9a9a9a, mars: 0xc1502e }
+/** planetShader's uBody. */
+const WORLD_INDEX = { earth: 0, moon: 1, mars: 2 } as const
 
 function label(text: string, sub?: string, w = 512, h = 128) {
   const s = canvasScreen(w, h)
@@ -131,11 +134,32 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   const sun = new THREE.DirectionalLight(0xfff4e0, 3)
   sun.position.set(-40, 20, -30)
   scene.add(sun)
-  const worldMat = new THREE.MeshStandardMaterial({ color: WORLD_COLOUR.earth, roughness: 0.9 })
-  const world = new THREE.Mesh(new THREE.SphereGeometry(40, 64, 48), worldMat)
+  // The real planet (claude@ethan, ui/scene3d): NASA surface maps, city lights at night, clouds over Earth.
+  const uSun = { value: sun.position.clone().normalize() }
+  const uBody = { value: WORLD_INDEX.earth as number }
+  const worldMaps = planetMaps(renderer.capabilities.getMaxAnisotropy())
+  const worldMat = new THREE.ShaderMaterial({ ...toScreen(planetShader), uniforms: { uSun, uBody, ...worldMaps.maps.earth } })
+  const world = new THREE.Mesh(new THREE.SphereGeometry(40, 96, 64), worldMat)
   world.position.set(10, -38, -70)
   scene.add(world)
-  const atmosphere = new THREE.Mesh(new THREE.SphereGeometry(41.2, 64, 48), new THREE.MeshBasicMaterial({ color: 0x7fb2ff, transparent: true, opacity: 0.12, side: THREE.BackSide }))
+  const clouds = new THREE.Mesh(
+    new THREE.SphereGeometry(40.4, 96, 64),
+    new THREE.ShaderMaterial({ ...toScreen(cloudShader), uniforms: { uSun, uTime: { value: 0 } }, transparent: true, depthWrite: false }),
+  )
+  world.add(clouds)
+  // A soft glow of air around the limb, brightest on the sunlit side.
+  const uAir = { value: new THREE.Color(0.3, 0.55, 1) }
+  const atmosphere = new THREE.Mesh(
+    new THREE.SphereGeometry(41.2, 64, 48),
+    new THREE.ShaderMaterial({
+      ...toScreen(atmosphereShader),
+      uniforms: { uSun, uColor: uAir, uThickness: { value: Math.sqrt(1 - (40 / 41.2) ** 2) } },
+      side: THREE.BackSide,
+      blending: THREE.AdditiveBlending,
+      transparent: true,
+      depthWrite: false,
+    }),
+  )
   world.add(atmosphere)
 
   // ---- Dashboard: gauges, your spacecraft, the time controls.
@@ -322,8 +346,13 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
         mat.emissive.setHex(red ? 0xff3b2f : 0x63dbad)
         if (!red) mat.emissiveIntensity = 1
       }
-      worldMat.color.setHex(WORLD_COLOUR[s.body] ?? WORLD_COLOUR.earth!)
-      atmosphere.visible = s.body !== 'moon'
+      const body = s.body in WORLD_INDEX ? (s.body as keyof typeof WORLD_INDEX) : 'earth'
+      uBody.value = WORLD_INDEX[body]
+      Object.assign(worldMat.uniforms, worldMaps.maps[body])
+      clouds.visible = body === 'earth'
+      atmosphere.visible = body !== 'moon'
+      if (body === 'mars') uAir.value.setRGB(0.75, 0.45, 0.3)
+      else uAir.value.setRGB(0.3, 0.55, 1)
       worldTurn = (s.day / 365) * Math.PI * 2 * 6 // a few turns over a year: you can see it move at speed
       // Sim steps clone params; equal craft values must not rebuild GPU geometry every tick.
       const nextCraftKey = JSON.stringify(s.craft)
@@ -362,6 +391,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
       observer.disconnect()
       fps.dispose()
       disposeObject(scene)
+      worldMaps.dispose()
       envMap.dispose()
       renderer.dispose()
       renderer.domElement.remove()

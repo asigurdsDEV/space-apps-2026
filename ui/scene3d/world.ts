@@ -11,6 +11,7 @@ import { buildCraft, disposeObject } from './craft'
 import { cruiseLayout, transferArc, transferPoint } from './cruise'
 import { lapSeconds, orbitRadius, type Body, type SceneSpec } from './model'
 import { planetMaps } from './maps'
+import { steadyResolution } from './steady'
 import { atmosphereShader, cloudShader, planetShader } from './shaders'
 import { COMPANIONS, companionPosition, type Companion } from './sky'
 
@@ -373,8 +374,14 @@ export function createWorld(container: HTMLElement, initial: SceneSpec, options:
     }
   }
 
+  // Slower graphics chips get fewer pixels, not fewer frames (steady.ts).
+  const steady = steadyResolution((ratio) => {
+    renderer.setPixelRatio(ratio)
+    composer.setPixelRatio(ratio)
+  }, renderer.getPixelRatio())
   let last = performance.now()
   function frame(now: number) {
+    steady((now - last) / 1000)
     const dt = Math.min((now - last) / 1000, 0.1)
     last = now
     uTime.value += dt

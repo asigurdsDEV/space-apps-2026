@@ -112,8 +112,10 @@ void main() {
   float shore = p.x - 2200.0 + (big - 0.5) * 9000.0 * smoothstep(1500.0, 9000.0, r) + (mid - 0.5) * 500.0;
   float sea = max(smoothstep(-30.0, 30.0, shore), smoothstep(0.66, 0.68, fbm2(p * 0.00035 + 20.0)) * smoothstep(2500.0, 5000.0, r));
   float sand = smoothstep(-160.0, -30.0, shore) * (1.0 - sea);
-  vec3 scrub = mix(lin(vec3(0.20, 0.25, 0.14)), lin(vec3(0.33, 0.33, 0.20)), mid) * (0.7 + 0.6 * fine);
-  scrub = mix(scrub, lin(vec3(0.30, 0.29, 0.22)), smoothstep(0.55, 0.7, big));
+  // Florida's coast from the air: dark green scrub, darker marsh and stands of trees, paler grass.
+  vec3 scrub = mix(lin(vec3(0.13, 0.24, 0.11)), lin(vec3(0.30, 0.36, 0.18)), mid) * (0.7 + 0.6 * fine);
+  scrub *= 0.7 + 0.6 * smoothstep(0.35, 0.65, fbm2(p * 0.0009 + 7.0));
+  scrub = mix(scrub, lin(vec3(0.30, 0.31, 0.20)), smoothstep(0.55, 0.7, big));
   vec3 col = mix(scrub, lin(vec3(0.66, 0.60, 0.48)), sand);
   // Apron, a crawlerway to the west and a perimeter road.
   float road = (1.0 - smoothstep(uPad * 0.10, uPad * 0.12, abs(p.y + 0.0))) * step(p.x, 0.0) * step(-uPad * 14.0, p.x);
@@ -128,11 +130,14 @@ void main() {
   // Water: reflects the sky, with a glitter path toward the Sun.
   vec3 n = normalize(vec3((noise2(p * 0.05 + uTime * 0.3) - 0.5) * 0.16, 1.0, (noise2(p * 0.05 + 40.0 - uTime * 0.2) - 0.5) * 0.16));
   vec3 refl = reflect(-v, n);
-  vec3 water = lin(vec3(0.03, 0.07, 0.12)) + skyColor(vec3(refl.x, abs(refl.y), refl.z)) * 0.45;
+  // Turquoise over the sandy shallows and in the lagoons, deep blue a few hundred metres out.
+  vec3 water = mix(lin(vec3(0.10, 0.36, 0.36)), lin(vec3(0.02, 0.07, 0.15)), smoothstep(0.0, 900.0, shore)) * light + skyColor(vec3(refl.x, abs(refl.y), refl.z)) * 0.4;
   water += vec3(1.0, 0.6, 0.3) * pow(max(dot(refl, uSun), 0.0), 220.0) * 6.0;
   col = mix(col, water, sea);
+  // A line of white surf where the waves break.
+  col = mix(col, vec3(0.9) * light, (1.0 - smoothstep(12.0, 50.0, abs(shore - 30.0))) * (0.35 + 0.5 * noise2(p * 0.03 + uTime * 0.2)));
   // Haze toward the horizon; thinner when looking down from high up.
-  float haze = 1.0 - exp(-dist * mix(0.00006, 0.00002, smoothstep(2000.0, 20000.0, cameraPosition.y)));
+  float haze = 1.0 - exp(-dist * mix(0.00004, 0.000012, smoothstep(2000.0, 20000.0, cameraPosition.y)));
   col = mix(col, skyColor(vec3(-v.x, 0.0, -v.z)), haze);
   gl_FragColor = vec4(col, 1.0);
 }
@@ -467,8 +472,9 @@ void main() {
   // Lowest height the view ray reaches: the camera's own for rays going up, the grazing height for rays going down.
   float graze = r0 * sqrt(max(1.0 - d.y * d.y, 0.0)) - uRadius;
   float h = d.y >= 0.0 ? uAltitude : max(graze, 0.0);
-  float air = exp(-h / 16000.0) / (max(d.y, 0.0) + 0.06) * (1.0 + smoothstep(0.0, -0.03, d.y));
-  float glow = 1.0 - exp(-air * 0.45);
+  // Seen from orbit the air is a thin bright line on the horizon, not a wide band.
+  float air = exp(-h / 10000.0) / (max(d.y, 0.0) + 0.06) * (1.0 + smoothstep(0.0, -0.03, d.y));
+  float glow = 1.0 - exp(-air * 0.32);
   float day = 0.15 + 0.85 * smoothstep(-0.2, 0.3, uSun.y + 0.5 * dot(normalize(d.xz + 1e-5), normalize(uSun.xz + 1e-5)));
   vec3 col = mix(vec3(0.07, 0.2, 0.62), vec3(0.5, 0.74, 1.0), glow * glow) * glow * day * 1.3;
   float s = max(dot(d, uSun), 0.0);

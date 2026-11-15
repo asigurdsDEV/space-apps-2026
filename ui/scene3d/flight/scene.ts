@@ -12,6 +12,7 @@ import type { PilotIntent } from '../../pilot-input/model'
 import { buildCraft, disposeObject } from '../craft'
 import { makeStars } from '../launch/fx'
 import { planetMaps } from '../maps'
+import { steadyResolution } from '../steady'
 import { BODY_RADIUS_M, type Body, type CraftSpec } from '../model'
 import { atmosphereShader, cloudShader, planetShader } from '../shaders'
 import { chase, nextFocus, SPOTS, startPose, stepPose, type FlightTarget, type Vec3 } from './model'
@@ -232,7 +233,13 @@ export function createFlightScene(container: HTMLElement, options: FlightSceneOp
 
   // Frames come from requestAnimationFrame, so a hidden tab pauses the flight by itself; dt is capped for the frame after it comes back.
   let last = performance.now()
+  // Slower graphics chips get fewer pixels, not fewer frames (steady.ts).
+  const steady = steadyResolution((ratio) => {
+    renderer.setPixelRatio(ratio)
+    composer.setPixelRatio(ratio)
+  }, renderer.getPixelRatio())
   function frame(now: number) {
+    steady((now - last) / 1000)
     const dt = Math.min((now - last) / 1000, 0.1)
     last = now
     const { intent, scanning, done } = options.input()

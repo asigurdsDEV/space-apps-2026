@@ -10,6 +10,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js'
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { buildCraft, disposeObject } from '../craft'
 import { planetMaps } from '../maps'
+import { steadyResolution } from '../steady'
 import type { CraftSpec } from '../model'
 import { cloudShader, planetShader } from '../shaders'
 import { altitudeM, downrangeM, pitchRad, vacuum } from './flight'
@@ -656,7 +657,13 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
   let onScreen = true
   let ended = false
   let last = 0
+  // Slower graphics chips get fewer pixels, not fewer frames (steady.ts).
+  const steady = steadyResolution((ratio) => {
+    renderer.setPixelRatio(ratio)
+    composer.setPixelRatio(ratio)
+  }, renderer.getPixelRatio())
   function frame(stamp: number) {
+    steady((stamp - last) / 1000)
     // Capped so a tab switch does not skip a shot; high enough that a slow phone still runs in real time.
     const dt = Math.min((stamp - last) / 1000, 0.25)
     last = stamp
@@ -692,6 +699,19 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
     run()
   })
   visibility.observe(container)
+  // Compile every shader and upload every mesh now. Otherwise the first frame that shows the Earth, a dropped stage
+  // or the spacecraft stalls for a tenth of a second while the graphics chip catches up (measured: 100 to 130 ms).
+  const was = new Map<THREE.Object3D, [boolean, boolean]>()
+  scene.traverse((o) => {
+    was.set(o, [o.visible, o.frustumCulled])
+    o.visible = true
+    o.frustumCulled = false
+  })
+  composer.render()
+  for (const [o, [visible, culled]] of was) {
+    o.visible = visible
+    o.frustumCulled = culled
+  }
   resize()
 
   return {
