@@ -87,9 +87,9 @@ function falcon(spec: RocketSpec): RocketModel {
 
   barrel(st, upper, R, spec.s2.length, { base: WHITE, seams: [0.03, 0.42, 0.97, 0.22, 0.62, 0.8], panels: 3, rivets: [0.015, 0.985], frost: [[0.44, 0.95, 0.3]], roughness: 0.42, marks: [{ kind: 'door', u: 0.2, v: 0.43, size: 0.5, width: 0.7 }] })
   runUp(upper, k.dark, R, 0.5, 0.4, spec.s2.length * 0.95, 0.25)
-  // Merlin Vacuum: its bell nearly fills the interstage.
-  put(upper, tube(0.5, 0.9, 0.9, 16), k.metal, 0, -0.9)
-  engines(upper, k, st.heat.s2, [[0, 0]], 1.5, 3, -0.8, { seg: 24 })
+  // Merlin Vacuum under the tank's aft dome: its bell nearly fills the interstage.
+  put(upper, new THREE.SphereGeometry(R * 0.9, 24, 10, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2).scale(1, 0.3, 1), k.metal)
+  engines(upper, k, st.heat.s2, [[0, 0]], 1.5, 3, -1.3, { seg: 24, vac: true })
 
   const F = spec.fairing
   const fairing = fairingHalves(st, [[R, 0], [F.radius, 1.3], [F.radius, 7.6], ...ogive(F.radius, F.length - 7.6, 7.6, 0.14)], whiteFairing(st, F.radius, { seams: [0.1, 0.58], marks: [FLAG(0.25, 0.5, 1.5), ...row('vent', 4, 0.06, 0.18, 0.4, 0.125)] }))
@@ -97,7 +97,7 @@ function falcon(spec: RocketSpec): RocketModel {
   const core = { y: -1.4, radius: R * 0.85, propellant: 'kerolox' as const, engines: OCTAWEB, exit: 0.46 }
   return finish(st, {
     fairing, ...bay,
-    nozzles: { s1: core, booster: heavy ? core : null, s2: { y: -3.8, radius: 1.5, propellant: 'kerolox', engines: [[0, 0]], exit: 1.5 } },
+    nozzles: { s1: core, booster: heavy ? core : null, s2: { y: -4.3, radius: 1.5, propellant: 'kerolox', engines: [[0, 0]], exit: 1.5 } },
     footprint: heavy ? 3 * R + 0.9 : F.radius,
   })
 }
@@ -119,7 +119,7 @@ function electron(spec: RocketSpec): RocketModel {
   engines(stage1, k, st.heat.s1, rutherfords, 0.125, 0.32, -0.15, { seg: 12 })
 
   barrel(st, upper, R, spec.s2.length, { ...carbon, frost: [[0.06, 0.5, 0.7]], seams: [0.04, 0.52, 0.96], rivets: [0.02, 0.98] }, 0, 40)
-  engines(upper, k, st.heat.s2, [[0, 0]], 0.3, 0.95, -0.05, { seg: 16, heads: true })
+  engines(upper, k, st.heat.s2, [[0, 0]], 0.3, 0.95, -0.3, { seg: 16, vac: true })
   // Curie kick stage: a squat disc under the spacecraft that finishes the orbit.
   put(upper, tube(0.5, 0.5, 0.35, 24), k.dark, 0, spec.s2.length)
   put(upper, tube(0.52, 0.52, 0.06, 24), k.foil, 0, spec.s2.length + 0.15)
@@ -129,7 +129,7 @@ function electron(spec: RocketSpec): RocketModel {
   const bay = payloadBay(st, spec.s2.length + 0.35, spec.s2.length + F.length, R * 0.9, 0.35)
   return finish(st, {
     fairing, ...bay,
-    nozzles: { s1: { y: -0.47, radius: R * 0.85, propellant: 'kerolox', engines: rutherfords, exit: 0.125 }, booster: null, s2: { y: -1, radius: 0.3, propellant: 'kerolox', engines: [[0, 0]], exit: 0.3 } },
+    nozzles: { s1: { y: -0.47, radius: R * 0.85, propellant: 'kerolox', engines: rutherfords, exit: 0.125 }, booster: null, s2: { y: -1.25, radius: 0.3, propellant: 'kerolox', engines: [[0, 0]], exit: 0.3 } },
     footprint: R,
   })
 }
@@ -215,7 +215,7 @@ function vulcan(spec: RocketSpec): RocketModel {
   // Centaur V: bare stainless steel, two RL10 engines tucked inside the interstage.
   barrel(st, upper, R, spec.s2.length, { base: '#b9bcc2', seams: [0.05, 0.55, 0.95, ...welds(0.14, 0.86, 9)], panels: 6, rivets: [0.02, 0.98], frost: [[0.12, 0.9, 0.22]], roughness: 0.34, metalness: 0.85 }, 0, 56)
   const rl10s: [number, number][] = [[-1.05, 0], [1.05, 0]]
-  engines(upper, k, st.heat.s2, rl10s, 0.75, 2, -0.2, { seg: 20, heads: true })
+  engines(upper, k, st.heat.s2, rl10s, 0.75, 2, -1.3, { seg: 20, vac: true })
   put(upper, new THREE.SphereGeometry(R * 0.9, 24, 10, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2).scale(1, 0.35, 1), k.metal)
 
   const F = spec.fairing
@@ -226,7 +226,7 @@ function vulcan(spec: RocketSpec): RocketModel {
     nozzles: {
       s1: { y: -2.7, radius: R * 0.75, propellant: 'methalox', engines: be4s, exit: 0.95 },
       booster: { y: -1.3, radius: 0.62, propellant: 'solid', engines: [[0, 0]], exit: 0.62 },
-      s2: { y: -2.2, radius: 1.5, propellant: 'hydrolox', engines: rl10s, exit: 0.75 },
+      s2: { y: -3.3, radius: 1.5, propellant: 'hydrolox', engines: rl10s, exit: 0.75 },
     },
     footprint: R + B.radius * 2 + 0.2,
   })
@@ -254,7 +254,7 @@ function atlas(spec: RocketSpec): RocketModel {
   // Centaur: foam-insulated tanks under a bare steel forward ring; one RL10 inside the interstage.
   barrel(st, upper, top, spec.s2.length, { base: '#e6e1d4', bands: [[0.9, 1, '#b4b8be']], seams: [0.08, 0.55, 0.9], ribs: [[0.9, 1, 72]], rivets: [0.905, 0.995], grain: 0.5, roughness: 0.75 }, 0, 40)
   put(upper, new THREE.SphereGeometry(top * 0.95, 20, 8, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2).scale(1, 0.4, 1), k.metal)
-  engines(upper, k, st.heat.s2, [[0, 0]], 0.72, 1.9, -0.5, { seg: 20, heads: true })
+  engines(upper, k, st.heat.s2, [[0, 0]], 0.72, 1.9, -1.3, { seg: 20, vac: true })
 
   // 4 m fairing: a boat-tail up from the Centaur, a barrel, then a cone with a rounded cap.
   const F = spec.fairing
@@ -262,7 +262,7 @@ function atlas(spec: RocketSpec): RocketModel {
   const bay = payloadBay(st, spec.s2.length, spec.s2.length + F.length, F.radius * 0.9, 1)
   return finish(st, {
     fairing, ...bay,
-    nozzles: { s1: { y: -3, radius: 1.5, propellant: 'kerolox', engines: chambers, exit: 0.72 }, booster: null, s2: { y: -2.4, radius: 0.72, propellant: 'hydrolox', engines: [[0, 0]], exit: 0.72 } },
+    nozzles: { s1: { y: -3, radius: 1.5, propellant: 'kerolox', engines: chambers, exit: 0.72 }, booster: null, s2: { y: -3.2, radius: 0.72, propellant: 'hydrolox', engines: [[0, 0]], exit: 0.72 } },
     footprint: F.radius,
   })
 }
@@ -300,7 +300,7 @@ function delta(spec: RocketSpec): RocketModel {
   // The 5 m upper stage: only its foam-covered hydrogen tank shows; the oxygen tank and RL10 hang inside the interstage.
   barrel(st, upper, R, spec.s2.length, { ...DELTA_FOAM, seams: [0.04, 0.35, 0.66, 0.96] })
   put(upper, new THREE.SphereGeometry(1.6, 20, 12).scale(1, 0.6, 1), k.metal, 0, -0.5)
-  engines(upper, k, st.heat.s2, [[0, 0]], 1.05, 2.4, -1.3, { seg: 22, heads: true })
+  engines(upper, k, st.heat.s2, [[0, 0]], 1.05, 2.4, -1.75, { seg: 22, vac: true })
 
   const F = spec.fairing
   const fairing = fairingHalves(st, [[R, 0], [R, 12.2], ...ogive(R, F.length - 12.2, 12.2, 0.12)], whiteFairing(st, R, { seams: [0.02, 0.35, 0.64], panels: 3, marks: [FLAG(0.25, 0.5, 1.6)] }))
@@ -308,7 +308,7 @@ function delta(spec: RocketSpec): RocketModel {
   const rs68 = { y: -3.8, radius: 1.2, propellant: 'hydrolox' as const, engines: [[0, 0]] as [number, number][], exit: 1.2 }
   return finish(st, {
     fairing, ...bay,
-    nozzles: { s1: rs68, booster: rs68, s2: { y: -3.7, radius: 1.05, propellant: 'hydrolox', engines: [[0, 0]], exit: 1.05 } },
+    nozzles: { s1: rs68, booster: rs68, s2: { y: -4.15, radius: 1.05, propellant: 'hydrolox', engines: [[0, 0]], exit: 1.05 } },
     footprint: 3 * R + 0.25,
   })
 }
@@ -361,7 +361,7 @@ function sls(spec: RocketSpec): RocketModel {
   const icps = 4.5
   barrel(st, upper, spec.s2.radius, icps, { base: '#e8e4da', seams: [0.06, 0.5, 0.94], grain: 0.4, rivets: [0.03, 0.97], roughness: 0.6 })
   put(upper, new THREE.SphereGeometry(1.6, 20, 12).scale(1, 0.65, 1), k.metal, 0, -1.2)
-  engines(upper, k, st.heat.s2, [[0, 0]], 1.07, 2.4, -2.2, { seg: 22, heads: true })
+  engines(upper, k, st.heat.s2, [[0, 0]], 1.07, 2.4, -2.9, { seg: 22, vac: true })
   // Orion stage adapter ring, where Artemis I carried its CubeSats.
   barrel(st, upper, spec.s2.radius, spec.s2.length - icps, { base: '#dfe1e4', seams: [0.1, 0.9], rivets: [0.05, 0.95], marks: row('door', 6, 0.5, 0.5, 0.7) }, icps)
 
@@ -389,7 +389,7 @@ function sls(spec: RocketSpec): RocketModel {
     nozzles: {
       s1: { y: -4, radius: R * 0.7, propellant: 'hydrolox', engines: rs25s, exit: 1.15 },
       booster: { y: -2.6, radius: 1.9, propellant: 'solid', engines: [[0, 0]], exit: 1.9 },
-      s2: { y: -4.6, radius: 1.07, propellant: 'hydrolox', engines: [[0, 0]], exit: 1.07 },
+      s2: { y: -5.3, radius: 1.07, propellant: 'hydrolox', engines: [[0, 0]], exit: 1.07 },
     },
     footprint: R + 2 * r + 0.25 + r * 0.43,
   })

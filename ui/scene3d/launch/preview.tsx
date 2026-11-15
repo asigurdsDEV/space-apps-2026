@@ -11,6 +11,8 @@ import { catalogEntities } from '../../../sim/parts'
 import type { Params } from '../../../shared'
 import { showHangar } from './hangar'
 import { LaunchView } from './LaunchView'
+import { sceneSpec } from '../model'
+import { launchTimeline } from './timeline'
 import { KNOWN, rocketSpec } from './vehicles'
 
 const query = new URLSearchParams(location.search)
@@ -26,6 +28,8 @@ for (const key of ['bus', 'solar', 'comms', 'instruments', 'orbit'] as const) {
 }
 params.launch_vehicle = query.get('vehicle') ?? String(params.launch_vehicle ?? 'falcon-9')
 const vehicles = entities.filter((e) => e.kind === 'launch_vehicle')
+const shot = launchTimeline(rocketSpec(vehicles.find((v) => v.id === params.launch_vehicle))).stages.find((s) => s.id === query.get('stage'))
+const startAt = shot ? shot.start + (shot.end - shot.start) * Number(query.get('p') ?? 0.5) : Number(query.get('t') ?? 0) || 0
 
 function Preview() {
   const [doneCount, setDoneCount] = useState(0)
@@ -40,7 +44,7 @@ function Preview() {
         state={{ entities, params }}
         failed={query.get('failed') === '1'}
         paused={query.get('paused') === '1'}
-        startAt={Number(query.get('t') ?? 0) || 0}
+        startAt={startAt}
         reducedMotion={query.get('still') === '1' ? true : undefined}
         onDone={() => setDoneCount((n) => n + 1)}
         className="preview-full"
@@ -65,7 +69,7 @@ if (lineup) {
   const num = (key: string, fallback: number) => Number(query.get(key) ?? fallback)
   showHangar(document.getElementById('root')!, ids.map((id) => rocketSpec(entities.find((e) => e.id === id) ?? { id, name: id, props: { payload_leo_kg: 8000 } })), {
     yaw: num('yaw', 14), pitch: num('pitch', 4), zoom: num('zoom', 1), cx: num('cx', 0.5), cy: num('cy', 0.5),
-  })
+  }, query.get('open') ? sceneSpec({ entities, params }).craft : undefined, query.get('open') === '2')
 } else {
   createRoot(document.getElementById('root')!).render(<StrictMode><Preview /></StrictMode>)
 }
