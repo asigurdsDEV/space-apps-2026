@@ -378,7 +378,7 @@ void main() {
   // where this line of sight passes closest to the ground; deep in the night the plain rim returns.
   float low = dot(normalize(n - v * dot(n, v) + 1e-5), uSun); // + 1e-5: never the zero vector, whose normal is not a number
   float dusk = uSunset * (1.0 - smoothstep(-0.05, 0.15, low)) * smoothstep(-0.6, -0.3, low);
-  vec3 arc = mix(vec3(0.2, 0.45, 1.0), vec3(1.0, 0.4, 0.1), smoothstep(0.7, 0.98, depth)) * pow(depth, 10.0) * 0.6 * smoothstep(-0.5, 0.0, low);
+  vec3 arc = mix(vec3(0.2, 0.45, 1.0), vec3(1.0, 0.4, 0.1), smoothstep(0.88, 0.995, depth)) * pow(depth, 14.0) * 0.4 * smoothstep(-0.5, 0.0, low);
   gl_FragColor = vec4(mix(tint * glow * day * 1.8, arc, dusk), 1.0);
 }
 `,
@@ -408,8 +408,10 @@ void main() {
   vec3 ray = normalize(vWorldPos - cameraPosition);
   float b = dot(eye, ray);
   vec3 glow = vec3(0.0);
+  // A different start height per pixel, so edge-on at the limb the four samples blend into one layer instead of four lines.
+  float j = fract(52.9829189 * fract(dot(gl_FragCoord.xy, vec2(0.06711056, 0.00583715))));
   for (int i = 0; i < 4; i++) {
-    float h = float(i) / 3.0;
+    float h = (float(i) + j) / 4.0;
     float r = mix(1.016, 1.055, h);
     float inside = b * b - dot(eye, eye) + r * r;
     if (inside <= 0.0) continue;
