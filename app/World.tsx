@@ -23,6 +23,7 @@ import { useSession } from './useSession'
 import { hasWebGL } from './Walk'
 import { WorldMenu } from './WorldMenu'
 import { launchCause, tryAgain, WhatWentWrong } from './WhatWentWrong'
+import { MissionReview } from './MissionReview'
 import { useRisingSound } from '../ui/audio/moments'
 import { CampaignResult } from '../ui/campaign/CampaignBoard'
 import { designGuide } from '../ui/campaign/model'
@@ -76,14 +77,17 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
   const fault = ended ? String(state.metrics.fault ?? '') : ''
   const [watched, setWatched] = useState(false)
   const [wrongClosed, setWrongClosed] = useState(false)
+  const [reviewClosed, setReviewClosed] = useState(false)
   useEffect(() => {
     if (phase !== 'design') return
     setWatched(false)
     setWrongClosed(false)
+    setReviewClosed(false)
   }, [phase])
   const wrongOpen = fault !== '' && watched && !wrongClosed && !cutscene
+  // After "What went wrong", a guided mission's funding card comes up in the Mission menu; every other ending gets the review.
   useEffect(() => {
-    if (ended && active.campaign && !cutscene && !(fault && !wrongClosed)) setMenuOpen(true)
+    if (ended && active.campaign && !cutscene && fault && wrongClosed) setMenuOpen(true)
   }, [ended, active.campaign, cutscene, fault, wrongClosed])
 
   // "What would have fixed it": the flown mission rerun with every single change, once, when it ends.
@@ -126,6 +130,11 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
   }, [ended, fixes])
 
   const flying = !ended && phase !== 'design'
+  const reviewOpen = ended && !fault && !!summary && !reviewClosed && !cutscene
+  const tryFix = (fix: { params?: SimState['params'] }) => {
+    session.send({ type: 'reset', payload: {} })
+    for (const [key, value] of Object.entries(fix.params ?? {})) session.send({ type: 'set_param', payload: { key, value } })
+  }
 
   // Cutscenes and the launch hold the mission clock in solo, so nothing happens unseen (as the 2D flight does).
   // Online the clock is shared by the whole crew, so it keeps running there.
@@ -209,7 +218,7 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
   }
   // No menu while the launch still covers the room, as during the launch: it would hold the clock, and the first step with it.
   const menu = (
-    <WorldMenu open={menuOpen} disabled={cutscene || launchCover || wrongOpen} onOpenChange={setMenuOpen}
+    <WorldMenu open={menuOpen} disabled={cutscene || launchCover || wrongOpen || reviewOpen} onOpenChange={setMenuOpen}
       online={roomCode !== null}
       onTraining={canTrain ? () => { setMenuOpen(false); setMoonSurface(false); setTraining(true) } : undefined}
       onClassic={() => { setMenuOpen(false); setClassic(true) }}
@@ -218,7 +227,7 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
         onContinue={onCampaignNext} onBoard={onExit} />}
     </WorldMenu>
   )
-  const enabled = !cutscene && !menuOpen
+  const enabled = !cutscene && !menuOpen && !reviewOpen
 
   // Same element before and after the launch ends, so the room mounts under it without remounting the launch.
   const launch = (!launched || launchCover) && (
@@ -323,6 +332,12 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
         callout={ended ? null : callout}
         shown={fault ? ['ending-loss'] : undefined}
       />
+      {reviewOpen && summary && (
+        <MissionReview state={state} summary={summary} title={config.title} bonusGoal={bonusGoal} fixes={fixes}
+          onCommand={session.send} onTryFix={tryFix} onBack={() => setReviewClosed(true)}>
+          {active.campaign && <CampaignResult missionId={active.campaign} success={summary.outcome === 'success'} onContinue={onCampaignNext} onBoard={onExit} />}
+        </MissionReview>
+      )}
       {wrongOpen && <WhatWentWrong state={state} campaign={!!active.campaign} onTryAgain={() => tryAgain(session.send, state.params)}
         onExit={onExit} onBack={() => setWrongClosed(true)} />}
     </div>

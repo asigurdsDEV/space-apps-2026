@@ -425,3 +425,9 @@ h1.app-bar-title {
 /* Classic builder: "Launch anyway" right under the builder's Launch column. */
 .app-anyway { display: flex; justify-content: flex-end; padding: 0 24px; }
 .app-anyway .gng-anyway { width: min(380px, 100%); justify-content: flex-end; }
+
+/* The mission review (app/MissionReview.tsx): the Classic results screen in a dialog in the Mission menu's look, wide enough for its cards. */
+.app-review.mv-root { width: min(760px, calc(100vw - 32px)); min-height: 0; padding: 20px; background: var(--game-glass); }
+.app-review.mv-root h1 { margin-bottom: 12px; }
+.app-review .mv button { width: auto; margin-top: 0; }
+.app-review .campaign-result { margin-top: 16px; }

@@ -119,7 +119,7 @@ try {
   at('fly: answer each alarm with option A, speed up')
   const deadline = Date.now() + 15 * 60_000
   let alarms = 0
-  while (!(await page.locator('dialog[open]').count())) { // the campaign result opens the menu when the mission ends
+  while (!(await page.locator('dialog[open]').count())) { // the mission review (with the campaign result) opens when the mission ends
     if (Date.now() > deadline) throw new Error(`the mission did not end in 15 minutes (${alarms} alarms answered)`)
     if (await page.locator('.st-cutscene').count()) { await page.waitForTimeout(1000); continue } // let cutscenes play
     if (!(await page.locator('.app-world-view canvas').count())) { await page.waitForTimeout(1000); continue }

@@ -28,5 +28,11 @@ describe('World', () => {
     for (let i = 0; i < 100; i++) game.advance(1000)
     expect(session.getSnapshot().state.status).toBe('ended')
     expect(bar()).not.toMatch(button) // back in mission control for the debrief
+    // The review comes up by itself: grade, score out of 1000, and the way back to the hall.
+    const review = bar()
+    expect(review).toContain('Mission review')
+    expect(review).toMatch(/aria-label="Grade [A-F]"/)
+    expect(review).toMatch(/<strong>\d+<\/strong> \/ 1000/)
+    expect(review).toContain('Back to Mission Control')
   })
 })
