@@ -66,7 +66,7 @@ function glyph(edge: boolean, ring = false): THREE.CanvasTexture {
   return new THREE.CanvasTexture(canvas)
 }
 
-interface Tag { el: HTMLElement; at: THREE.Vector3; x: number; y: number; shown: boolean; width: number; flipped: boolean }
+interface Tag { el: HTMLElement; at: THREE.Vector3; x: number; y: number; shown: boolean; width: number; flipped: boolean; shift: number }
 
 /** Throws when the browser cannot give a WebGL context. */
 export function createLiveScene(container: HTMLElement, options: LiveSceneOptions): LiveScene {
@@ -153,7 +153,7 @@ export function createLiveScene(container: HTMLElement, options: LiveSceneOption
     el.textContent = text
     el.style.visibility = 'hidden'
     tagLayer.appendChild(el)
-    return { el, at: new THREE.Vector3(), x: NaN, y: NaN, shown: false, width: el.offsetWidth, flipped: false }
+    return { el, at: new THREE.Vector3(), x: NaN, y: NaN, shown: false, width: el.offsetWidth, flipped: false, shift: 0 }
   }
   const pickedTag = tag('le-tag le-tag--picked', '')
   let stormTags: Tag[] = []
@@ -276,6 +276,24 @@ export function createLiveScene(container: HTMLElement, options: LiveSceneOption
     }
     t.el.style.transform = `translate(${x}px, ${y}px)`
   }
+  const leftOf = (t: Tag) => (t.flipped ? t.x - 15 - t.width : t.x + 15)
+  /** A storm's name that would lie on the picked satellite's or an earlier storm's moves just clear of it, up or down, so both can be read. */
+  function spread(): void {
+    for (let i = 0; i < stormTags.length; i++) {
+      const t = stormTags[i]
+      if (!t.shown) continue
+      let shift = 0
+      for (let j = -1; j < i; j++) {
+        const other = j < 0 ? pickedTag : stormTags[j]
+        if (!other.shown || leftOf(t) >= leftOf(other) + other.width || leftOf(other) >= leftOf(t) + t.width) continue
+        const apart = t.y + shift - other.y - other.shift
+        if (Math.abs(apart) < 21) shift += (apart < 0 ? -1 : 1) * (22 - Math.abs(apart)) // a name is 20 px tall
+      }
+      if (shift === t.shift) continue
+      t.shift = shift
+      t.el.style.marginTop = shift ? `calc(-0.8em + ${shift}px)` : ''
+    }
+  }
 
   // A click or tap that is not a drag picks the nearest satellite dot.
   const local = new THREE.Vector3()
@@ -330,6 +348,7 @@ export function createLiveScene(container: HTMLElement, options: LiveSceneOption
     renderer.render(scene, camera)
     place(pickedTag, shown.satellites && picked >= 0)
     for (const t of stormTags) place(t, shown.storms)
+    spread()
     steady(dt_s)
   }
   raf = requestAnimationFrame(frame)

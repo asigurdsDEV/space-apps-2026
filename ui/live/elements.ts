@@ -49,7 +49,7 @@ export function parseElements(body: unknown): Row[] {
     const row = FIELDS.map((field) => item[field]) as Row
     const [name, , epoch, meanMotion, eccentricity] = row
     const numbers = row.every((value, i) => (i === 0 || i === 2 ? typeof value === 'string' : typeof value === 'number' && Number.isFinite(value)))
-    if (!numbers || !name || !EPOCH.test(epoch as string)) continue
+    if (!numbers || !name || (name as string).length > 40 || !EPOCH.test(epoch as string)) continue
     if ((meanMotion as number) <= 0 || (eccentricity as number) < 0 || (eccentricity as number) >= 1) continue
     rows.push(row)
   }

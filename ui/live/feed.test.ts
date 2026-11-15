@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { feed, forgetFeeds, OFFLINE, RETRY_MS, STALE_PERIODS, type FeedSpec } from './feed'
+import { feed, forgetFeeds, OFFLINE, REREAD_MS, RETRY_MS, STALE_PERIODS, type FeedSpec } from './feed'
 
 const HOUR = 3_600_000
 const SPEC: FeedSpec<{ n: number }> = {
@@ -67,6 +67,17 @@ describe('polite feed cache', () => {
     expect(await feed(SPEC)).toMatchObject({ ok: false })
     expect(calls).toBe(1)
     vi.setSystemTime(Date.now() + RETRY_MS + 1)
+    expect(await feed(SPEC)).toMatchObject({ ok: true, data: { n: 3 } })
+    expect(calls).toBe(2)
+  })
+
+  it('asks again a minute after an answer it could not read (a file caught mid-rewrite)', async () => {
+    respond = () => Promise.resolve(new Response('{"n": 3'))
+    expect(await feed(SPEC)).toMatchObject({ ok: false, reason: 'Test feed sent data this screen could not read.' })
+    respond = json({ n: 3 })
+    expect(await feed(SPEC)).toMatchObject({ ok: false })
+    expect(calls).toBe(1)
+    vi.setSystemTime(Date.now() + REREAD_MS + 1)
     expect(await feed(SPEC)).toMatchObject({ ok: true, data: { n: 3 } })
     expect(calls).toBe(2)
   })

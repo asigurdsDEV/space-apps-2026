@@ -23,20 +23,24 @@ export function parseStorms(body: unknown): Storm[] {
   const events = (body as { events?: unknown } | null)?.events
   if (!Array.isArray(events)) throw new Error('no event list')
   const storms: Storm[] = []
+  const seen = new Set<string>()
   for (const event of events as Record<string, unknown>[]) {
     const points = Array.isArray(event?.geometry) ? (event.geometry as Record<string, unknown>[]) : []
     const point = points.filter((p) => p?.type === 'Point' && typeof p.date === 'string' && !Number.isNaN(Date.parse(p.date))).sort((a, b) => Date.parse(a.date as string) - Date.parse(b.date as string)).at(-1)
     const [lon, lat] = Array.isArray(point?.coordinates) ? (point.coordinates as unknown[]) : []
-    if (!point || typeof event.id !== 'string' || typeof event.title !== 'string' || !event.title) continue
+    if (!point || typeof event.id !== 'string' || seen.has(event.id) || typeof event.title !== 'string' || !event.title.trim()) continue
     if (typeof lat !== 'number' || typeof lon !== 'number' || Math.abs(lat) > 90 || Math.abs(lon) > 180) continue
+    seen.add(event.id)
+    const wind = point.magnitudeValue
     storms.push({
       id: event.id,
-      name: event.title,
+      // The feed is not ours: a name is kept to one short line, and a wind no storm has reached is left out.
+      name: event.title.trim().slice(0, 60),
       lat,
       lon,
       at: new Date(point.date as string).toISOString(),
-      windKts: point.magnitudeUnit === 'kts' && typeof point.magnitudeValue === 'number' ? point.magnitudeValue : null,
-      link: typeof event.link === 'string' ? event.link : 'https://eonet.gsfc.nasa.gov/',
+      windKts: point.magnitudeUnit === 'kts' && typeof wind === 'number' && wind > 0 && wind < 250 ? wind : null,
+      link: typeof event.link === 'string' && event.link.startsWith('https://eonet.gsfc.nasa.gov/') ? event.link : 'https://eonet.gsfc.nasa.gov/',
     })
   }
   return storms

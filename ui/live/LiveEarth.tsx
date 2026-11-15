@@ -216,7 +216,7 @@ export default function LiveEarth({ onClose }: { onClose: () => void }) {
               <p className="le-source">
                 NOAA SWPC · {[...new Set([
                   weather.kp.ok ? `Kp for the 3 hours from ${timeText(weather.kp.asOf)}` : weather.kp.reason,
-                  weather.flare.ok ? `flare peaked ${whenText(weather.flare.data.peakAt)}` : weather.flare.reason,
+                  weather.flare.ok ? (weather.flare.data.peakAt ? `flare peaked ${whenText(weather.flare.data.peakAt)}` : `flare still rising at ${timeText(weather.flare.data.measuredAt)}`) : weather.flare.reason,
                 ])].join(' · ')}
               </p>
             )}

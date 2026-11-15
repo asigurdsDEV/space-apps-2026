@@ -20,10 +20,10 @@ export interface KpNow {
 }
 
 export interface FlareNow {
-  /** Peak class of the most recent flare, for example "C1.0" or "X2.3". */
+  /** Peak class of the most recent flare, for example "C1.0" or "X2.3"; the level now while that flare is still rising. */
   flareClass: string
-  /** ISO UTC time of that peak. */
-  peakAt: string
+  /** ISO UTC time of that peak, or null while the flare is still rising. */
+  peakAt: string | null
   /** The Sun's X-ray level at the last measurement, same scale. */
   nowClass: string
   /** ISO UTC time of that measurement. */
@@ -51,16 +51,19 @@ export function parseKp(body: unknown): KpNow {
   return { kp, g, label: g || kp < 3 ? G_LABELS[g] : kp < 4 ? 'unsettled' : 'active', from: new Date(utc(last.time_tag)).toISOString() }
 }
 
-const FLARE_CLASS = /^[ABCMX]\d+(\.\d+)?$/
+const FLARE_CLASS = /^[ABCMX]\d{1,3}(\.\d{1,2})?$/
 
 /** xray-flares-latest.json: one record with the last flare's peak and the current level. */
 export function parseFlare(body: unknown): FlareNow {
   const record = (Array.isArray(body) ? body[0] : null) as Record<string, unknown> | null
   if (!record) throw new Error('no flare record')
-  const { max_class, max_time, current_class, time_tag } = record
-  if (typeof max_class !== 'string' || !FLARE_CLASS.test(max_class) || !isTime(max_time)) throw new Error('no flare peak')
+  const { max_class, max_time, current_class, time_tag, begin_time } = record
   if (typeof current_class !== 'string' || !FLARE_CLASS.test(current_class) || !isTime(time_tag)) throw new Error('no current level')
-  return { flareClass: max_class, peakAt: new Date(utc(max_time)).toISOString(), nowClass: current_class, measuredAt: new Date(utc(time_tag)).toISOString() }
+  const measuredAt = new Date(utc(time_tag)).toISOString()
+  // NOAA writes "Unk" and null for what a flare in progress has not reached yet: one that has begun has no peak for its first minutes.
+  if (max_class === null && max_time === 'Unk' && isTime(begin_time)) return { flareClass: current_class, peakAt: null, nowClass: current_class, measuredAt }
+  if (typeof max_class !== 'string' || !FLARE_CLASS.test(max_class) || !isTime(max_time)) throw new Error('no flare peak')
+  return { flareClass: max_class, peakAt: new Date(utc(max_time)).toISOString(), nowClass: current_class, measuredAt }
 }
 
 const KP: FeedSpec<KpNow> = { key: 'kp', url: KP_URL, source: SWPC, sourceUrl: SWPC_URL, ttlMs: TTL_MS, parse: parseKp, asOf: (kp) => kp.from }

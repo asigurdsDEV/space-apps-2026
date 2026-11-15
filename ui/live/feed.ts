@@ -33,6 +33,8 @@ export interface FeedSpec<T> {
 export const TIMEOUT_MS = 12_000
 /** After a failed request, leave that feed alone this long. */
 export const RETRY_MS = 10 * 60_000
+/** After an answer that arrived but could not be read: usually a file caught while it was being rewritten, good again within a minute. */
+export const REREAD_MS = 60_000
 /** After a failed refresh, an older answer is still shown (with its real times) up to this many refresh periods. */
 export const STALE_PERIODS = 24
 export const OFFLINE = 'Live data needs a connection.'
@@ -42,7 +44,7 @@ const PREFIX = 'live-earth:1:'
 interface Saved<T> { at: number; data: T }
 
 const memory = new Map<string, Saved<unknown>>()
-const failures = new Map<string, { at: number; reason: string }>()
+const failures = new Map<string, { until: number; reason: string }>()
 const inflight = new Map<string, Promise<Feed<unknown>>>()
 
 export const unavailable = (spec: { source: string; sourceUrl: string }, reason: string): Feed<never> =>
@@ -89,9 +91,11 @@ async function refresh<T>(spec: FeedSpec<T>, old: Saved<T> | undefined): Promise
     old && Date.now() - old.at < spec.ttlMs * STALE_PERIODS ? answer(spec, old) : unavailable(spec, reason)
   // Offline is not a failed request: nothing was asked, so nothing holds back the next try.
   if (globalThis.navigator?.onLine === false) return fallback(OFFLINE)
+  let arrived = false
   try {
     // NOAA's flare file is rewritten in place and sometimes ends in a stray NUL byte (seen 2026-11-15), which JSON.parse refuses.
     const text = (await (await get(spec.url, spec.source)).text()).replace(/\0+$/, '')
+    arrived = true
     const saved: Saved<T> = { at: 0, data: spec.parse(JSON.parse(text)) }
     saved.at = Date.now()
     memory.set(spec.key, saved)
@@ -100,7 +104,7 @@ async function refresh<T>(spec: FeedSpec<T>, old: Saved<T> | undefined): Promise
     return answer(spec, saved)
   } catch (error) {
     const reason = failureReason(error, spec.source)
-    failures.set(spec.key, { at: Date.now(), reason })
+    failures.set(spec.key, { until: Date.now() + (arrived ? REREAD_MS : RETRY_MS), reason })
     return fallback(reason)
   }
 }
@@ -113,7 +117,7 @@ export function feed<T>(spec: FeedSpec<T>, signal?: AbortSignal): Promise<Feed<T
   const saved = read<T>(spec.key)
   if (saved && Date.now() - saved.at < spec.ttlMs) return Promise.resolve(answer(spec, saved))
   const failed = failures.get(spec.key)
-  if (failed && Date.now() - failed.at < RETRY_MS) {
+  if (failed && Date.now() < failed.until) {
     return Promise.resolve(saved && Date.now() - saved.at < spec.ttlMs * STALE_PERIODS ? answer(spec, saved) : unavailable(spec, failed.reason))
   }
   let job = inflight.get(spec.key) as Promise<Feed<T>> | undefined

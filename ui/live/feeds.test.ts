@@ -27,7 +27,7 @@ describe('CelesTrak elements', () => {
 
   it('drops damaged objects and refuses a body with nothing usable', () => {
     const iss = stations[0]
-    expect(parseElements([iss, { ...iss, MEAN_MOTION: 'fast' }, { ...iss, ECCENTRICITY: 1.2 }, { ...iss, EPOCH: 'soon' }, null, { OBJECT_NAME: 'X' }])).toHaveLength(1)
+    expect(parseElements([iss, { ...iss, MEAN_MOTION: 'fast' }, { ...iss, ECCENTRICITY: 1.2 }, { ...iss, EPOCH: 'soon' }, { ...iss, OBJECT_NAME: 'X'.repeat(41) }, null, { OBJECT_NAME: 'X' }])).toHaveLength(1)
     expect(() => parseElements([])).toThrow()
     expect(() => parseElements({ error: 'GP data has not updated' })).toThrow()
     expect(() => parseElements('No GP data found')).toThrow()
@@ -66,6 +66,13 @@ describe('space weather', () => {
     expect(() => parseFlare([])).toThrow()
     expect(() => parseFlare([{ ...flare[0], max_class: 'huge' }])).toThrow()
     expect(() => parseFlare([{ ...flare[0], max_time: null }])).toThrow()
+    expect(() => parseFlare([{ ...flare[0], max_class: `X${'9'.repeat(40)}` }])).toThrow()
+  })
+
+  it('reads a flare that has begun but not peaked as the level now', () => {
+    const rising = { ...flare[0], time_tag: '2026-11-15T12:00:00Z', current_class: 'B7.9', begin_time: '2026-11-15T11:55:00Z', max_time: 'Unk', max_class: null, end_time: 'Unk', end_class: null }
+    expect(parseFlare([rising])).toEqual({ flareClass: 'B7.9', peakAt: null, nowClass: 'B7.9', measuredAt: '2026-11-15T12:00:00.000Z' })
+    expect(() => parseFlare([{ ...rising, begin_time: 'Unk' }])).toThrow()
   })
 })
 
@@ -82,6 +89,20 @@ describe('storms', () => {
     expect(parseStorms({ events: [{ id: 'a', title: 'Shape', geometry: [{ type: 'Polygon', date: '2026-11-11T12:00:00Z', coordinates: [[1, 2]] }] }, { id: 'b', title: 'Nowhere', geometry: [] }, { id: 'c', title: 'Off the map', geometry: [{ type: 'Point', date: '2026-11-11T12:00:00Z', coordinates: [10, 95] }] }] })).toEqual([])
     expect(() => parseStorms({ title: 'EONET Events' })).toThrow()
     expect(() => parseStorms(null)).toThrow()
+  })
+
+  it('does not trust the feed: one marker per id, a short name, a wind a storm can have, its own links only', () => {
+    const [cempaka] = eonet.events
+    const point = cempaka.geometry.at(-1)!
+    const hostile = { events: [
+      { ...cempaka, title: `  ${'Typhoon '.repeat(40)}`, link: 'javascript:alert(1)', geometry: [{ ...point, magnitudeValue: 1e300 }] },
+      { ...cempaka, title: 'The same id again' },
+      { ...cempaka, id: 'blank', title: '   ' },
+    ] }
+    const storms = parseStorms(hostile)
+    expect(storms).toHaveLength(1)
+    expect(storms[0].name).toHaveLength(60)
+    expect(storms[0]).toMatchObject({ windKts: null, link: 'https://eonet.gsfc.nasa.gov/' })
   })
 })
 

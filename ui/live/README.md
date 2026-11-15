@@ -108,7 +108,7 @@ interface Satellites { list: Satellite[]; missing: string[] }                // 
 interface Satellite { id: number; name: string; does: string; elements: Elements }
 interface Debris { objects: Elements[]; clouds: { name: string; cause: string; count: number | null }[] }
 interface KpNow { kp: number; g: 0 | 1 | 2 | 3 | 4 | 5; label: string; from: string }
-interface FlareNow { flareClass: string; peakAt: string; nowClass: string; measuredAt: string }
+interface FlareNow { flareClass: string; peakAt: string | null; nowClass: string; measuredAt: string } // peakAt null: still rising, flareClass is the level now
 interface Storm { id: string; name: string; lat: number; lon: number; at: string; windKts: number | null; link: string }
 
 interface Orbits extends Tracked {
@@ -191,5 +191,6 @@ Kp comes with NOAA's storm level: `g` 0 to 5 and a label (below storm level: und
 
 - No check that a day's picture is complete beyond its file size; a day with one missing orbit would still be shown.
 - The Cache Storage copy of the picture and the `localStorage` copies of the feeds are never cleared except by being replaced.
-- A feed that fails is left alone for ten minutes in the same visit; a reload asks again.
-- Not seen: how `xray-flares-latest.json` looks while a flare is still rising. If its peak fields are empty then, the flare item reads unavailable until the flare ends.
+- A feed that cannot be reached is left alone for ten minutes in the same visit, and one whose answer could not be read for one minute; a reload asks again.
+- Not seen: how `xray-flares-latest.json` looks while a flare is still rising. At 12:05 UTC on 2026-11-15, as a new flare was first listed, the screen could not read the file once; a minute later it could. The file writes `"Unk"` and `null` for the end of a flare that has not ended, so `parseFlare` takes the same for a peak not yet reached and shows the level now ("flare still rising at 12:00 UTC"). If the cause was a half-written file instead, the one-minute rule above covers it.
+- Feed text is not trusted: a storm's name is cut to 60 characters, a wind of 250 knots or more is left out, a second event with the same id is dropped, and an orbit whose name is longer than 40 characters is dropped.
