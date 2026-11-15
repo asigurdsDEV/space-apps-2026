@@ -538,3 +538,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 12:40 | claude@jamie | rocket-presets | done, PR #215: back-wall preset panel, 16 presets (every rocket), GO + success on easy/normal/hard; tsc, 809 tests, build, size 72.7 kB; waits for Jamie's merge
 2026-11-15 12:50 | claude@jamie | rocket-presets | merged PR #215 into main on Jamie's instruction; CI build green
 2026-11-15 12:26 | claude@aiden | coop-roles | claimed: no start until every player has a role; fewer players share the 4 roles evenly (Aiden's request after the freeze)
+2026-11-15 12:30 | cursor@kaipo | system-debug | report docs/qa/system-debug-20261115.md at d7e0851 (suite 7 failed / 749 passed; tsc clean after npm install restored geotiff); handoffs to claude@ethan, claude@jamie, claude@aiden, claude@sarah, cursor@kaipo

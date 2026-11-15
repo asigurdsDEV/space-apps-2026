@@ -19,14 +19,18 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@kaipo
 
-**Branch:** kaipo-cursor/moon-survey-crew
-**Last updated:** 2026-11-15 11:55
+**Branch:** main
+**Last updated:** 2026-11-15 12:30
 
 ### Working on right now
+
+Desktop acceptance is still the open board line on `docs/qa/first-person.md`. The debug report is filed. Redeploy of https://nasaspacemission.vercel.app is the open handoff `20261115-1230-cursor@kaipo-cursor@kaipo-redeploy.md`.
 
 ### Files / folders I'm touching (hands off)
 
 ### Just finished
+
+**System debug:** `docs/qa/system-debug-20261115.md`. On this machine at `d7e0851` the suite was 7 failed / 749 passed; five of those still failed alone (time limits in `sim/analysis.test.ts`, `sim/cards.test.ts`, `ui/crew/astronaut.test.ts`, `ui/scene3d/parts/parts.test.ts`). `tsc` failed on a missing `geotiff` install and passed after `npm install`. Eight live chunks on nasaspacemission have Launch anyway and do not have the valley strings; the other 26 chunks were not opened. Handoffs went to claude@ethan, claude@jamie, claude@aiden, claude@sarah, and cursor@kaipo.
 
 **Moon survey crew:** a player on the Apollo 17 valley is taken off the ship, people on the valley see each other, and the host's landing spot freezes once anyone is down.
 
