@@ -1,6 +1,7 @@
 // Shader effects for the launch: sky, ground, cloud deck, engine plumes, smoke puffs and the Earth from low orbit.
 // Everything is procedural (no texture files) except the Earth, which reads the NASA maps. Colors are linear; OutputPass tone-maps.
 import * as THREE from 'three'
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js'
 import type { MapUniforms } from '../maps'
 import { ASSEMBLY, COAST_GLSL, CRAWLER_TURN } from './layout'
 import type { Nozzle } from './stack'
@@ -36,19 +37,47 @@ vec3 skyColor(vec3 d) {
   float toSun = max(dot(normalize(d.xz + 1e-5), normalize(uSun.xz)), 0.0);
   // A hazy morning: soft blue overhead, paling to a milky blue-grey at the horizon, a little cream toward the Sun.
   vec3 zenith = mix(lin(vec3(0.24, 0.38, 0.64)), vec3(0.0005, 0.001, 0.004), uSpace);
-  vec3 mid = mix(lin(vec3(0.49, 0.62, 0.80)), lin(vec3(0.10, 0.20, 0.50)), uSpace);
+  vec3 mid = mix(lin(vec3(0.49, 0.62, 0.80)), lin(vec3(0.13, 0.24, 0.52)), uSpace);
   vec3 horizon = mix(lin(vec3(0.73, 0.78, 0.83)), lin(vec3(0.97, 0.78, 0.58)), pow(toSun, 3.0) * 0.7);
+  // Seen from above the haze, the band on the horizon is white-blue, not grey.
+  horizon = mix(horizon, lin(vec3(0.66, 0.78, 0.93)), 0.7 * uSpace);
   float h = max(d.y, 0.0);
-  vec3 col = mix(horizon, mid, smoothstep(0.0, mix(0.32, 0.10, uSpace), h));
+  // The higher the camera, the less air it looks through sideways: the pale band on the horizon narrows.
+  vec3 col = mix(horizon, mid, mix(smoothstep(0.0, 0.32, h), 1.0 - exp(-h / 0.06), uSpace));
   col = mix(col, zenith, smoothstep(0.10, mix(0.85, 0.3, uSpace), h));
   float s = max(dot(d, uSun), 0.0);
   col += vec3(1.0, 0.5, 0.2) * (pow(s, 12.0) * 0.35 + pow(s, 90.0) * 0.9);
   return col;
 }
+// The colour haze adds to something seen along v (from it to the camera): the horizon's own colour looking level, so
+// far things melt into the sky; bluer looking down from high up, where the light scattered into the view is blue.
+vec3 airlight(vec3 v) {
+  return mix(skyColor(vec3(-v.x, 0.0, -v.z)), lin(vec3(0.41, 0.54, 0.76)), uSpace * smoothstep(0.0, 0.35, v.y));
+}
 // How much of a view that many meters long is haze: thick near the ground on a still morning, thin from high up.
 float hazeOver(float dist) {
-  float k = mix(mix(0.00016, 0.00004, smoothstep(30.0, 600.0, cameraPosition.y)), 0.000012, smoothstep(2000.0, 20000.0, cameraPosition.y));
+  float k = mix(mix(0.00016, 0.00004, smoothstep(30.0, 600.0, cameraPosition.y)), 0.000009, smoothstep(1500.0, 12000.0, cameraPosition.y));
   return 1.0 - exp(-dist * k);
+}
+`
+
+/** Camera height, meters, above which a shot counts as seen from the air: every shot from the pitch-over on, and the whole air launch. The pad shots stay below it. */
+export const AIR = 300
+/** Height of the cloud deck, meters. */
+export const CLOUD_DECK_M = 3600
+
+// x: how much cloud stands over a point (meters), 0 to 1. y: how thick it is there, for shading.
+// From the pad the clouds are a few soft sheets. From the air the same sheets resolve into fields of small cumulus.
+const CLOUDS = /* glsl */ `
+float cloudPuff(vec2 p) { return fbm2(p * 0.0011 + vec2(uTime * 0.004, 50.0)); }
+vec2 cloudCover(vec2 p) {
+  float c = fbm2(p * 0.00022 + vec2(uTime * 0.004, 0.0));
+  if (cameraPosition.y < ${AIR}.0) {
+    c += 0.25 * (fbm2(p * 0.0016) - 0.5);
+    return vec2(smoothstep(0.57, 0.82, c), c);
+  }
+  float puff = cloudPuff(p);
+  return vec2(smoothstep(0.42, 0.62, c) * smoothstep(0.49, 0.56, puff), puff);
 }
 `
 
@@ -97,57 +126,151 @@ void main() {
 /**
  * The launch site's ground at dawn: a sand spit with the concrete apron and the crawlerway, the sea behind and to the
  * east, an inlet in front (layout.ts has the map). `flame`: where the engines' fire is (xyz) and how bright (w), so
- * the pad and the water can pick up its glow.
+ * the pad and the water can pick up its glow. `offshore`: meters the map is moved west, for a launch out at sea.
  */
-export function makeGround(u: SkyUniforms, unit: number, flame: { value: THREE.Vector4 }): THREE.Mesh {
-  const ground = new THREE.Mesh(
+export function makeGround(u: SkyUniforms, unit: number, flame: { value: THREE.Vector4 }, offshore = 0): THREE.Mesh {
+  // Two grounds in one mesh. The pad shots draw the one flat quad they were composed on (a finer mesh moves the
+  // sparkle on the water). From the air it is a grid wide enough to reach past the horizon and fine enough to bend.
+  const geometry = mergeGeometries([
     new THREE.PlaneGeometry(400_000, 400_000).rotateX(-Math.PI / 2),
+    new THREE.PlaneGeometry(1_600_000, 1_600_000, 96, 96).rotateX(-Math.PI / 2),
+  ])
+  const ground = new THREE.Mesh(
+    geometry,
     new THREE.ShaderMaterial({
-      uniforms: { ...u, uPad: { value: unit }, uFlame: flame },
-      vertexShader: WORLD_VERTEX,
+      uniforms: { ...u, uPad: { value: unit }, uFlame: flame, uOffshore: { value: offshore } },
+      vertexShader: /* glsl */ `
+varying vec3 vWorld;
+void main() {
+  vec4 wp = modelMatrix * vec4(position, 1.0);
+  // From the air the Earth is round: past 20 km the ground falls away (r squared over two Earth radii), so the
+  // horizon dips and curves. The pad shots keep the flat plane they were composed on.
+  float away = max(length(wp.xz) - 20000.0, 0.0);
+  if (cameraPosition.y > ${AIR}.0) wp.y -= away * away / 12742000.0;
+  vWorld = wp.xyz;
+  gl_Position = projectionMatrix * viewMatrix * wp;
+}
+`,
       fragmentShader: /* glsl */ `
 uniform float uPad;
+uniform float uOffshore;
 uniform vec4 uFlame;
 varying vec3 vWorld;
 ${NOISE2}
 ${SKY}
 ${COAST_GLSL}
+${CLOUDS}
 float segDist(vec2 p, vec2 a, vec2 b) {
   vec2 pa = p - a;
   vec2 ba = b - a;
   return length(pa - ba * clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0));
 }
 void main() {
-  vec2 p = vWorld.xz;
+  // The map, in meters from the pad. An air launch happens out at sea, with the coast uOffshore to the west.
+  vec2 p = vWorld.xz + vec2(uOffshore, 0.0);
   vec3 toCam = cameraPosition - vWorld;
   float dist = length(toCam);
   vec3 v = toCam / dist;
   float U = uPad;
   float r = length(p);
+  // Every shot after lift-off looks down from the air. There the same coast is drawn as a map, in meters, of the kind
+  // of place rockets fly from: a barrier island with lagoons behind it, marsh, scrub, a few roads and other pads.
+  bool air = cameraPosition.y > ${AIR}.0;
+  // The ground one pixel covers, meters. Anything finer than that would only sparkle, so it fades out.
+  float px = length(fwidth(p)) * float(air);
   float big = fbm2(p * 0.00012 + 3.0);
   float mid = fbm2(p * 0.0021);
-  float fine = fbm2(p * 0.07);
+  float fine = 0.48;
+  if (px < 25.0) fine = mix(fbm2(p * 0.07), 0.48, smoothstep(3.0, 25.0, px));
   vec2 lp = p * (0.9 / U) + 5.0;
   float local = 0.65 * noise2(lp) + 0.35 * noise2(lp * 2.3 + 9.0);
   vec2 assembly = vec2(${ASSEMBLY[0].toFixed(1)}, ${ASSEMBLY[1].toFixed(1)});
   vec2 turn = vec2(-${CRAWLER_TURN.toFixed(1)} * U, 0.0);
   float way = min(segDist(p, vec2(0.0), turn), segDist(p, turn, assembly));
-  // The waterline wanders a little at the pad and a lot far away (layout.ts: shoreWobble is the bound).
-  float shore = coast(p, U) + (local - 0.5) * 0.3 * U + (mid - 0.5) * 500.0 * smoothstep(600.0, 3000.0, r) + (big - 0.5) * 2500.0 * smoothstep(1500.0, 9000.0, r);
+  float patches = 0.6 * noise2(p * 0.0009 + 7.0) + 0.4 * noise2(p * 0.0031 + 2.0);
+  float shore;
+  // Air only. open: meters out to sea from the ocean beach (inland below zero). back: the same for the lagoons.
+  // lagoon and still: 1 on lagoon water and on sheltered water. road: meters to the nearest paved road.
+  float open = 0.0;
+  float back = -1e6;
+  float lagoon = 0.0;
+  float still = 0.0;
+  float road = 1e6;
+  float clearing = 0.0;
+  if (air) {
+    // The ocean beach is one long smooth arc: sand does not wiggle the way a noise contour does.
+    float wob = (local - 0.5) * 0.3 * U + (mid - 0.5) * 60.0 * smoothstep(600.0, 3000.0, r)
+      + (600.0 * sin(p.y * 0.00011) + 2000.0 * sin(p.y * 0.000027)) * smoothstep(1000.0, 5000.0, r);
+    // layout.ts coast() without the inlet.
+    float north = -p.y - 2.4 * U;
+    open = max(min(north, (north + 3.0 * (p.x + 4.0 * U)) / 3.162), p.x - 9.0 * U) + wob;
+    // The inlet ends a kilometer in, where it meets the lagoon.
+    float near = coast(p, U) + wob - 0.3 * max(-p.x - 900.0, 0.0);
+    // Lagoon banks are ragged marsh.
+    float rag = ((mid - 0.5) * 700.0 + (big - 0.5) * 3000.0) * smoothstep(800.0, 3000.0, r);
+    // Behind the barrier island lies a shallow lagoon. It pinches out at the launch site, where the island joins the
+    // land: to the south it starts at the inlet, to the north 8 km up the coast. Further inland runs a wide river.
+    float gap = max(p.y - 1.5 * U - 0.5 * max(-p.x - 600.0, 0.0), -p.y - 8500.0) + rag;
+    float lag = min(min(-open - 600.0 - 0.15 * rag, 4200.0 + open + rag), gap);
+    float river = 1500.0 - abs(-open - 9000.0 - 1200.0 * sin(p.y * 0.00008)) + 0.5 * rag;
+    back = max(lag, river);
+    // Other launch complexes up the coast: pale clearings on spurs off the crawler road north from the assembly building.
+    vec2 c0 = vec2(-4.0 * U, -2.4 * U);
+    vec2 q = vec2(dot(p - c0, vec2(-0.316, -0.949)), dot(p - c0, vec2(-0.949, 0.316)));
+    float spine = dot(assembly - c0, vec2(-0.949, 0.316));
+    float k = clamp(floor(q.x / 2300.0 + 0.5), 1.0, 3.0) * 2300.0;
+    way = min(way, min(length(vec2(q.x - clamp(q.x, 2300.0, 6900.0), q.y - spine)), length(vec2(q.x - k, q.y - clamp(q.y, 380.0, spine)))));
+    clearing = 1.0 - smoothstep(0.3 * U, 0.34 * U + px, length(max(abs(q - vec2(k, 380.0)) - vec2(0.7, 0.5) * U, 0.0)));
+    // A causeway west from the assembly building over the river, and the road that follows the beach.
+    road = min(segDist(p, assembly, assembly + vec2(-16000.0, 1500.0)), abs(open + 300.0) + max(2500.0 - r, 0.0));
+    // Roads and pads stand on fill, so they cross water as causeways.
+    back = min(back, min(min(way - 0.5 * U, road - 18.0), mix(1e6, -60.0, clearing)));
+    shore = max(max(open, near), back);
+    lagoon = smoothstep(-10.0, 10.0, back - max(open, near));
+    still = max(lagoon, smoothstep(0.0, 0.1 * U, near - open));
+  } else {
+    // The waterline wanders a little at the pad and a lot far away (layout.ts: shoreWobble is the bound).
+    shore = coast(p, U) + (local - 0.5) * 0.3 * U + (mid - 0.5) * 500.0 * smoothstep(600.0, 3000.0, r) + (big - 0.5) * 2500.0 * smoothstep(1500.0, 9000.0, r);
+  }
   // Marsh ponds inland, but none under the crawlerway or the assembly buildings.
-  float pond = smoothstep(0.66, 0.68, fbm2(p * 0.00035 + 20.0)) * smoothstep(2500.0, 5000.0, r) * smoothstep(150.0, 400.0, way) * smoothstep(700.0, 1300.0, length(p - assembly));
-  float sea = max(smoothstep(-0.02 * U - 1.0, 0.02 * U + 1.0, shore), pond);
-  float sand = smoothstep(-0.3 * U - 12.0, -0.04 * U, shore) * (1.0 - sea);
+  float pond = smoothstep(0.66, 0.68, fbm2(p * 0.00035 + 20.0)) * smoothstep(2500.0, 5000.0, r) * smoothstep(150.0, 400.0, way) * smoothstep(700.0, 1300.0, length(p - assembly)) * (1.0 - clearing) * smoothstep(20.0, 60.0, road);
+  float sea = max(smoothstep(-0.02 * U - 1.0 - 0.7 * px, 0.02 * U + 1.0 + 0.7 * px, shore), pond);
+  // Beach sand along the ocean; the lagoon banks are mud and mangrove.
+  float sand = smoothstep(-0.3 * U - 12.0 - 30.0 * float(air), -0.04 * U, shore) * (1.0 - sea) * (1.0 - lagoon);
 
   // Coastal scrub: dry grass and bare sandy soil with darker stands of palmetto, sandier where the site was cleared.
-  float patches = 0.6 * noise2(p * 0.0009 + 7.0) + 0.4 * noise2(p * 0.0031 + 2.0);
   vec3 scrub = mix(lin(vec3(0.20, 0.27, 0.15)), lin(vec3(0.50, 0.47, 0.30)), smoothstep(0.3, 0.7, mid)) * (0.75 + 0.5 * fine);
   scrub = mix(scrub, lin(vec3(0.15, 0.22, 0.13)), smoothstep(0.5, 0.75, patches) * 0.7);
   vec3 sandCol = lin(vec3(0.74, 0.68, 0.55)) * (0.85 + 0.3 * fine);
   scrub = mix(scrub, sandCol, (0.3 + 0.5 * smoothstep(0.45, 0.8, local)) * (1.0 - smoothstep(1.2 * U, 5.0 * U, r)));
+  if (air && sea < 1.0) {
+    // Land cover with edges, as it shows from above: tan scrub on sandy soil, dark hammocks of oak and palm, wet
+    // marsh toward the lagoons cut by winding creeks, sandy dunes behind the beach.
+    // Clumps of trees and bushes, 5 to 80 m across: the grain of the land from a kilometer up.
+    float tex = 0.48;
+    if (px < 100.0) tex = mix(fbm2(p * 0.011 + 17.0), 0.48, smoothstep(12.0, 100.0, px));
+    float grain = (0.72 + 0.56 * fine) * (0.8 + 0.42 * tex);
+    vec3 land = mix(lin(vec3(0.21, 0.27, 0.15)), lin(vec3(0.42, 0.40, 0.26)), smoothstep(0.45, 0.55, mid + (tex - 0.48) * 0.5));
+    land = mix(land, lin(vec3(0.10, 0.16, 0.08)), 0.85 * smoothstep(0.50, 0.53, patches + (tex - 0.48) * 0.3));
+    // Marsh lines the lagoons and the creeks that wind through the low ground.
+    float low = abs(patches - 0.42);
+    float marsh = max(1.0 - smoothstep(100.0, 900.0 + 2500.0 * big, -back), 0.8 * (1.0 - smoothstep(0.015, 0.06, low)) * smoothstep(300.0, 700.0, -open));
+    vec3 wet = mix(lin(vec3(0.15, 0.19, 0.10)), lin(vec3(0.32, 0.27, 0.16)), smoothstep(0.42, 0.56, 0.5 * noise2(p * 0.004 + 13.0) + 0.5 * mid + (tex - 0.48) * 0.4));
+    // Small dark pools dot the marsh.
+    wet = mix(wet, lin(vec3(0.09, 0.14, 0.15)), smoothstep(0.61, 0.65, tex) * smoothstep(150.0, 400.0, way));
+    land = mix(land, wet, marsh) * grain;
+    float cw = 0.006 + 0.002 * px;
+    float creek = (1.0 - smoothstep(0.5 * cw, cw, low)) * smoothstep(300.0, 700.0, -open) * min(1.0, 8.0 / max(px, 1.0)) * smoothstep(150.0, 400.0, way) * smoothstep(700.0, 1300.0, length(p - assembly));
+    land = mix(land, lin(vec3(0.10, 0.15, 0.15)), creek);
+    land = mix(land, sandCol * 0.8, 0.55 * (1.0 - smoothstep(60.0, 450.0, -open)));
+    scrub = mix(scrub, land, smoothstep(2.0 * U, 6.0 * U, r));
+    scrub = mix(scrub, lin(vec3(0.66, 0.63, 0.55)) * (0.85 + 0.3 * fine), clearing);
+    scrub = mix(scrub, lin(vec3(0.50, 0.50, 0.48)), clamp((5.0 - road) / max(px, 1.0) + 0.5, 0.0, 1.0) * min(1.0, 14.0 / max(px, 1.0)));
+  }
   vec3 col = mix(scrub, sandCol, sand);
   // The crawlerway: two lanes of pale river gravel with a strip of grass between them.
-  float lane = smoothstep(0.045 * U, 0.06 * U, way) * (1.0 - smoothstep(0.19 * U, 0.21 * U, way));
+  float soft = 0.0075 * U + 0.5 * px;
+  float lane = smoothstep(0.0525 * U - soft, 0.0525 * U + soft, way) * (1.0 - smoothstep(0.2 * U - soft - 0.0025 * U, 0.2 * U + soft + 0.0025 * U, way));
   col = mix(col, lin(vec3(0.63, 0.59, 0.50)) * (0.85 + 0.3 * fine), lane * (1.0 - sea));
   // The apron: a rounded square of concrete slabs, scorched along the flame trench.
   vec2 q = abs(p) / vec2(U, 0.8 * U);
@@ -158,7 +281,10 @@ void main() {
   concrete *= 1.0 - 0.6 * (1.0 - smoothstep(0.0, U * 0.45, abs(p.y))) * (1.0 - smoothstep(U * 0.3, U * 0.95, abs(p.x)));
   col = mix(col, concrete, apron * (1.0 - sea));
   // Dawn light: a low warm Sun plus blue sky light.
-  vec3 light = vec3(1.0, 0.72, 0.5) * 0.5 * max(uSun.y * 3.0, 0.0) + lin(vec3(0.42, 0.52, 0.72)) * 0.75;
+  vec3 light = vec3(1.0, 0.72, 0.5) * 0.5 * max(uSun.y * 3.0, 0.0);
+  // Cloud shadows: at dawn they fall a long way from the clouds that cast them.
+  if (air) light *= 1.0 - 0.8 * cloudCover(vWorld.xz + uSun.xz * (${CLOUD_DECK_M.toFixed(1)} / uSun.y)).x;
+  light += lin(vec3(0.42, 0.52, 0.72)) * 0.75;
   col *= light;
   // The engines' fire lights the pad around it.
   vec3 toFlame = uFlame.xyz - vWorld;
@@ -168,15 +294,18 @@ void main() {
   // length and speed, bent a little by noise so the crests are not ruler-straight. The breeze ruffles it in long
   // patches and leaves glassy slicks between them. The short ripples fade with distance, where they would only shimmer.
   // South of the apron all the water is the inlet (its north bank wanders either side of one unit out).
-  float inlet = step(0.3, p.y / U);
+  float inlet = air ? still : step(0.3, p.y / U);
   float jit = mid * 14.0 + local * 3.0 + 5.0 * noise2(p * 0.045);
   float f1 = 1.0 - smoothstep(30.0, 220.0, dist);
   float f2 = 1.0 - smoothstep(100.0, 800.0, dist);
-  float f3 = (1.0 - smoothstep(400.0, 3500.0, dist)) * (1.0 - 0.6 * inlet);
-  float f4 = (1.0 - smoothstep(2500.0, 14000.0, dist)) * (1.0 - 0.8 * inlet);
+  // From the air the swell is texture, not marks: weaker, and gone before a crest is narrower than a pixel.
+  float f3 = (1.0 - smoothstep(400.0, 3500.0, dist)) * (1.0 - 0.6 * inlet) * (1.0 - smoothstep(1.5, 4.0, px));
+  float f4 = (1.0 - smoothstep(2500.0, 14000.0, dist)) * (1.0 - 0.8 * inlet) * (1.0 - smoothstep(4.0, 10.0, px)) * (1.0 - 0.5 * float(air));
   // The current: the inlet drains east to the sea, the sea sets toward the beach.
   vec2 drift = mix(vec2(-0.3, 0.5), vec2(1.0, 0.08), inlet) * uTime;
-  float ruffle = smoothstep(0.35, 0.7, fbm2((p - drift * 0.6) * vec2(0.5, 2.2) / U + 11.0));
+  // (From the air neither the ruffled patches nor the wind ripples below are big enough to see.)
+  float ruffle = 0.5;
+  if (!air) ruffle = smoothstep(0.35, 0.7, fbm2((p - drift * 0.6) * vec2(0.5, 2.2) / U + 11.0));
   // The sheltered inlet is far calmer than the open sea.
   float calm = mix(0.7, 0.3, inlet) * (0.35 + 0.65 * ruffle);
   // The long trains come in groups, one strong where the other is weak, so the two never weave an even lattice.
@@ -188,7 +317,7 @@ void main() {
   // Wind ripples carried along by the current.
   vec2 w1 = p * 0.9 - drift * 1.2;
   vec2 w2 = p * 0.21 - drift * 0.5;
-  slope += (vec2(noise2(w1), noise2(w1 + 40.0)) - 0.5) * 0.08 * f1 + (vec2(noise2(w2), noise2(w2 + 17.0)) - 0.5) * 0.06 * f2;
+  if (!air) slope += (vec2(noise2(w1), noise2(w1 + 40.0)) - 0.5) * 0.08 * f1 + (vec2(noise2(w2), noise2(w2 + 17.0)) - 0.5) * 0.06 * f2;
   slope *= calm;
   vec3 n = normalize(vec3(slope.x, 1.0, slope.y));
   // Far off, the many small waves the shader no longer draws still tip the mirror up: the sea reflects higher,
@@ -202,6 +331,14 @@ void main() {
   // The marsh ponds lie inland of the waterline, where shore is negative: they get a depth of their own.
   float depth = max(shore, pond * 80.0);
   vec3 deep = mix(lin(vec3(0.20, 0.38, 0.40)), lin(vec3(0.07, 0.18, 0.29)), smoothstep(0.0, 6.0 * U + 300.0, depth));
+  if (air) {
+    // Looking down, the water shows its own colour: a pale green shelf off the beach and deep blue-green beyond it;
+    // the lagoons are shallow, brown-green over their shoals with darker channels.
+    deep = mix(lin(vec3(0.21, 0.40, 0.40)), lin(vec3(0.05, 0.17, 0.28)), smoothstep(0.0, 1.0, sqrt(clamp(depth / 3500.0, 0.0, 1.0))));
+    vec3 shoal = mix(lin(vec3(0.34, 0.38, 0.28)), lin(vec3(0.12, 0.23, 0.25)), smoothstep(0.3, 0.75, depth / 1100.0 + (mid - 0.5) * 1.3));
+    // Wind streaks and slicks: faint, so the sea is not one flat colour.
+    deep = mix(deep, shoal, lagoon) * (0.9 + 0.2 * noise2(p * vec2(0.0035, 0.0011) + 3.0) * (0.6 + 0.8 * mid));
+  }
   vec3 body = mix(sandCol * 0.6, deep, smoothstep(0.0, 0.12 * U + 2.0, depth)) * light;
   // Wave faces turned to the Sun are brighter. From the air the mirror is weak, so this is what shows the swell.
   body *= 1.0 + 2.5 * dot(slope, uSun.xz);
@@ -220,21 +357,27 @@ void main() {
   off.y *= 0.35;
   water += vec3(2.4, 1.0, 0.3) * uFlame.w * exp(-dot(off, off) / (0.05 * U * U + 0.004 * along * along)) * step(0.0, along);
   // Foam: a thin line lapping the banks, and rows of surf rolling up the sea beach.
-  float lap = (1.0 - smoothstep(0.0, 0.035 * U + 0.6 + (0.02 * U + 0.4) * sin(uTime * 1.3 + local * 40.0), shore));
-  float surf = smoothstep(0.55, 0.95, sin(shore * 0.22 + uTime * 0.8 + local * 5.0)) * (1.0 - smoothstep(8.0, 55.0, shore)) * (1.0 - inlet);
+  float lap = (1.0 - smoothstep(0.0, 0.035 * U + 0.6 + (0.02 * U + 0.4) * sin(uTime * 1.3 + local * 40.0), shore)) * (1.0 - smoothstep(1.0, 4.0, px));
+  float surf = smoothstep(0.55, 0.95, sin(shore * 0.22 + uTime * 0.8 + local * 5.0)) * (1.0 - smoothstep(8.0, 55.0, shore)) * (1.0 - inlet) * (1.0 - smoothstep(3.0, 9.0, px));
+  // From high up the rows of surf merge into one white line along the beach.
+  float wash = (1.0 - smoothstep(12.0 + 0.5 * px, 30.0 + px, abs(shore - 14.0))) * (0.5 + 0.5 * noise2(p * 0.02 + uTime * 0.1)) * (1.0 - inlet) * smoothstep(3.0, 9.0, px) * min(1.0, 45.0 / max(px, 1.0));
   // A few whitecaps on the open sea, breaking on the crests of the long swell. Seen from far only: close up they are squiggles.
-  float caps = smoothstep(0.9, 1.0, sin(ph4)) * smoothstep(0.75, 0.83, noise2(p * 0.035 + 31.0 - drift * 0.03)) * (1.0 - inlet) * smoothstep(60.0, 250.0, shore) * smoothstep(250.0, 1000.0, dist) * (1.0 - smoothstep(2500.0, 9000.0, dist));
-  float foam = max(max(lap, caps * 0.45), surf * (0.4 + 0.6 * noise2(p * 0.12 + uTime * 0.15)));
+  float caps = smoothstep(0.9, 1.0, sin(ph4)) * smoothstep(0.75, 0.83, noise2(p * 0.035 + 31.0 - drift * 0.03)) * (1.0 - inlet) * smoothstep(60.0, 250.0, shore) * smoothstep(250.0, 1000.0, dist) * (1.0 - smoothstep(2500.0, 9000.0, dist)) * (1.0 - float(air));
+  float foam = max(max(max(lap, wash), caps * 0.45), surf * (0.4 + 0.6 * noise2(p * 0.12 + uTime * 0.15)));
   // Only along the coast: the ponds are still, and inland of the waterline, where shore is below zero.
   water = mix(water, vec3(0.92) * light, clamp(foam, 0.0, 1.0) * step(-0.02 * U - 1.0, shore));
   col = mix(col, water, sea);
   // Haze toward the horizon: the far shore and the sea's edge melt into the sky.
-  col = mix(col, skyColor(vec3(-v.x, 0.0, -v.z)), hazeOver(dist));
+  col = mix(col, airlight(v), hazeOver(dist));
   gl_FragColor = vec4(col, 1.0);
 }
 `,
     }),
   )
+  ground.onBeforeRender = (_renderer, _scene, camera) => {
+    if (camera.position.y > AIR) geometry.setDrawRange(6, Infinity)
+    else geometry.setDrawRange(0, 6)
+  }
   return ground
 }
 
@@ -270,7 +413,7 @@ void main() {
   vec3 v = toCam / dist;
   vec3 light = vec3(1.0, 0.72, 0.5) * 1.5 * max(dot(normalize(vN), uSun), 0.0) + lin(vec3(0.42, 0.52, 0.72)) * (0.55 + 0.2 * vN.y);
   vec3 col = lin(vColor) * light;
-  gl_FragColor = vec4(mix(col, skyColor(vec3(-v.x, 0.0, -v.z)), hazeOver(dist)), 1.0);
+  gl_FragColor = vec4(mix(col, airlight(v), hazeOver(dist)), 1.0);
 }
 `,
   })
@@ -287,14 +430,16 @@ export function makeCloudDeck(u: SkyUniforms, altitude: number): THREE.Mesh {
 varying vec3 vWorld;
 ${NOISE2}
 ${SKY}
+${CLOUDS}
 void main() {
   vec2 p = vWorld.xz;
   vec3 toCam = cameraPosition - vWorld;
   float dist = length(toCam);
   vec3 v = toCam / dist;
-  float c = fbm2(p * 0.00022 + vec2(uTime * 0.004, 0.0)) + 0.25 * (fbm2(p * 0.0016) - 0.5);
   // A few soft clouds, not an overcast.
-  float a = smoothstep(0.57, 0.82, c);
+  vec2 cover = cloudCover(p);
+  float a = cover.x;
+  float c = cover.y;
   // Seen from below, the Sun side glows pink; from above it is bright white.
   float above = step(0.0, toCam.y);
   float toSun = pow(max(dot(normalize(-v.xz + 1e-5), normalize(uSun.xz)), 0.0), 2.0);
@@ -302,7 +447,13 @@ void main() {
   vec3 top = mix(lin(vec3(0.80, 0.82, 0.90)), lin(vec3(1.0, 0.86, 0.74)), toSun) * (0.5 + 0.7 * c);
   vec3 col = mix(under, top, above);
   float haze = 1.0 - exp(-dist * 0.000025);
-  col = mix(col, skyColor(vec3(-v.x, 0.0, -v.z)), haze);
+  if (cameraPosition.y > ${AIR}.0) {
+    // Cumulus from above: brilliant white where the Sun strikes the flank of a puff, blue-grey on the far side.
+    float lit = clamp(0.55 + 7.0 * (c - cloudPuff(p + normalize(uSun.xz) * 160.0)), 0.0, 1.0);
+    col = mix(mix(lin(vec3(0.52, 0.56, 0.66)), lin(vec3(1.0, 0.95, 0.90)) * 1.15, lit), col, 1.0 - above);
+    haze = hazeOver(dist);
+  }
+  col = mix(col, airlight(v), haze);
   // Fade out where the camera flies through the deck, and far away where it would alias.
   a *= smoothstep(0.0, 300.0, abs(toCam.y)) * (1.0 - smoothstep(20000.0, 140000.0, dist));
   gl_FragColor = vec4(col, a * 0.9);
