@@ -2,6 +2,7 @@
 // Everything is drawn in code: no image files. Materials and their textures are made once and shared
 // by every part and every rebuild; only geometry is made (and disposed) per craft.
 import * as THREE from 'three'
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js'
 
 // Tests run without a DOM: there the materials simply have no texture maps.
 const hasDom = typeof document !== 'undefined'
@@ -23,45 +24,66 @@ function texture(size: number, draw: (g: CanvasRenderingContext2D, s: number) =>
   return t
 }
 
-/** Crinkled foil as a tangent-space normal map: random overlapping facets, then a Sobel pass. Tiles. */
-function crinkleNormal(): THREE.CanvasTexture | null {
-  return texture(256, (g, s) => {
-    const rnd = rng(11)
-    g.fillStyle = '#808080'
-    g.fillRect(0, 0, s, s)
-    for (let i = 0; i < 170; i++) {
-      const x = rnd() * s
-      const y = rnd() * s
-      const r = 14 + rnd() * 48
-      const v = Math.floor(rnd() * 255)
-      g.fillStyle = `rgba(${v},${v},${v},0.42)`
-      const pts = [0, 1, 2].map(() => [x + (rnd() - 0.5) * 2 * r, y + (rnd() - 0.5) * 2 * r] as const)
-      // Drawn nine times so facets wrap around the edges.
-      for (const ox of [-s, 0, s]) for (const oy of [-s, 0, s]) {
-        g.beginPath()
-        pts.forEach(([px, py], n) => (n ? g.lineTo(px + ox, py + oy) : g.moveTo(px + ox, py + oy)))
-        g.fill()
+/**
+ * Crumpled-foil relief over an s x s tile that repeats, as heights in pixels: flat facets, each tilted its
+ * own way, at two sizes (the big folds, then the small crumples on them). Facets meet in sharp creases.
+ */
+export function foilRelief(s: number, seed = 11): Float32Array {
+  const rnd = rng(seed)
+  const k = s / 256
+  const layer = (n: number, slope: number, step: number) =>
+    Array.from({ length: n }, () => [rnd() * s, rnd() * s, (rnd() - 0.5) * 2 * slope, (rnd() - 0.5) * 2 * slope, (rnd() - 0.5) * step * k] as const)
+  const layers = [layer(14, 0.32, 3), layer(120, 0.24, 1.5)]
+  const wrap = (d: number) => d - s * Math.round(d / s)
+  const h = new Float32Array(s * s)
+  for (let y = 0; y < s; y++) for (let x = 0; x < s; x++) {
+    // Creases in foil are never ruler-straight: the tile is bent a little before the facets are looked up.
+    const px = x + 7 * k * Math.sin((Math.PI * 4 * y) / s + 1.3)
+    const py = y + 7 * k * Math.sin((Math.PI * 6 * x) / s + 0.4)
+    let v = 0
+    for (const facets of layers) {
+      let best = Infinity
+      let on = 0
+      for (const [fx, fy, gx, gy, lift] of facets) {
+        const dx = wrap(px - fx)
+        const dy = wrap(py - fy)
+        const d = dx * dx + dy * dy
+        if (d < best) {
+          best = d
+          on = lift + gx * dx + gy * dy
+        }
       }
+      v += on
     }
-    const src = g.getImageData(0, 0, s, s).data
-    const out = g.createImageData(s, s)
-    const h = (x: number, y: number) => src[(((y + s) % s) * s + ((x + s) % s)) * 4]! / 255
-    for (let y = 0; y < s; y++) for (let x = 0; x < s; x++) {
-      const dx = (h(x + 1, y) - h(x - 1, y)) * 1.7
-      const dy = (h(x, y + 1) - h(x, y - 1)) * 1.7
-      const l = Math.hypot(dx, dy, 1)
-      const i = (y * s + x) * 4
-      out.data[i] = (-dx / l * 0.5 + 0.5) * 255
-      out.data[i + 1] = (dy / l * 0.5 + 0.5) * 255
-      out.data[i + 2] = (1 / l * 0.5 + 0.5) * 255
-      out.data[i + 3] = 255
-    }
-    g.putImageData(out, 0, 0)
-  }, false)
+    h[y * s + x] = v
+  }
+  return h
 }
 
-/** Blanket seams: quilted patches with stitched edges and tie-down buttons. Multiplies any foil colour. */
-function quiltMap(): THREE.CanvasTexture | null {
+/** A height field as tangent-space normal-map pixels (RGBA). Slopes are capped, so a crease is a sharp line, not a spike. */
+export function reliefNormals(h: Float32Array, s: number, cap = 0.8): Uint8ClampedArray<ArrayBuffer> {
+  const out = new Uint8ClampedArray(s * s * 4)
+  const at = (x: number, y: number) => h[((y + s) % s) * s + ((x + s) % s)]!
+  const slope = (d: number) => Math.max(-cap, Math.min(cap, d / 2))
+  for (let y = 0; y < s; y++) for (let x = 0; x < s; x++) {
+    const dx = slope(at(x + 1, y) - at(x - 1, y))
+    const dy = slope(at(x, y + 1) - at(x, y - 1))
+    const l = Math.hypot(dx, dy, 1)
+    const i = (y * s + x) * 4
+    out[i] = (-dx / l * 0.5 + 0.5) * 255
+    // Canvas rows run down, the normal map's green axis runs up.
+    out[i + 1] = (dy / l * 0.5 + 0.5) * 255
+    out[i + 2] = (1 / l * 0.5 + 0.5) * 255
+    out[i + 3] = 255
+  }
+  return out
+}
+
+/**
+ * Blanket seams: quilted patches with taped edges and tie-down buttons. Multiplies any foil colour.
+ * The crumples are shaded in as well, so foil still reads as foil when it is too small on screen for the normal map.
+ */
+function quiltMap(crumple: Uint8ClampedArray): THREE.CanvasTexture | null {
   return texture(256, (g, s) => {
     const rnd = rng(5)
     g.fillStyle = '#fff'
@@ -86,26 +108,40 @@ function quiltMap(): THREE.CanvasTexture | null {
       g.arc(32 + i * 64, 32 + j * 64, 2.2, 0, 7)
       g.fill()
     }
+    const img = g.getImageData(0, 0, s, s)
+    for (let i = 0; i < img.data.length; i += 4) {
+      const lit = 0.8 + 0.55 * ((crumple[i]! / 127.5 - 1) * 0.6 + (crumple[i + 1]! / 127.5 - 1) * 0.8)
+      const k = Math.max(0.5, Math.min(1, lit))
+      for (let c = 0; c < 3; c++) img.data[i + c] = img.data[i + c]! * k
+    }
+    g.putImageData(img, 0, 0)
   })
 }
 
-/** Triple-junction solar cells: 2 x 4 dark blue cells per tile with cropped corners, grid fingers and bus bars. */
+/**
+ * Triple-junction solar cells: 2 x 4 deep blue cells per tile with cropped corners, grid fingers, two bus bars
+ * each, and the pale substrate showing between them as the cell grid.
+ */
 function cellMap(): THREE.CanvasTexture | null {
   return texture(256, (g, s) => {
-    g.fillStyle = '#6f7690'
+    const rnd = rng(7)
+    g.fillStyle = '#a9b2cc'
     g.fillRect(0, 0, s, s)
     const cw = s / 2
     const ch = s / 4
     for (let i = 0; i < 2; i++) for (let j = 0; j < 4; j++) {
-      const x = i * cw + 3
-      const y = j * ch + 3
-      const w = cw - 6
-      const h = ch - 6
-      const k = 9
+      const x = i * cw + 2.5
+      const y = j * ch + 2.5
+      const w = cw - 5
+      const h = ch - 5
+      const k = 8
+      // No two cells come out quite the same blue.
+      const l = 0.8 + rnd() * 0.4
+      const blue = (r: number, gr: number, b: number) => `rgb(${Math.round(r * l)},${Math.round(gr * l)},${Math.round(b * l)})`
       const grad = g.createLinearGradient(x, y, x + w, y + h)
-      grad.addColorStop(0, '#1a2a6c')
-      grad.addColorStop(0.5, '#0d1740')
-      grad.addColorStop(1, '#16235c')
+      grad.addColorStop(0, blue(26, 44, 122))
+      grad.addColorStop(0.5, blue(11, 22, 70))
+      grad.addColorStop(1, blue(22, 37, 104))
       g.fillStyle = grad
       g.beginPath()
       g.moveTo(x + k, y)
@@ -117,12 +153,17 @@ function cellMap(): THREE.CanvasTexture | null {
       g.lineTo(x, y + h - k)
       g.lineTo(x, y + k)
       g.fill()
-      g.strokeStyle = 'rgba(170,185,230,0.28)'
+      g.strokeStyle = 'rgba(170,185,230,0.22)'
       g.lineWidth = 1
-      for (let f = 1; f < 12; f++) g.strokeRect(x + (f * w) / 12, y + 2, 0, h - 4)
-      g.strokeStyle = 'rgba(205,210,225,0.7)'
-      g.lineWidth = 2
-      g.strokeRect(x + 4, y + h / 2, w - 8, 0)
+      for (let f = 1; f < 14; f++) g.strokeRect(x + (f * w) / 14, y + 2, 0, h - 4)
+      g.strokeStyle = 'rgba(210,216,232,0.6)'
+      g.lineWidth = 1.5
+      g.fillStyle = '#c9cfdd'
+      for (const b of [0.28, 0.72]) {
+        g.strokeRect(x + 3, y + h * b, w - 6, 0)
+        // The tab that wires each bus bar to the next cell.
+        g.fillRect(x + w - 2, y + h * b - 2, 5, 4)
+      }
     }
   })
 }
@@ -177,7 +218,7 @@ function cubePanelMap(): THREE.CanvasTexture | null {
   })
 }
 
-/** Honeycomb equipment deck: bare aluminium with rows of bolt inserts. */
+/** Honeycomb equipment deck: bare aluminium panels with rows of bolt inserts. */
 function deckMap(): THREE.CanvasTexture | null {
   return texture(256, (g, s) => {
     g.fillStyle = '#b9bdc6'
@@ -188,9 +229,21 @@ function deckMap(): THREE.CanvasTexture | null {
       g.arc(16 + i * 32, 16 + j * 32, 2.5, 0, 7)
       g.fill()
     }
-    g.strokeStyle = 'rgba(70,75,85,0.5)'
-    g.lineWidth = 2
+    // Panel seams, and an access cover held down by its own ring of screws.
+    g.strokeStyle = 'rgba(40,44,52,0.75)'
+    g.lineWidth = 2.5
     g.strokeRect(1, 1, s - 2, s - 2)
+    g.strokeRect(0, 160, s, 0)
+    g.fillStyle = '#a9aeb8'
+    g.fillRect(40, 180, 112, 56)
+    g.lineWidth = 1.5
+    g.strokeRect(40, 180, 112, 56)
+    g.fillStyle = '#5d626c'
+    for (const x of [48, 96, 144]) for (const y of [188, 228]) {
+      g.beginPath()
+      g.arc(x, y, 3, 0, 7)
+      g.fill()
+    }
   })
 }
 
@@ -295,16 +348,24 @@ function petalMap(): THREE.CanvasTexture | null {
 }
 
 function build() {
-  const normalMap = crinkleNormal()
-  const quilt = quiltMap()
+  // One crumple pattern serves every foil: as the normal map, and shaded into the colour map.
+  const crumple = hasDom ? reliefNormals(foilRelief(256), 256) : null
+  const normalMap = crumple && texture(256, (g, s) => g.putImageData(new ImageData(crumple, s, s), 0, 0), false)
+  const quilt = crumple && quiltMap(crumple)
+  // Turned and scaled against the seams, so the crumples do not repeat in step with the blanket patches.
+  if (normalMap) {
+    normalMap.rotation = 0.6
+    normalMap.repeat.setScalar(0.83)
+  }
   const std = (o: THREE.MeshStandardMaterialParameters) => new THREE.MeshStandardMaterial(o)
-  const foil = (color: number, roughness: number, metalness = 1) =>
-    std({ color, metalness, roughness, map: quilt, normalMap, normalScale: new THREE.Vector2(0.5, 0.5) })
+  // Foil mirrors its surroundings, and space is dark: the reflections are turned up so the facets that face a light flash.
+  const foil = (color: number, roughness: number, metalness: number, envMapIntensity: number) =>
+    std({ color, metalness, roughness, envMapIntensity, map: quilt, normalMap, normalScale: new THREE.Vector2(1, 1) })
   return {
-    goldMLI: foil(0xf0b84a, 0.26),
-    goldDouble: Object.assign(foil(0xf0b84a, 0.26), { side: THREE.DoubleSide }),
-    blackMLI: foil(0x3a3c46, 0.32, 0.85),
-    silverMLI: foil(0xe6e9f0, 0.22),
+    goldMLI: foil(0xffbe4a, 0.3, 0.9, 3),
+    goldDouble: Object.assign(foil(0xffbe4a, 0.3, 0.9, 3), { side: THREE.DoubleSide }),
+    blackMLI: foil(0x3a3c46, 0.36, 0.8, 2),
+    silverMLI: foil(0xe9ecf2, 0.38, 0.75, 3),
     alu: std({ color: 0xc3c7cf, metalness: 0.9, roughness: 0.34 }),
     aluDark: std({ color: 0x24262c, metalness: 0.6, roughness: 0.5 }),
     tape: std({ color: 0xd8d2b4, metalness: 0.45, roughness: 0.4 }),
@@ -329,7 +390,8 @@ function build() {
     reflectarray: std({ map: reflectarrayMap(), color: hasDom ? 0xffffff : 0xc9a060, metalness: 0.35, roughness: 0.5 }),
     dishFace: std({ map: petalMap(), color: hasDom ? 0xffffff : 0xe6e8ec, metalness: 0, roughness: 0.6, side: THREE.DoubleSide }),
     nozzle: std({ color: 0x5a524c, metalness: 0.9, roughness: 0.42, side: THREE.DoubleSide }),
-    cells: std({ map: cellMap(), color: hasDom ? 0xffffff : 0x16245a, metalness: 0.45, roughness: 0.3 }),
+    // Cover glass over the cells: glossy, so a wing flashes when it catches the Sun.
+    cells: std({ map: cellMap(), color: hasDom ? 0xffffff : 0x16245a, metalness: 0.5, roughness: 0.2, envMapIntensity: 2 }),
     cellBack: std({ map: backMap(), color: hasDom ? 0xffffff : 0x22252b, metalness: 0.3, roughness: 0.6 }),
     cubePanel: std({ map: cubePanelMap(), color: hasDom ? 0xffffff : 0x23262d, metalness: 0.55, roughness: 0.5 }),
     deck: std({ map: deckMap(), color: hasDom ? 0xffffff : 0xb9bdc6, metalness: 0.85, roughness: 0.4 }),
@@ -386,6 +448,44 @@ export function tileBox(geo: THREE.BoxGeometry, ux: number, uy: number, uz: numb
     uv.setXY(i, uv.getX(i) * u, uv.getY(i) * v)
   }
   return geo
+}
+
+/**
+ * Groups a box's faces by material, so it costs one draw call per material instead of one per face.
+ * `slots` is the material index of the +x, -x, +y, -y, +z, -z faces.
+ */
+export function groupBox(geo: THREE.BoxGeometry, slots: readonly number[]): THREE.BoxGeometry {
+  const src = Array.from(geo.index!.array)
+  const out: number[] = []
+  geo.clearGroups()
+  for (const slot of [...new Set(slots)].sort((a, b) => a - b)) {
+    const start = out.length
+    // Each face of an unsegmented box is two triangles: six indices.
+    slots.forEach((s, face) => s === slot && out.push(...src.slice(face * 6, face * 6 + 6)))
+    geo.addGroup(start, out.length - start, slot)
+  }
+  geo.setIndex(out)
+  return geo
+}
+
+/** Several geometries as one mesh's worth: one draw call. The inputs are used up. */
+export function fuse(geos: THREE.BufferGeometry[]): THREE.BufferGeometry {
+  const out = mergeGeometries(geos)
+  for (const g of geos) g.dispose()
+  return out
+}
+
+/**
+ * `tray` (material 0) with a w x h sheet lying on its +z side at height z (material 1) and, with `back`, another
+ * on its -z side (material 2): one geometry, one draw call per material. The sheets repeat their texture u x v times.
+ */
+export function sheeted(tray: THREE.BufferGeometry, w: number, h: number, z: number, u: number, v: number, back = true): THREE.BufferGeometry {
+  const sheet = () => tile(new THREE.PlaneGeometry(w, h), u, v).translate(0, 0, z)
+  const geos = [tray, sheet()]
+  if (back) geos.push(sheet().rotateY(Math.PI))
+  const out = mergeGeometries(geos, true)
+  for (const g of geos) g.dispose()
+  return out
 }
 
 export function put(

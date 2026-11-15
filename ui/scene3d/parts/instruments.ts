@@ -2,7 +2,7 @@
 // footprint of side L at y = 0 and look along +y (the craft turns that to nadir). Booms, radars and the
 // telescope have their own mounts (layout.ts).
 import * as THREE from 'three'
-import { aim, box, cyl, dishGeometry, mats, put, strut, tile } from './kit'
+import { aim, box, cyl, dishGeometry, groupBox, mats, put, strut, tile } from './kit'
 import { INSTRUMENT } from './references'
 
 const V = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z)
@@ -253,8 +253,8 @@ export function sar(g: THREE.Object3D, D: number, s: number) {
   feed.position.copy(at)
   feed.rotation.z = Math.atan2(centre.y - at.y, centre.x - at.x)
   g.add(feed)
-  const face = tile(box(0.012 * D, 0.07 * D, 2 * k), 2, 6)
-  put(feed, face, [m.radar, m.aluDark, m.alu, m.alu, m.alu, m.alu])
+  const face = groupBox(tile(box(0.012 * D, 0.07 * D, 2 * k), 2, 6), [0, 1, 2, 2, 2, 2])
+  put(feed, face, [m.radar, m.aluDark, m.alu])
   put(feed, box(0.03 * D, 0.05 * D, 1.6 * k), m.goldMLI, -0.022 * D, 0, 0)
   strut(g, V(0.01 * s, -0.02 * s, 0), at, 0.012 * D, m.alu, 6)
 }

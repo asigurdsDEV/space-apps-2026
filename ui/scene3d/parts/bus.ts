@@ -5,7 +5,7 @@
 // launch adapter ring are on the lower anti-Sun face (-z), as on MAVEN and MRO, clear of every mount slot.
 import * as THREE from 'three'
 import { num } from '../model'
-import { aim, bellGeometry, box, cyl, mats, partGroup, put, tile, tileBox } from './kit'
+import { aim, bellGeometry, box, cyl, fuse, groupBox, mats, partGroup, put, tile, tileBox } from './kit'
 import type { CraftLayout } from './layout'
 import { CUBESAT } from './references'
 
@@ -83,31 +83,39 @@ function engines(g: THREE.Object3D, s: number, [bx, by, bz]: Size, n: number, sm
   if (small) ring(small, R * 0.56, 0.1 * R, 0.28 * R, Math.PI / small)
 }
 
+/** The frame along the twelve edges of the bus, as one mesh. */
 function edges(g: THREE.Object3D, [bx, by, bz]: Size, e: number, mat: THREE.Material) {
+  const bars: THREE.BufferGeometry[] = []
   for (const a of [-1, 1]) for (const b of [-1, 1]) {
-    put(g, box(e, by + e, e), mat, (a * bx) / 2, 0, (b * bz) / 2)
-    put(g, box(bx + e, e, e), mat, 0, (a * by) / 2, (b * bz) / 2)
-    put(g, box(e, e, bz + e), mat, (a * bx) / 2, (b * by) / 2, 0)
+    bars.push(box(e, by + e, e).translate((a * bx) / 2, 0, (b * bz) / 2))
+    bars.push(box(bx + e, e, e).translate(0, (a * by) / 2, (b * bz) / 2))
+    bars.push(box(e, e, bz + e).translate((a * bx) / 2, (b * by) / 2, 0))
   }
+  put(g, fuse(bars), mat)
 }
+
+/** The body of a blanketed bus: foil on the four sides, bare equipment decks on top and bottom. */
+const body = ([bx, by, bz]: Size, u: number, v: number) => groupBox(tileBox(box(bx, by, bz), u, v, u), [0, 0, 1, 1, 0, 0])
 
 function cubesat(g: THREE.Object3D, [bx, by, bz]: Size, deltaV: number) {
   const m = mats()
   const rail = CUBESAT.rail
   const [ux, uy, uz] = [bx, by, bz].map((v) => Math.max(1, Math.round(v / 0.1135))) as Size
-  put(g, tileBox(box(bx - 0.002, by, bz - 0.002), ux, uy, uz), [m.cubePanel, m.cubePanel, m.deck, m.aluDark, m.cubePanel, m.cubePanel])
+  put(g, groupBox(tileBox(box(bx - 0.002, by, bz - 0.002), ux, uy, uz), [0, 0, 1, 2, 0, 0]), [m.cubePanel, m.deck, m.aluDark])
   // Four hard-anodised rails: what the deployer's guides slide on. They stand 6.5 mm past both ends.
+  const frame: THREE.BufferGeometry[] = []
   for (const a of [-1, 1]) for (const b of [-1, 1]) {
     const [x, z] = [(a * (bx - rail)) / 2, (b * (bz - rail)) / 2]
-    put(g, box(rail, by + 0.013, rail), m.alu, x, 0, z)
+    frame.push(box(rail, by + 0.013, rail).translate(x, 0, z))
     // Deployment switches on two rail feet keep the satellite off until it leaves the deployer; springs on the other two push it clear.
     put(g, cyl(0.0022, 0.0022, 0.006, 8), a === b ? m.steel : m.copper, x, -by / 2 - 0.0095, z)
   }
   // Frame ribs at every unit boundary, so the stack of units shows.
   const rib = rail * 0.5
-  for (let k = 0; k <= uy; k++) put(g, box(bx, rib, bz), m.alu, 0, -by / 2 + (k * by) / uy + (k === 0 ? rib / 2 : k === uy ? -rib / 2 : 0), 0)
-  for (let k = 1; k < ux; k++) put(g, box(rib, by, bz), m.alu, -bx / 2 + (k * bx) / ux, 0, 0)
-  for (let k = 1; k < uz; k++) put(g, box(bx, by, rib), m.alu, 0, 0, -bz / 2 + (k * bz) / uz)
+  for (let k = 0; k <= uy; k++) frame.push(box(bx, rib, bz).translate(0, -by / 2 + (k * by) / uy + (k === 0 ? rib / 2 : k === uy ? -rib / 2 : 0), 0))
+  for (let k = 1; k < ux; k++) frame.push(box(rib, by, bz).translate(-bx / 2 + (k * bx) / ux, 0, 0))
+  for (let k = 1; k < uz; k++) frame.push(box(bx, by, rib).translate(0, 0, -bz / 2 + (k * bz) / uz))
+  put(g, fuse(frame), m.alu)
   if (ux * uz === 2) {
     // MarCO: two white radiators and the star tracker's baffle on the cold face.
     for (const a of [-1, 1]) put(g, box(0.4 * bx, 0.26 * by, 0.002), m.white, a * 0.24 * bx, 0.3 * by, -bz / 2 - 0.001)
@@ -127,7 +135,7 @@ function cubesat(g: THREE.Object3D, [bx, by, bz]: Size, deltaV: number) {
 function smallsat(g: THREE.Object3D, size: Size, s: number, deltaV: number) {
   const m = mats()
   const [bx, by, bz] = size
-  put(g, tileBox(box(bx, by, bz), 2, 2, 2), [m.silverMLI, m.silverMLI, m.deck, m.deck, m.silverMLI, m.silverMLI])
+  put(g, body(size, 2, 2), [m.silverMLI, m.deck])
   edges(g, size, 0.016 * s, m.alu)
   // GRAIL: one 22 N main engine inside the separation ring, and eight small attitude thrusters.
   engines(g, s, size, deltaV > 0 ? 1 : 0)
@@ -142,7 +150,7 @@ function medium(g: THREE.Object3D, size: Size, s: number, deltaV: number) {
   const m = mats()
   const [bx, by, bz] = size
   // MAVEN: a 2.3 m cube of composite panels under black blankets, with a gold-blanketed propulsion deck.
-  put(g, tileBox(box(bx, by, bz), 3, 3, 3), [m.blackMLI, m.blackMLI, m.deck, m.deck, m.blackMLI, m.blackMLI])
+  put(g, body(size, 3, 3), [m.blackMLI, m.deck])
   put(g, tileBox(box(bx * 1.006, 0.14 * by, bz * 1.006), 4, 1, 4), m.goldMLI, 0, -0.43 * by, 0)
   edges(g, size, 0.012 * s, m.alu)
   engines(g, s, size, deltaV > 0 ? 6 : 0)
@@ -157,7 +165,7 @@ function flagship(g: THREE.Object3D, size: Size, s: number, deltaV: number) {
   const m = mats()
   const [bx, by, bz] = size
   // MRO: gold blankets, black panels round the top, louvered radiators by the wing roots.
-  put(g, tileBox(box(bx, by, bz), 3, 4, 3), [m.goldMLI, m.goldMLI, m.deck, m.deck, m.goldMLI, m.goldMLI])
+  put(g, body(size, 3, 4), [m.goldMLI, m.deck])
   put(g, tileBox(box(bx * 1.004, 0.12 * by, bz * 1.004), 4, 1, 4), m.blackMLI, 0, 0.44 * by, 0)
   edges(g, size, 0.01 * s, m.alu)
   // Six 170 N engines for braking into orbit, six 22 N trim engines between them, eight small thrusters in pods.

@@ -10,6 +10,7 @@ How to read the tables:
 - **est.** means the number was estimated from NASA drawings or photos, or recalled and not re-checked. It is not quoted from the cited page.
 - **Game rule** means the number comes from the catalog row, not from the hardware (see "Scaling rules").
 - Blanket colours (gold, silver, black) follow NASA illustrations of each spacecraft. They were not checked panel by panel.
+- Surface finish is est. from photos of blanketed spacecraft in orbit, not measured: crumpled foil with taped seams, solar cells with their grid, bus bars and a bare frame round each panel, decks with panel seams and screws.
 
 Everything is built in code (three.js geometry and canvas textures). No model or texture files were downloaded.
 
