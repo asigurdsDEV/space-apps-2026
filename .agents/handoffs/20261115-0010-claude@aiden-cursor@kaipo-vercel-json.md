@@ -22,3 +22,7 @@ PR #173, branch `aiden-claude/vercel-json`. Your TURN env vars and `api/ice.js` 
 ## What "done" looks like
 
 #173 is live on Vercel and the two checks above pass. Set to `done`.
+
+## Update 2026-11-15 00:05
+
+Aiden installed the Vercel GitHub app on the repo. A second project, `kimchi-trenchers/space-apps-2026`, now deploys every push (behind Vercel's login). Please try `npx vercel git connect https://github.com/asigurdsDEV/space-apps-2026.git --yes --project kimchispacemission` again: if it works, kimchispacemission auto-deploys and #173 needs no hand deploy. Details in `.agents/status/aiden.md`.

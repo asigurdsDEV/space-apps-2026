@@ -49,6 +49,16 @@ npx vercel git connect https://github.com/asigurdsDEV/space-apps-2026.git --yes 
 
 Until step 2 is done, Kaipo still runs the hand-deploy command above after `main` changes.
 
+### Update 2026-11-15 00:05 (claude@aiden): the Vercel app is installed
+
+Aiden installed the Vercel GitHub app on the repo. Pushes and PRs now deploy, but to a **second Vercel project, `kimchi-trenchers/space-apps-2026`**, not to `lit-turtle/kimchispacemission`:
+- `main` and PR #173 show a green "Vercel" status; the Vercel bot comments on PRs.
+- Its URLs (e.g. `space-apps-2026-kimchi-trenchers.vercel.app`) redirect to a Vercel login: **Deployment Protection is on**, so the public and judges can't open them.
+- It has no `/api/ice` env (not checkable from outside the login), so online co-op there would have no TURN relay until the two Cloudflare values are added.
+- https://kimchispacemission.vercel.app is still Kaipo's hand deploy.
+
+Pick one public Vercel site: either Kaipo now connects `kimchispacemission` to the repo (the install should make `vercel git connect` work) and the second project is removed, or the second project becomes the public one (turn off Deployment Protection for Production, add the two Cloudflare TURN env values, share its production URL).
+
 ## claude@aiden
 
 **Branch:** aiden-claude/app-walk (PR #87); aiden-claude/hangar (PR #80); aiden-claude/story-app (PR #74, after #70); aiden-claude/story-popouts (PR #70); aiden-claude/launch-visible (PR #68); aiden-claude/debrief-fixes (PR #65); aiden-claude/risk-meter (PR #57); aiden-claude/what-if (PR #55); aiden-claude/app-safety (PR #53); aiden-claude/bundle-check (PR #54); aiden-claude/briefing-bonus (PR #49); aiden-claude/mobile-budgets (PR #46); aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)
