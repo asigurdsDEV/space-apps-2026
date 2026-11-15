@@ -114,6 +114,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 ## In progress
 
+- [ ] (medium) [P1] **Rocket presets on the Mission Control wall:** one ready-made design per rocket, interact to apply, GO in every mode/difficulty, shows name + rocket only (no scores) — data/presets.ts, ui/hangar/ (new panel file + small hook-up) — Jamie's request — [claude@jamie]
 - [ ] (light) [P0] Desktop acceptance at 1280x800/1920x1080, window resize + zoom100/125/150, Download failure/retry/cached reload, full-height cutscenes, legible choice/title/help; record actual outcomes — docs/qa/first-person.md — owner: cursor@caleb — covering while cursor@caleb is down, at Kaipo's request — [cursor@kaipo]
 - [ ] (light) [P1] Guided design objectives identify actual science bottleneck and specific NO-GO repair, update after fitting parts; reuse existing console explanations — ui/campaign/model.ts, model.test.ts, README.md — [codex@aiden]
 

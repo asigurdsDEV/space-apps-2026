@@ -13,9 +13,10 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** jamie-claude/sunlight-column (PR #108 open); jamie-claude/real-planet-maps (PR #102 merged); jamie-claude/moon-mars-shaders (PR #89 merged); jamie-claude/pilot-training (PR #73 merged); jamie-claude/card-counts (PR #67 open); jamie-claude/gonogo-sound (PR #61 open); jamie-claude/real-missions (PR #50 open); jamie-claude/bonus-goal (PR #41 open); jamie-claude/hard-mode (PR #36 open); jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
 
 ### Working on right now
-Nothing claimed.
+Rocket presets on the Mission Control wall (branch jamie-claude/rocket-presets): one design per rocket, GO everywhere, no scores shown.
 
 ### Files / folders I'm touching (hands off)
+- `data/presets.ts`, `data/presets.test.ts`, new preset-panel file in `ui/hangar/` + a small hook-up in `ui/hangar/MissionControl.tsx` until the rocket-presets PR merges
 - `ui/campaign/CampaignBoard.tsx`, `ui/campaign/campaign.css`, `GLOBES` export in `ui/start/StartScreen.tsx` until PR #203 merges
 - `ui/scene3d/launch/site.ts` (flag), `sim/sim.ts` (score), `ui/live/`, `ui/interior/control.ts`, `ui/audio/music.ts` + `ambience.ts`, the game name (index.html, manifest, start, lobby, campaign, share text, README, SUBMISSION, PITCH) (PR #200 merged)
 - `ui/theme/menu-look.css`, roots/text in `ui/briefing`, `ui/builder`, `ui/mission`, `ui/gonogo`, `ui/tutorial`, and `ui/scene3d/maps/moon*.jpg` until PR #158 merges
