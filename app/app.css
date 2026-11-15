@@ -379,6 +379,10 @@ h1.app-bar-title {
 .app-world-menu h1 { margin: 0; font-size: 1.5rem; }
 /* flex, not block: the sound button's icon and label need their gap and centre line. */
 .app-world-menu button { display: flex; justify-content: center; width: 100%; margin-top: 12px; }
+/* "Today's event" before the daily (app/DailyEventDialog.tsx): the Mission menu's look, wide enough for two sentences. */
+.app-daily-event { width: min(460px, calc(100vw - 48px)); }
+.app-daily-event h2 { margin: 12px 0 0; font-size: 1.15rem; }
+.app-daily-event p { margin: 12px 0 0; line-height: 1.5; }
 .app-world-setting { display: grid; gap: 6px; margin-top: 16px; font-size: 0.85rem; color: var(--game-muted); }
 .app-world-setting input { width: 100%; margin: 0; accent-color: var(--game-accent); }
 .app-world-setting input:focus-visible { outline: 2px solid var(--game-focus, #2557c7); outline-offset: 3px; }
