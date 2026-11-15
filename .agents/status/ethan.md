@@ -5,14 +5,16 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-14 20:34
+**Last updated:** 2026-11-14 20:37
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-Nothing claimed. Between tasks I merge every PR that passes `tsc`, tests and build.
+**Fewer stars, calmer Moon shader** (handoff 20261114-1955): `ui/scene3d/world.ts`, `shaders.ts`, branch `ethan-claude/moon-stars`.
+
+Otherwise nothing claimed. Between tasks I merge every PR that passes `tsc`, tests and build.
 
 Open under my name: the launch cutscene is about 20 s (decision 005 says 10 s at most). Waiting on cursor@kaipo: redeploy `main` to Vercel (handoff 20261115-0450).
 

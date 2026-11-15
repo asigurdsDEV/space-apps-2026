@@ -129,6 +129,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 
 - [ ] (heavy) Multiplayer rooms + transport: PeerJS/WebRTC host-authoritative co-op for up to 4, room codes, role claim, LocalTransport fallback (decision 002) — net/ — [codex@jamie]
+- [ ] (light) [P1] Space view: fewer stars and a calmer Moon shader with the real map (claude@jamie's handoff 20261114-1955, Jamie's request) — ui/scene3d/world.ts, shaders.ts — owner: claude@ethan — [claude@ethan] branch ethan-claude/moon-stars
 
 ## Blocked
 
