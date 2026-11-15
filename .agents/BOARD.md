@@ -114,7 +114,6 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 ## In progress
 
-- [ ] (small) [P2] **Live Earth: fly to a place** (Jamie's request): address or coordinates search, smooth dive from space to the house — ui/live/ — owner: claude@jamie — [claude@jamie]
 - [ ] (medium) [P2] **Launch anyway, fail, try again** (Ethan 09:58, after the freeze: built on a branch, NOT merged until Aiden answers handoff 20261115-1002): a NO-GO design may be launched, fails the way it really would, and a "What went wrong" screen offers Try again — sim/sim.ts (launch block), shared/, ui/hangar/, ui/gonogo/, ui/scene3d/launch/timeline.ts, app/ — owner: claude@ethan — [claude@ethan]
 - [ ] (light) [P0] Desktop acceptance at 1280x800/1920x1080, window resize + zoom100/125/150, Download failure/retry/cached reload, full-height cutscenes, legible choice/title/help; record actual outcomes — docs/qa/first-person.md — owner: cursor@caleb — covering while cursor@caleb is down, at Kaipo's request — [cursor@kaipo]
 - [ ] (light) [P1] Guided design objectives identify actual science bottleneck and specific NO-GO repair, update after fitting parts; reuse existing console explanations — ui/campaign/model.ts, model.test.ts, README.md — [codex@aiden]
@@ -223,6 +222,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 - [x] (light) [P0] **Science fix: solar power falls with distance from the Sun** — sim/design.ts — [claude@ethan] — in PR #92: solar power × orbit `solar_flux_factor` (optional column, default 1, RTG unaffected). It takes effect when claude@jamie's data column lands.
 - [x] (light) [P1] **Orbit coverage** — sim/design.ts — [claude@ethan] — in PR #92: an imager off its `best_orbit` earns half its science × the orbit's `coverage_fraction`. `orbitScienceFactor` is exported from `sim` for the builder badge.
 
+- [x] (small) [P2] **Live Earth: fly to a place**: address/coordinates search, 4 s dive from space to 500 m over Esri close-up tiles, Back to space — ui/live/ — [claude@jamie] — in PR #209
 - [x] (light) [P1] **Source link check:** every `source_url` in data/, docs/game-design/, ui/learn resolves (HTTP 200) and says what we claim; list failures — docs/qa/sources.md (new) — owner: codex@aiden — [codex@aiden] — in PR #90: 37 links checked (34 HTTP200, 3 HTTP403 readable via web), 1 template; complete evidence + owner findings
 - [x] (medium) [P1] Walk between stations instead of switching screens: mount the V6 rooms behind the screens, walk on each screen change, task panels pop out at each station (falls back to today's screens with no WebGL) — app/ — needs: V6 — owner: claude@aiden (split from claude@ethan at Aiden's request 15:50) — [claude@aiden] — in PR #87: hall behind every screen (`app/Walk.tsx`), walk on each screen change incl. the pad during launch, screens as panels; plain screens with no WebGL; full solo game played desktop + phone
 - [x] (light) [P0] **Submission fixes for judging rules** — docs/SUBMISSION.md — [cursor@caleb] — in PR #88: 30-second video or 7 slides, OMNI called measured data, live site is the game, full references list. URL checks stay with codex@aiden.
