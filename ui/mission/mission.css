@@ -1,26 +1,28 @@
 /* Mission run view + results screen. Every class starts with .mv so nothing leaks into other screens. */
 
 .mv-root {
-  /* GO / NO-GO mission-control palette, same as ui/theme */
-  --mv-bg: #0a0f1c;
-  --mv-card: #111a2e;
-  --mv-line: #4a6c9b;
-  --mv-text: #eef3ff;
-  --mv-muted: #9eb0cf;
-  --mv-info: #5fd4ff;
-  --mv-good: #5ee0a8;
-  --mv-warn: #ffd479;
-  --mv-bad: #ff7a7a;
-  --mv-amber: #ffb547;
+  /* The shared theme (ui/theme); the fallbacks are its dark values, for a page that has not loaded it. */
+  --mv-bg: var(--game-bg, #07090c);
+  --mv-card: var(--game-panel, #101216);
+  --mv-line: var(--game-line, rgb(255 255 255 / 0.14));
+  --mv-control: var(--game-border, #6c7078);
+  --mv-text: var(--game-text, #f5f6f8);
+  --mv-muted: var(--game-muted, #a0a3a8);
+  --mv-info: var(--game-accent, #fff);
+  --mv-on-info: var(--game-on-accent, #0b0c0e);
+  --mv-good: var(--game-success, #5ee0a8);
+  --mv-warn: var(--game-warning, #ffd479);
+  --mv-bad: var(--game-danger, #ff7a7a);
+  --mv-glass: var(--game-glass, rgb(10 12 16 / 0.6));
+  --mv-glass-blur: var(--game-glass-blur, blur(18px));
   --mv-earth: #3b7dd8;
   --mv-moon: #b9bccb;
   --mv-mars: #c8643b;
-  --mv-display: "Rajdhani", "Segoe UI", system-ui, sans-serif;
 
   background: var(--mv-bg);
   color: var(--mv-text);
-  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
-  line-height: 1.45;
+  font-family: var(--game-font, system-ui, -apple-system, 'Segoe UI', sans-serif);
+  line-height: 1.5;
   padding: 16px;
   min-height: 100%;
   box-sizing: border-box;
@@ -43,14 +45,17 @@
   margin: 0;
 }
 .mv h3 {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.3em;
   color: var(--mv-muted);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
-.mv-title {
-  font-size: 1.4rem;
+.mv h2 {
+  font-size: 1.9rem;
+  font-weight: 400;
+  letter-spacing: -0.02em;
 }
 .mv-muted {
   color: var(--mv-muted);
@@ -63,7 +68,7 @@
 .mv-card {
   background: var(--mv-card);
   border: 1px solid var(--mv-line);
-  border-radius: 0;
+  border-radius: var(--game-radius, 22px);
   padding: 14px 16px;
 }
 
@@ -77,31 +82,28 @@
 .mv-speeds {
   display: inline-flex;
   border: 1px solid var(--mv-line);
-  border-radius: 0;
+  border-radius: var(--game-radius-control, 14px);
   overflow: hidden;
 }
 .mv button {
-  font: inherit;
   color: var(--mv-text);
-  background: var(--mv-card);
-  border: 1px solid var(--mv-line);
-  border-radius: 0;
-  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid var(--mv-control);
+  border-radius: var(--game-radius-control, 14px);
+  padding: 6px 14px;
   cursor: pointer;
-  min-height: 36px;
-}
-.mv button:hover:not(:disabled) {
-  border-color: var(--mv-info);
+  min-height: 44px;
 }
 .mv button:focus-visible {
-  outline: 2px solid var(--mv-info);
-  outline-offset: 2px;
+  outline: 2px solid var(--game-focus, #fff);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px rgb(0 0 2 / 0.7); /* shows the ring over the day side of the planet */
 }
 .mv button:disabled {
   opacity: 0.45;
   cursor: default;
 }
-.mv-speeds button {
+.mv .mv-speeds button {
   border: 0;
   border-radius: 0;
   border-right: 1px solid var(--mv-line);
@@ -111,14 +113,14 @@
 }
 .mv-speeds button.is-active {
   background: var(--mv-info);
-  color: #fff;
+  color: var(--mv-on-info);
 }
 .mv button.mv-primary {
   background: var(--mv-info);
   border-color: var(--mv-info);
-  color: #fff;
-  font-weight: 600;
-  padding: 10px 18px;
+  color: var(--mv-on-info);
+  min-height: 52px;
+  padding: 14px 24px;
 }
 
 /* ---------- bars */
@@ -138,7 +140,7 @@
   text-align: right;
 }
 .mv-bar__track {
-  height: 10px;
+  height: 4px;
   border-radius: 0;
   background: var(--mv-line);
   overflow: hidden;
@@ -172,9 +174,9 @@
   margin: 12px 0 0;
 }
 .mv-stats div {
-  background: var(--mv-bg);
-  border-radius: 0;
-  padding: 8px 10px;
+  border: 1px solid var(--mv-line);
+  border-radius: var(--game-radius-control, 14px);
+  padding: 10px 12px;
 }
 .mv-stats dt {
   font-size: 0.75rem;
@@ -182,7 +184,7 @@
 }
 .mv-stats dd {
   margin: 0;
-  font-weight: 600;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 .mv-stats .mv-tone-warn dd {
@@ -199,12 +201,12 @@
   flex: none;
   width: 88px;
   height: 88px;
-  border-radius: 0;
+  border-radius: var(--game-radius-control, 14px);
   display: grid;
   place-items: center;
-  font-size: 3rem;
-  font-weight: 800;
-  color: #fff;
+  font-size: 3.2rem;
+  font-weight: 500;
+  color: var(--mv-on-info);
   background: var(--mv-tone, var(--mv-info));
 }
 .mv-score {
@@ -223,10 +225,12 @@
 
 /* ---------- anomaly card (decision 004) */
 .mv-decision {
-  background: var(--mv-card);
-  border: 2px solid var(--mv-warn);
-  border-radius: 0;
-  padding: 16px 18px;
+  /* Glass, not the card colour: it sits over the lit planet, where a see-through card loses its text. */
+  background: var(--mv-glass);
+  backdrop-filter: var(--mv-glass-blur);
+  border: 1px solid var(--mv-warn);
+  border-radius: var(--game-radius, 22px);
+  padding: 20px 22px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
   display: grid;
   gap: 10px;
@@ -250,14 +254,16 @@
 .mv-decision__badge {
   background: var(--mv-warn);
   color: #1a1200;
-  font-weight: 700;
-  border-radius: 0;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  border-radius: 6px;
   padding: 2px 8px;
 }
 .mv .mv-decision__title {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
+  font-weight: 400;
   text-transform: none;
-  letter-spacing: 0;
+  letter-spacing: -0.02em;
   color: var(--mv-text);
   margin: 0;
 }
@@ -271,22 +277,26 @@
   gap: 10px;
   align-items: flex-start;
   text-align: left;
-  padding: 12px;
-  background: var(--mv-bg);
+  padding: 14px;
+  border-color: var(--mv-line);
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+  text-transform: none;
 }
 .mv-decision__option strong {
   display: block;
+  font-weight: 500;
 }
 .mv-decision__key {
   flex: none;
   width: 26px;
   height: 26px;
-  border-radius: 0;
+  border-radius: 6px;
   display: grid;
   place-items: center;
   background: var(--mv-info);
-  color: #fff;
-  font-weight: 700;
+  color: var(--mv-on-info);
+  font-weight: 500;
 }
 .mv-decision__effect {
   display: block;
@@ -296,9 +306,8 @@
 }
 .mv-decision__story {
   font-size: 0.85rem;
-  border-left: 3px solid var(--mv-info);
-  padding: 6px 10px;
-  background: var(--mv-bg);
+  border-left: 1px solid var(--mv-info);
+  padding: 6px 12px;
   border-radius: 0;
 }
 .mv-decision__story a {
@@ -333,22 +342,35 @@
   flex: none;
   white-space: nowrap;
 }
+/* One white button on the screen ("Design a new mission"); "Try it" is an outline.
+   .mv-root in front so this outranks the shared primary-button rules. */
+.mv-root .mv .mv-fixes button.mv-primary:not(:disabled) {
+  background: transparent;
+  border: 1px solid rgb(255 255 255 / 0.3);
+  color: var(--mv-text);
+  min-height: 44px;
+  padding: 6px 14px;
+}
+.mv-root .mv .mv-fixes button.mv-primary:not(:disabled):hover {
+  background: color-mix(in srgb, var(--mv-text) 5%, transparent);
+  border-color: color-mix(in srgb, var(--mv-text) 60%, transparent);
+}
 .mv-fixes li {
   display: flex;
   gap: 12px;
   align-items: center;
   justify-content: space-between;
-  background: var(--mv-bg);
-  border-radius: 0;
-  padding: 8px 10px;
+  border-top: 1px solid var(--mv-line);
+  padding: 10px 0 0;
 }
 .mv-share pre {
   margin: 0 0 10px;
   white-space: pre-wrap;
   font-size: 0.9rem;
-  background: var(--mv-bg);
-  border-radius: 0;
-  padding: 10px;
+  font-family: inherit;
+  border: 1px solid var(--mv-line);
+  border-radius: var(--game-radius-control, 14px);
+  padding: 12px;
 }
 
 /* ---------- real space weather strip (data/space-weather) */
@@ -359,10 +381,10 @@
   align-items: baseline;
   margin: 0;
   padding: 8px 12px;
-  border-radius: 0;
+  border-radius: var(--game-radius-control, 14px);
   background: var(--mv-card);
   border: 1px solid var(--mv-line);
-  border-left: 4px solid var(--mv-tone);
+  border-left: 2px solid var(--mv-tone);
   font-size: 0.9rem;
 }
 
@@ -405,7 +427,7 @@
   position: relative;
   height: min(72vh, 680px);
   min-height: 420px;
-  border-radius: 0;
+  border-radius: var(--game-radius, 22px);
   overflow: hidden;
   border: 1px solid var(--mv-line);
   background: #02040a;
@@ -431,15 +453,16 @@
   gap: 4px;
   list-style: none;
   margin: 0;
-  padding: 4px;
-  border-radius: 0;
-  background: rgba(11, 16, 32, 0.72);
-  backdrop-filter: blur(6px);
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: var(--game-radius-control, 14px);
+  background: var(--mv-glass);
+  backdrop-filter: var(--mv-glass-blur);
 }
 .mv-phase {
   width: 10px;
   height: 10px;
-  border-radius: 0;
+  border-radius: 8px;
   background: var(--mv-line);
   transition: width 0.3s ease;
 }
@@ -451,9 +474,11 @@
   height: auto;
   padding: 2px 10px;
   background: var(--mv-info);
-  color: #fff;
-  font-size: 0.8rem;
-  font-weight: 700;
+  color: var(--mv-on-info);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
 }
 .mv-phase:not(.mv-phase--current) .mv-phase__label {
   position: absolute;
@@ -463,9 +488,10 @@
   clip: rect(0 0 0 0);
 }
 .mv-day {
-  padding: 4px 10px;
-  border-radius: 0;
-  background: rgba(11, 16, 32, 0.72);
+  padding: 6px 12px;
+  border-radius: var(--game-radius-control, 14px);
+  background: var(--mv-glass);
+  backdrop-filter: var(--mv-glass-blur);
   font-size: 0.85rem;
   font-variant-numeric: tabular-nums;
 }
@@ -474,14 +500,16 @@
   gap: 6px;
 }
 .mv-top button {
-  background: rgba(11, 16, 32, 0.78);
-  backdrop-filter: blur(6px);
-  min-height: 40px;
+  background: var(--mv-glass);
+  backdrop-filter: var(--mv-glass-blur);
+}
+.mv-top .mv-speeds button {
+  backdrop-filter: none;
 }
 .mv-speeds {
   display: inline-flex;
-  border: 1px solid var(--mv-line);
-  border-radius: 0;
+  border: 1px solid var(--mv-control);
+  border-radius: var(--game-radius-control, 14px);
   overflow: hidden;
 }
 
@@ -493,11 +521,13 @@
   z-index: 2;
   margin: 0;
   padding: 6px 12px;
-  border-radius: 0;
-  background: rgba(11, 16, 32, 0.8);
-  border: 1px solid var(--mv-tone);
+  border-radius: var(--game-radius-control, 14px);
+  background: var(--mv-glass);
+  backdrop-filter: var(--mv-glass-blur);
+  border: 1px solid var(--mv-line);
+  border-left: 2px solid var(--mv-tone);
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 500;
 }
 .mv-weather span {
   font-weight: 400;
@@ -511,10 +541,12 @@
   z-index: 2;
   max-width: min(560px, calc(100% - 24px));
   margin: 0;
-  padding: 8px 14px;
-  border-radius: 0;
-  background: rgba(11, 16, 32, 0.85);
-  border-left: 4px solid var(--mv-tone);
+  padding: 10px 16px;
+  border-radius: var(--game-radius-control, 14px);
+  background: var(--mv-glass);
+  backdrop-filter: var(--mv-glass-blur);
+  border: 1px solid var(--mv-line);
+  border-left: 2px solid var(--mv-tone);
   animation: mv-toast 4s ease forwards;
 }
 @keyframes mv-toast {
@@ -538,21 +570,22 @@
   display: flex;
   gap: 10px;
   align-items: center;
-  padding: 8px 10px;
-  border-radius: 0;
-  background: rgba(11, 16, 32, 0.78);
-  backdrop-filter: blur(6px);
+  padding: 10px 12px;
+  border: 1px solid var(--mv-line);
+  border-radius: var(--game-radius-control, 14px);
+  background: var(--mv-glass);
+  backdrop-filter: var(--mv-glass-blur);
 }
 .mv-gauge__ring {
   flex: none;
   width: 46px;
   height: 46px;
-  border-radius: 0;
+  border-radius: 50%;
   display: grid;
   place-items: center;
   font-size: 1.15rem;
   background:
-    radial-gradient(closest-side, rgba(11, 16, 32, 0.95) 76%, transparent 78%),
+    radial-gradient(closest-side, rgb(10 12 16 / 0.95) 86%, transparent 88%),
     conic-gradient(var(--mv-tone, var(--mv-info)) var(--share, 0%), var(--mv-line) 0);
   transition: background 0.3s ease;
 }
@@ -588,7 +621,7 @@
 .mv-decision__story summary {
   cursor: pointer;
   color: var(--mv-info);
-  font-weight: 600;
+  font-weight: 500;
 }
 .mv-decision__story[open] summary {
   margin-bottom: 6px;
@@ -597,13 +630,16 @@
 /* folded extras */
 .mv-more {
   border: 1px solid var(--mv-line);
-  border-radius: 0;
+  border-radius: var(--game-radius, 22px);
   background: var(--mv-card);
   padding: 10px 14px;
 }
 .mv-more > summary {
   cursor: pointer;
-  font-weight: 600;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
   color: var(--mv-muted);
 }
 .mv-more[open] > summary {
@@ -626,8 +662,7 @@
   grid-template-columns: 64px 1fr;
   gap: 8px;
   padding: 6px 8px 6px 10px;
-  border-left: 3px solid var(--mv-tone, var(--mv-line));
-  background: var(--mv-bg);
+  border-left: 2px solid var(--mv-tone, var(--mv-line));
   border-radius: 0;
   font-size: 0.9rem;
 }
@@ -644,6 +679,11 @@
   }
   .mv-top .mv-controls {
     margin-left: 0;
+  }
+  /* Pause, four speeds and Restart share one row of a phone. */
+  .mv-top button {
+    padding: 6px 9px;
+    letter-spacing: 0.08em;
   }
   .mv-weather {
     top: 104px;
@@ -676,7 +716,7 @@
   align-items: center;
   position: relative;
   padding: 18px;
-  border-radius: 0;
+  border-radius: var(--game-radius, 22px);
   background: var(--mv-card);
   border: 1px solid var(--mv-line);
   overflow: hidden;
@@ -712,7 +752,7 @@
   vertical-align: -2px;
 }
 .mv-fixes {
-  border-color: var(--mv-info);
+  border-color: var(--mv-line);
 }
 .mv-fixes__score {
   color: var(--mv-good);
@@ -764,23 +804,7 @@
   }
 }
 
-/* ---------- GO / NO-GO console layer ---------- */
-.mv :is(h2, h3, button, summary, .mv-grade, .mv-score, .mv-day, .mv-phase--current, .mv-gauge strong, .mv-decision__badge, .mv-weather) {
-  font-family: var(--mv-display);
-  letter-spacing: 0.08em;
-}
-.mv h2 { text-transform: uppercase; font-size: 2rem; letter-spacing: 0.08em; font-weight: 700; }
-.mv h3 { font-size: 1.15rem; letter-spacing: 0.18em; }
-.mv button { text-transform: uppercase; font-size: 1.15rem; border-width: 2px; }
-.mv button.mv-primary {
-  background: var(--mv-amber);
-  color: #1a1206;
-  border: 0;
-  clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
-  font-weight: 700;
-  letter-spacing: 0.14em;
-}
-.mv-card, .mv-more, .mv-results__head, .mv-decision, .mv-stage { border-width: 2px; }
-.mv-gauge strong { font-size: 1.25rem; }
-.mv-grade { font-family: var(--mv-display); font-size: 4rem; }
-.mv-phase { border-radius: 0; }
+/* ---------- numbers ---------- */
+.mv-grade, .mv-score, .mv-day, .mv-gauge strong { font-variant-numeric: tabular-nums; }
+.mv-gauge strong { font-size: 1.1rem; font-weight: 500; }
+.mv-score strong { font-weight: 500; }

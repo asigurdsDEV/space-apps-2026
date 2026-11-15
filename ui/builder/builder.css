@@ -4,7 +4,7 @@
   --mb-panel: var(--game-panel);
   --mb-text: var(--game-text);
   --mb-muted: var(--game-muted);
-  --mb-line: var(--game-border);
+  --mb-line: var(--game-line);
   --mb-accent: var(--game-accent);
   --mb-pick: var(--game-selected);
   --mb-ok: var(--game-success);
@@ -32,27 +32,26 @@
   .mb-side .mb-console { padding: 4px 4px 4px 16px; font-size: 0.7rem; }
   .mb-side .mb-console::before { left: 5px; top: 8px; width: 7px; height: 7px; }
   .mb-side .mb-console-name { letter-spacing: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .mb-side-toggle { display: block; width: 100%; min-height: 44px; margin-bottom: 8px; border: 1px solid var(--mb-line); border-radius: 8px; background: transparent; color: var(--mb-text); font: inherit; font-weight: 600; cursor: pointer; }
+  .mb-side-toggle { display: block; width: 100%; min-height: 44px; margin-bottom: 8px; border: 1px solid var(--game-border); background: transparent; color: var(--mb-text); cursor: pointer; }
   .mb-side .mb-launch { margin-top: 0; }
 }
 
-.mb-title { margin: 0 0 16px; font-size: 1.5rem; }
+.mb-title { margin: 0 0 16px; font-size: 1.9rem; font-weight: 400; letter-spacing: -0.02em; }
 .mb-muted { color: var(--mb-muted); font-weight: normal; }
 .mb-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
 .mb-slot {
   background: var(--mb-panel);
   border: 1px solid var(--mb-line);
-  border-radius: 10px;
   padding: 12px 16px 16px;
   margin: 0 0 16px;
   min-width: 0; /* fieldsets default to min-content width, which overflows on phones */
 }
-.mb-slot legend { font-weight: 600; padding: 0 4px; }
+.mb-slot legend { padding: 0 8px; color: var(--mb-muted); font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase; }
 
 .mb-table-wrap { overflow-x: auto; }
 .mb-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-.mb-table th { text-align: left; font-weight: 600; text-transform: capitalize; border-bottom: 1px solid var(--mb-line); padding: 6px 8px; white-space: nowrap; }
+.mb-table th { text-align: left; color: var(--mb-muted); font-weight: 400; text-transform: capitalize; border-bottom: 1px solid var(--mb-line); padding: 6px 8px; white-space: nowrap; }
 .mb-table td { padding: 6px 8px; border-bottom: 1px solid var(--mb-line); vertical-align: top; }
 .mb-table tr.is-picked td { background: var(--mb-pick); }
 .mb-table input { accent-color: var(--mb-accent); width: 18px; height: 18px; margin: 0; }
@@ -60,15 +59,15 @@
 .mb-num { font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 .mb-side {
+  border-radius: var(--game-radius, 22px);
   position: sticky;
   top: 24px;
   align-self: start;
   background: var(--mb-panel);
   border: 1px solid var(--mb-line);
-  border-radius: 10px;
   padding: 16px;
 }
-.mb-side h2 { margin: 0 0 12px; font-size: 1.1rem; }
+.mb-side h2 { margin: 0 0 14px; color: var(--mb-muted); font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase; }
 /* Desktop: never taller than the screen, so Launch is always in view (it sticks to the panel's bottom). */
 @media (min-width: 801px) {
   .mb-side { max-height: calc(100vh - 48px); overflow-y: auto; overscroll-behavior: contain; padding-bottom: 0; }
@@ -78,41 +77,38 @@
 .mb-bar { margin-bottom: 14px; }
 .mb-bar-head { display: flex; justify-content: space-between; gap: 8px; font-size: 0.85rem; margin-bottom: 4px; font-variant-numeric: tabular-nums; }
 .mb-bar-head strong { color: var(--mb-bad); }
-.mb-track { height: 10px; border-radius: 5px; background: var(--mb-line); overflow: hidden; }
+.mb-track { height: 4px; background: var(--mb-line); overflow: hidden; }
 .mb-fill { height: 100%; background: var(--mb-ok); transition: width 150ms ease; }
 .mb-bar.is-bad .mb-fill { background: var(--mb-bad); }
 .mb-bar.is-goal.is-bad .mb-fill { background: var(--mb-warn); }
 .mb-bar.is-goal.is-bad .mb-bar-head strong { color: var(--mb-warn); }
 
 .mb-issues { list-style: none; padding: 0; margin: 0 0 12px; font-size: 0.85rem; }
-.mb-issue { padding: 6px 8px; border-left: 3px solid; margin-bottom: 6px; border-radius: 0 4px 4px 0; }
+.mb-issue { padding: 6px 10px; border-left: 2px solid; margin-bottom: 6px; }
 .mb-issue.is-error { border-color: var(--mb-bad); }
 .mb-issue.is-warning { border-color: var(--mb-warn); }
 
 .mb-launch {
   width: 100%;
-  padding: 10px;
-  font-size: 1rem;
-  font-weight: 600;
+  min-height: 52px;
+  padding: 14px 24px;
   border: 0;
-  border-radius: 8px;
   background: var(--mb-accent);
   color: var(--game-on-accent);
   cursor: pointer;
 }
 .mb-launch:disabled { opacity: 0.45; cursor: not-allowed; }
-.mb-launch:focus-visible, .mb-table input:focus-visible { outline: 2px solid var(--mb-accent); outline-offset: 2px; }
+.mb-launch:focus-visible, .mb-table input:focus-visible { outline: 2px solid var(--game-focus); outline-offset: 3px; }
 .mb-table td:nth-child(2) { min-width: 11rem; }
 
 /* co-op roles */
 .mb-role {
   margin-left: 8px;
   padding: 1px 8px;
-  border-radius: 999px;
-  background: var(--mb-pick);
-  color: var(--mb-accent);
+  border: 1px solid var(--mb-line);
+  color: var(--mb-text);
   font-size: 0.8em;
-  font-weight: 600;
+  font-weight: 500;
   white-space: nowrap;
 }
 .mb-slot.is-locked .mb-table-wrap { opacity: 0.6; }
@@ -128,19 +124,19 @@
 
 /* Flight console lights (ui/gonogo poll), live while designing. */
 .mb-consoles { list-style: none; margin: 0 0 16px; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-.mb-console { display: flex; flex-direction: column; padding: 6px 8px 6px 22px; border: 1px solid var(--mb-line); border-radius: 8px; position: relative; font-size: 0.8rem; line-height: 1.3; }
+.mb-console { display: flex; flex-direction: column; padding: 6px 8px 6px 22px; border: 1px solid var(--mb-line); position: relative; font-size: 0.8rem; line-height: 1.3; border-radius: var(--game-radius-control, 14px); }
 .mb-console::before { content: ''; position: absolute; left: 8px; top: 10px; width: 8px; height: 8px; border-radius: 50%; background: var(--mb-ok); }
-.mb-console-name { font-family: var(--game-font-mono, monospace); letter-spacing: 0.06em; color: var(--mb-muted); }
-.mb-console-call { font-weight: 700; color: var(--mb-ok); }
+.mb-console-name { font-size: 0.65rem; letter-spacing: 0.2em; color: var(--mb-muted); }
+.mb-console-call { font-weight: 500; color: var(--mb-ok); }
 .mb-console.is-go-concerns::before { background: var(--mb-warn); }
 .mb-console.is-go-concerns .mb-console-call { color: var(--mb-warn); }
 .mb-console.is-no-go { border-color: var(--mb-bad); }
 .mb-console.is-no-go::before { background: var(--mb-bad); }
 .mb-console.is-no-go .mb-console-call { color: var(--mb-bad); }
-.mb-console.is-mine { outline: 2px solid var(--mb-accent); outline-offset: 1px; }
+.mb-console.is-mine { outline: 1px solid var(--mb-accent); outline-offset: 1px; }
 
 /* Part compatibility (partFit): badges in the name cell; parts too big for the bus are dimmed but still pickable. */
-.mb-badge { display: inline-block; margin: 2px 6px 2px 0; padding: 0 6px; border-radius: 999px; border: 1px solid currentColor; font-size: 0.75rem; font-weight: 600; line-height: 1.5; }
+.mb-badge { display: inline-block; margin: 2px 6px 2px 0; padding: 0 6px; border: 1px solid currentColor; font-size: 0.75rem; font-weight: 500; line-height: 1.5; border-radius: 6px; }
 .mb-badge.is-good { color: var(--mb-ok); }
 .mb-badge.is-warn { color: var(--mb-warn); }
 .mb-badge.is-bad { color: var(--mb-bad); }

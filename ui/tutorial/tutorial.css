@@ -1,23 +1,25 @@
-.bt-root { color: var(--game-text); background: var(--game-panel); border: 1px solid var(--game-border); border-top: 3px solid var(--game-accent); border-radius: 18px; padding: clamp(20px, 4vw, 36px); font: 1rem/1.5 var(--game-font); width: min(34rem, calc(100% - 32px)); max-height: calc(100dvh - 32px); overflow: auto; box-shadow: 0 24px 120px #0008; }
-.bt-root::backdrop { background: #030916bb; backdrop-filter: blur(5px); }
+/* Glass, as the Menu dialog: the page shows through a see-through panel colour and the text is lost. */
+.bt-root { color: var(--game-text); background: var(--game-glass); backdrop-filter: var(--game-glass-blur); border: 1px solid var(--game-line); padding: clamp(20px, 4vw, 36px); font: 1rem/1.5 var(--game-font); width: min(34rem, calc(100% - 32px)); max-height: calc(100dvh - 32px); overflow: auto; box-shadow: 0 24px 120px #0008; }
+.bt-root::backdrop { background: rgb(0 0 2 / 0.6); backdrop-filter: blur(5px); }
 .bt-root, .bt-root * { box-sizing: border-box; }
 .bt-root p { margin: 0; }
 .bt-heading, .bt-actions, .bt-navigation { display: flex; align-items: center; gap: 12px; }
 .bt-heading, .bt-actions { justify-content: space-between; }
-.bt-heading > p { color: var(--game-accent); font: .7rem var(--game-font-mono); letter-spacing: .07em; text-transform: uppercase; }
+.bt-heading > p { color: var(--game-muted); font-size: .68rem; letter-spacing: .3em; text-transform: uppercase; }
 .bt-progress { display: flex; gap: 5px; margin: 20px 0; }
-.bt-progress span { flex: 1; height: 3px; background: var(--game-border); border-radius: 2px; }
+.bt-progress span { flex: 1; height: 2px; background: var(--game-line); }
 .bt-progress .bt-progress-done { background: var(--game-accent); }
-.bt-root .bt-counter { color: var(--game-muted); font: .75rem var(--game-font-mono); margin-top: 10px; }
-.bt-copy h2 { font-size: 1.8rem; line-height: 1.15; letter-spacing: -.04em; margin: 12px 0; }
+.bt-root .bt-counter { color: var(--game-muted); font-size: .75rem; font-variant-numeric: tabular-nums; margin-top: 10px; }
+.bt-copy h2 { font-size: 1.9rem; font-weight: 400; line-height: 1.15; letter-spacing: -.02em; margin: 12px 0; }
 .bt-copy > p:last-child { color: var(--game-muted); }
-.bt-root button, .bt-replay { font: inherit; color: var(--game-text); border: 1px solid var(--game-border); border-radius: 8px; background: var(--game-bg); min-height: 44px; padding: 9px 14px; cursor: pointer; }
-.bt-replay { margin-bottom: 12px; background: var(--game-panel); font: .85rem var(--game-font); }
-.bt-replay span { color: var(--game-accent); margin-left: 10px; }
-.bt-root .bt-primary { background: var(--game-accent); color: var(--game-on-accent); font-weight: 700; }
+.bt-root button, .bt-replay { color: var(--game-text); border: 1px solid var(--game-border); background: transparent; min-height: 44px; padding: 9px 18px; cursor: pointer; }
+.bt-replay { margin-bottom: 12px; }
+.bt-replay span { color: var(--game-muted); margin-left: 10px; }
+.bt-root .bt-primary { background: var(--game-accent); color: var(--game-on-accent); }
 .bt-actions { margin-top: 28px; flex-wrap: wrap; }
 .bt-navigation { margin-left: auto; }
 .bt-root .bt-footer { font-size: .7rem; color: var(--game-muted); margin-top: 18px; }
-.bt-root :focus-visible, .bt-replay:focus-visible { outline: 3px solid var(--game-focus); outline-offset: 3px; }
-.bt-root button:disabled { opacity: .5; cursor: not-allowed; }
+.bt-root :focus-visible, .bt-replay:focus-visible { outline: 2px solid var(--game-focus); outline-offset: 3px; }
+.bt-root button:disabled { opacity: .45; cursor: not-allowed; }
+.bt-root h2:focus { outline: none; }
 @media (max-width: 400px) { .bt-heading { align-items: flex-start; } .bt-heading > p { max-width: 15ch; line-height: 1.5; } }

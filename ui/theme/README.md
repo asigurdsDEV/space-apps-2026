@@ -26,11 +26,13 @@ Add `game-theme` to the app wrapper. Leave `data-theme` unset to follow the devi
 | --- | --- |
 | `--game-bg`, `--game-panel`, `--game-surface` | Page, cards, inset surfaces |
 | `--game-text`, `--game-muted` | Body and secondary text |
-| `--game-border` | Visible control/panel outlines |
+| `--game-border` | Outlines of controls (buttons, inputs): 3:1 against the page |
+| `--game-line` | Hairline for panels and dividers (white at 14 %) |
+| `--game-glass`, `--game-glass-blur` | Background and `backdrop-filter` of a panel laid over the 3D game |
 | `--game-accent`, `--game-on-accent`, `--game-selected` | Actions, text on primary actions, selected backgrounds |
 | `--game-success`, `--game-warning`, `--game-danger` | Resource and mission feedback, always accompanied by text |
 | `--game-focus` | Keyboard focus outline |
-| `--game-font`, `--game-font-mono` | System fonts; no network font requests |
+| `--game-font`, `--game-font-mono`, `--game-font-display` | Inter Tight for everything (index.html links it from Google Fonts; a system sans is the fallback). Numbers that line up use `font-variant-numeric: tabular-nums` |
 | `--game-space-1/2/3/4/6/8` | 4/8/12/16/24/32px spacing at a 16px root |
 | `--game-radius`, `--game-radius-control` | Panels and controls |
 
@@ -53,4 +55,6 @@ Serve the repo root (or use Vite after the scaffold merges), then open `/ui/them
 
 Run `node ui/theme/check-contrast.mjs` from the repo root to check both palettes, status/text colors, primary button labels, control borders and focus outlines. It needs only Node, so it works before the scaffold merges.
 
-Enabled controls are at least 44px tall. Focus outlines are 3px. Text/status colors target WCAG AA contrast against page and panel backgrounds. Reduced-motion preference disables animations and transitions inside `.game-theme`. The illustrative resource values in the preview are not simulation output.
+The look is the start menu's (ui/start): near-black, white and grey, rounded corners (22px boxes, 14px controls), hairlines; green, amber and red only say GO, caution and NO-GO. Every button is a small tracked label; the main action (`*primary*` classes, submit buttons) is white with dark text.
+
+Enabled controls are at least 44px tall. Focus outlines are 2px and white; a control laid over the 3D game adds a dark band inside the ring (`box-shadow: 0 0 0 3px rgb(0 0 2 / 0.7)`) so it shows over a bright scene. Text/status colors target WCAG AA contrast against page and panel backgrounds. Reduced-motion preference disables animations and transitions inside `.game-theme`. The illustrative resource values in the preview are not simulation output.
