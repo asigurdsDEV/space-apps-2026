@@ -7,6 +7,7 @@ import { atmosphereShader, toScreen } from '../scene3d/shaders'
 import { steadyResolution } from '../scene3d/steady'
 import { earthOrientation, sunDirection } from '../scene3d/sun'
 import { liveEarthShader } from './earthShader'
+import { get } from './feed'
 import type { Orbits } from './propagate'
 import type { Storm } from './storms'
 
@@ -24,6 +25,10 @@ export interface LiveScene {
   lookAt(lat: number, lon: number): void
   /** Marks the player's own place (only after they agreed to share it) and turns the view to it. */
   setHere(lat: number, lon: number): void
+  /** Dives from wherever the view is to a few hundred metres over a place (degrees), with close-up pictures fading in. */
+  flyTo(lat: number, lon: number, name: string): void
+  /** Climbs back to the whole globe over the same place. */
+  flyOut(): void
   show(layer: Layer, on: boolean): void
   dispose(): void
 }
@@ -41,6 +46,15 @@ const ATMOSPHERE_R = 1.06
 const FOV = 38
 const RING_POINTS = 181
 const RAD = Math.PI / 180
+/** Close-up pictures for flyTo: Esri World Imagery tiles (free to show with its credit, CORS open), a square of TILES a side per level. */
+const tileUrl = (z: number, x: number, y: number) => `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`
+const TILE_LEVELS = [6, 9, 12, 15, 18]
+const TILES = 5
+/** Where the dive stops: 500 m up, in Earth radii. At 38° that shows about 350 m of ground, a house and its street. */
+const GROUND_HEIGHT = 0.5 / 6371
+const FLY_IN_S = 4
+const FLY_OUT_S = 2.5
+const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2)
 /** A rough middle of each continent's land (degrees), for its name on the globe. */
 const CONTINENTS: [string, number, number][] = [
   ['North America', 45, -100], ['South America', -15, -60], ['Europe', 50, 15], ['Africa', 5, 20],
@@ -71,6 +85,28 @@ function glyph(edge: boolean, ring = false): THREE.CanvasTexture {
   if (edge) disc(ring ? 11 : 30, 'rgb(0 0 2 / 0.6)')
   disc(ring ? 7 : edge ? 20 : 26, '#fff')
   return new THREE.CanvasTexture(canvas)
+}
+
+/** One map tile laid on the globe: an 8x8 grid between its Web Mercator edges, in the Earth's frame. */
+function tileGeometry(z: number, x: number, y: number): THREE.BufferGeometry {
+  const n = 2 ** z
+  const at: number[] = []
+  const uv: number[] = []
+  const index: number[] = []
+  for (let j = 0; j <= 8; j++) {
+    const lat = Math.atan(Math.sinh(Math.PI * (1 - (2 * (y + j / 8)) / n)))
+    for (let i = 0; i <= 8; i++) {
+      const lon = ((x + i / 8) / n) * 2 * Math.PI - Math.PI
+      at.push(Math.cos(lat) * Math.cos(lon), Math.sin(lat), -Math.cos(lat) * Math.sin(lon))
+      uv.push(i / 8, j / 8)
+      if (i < 8 && j < 8) index.push(j * 9 + i, (j + 1) * 9 + i, j * 9 + i + 1, j * 9 + i + 1, (j + 1) * 9 + i, (j + 1) * 9 + i + 1)
+    }
+  }
+  const geometry = new THREE.BufferGeometry()
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(at, 3))
+  geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2))
+  geometry.setIndex(index)
+  return geometry
 }
 
 interface Tag { el: HTMLElement; at: THREE.Vector3; x: number; y: number; shown: boolean; width: number; flipped: boolean; shift: number }
@@ -172,6 +208,7 @@ export function createLiveScene(container: HTMLElement, options: LiveSceneOption
   }
   const placeTags = CONTINENTS.map(([name, lat, lon]) => ground(tag('le-tag le-tag--place', name), lat, lon))
   let hereTag: Tag | null = null
+  let searchTag: Tag | null = null
 
   const controls = new OrbitControls(camera, renderer.domElement)
   controls.enableDamping = true
@@ -188,6 +225,9 @@ export function createLiveScene(container: HTMLElement, options: LiveSceneOption
   let home = 3.6
   const v = new THREE.Vector3()
   function lookFrom(local: THREE.Vector3, distance: number, lean: number): void {
+    // A storm picked while down at a place climbs straight out with the usual glide.
+    flight = parked = null
+    controls.enabled = true
     // Lean toward the Sun so something over the night side is seen beside daylight, not on a black disc.
     goal.copy(local).normalize().applyQuaternion(earth.quaternion).addScaledVector(SUN, lean).normalize()
     goalDistance = distance
@@ -209,6 +249,111 @@ export function createLiveScene(container: HTMLElement, options: LiveSceneOption
     gliding = false
     controls.autoRotate = false
   })
+
+  // flyTo / flyOut: the camera rides the Earth's frame (it turns under the Sun) on a path from one height to another, looking at the centre with north up (the scene's +y, as turnEarth keeps it).
+  let flight: { from: THREE.Vector3; to: THREE.Vector3; fromHeight: number; toHeight: number; t: number; s: number; land: boolean } | null = null
+  let parked: { at: THREE.Vector3; height: number } | null = null
+  const turn = new THREE.Quaternion()
+  const none = new THREE.Quaternion()
+  const earthDirection = () => camera.position.clone().applyQuaternion(earth.quaternion.clone().invert()).normalize()
+  function fly(to: THREE.Vector3, toHeight: number, s: number, land: boolean): void {
+    gliding = false
+    controls.autoRotate = false
+    controls.enabled = false
+    const fromHeight = parked ? parked.height : camera.position.length() - 1
+    flight = { from: parked ? parked.at.clone() : earthDirection(), to, fromHeight, toHeight, t: 0, s: options.reducedMotion ? 1e-9 : s, land }
+    parked = null
+  }
+  function ride(dt_s: number): void {
+    if (flight) {
+      flight.t = Math.min(1, flight.t + dt_s / flight.s)
+      // Turn over the place in the first 55 %, while the height falls (or climbs) evenly in log terms over the whole flight.
+      turn.setFromUnitVectors(flight.from, flight.to)
+      v.copy(flight.from).applyQuaternion(none.clone().slerp(turn, ease(Math.min(1, flight.t / 0.55))))
+      const height = Math.exp(Math.log(flight.fromHeight) + (Math.log(flight.toHeight) - Math.log(flight.fromHeight)) * ease(flight.t))
+      if (flight.t >= 1) {
+        if (flight.land) parked = { at: flight.to.clone(), height: flight.toHeight }
+        else controls.enabled = true
+        flight = null
+      }
+      camera.position.copy(v).multiplyScalar(1 + height)
+    } else if (parked) camera.position.copy(parked.at).multiplyScalar(1 + parked.height)
+    else return
+    camera.position.applyQuaternion(earth.quaternion)
+    camera.lookAt(0, 0, 0)
+  }
+  /** The near plane follows the height so the ground is never clipped 500 m below. */
+  let near = camera.near
+  function fitNear(): void {
+    const next = Math.min(0.05, Math.max(1e-6, (camera.position.length() - 1) * 0.3))
+    if (next === near) return
+    camera.near = near = next
+    camera.updateProjectionMatrix()
+  }
+
+  // The close-up pictures: one group per level, coarse under fine (no depth test, drawn in level order), each level faded by height.
+  let patch: { levels: { group: THREE.Group; materials: THREE.MeshBasicMaterial[]; cover: number }[]; stop: AbortController; owned: { dispose(): void }[] } | null = null
+  function dropPatch(): void {
+    if (!patch) return
+    patch.stop.abort()
+    for (const { group } of patch.levels) earth.remove(group)
+    for (const item of patch.owned) item.dispose()
+    patch = null
+  }
+  function loadPatch(lat: number, lon: number): void {
+    dropPatch()
+    const stop = new AbortController()
+    const mine: NonNullable<typeof patch> = { levels: [], stop, owned: [] }
+    patch = mine
+    TILE_LEVELS.forEach((z, level) => {
+      const n = 2 ** z
+      const fx = ((lon + 180) / 360) * n
+      const fy = ((1 - Math.log(Math.tan(lat * RAD) + 1 / Math.cos(lat * RAD)) / Math.PI) / 2) * n
+      const group = new THREE.Group()
+      group.renderOrder = 1 + level
+      earth.add(group)
+      const materials: THREE.MeshBasicMaterial[] = []
+      mine.levels.push({ group, materials, cover: (TILES * 2 * Math.PI * Math.cos(lat * RAD)) / n })
+      for (let dx = 0; dx < TILES; dx++) {
+        for (let dy = 0; dy < TILES; dy++) {
+          const x = Math.floor(fx) - (TILES >> 1) + dx
+          const y = Math.floor(fy) - (TILES >> 1) + dy
+          if (y < 0 || y >= n) continue
+          const material = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthTest: false, depthWrite: false, toneMapped: false })
+          const mesh = new THREE.Mesh(tileGeometry(z, x, y), material)
+          mesh.renderOrder = 1 + level
+          mesh.visible = false
+          mesh.frustumCulled = false
+          group.add(mesh)
+          mine.owned.push(mesh.geometry, material)
+          void get(tileUrl(z, ((x % n) + n) % n, y), 'Esri')
+            .then((r) => r.blob())
+            .then(async (blob) => {
+              if (stop.signal.aborted) return
+              const texture = new THREE.Texture(await createImageBitmap(blob))
+              texture.colorSpace = THREE.SRGBColorSpace
+              texture.flipY = false // an ImageBitmap is uploaded as it is: row 0, the tile's north edge, at v = 0
+              texture.needsUpdate = true
+              mine.owned.push(texture)
+              material.map = texture
+              material.needsUpdate = true
+              materials.push(material)
+              mesh.visible = true
+            })
+            .catch(() => { /* A missing tile leaves the coarser level showing through. */ })
+        }
+      }
+    })
+  }
+  function fadePatch(): void {
+    if (!patch) return
+    const height = camera.position.length() - 1
+    // A level shows in full below 1.5 times its square's width, fading out by 2.5 times.
+    for (const { materials, cover } of patch.levels) {
+      const opacity = Math.min(1, Math.max(0, 2.5 - height / cover))
+      for (const m of materials) m.opacity = opacity
+    }
+  }
 
   let width = 1
   let height = 1
@@ -359,12 +504,16 @@ export function createLiveScene(container: HTMLElement, options: LiveSceneOption
     }
     if (liveShown && uLiveMix.value < 1) uLiveMix.value = options.reducedMotion ? 1 : Math.min(1, uLiveMix.value + dt_s / 1.2)
     glide(dt_s)
-    controls.update(dt_s)
+    if (controls.enabled) controls.update(dt_s)
+    ride(dt_s)
+    fitNear()
+    fadePatch()
     renderer.render(scene, camera)
     place(pickedTag, shown.satellites && picked >= 0)
     for (const t of stormTags) place(t, shown.storms)
     for (const t of placeTags) place(t, true)
     if (hereTag) place(hereTag, true)
+    if (searchTag) place(searchTag, true)
     spread()
     steady(dt_s)
   }
@@ -428,7 +577,8 @@ export function createLiveScene(container: HTMLElement, options: LiveSceneOption
       local.fromArray(satellites.at, index * 3)
       // A high satellite (GOES is 6.6 Earth radii out) needs the view pulled back to be in it, and less lean to stay in it.
       const far = Math.max(1, local.length() / 1.7)
-      if (local.lengthSq() > 0) lookFrom(local, home * far, 0.95 / far)
+      // Not while down at a searched place: the first pick lands whenever the satellites load, maybe mid-dive. Back to space shows it.
+      if (local.lengthSq() > 0 && !flight && !parked) lookFrom(local, home * far, 0.95 / far)
     },
     lookAt(lat, lon) {
       const c = Math.cos(lat * RAD)
@@ -438,6 +588,18 @@ export function createLiveScene(container: HTMLElement, options: LiveSceneOption
       hereTag ??= tag('le-tag le-tag--here', 'You are here')
       ground(hereTag, lat, lon)
       this.lookAt(lat, lon)
+    },
+    flyTo(lat, lon, name) {
+      searchTag ??= tag('le-tag le-tag--here', '')
+      searchTag.el.textContent = name
+      searchTag.width = searchTag.el.offsetWidth
+      ground(searchTag, lat, lon).at.setLength(1) // on the ground itself: 1.005 is 32 km up, above the camera at the end of the dive
+      loadPatch(lat, lon)
+      fly(searchTag.at.clone().normalize(), GROUND_HEIGHT, FLY_IN_S, true)
+    },
+    flyOut() {
+      if (!parked && !flight) return
+      fly(parked?.at.clone() ?? earthDirection(), home - 1, FLY_OUT_S, false)
     },
     show(layer, on) {
       shown[layer] = on
@@ -453,6 +615,7 @@ export function createLiveScene(container: HTMLElement, options: LiveSceneOption
       renderer.domElement.removeEventListener('pointerdown', onDown)
       renderer.domElement.removeEventListener('pointerup', onUp)
       controls.dispose()
+      dropPatch()
       for (const item of owned) item.dispose()
       bundled.dispose()
       renderer.dispose()

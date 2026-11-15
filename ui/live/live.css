@@ -126,3 +126,6 @@ dialog.le {
   .le-now { position: static; width: auto; max-height: none; overflow: visible; }
   .le-back { top: 8px; right: 8px; }
 }
+/* Fly to a place: the address box and its Go button on one line. */
+.le-search { display: flex; gap: 0.5rem; }
+.le-search input { flex: 1; min-width: 0; }
