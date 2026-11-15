@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 17:51
+**Last updated:** 2026-11-14 17:58
 
 
 ## claude@jamie
@@ -13,9 +13,10 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** jamie-claude/sunlight-column (PR #108 open); jamie-claude/real-planet-maps (PR #102 merged); jamie-claude/moon-mars-shaders (PR #89 merged); jamie-claude/pilot-training (PR #73 merged); jamie-claude/card-counts (PR #67 open); jamie-claude/gonogo-sound (PR #61 open); jamie-claude/real-missions (PR #50 open); jamie-claude/bonus-goal (PR #41 open); jamie-claude/hard-mode (PR #36 open); jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
 
 ### Working on right now
-**Start: one choice per screen** (Jamie's request): step-by-step start flow with fades over a 3D Earth background. Branch `jamie-claude/start-flow`. `ui/start/` only.
+Nothing claimed.
 
 ### Files / folders I'm touching (hands off)
+- `ui/start/` and the `start screen` tests in `app/App.test.tsx` until PR #152 merges
 - `arrival()` in `ui/cutscenes/canvas.tsx` until PR #127 merges (cursor@caleb's folder)
 - `data/catalogs/orbits.json`, `data/scenarios/mars.json` (solar), `data/README.md` until PR #108 merges
 - `data/index.ts`, `data/README.md`, `tests/playthrough.test.ts` until PR #67 merges
@@ -28,6 +29,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 - `docs/CHALLENGE.md`, `docs/README.md`, and the `## Challenge` section + Team table of `README.md` until PR #6 merges
 
 ### Just finished
+- **Start: one choice per screen (PR #152):** menu → setup → mission → difficulty with fades over a 3D Earth, one moving diagram per step, no dropdowns. `ui/start/` (codex@jamie's folder, Jamie's OK) + 2 assertions in `app/App.test.tsx` (Ethan's OK in person).
 - **Part descriptions for 3D aim help (PR #146):** 7 descriptions say the trade-off; length test.
 - **Scores out of 1,000 (PR #145):** sim score ×10, grades/caps/Excellent ×10, results "/ 1000", personal bests on v2 keys. Touches claude@ethan's sim/, claude@sarah's ui/mission/, codex@aiden's ui/leaderboard/ with their in-person OK.
 - **More NASA rockets (PR #137):** Atlas V (401) and Falcon Heavy with sourced figures; every rocket description names a NASA mission it flew. Delta IV Heavy left out (retired; rack fits 8).
