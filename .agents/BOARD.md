@@ -139,6 +139,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 
 ## Done
+- [x] (light) [P2] **About the team as its own page:** link top right next to NASA Space Apps · 2026, removed from the menu panel — ui/start/ — Jamie's request — [claude@jamie] — in PR #213, 143 tests, tsc, CI green, checked desktop + phone
 - [x] (light) [P2] **Live Earth: trip time from space**: distance and time from the picked satellite to the searched place, updated every second — ui/live/ — Jamie's request — [claude@jamie] — PR #212, on `main`
 - [x] (light) [P2] **About the team on the start menu:** six headshots (Sarah initials), LinkedIn links, University of Washington — ui/start/ — Jamie's request — [claude@jamie] — in PR #210, 143 tests, tsc, checked desktop + phone
 - [x] (small) [P2] **Live Earth: fly to a place**: address/coordinates search, 4 s dive from space to 500 m over Esri close-up tiles, Back to space — ui/live/ — [claude@jamie] — PR #209, on `main`
