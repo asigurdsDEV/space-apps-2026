@@ -37,6 +37,10 @@ export interface Fps {
   dispose(): void
 }
 
+/** The controller of the room on screen (one at a time), for the touch pads in FpsPrompt. */
+let current: Fps | null = null
+export const currentFps = () => current
+
 const MOUSE = 0.0022
 const KEY_TURN = 1.9 // radians per second with the arrow keys
 /** Seconds for the walking head motion to ease in when you set off and out when you stop. */
@@ -300,8 +304,10 @@ export function createFps(element: HTMLElement, camera: PerspectiveCamera, optio
       removeEventListener('pointerup', onPointerUp)
       removeEventListener('pointercancel', onPointerUp)
       if (locked) document.exitPointerLock?.()
+      if (current === api) current = null
     },
   }
+  current = api
   // Dev builds only: QA can read and move the player from the console (`__fps.where()`, `__fps.teleport([x, 0, z], yaw)`).
   if (import.meta.env.DEV) Object.assign(window, { __fps: { ...api, get aimed() { return aimed }, where: () => ({ pos, yaw, pitch, head }) } })
   return api
