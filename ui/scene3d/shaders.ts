@@ -201,12 +201,11 @@ void main() {
     vec3 smallT = craters(p, 19.0, 0.8, bowl2, rim2) * (1.0 - 0.4 * maria);
     vec3 tilt = bigT + smallT;
     if (mapped) {
-      // LRO already shows the real maria, big craters and rays; the procedural craters add relief only.
-      // Big procedural craters would be in made-up places, so mostly the small ones stay.
-      col = m * (1.0 - 0.06 * bowl2 + 0.08 * rim2);
+      // LRO already shows the real maria, craters and rays, so the photo is the colour; made-up craters painted on it read as fake up close.
+      col = m;
       tilt = 0.25 * bigT + 0.8 * smallT;
-      // Real basins, crater walls and mountains from LOLA: 19.9 km of height over 42.6 km of ground, drawn 5x steeper so it reads from orbit.
-      if (uHasHeight > 0.5) tilt = 0.6 * smallT + relief(p, 0.47 * 5.0);
+      // Real basins, crater walls and mountains from LOLA, drawn about 2.5x steeper so they read from orbit; a trace of small craters for grain.
+      if (uHasHeight > 0.5) tilt = 0.12 * smallT + relief(p, 0.47 * 5.0);
     } else {
       col *= 1.0 - 0.16 * (bowl + 0.6 * bowl2) + 0.22 * (rim + 0.6 * rim2);
       // Bright rays from the young craters Tycho and Copernicus.
@@ -261,7 +260,11 @@ void main() {
   col *= mix(mapped ? 0.93 + 0.14 * fine : 0.86 + 0.28 * fine, 1.0, water);
 
   float d = dot(n, uSun);
-  vec3 lit = col * (0.012 + 1.25 * max(d, 0.0));
+  float sunlit = max(d, 0.0);
+  // Moon dust scatters light back toward the Sun, so the lit disc stays bright to its edge (Lommel-Seeliger), unlike a matte ball.
+  // Only where the Sun is well up: near the terminator it would turn every crater wall into a hard black-and-white blob.
+  if (uBody > 0.5 && uBody < 1.5) sunlit = mix(sunlit, 2.0 * sunlit / (sunlit + max(dot(n, v), 0.05)), 0.7 * smoothstep(0.1, 0.5, dot(normalize(mat3(modelMatrix) * p), uSun)));
+  vec3 lit = col * (0.012 + 1.25 * sunlit);
 
   // Sun glint on the oceans.
   vec3 hv = normalize(uSun + v);

@@ -59,7 +59,7 @@ function spriteTexture(draw: (g: CanvasRenderingContext2D, size: number) => void
 }
 
 function makeStars(): THREE.Points {
-  const n = 7000
+  const n = 2200
   const pos = new Float32Array(n * 3)
   const col = new Float32Array(n * 3)
   let seed = 42
