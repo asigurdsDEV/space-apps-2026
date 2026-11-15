@@ -36,6 +36,8 @@ describe('walk-in spacecraft layout', () => {
     expect(spots).toHaveLength(2)
     for (const s of spots) expect(Math.hypot(s.at[0] - radio.at[0], s.at[2] - radio.at[2])).toBeLessThan(1.2)
     expect(Math.hypot(spots[0]!.at[0] - spots[1]!.at[0], spots[0]!.at[2] - spots[1]!.at[2])).toBeGreaterThan(0.4)
+    // The radio faces -x, so you face +x and your right is +z: A stands left of B.
+    expect(spots[0]!.at[2]).toBeLessThan(spots[1]!.at[2])
   })
 
   it('choices at a module are not inside its pedestal (planning cards use the dashboard desk)', () => {
@@ -75,6 +77,19 @@ describe('walk-in spacecraft layout', () => {
       const at = interactables(list, { send: () => {}, paused: false, speed: 1, decision: null }).find((i) => i.id === id)!.at
       expect(Math.abs(at[0])).toBeLessThan(DASH.w / 2)
       expect(Math.abs(at[2] - DASH.z)).toBeLessThan(DASH.depth / 2)
+    }
+  })
+
+  it('instruments stand either side of the hatch, apart from each other and from the wall modules', () => {
+    const ids = ['camera-basic', 'magnetometer', 'laser-altimeter', 'subsurface-radar']
+    for (let n = 1; n <= ids.length; n++) {
+      const all = modules({ ...state, params: { ...state.params, instruments: ids.slice(0, n).join(',') } })
+      const back = all.filter((m) => m.key.startsWith('instrument:'))
+      expect(back).toHaveLength(n)
+      for (const m of back) {
+        expect(Math.abs(m.at[0])).toBeGreaterThan(1.4) // the hatch rim is 1 m from the middle, a mount 0.37 m wide each way
+        for (const other of all) if (other !== m) expect(Math.hypot(other.at[0] - m.at[0], other.at[2] - m.at[2])).toBeGreaterThan(0.8)
+      }
     }
   })
 

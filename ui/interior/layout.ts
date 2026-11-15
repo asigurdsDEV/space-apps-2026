@@ -45,9 +45,9 @@ export function modules(state: Pick<SimState, 'entities' | 'params'>): Module[] 
     { key: 'storage', name: 'Data storage', at: [3.5, 0, 1.2], face: [-1, 0] },
   ]
   const instruments = parseIds(params.instruments).map((id) => find(entities, 'instrument', id)).filter((e): e is Entity => !!e)
-  const n = instruments.length
   instruments.forEach((part, i) => {
-    const x = n === 1 ? 0 : -2.4 + (4.8 * i) / (n - 1)
+    // Either side of the hatch in the back wall, working outwards: nothing is bolted across the door.
+    const x = (i % 2 ? 1 : -1) * (1.7 + Math.floor(i / 2) * 0.9)
     out.push({ key: `instrument:${part.id}`, name: 'Instrument', part, at: [x, 0, 2.5], face: [0, -1] })
   })
   return out
@@ -69,7 +69,7 @@ export function choiceSpots(decision: Decision, list: readonly Module[]): { at: 
   return decision.options.map((_, i) => {
     const off = (i - (n - 1) / 2) * 0.45
     if (!m) return { at: [1.5 + off, 1.45, -1.1] as Vec3, along: [1, 0] as [number, number] }
-    const along: [number, number] = [-m.face[1], m.face[0]]
+    const along: [number, number] = [m.face[1], -m.face[0]] // your right as you face the module, so A is on the left
     return { at: [m.at[0] + m.face[0] * 0.75 + along[0] * off, 1.2, m.at[2] + m.face[1] * 0.75 + along[1] * off] as Vec3, along }
   })
 }

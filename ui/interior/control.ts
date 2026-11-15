@@ -49,6 +49,7 @@ const TEXT = '#f5f6f8'
 const MUTED = '#a0a3a8'
 const WARN = '#ffd479'
 const BAD = '#ff7a7a'
+const NO_RELIEF = { value: 0 }
 /** planetShader's uBody. */
 const WORLD_INDEX = { earth: 0, moon: 1, mars: 2 } as const
 
@@ -548,7 +549,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
       for (const y of [1.42, 2.02]) put(rails, new THREE.CylinderGeometry(0.012, 0.012, 0.1, 8).rotateZ(FACING), x + out * 0.085, y, z0 + k)
     }
   }
-  for (let k = 1; k < W; k++) put(metals, new THREE.BoxGeometry(0.07, y1, 0.06), x0 + k, y1 / 2, z1 - 0.03)
+  for (let k = 1; k < W; k++) if (x0 + k !== 0) put(metals, new THREE.BoxGeometry(0.07, y1, 0.06), x0 + k, y1 / 2, z1 - 0.03) // no post through the hatch
   for (const [x, out] of [[x0, 1], [x1, -1]] as const) {
     // A long rail at hand height, and a blue edge to the deck under it.
     put(rails, new THREE.CylinderGeometry(0.02, 0.02, D - 0.6, 12).rotateX(FACING), x + out * 0.1, 1.05, 0)
@@ -580,7 +581,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
     put(metals, rounded(0.12, 0.12, 0.07, 0.015), Math.cos(a) * 0.76, 1.5 + Math.sin(a) * 0.76, hz - 0.05)
   }
   for (const x of [-0.82, 0.82]) {
-    put(darks, new THREE.TorusGeometry(0.18, 0.04, 10, 32), x, 2.66, hz - 0.02)
+    put(metals, new THREE.TorusGeometry(0.17, 0.022, 10, 32), x, 2.66, hz - 0.02)
     put(darks, new THREE.CylinderGeometry(0.15, 0.15, 0.02, 32).rotateX(FACING), x, 2.66, hz - 0.015)
   }
 
@@ -966,6 +967,8 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
       const body = s.body in WORLD_INDEX ? (s.body as keyof typeof WORLD_INDEX) : 'earth'
       uBody.value = WORLD_INDEX[body]
       Object.assign(worldMat.uniforms, worldMaps.maps[body])
+      // From this close the Moon's elevation map shades its day/night line into hard black-and-white blobs: leave the relief to the photo.
+      if (body === 'moon') worldMat.uniforms.uHasHeight = NO_RELIEF
       clouds.visible = body === 'earth'
       atmosphere.visible = body !== 'moon'
       if (body === 'mars') uAir.value.setRGB(0.75, 0.45, 0.3)
@@ -984,7 +987,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
         if (s.craft) {
           const craft = buildCraft(s.craft)
           const size = new THREE.Box3().setFromObject(craft).getSize(new THREE.Vector3())
-          craft.scale.setScalar(0.42 / Math.max(size.x, size.y, size.z, 1e-6))
+          craft.scale.multiplyScalar(0.42 / Math.max(size.x, size.y, size.z, 1e-6)) // buildCraft has already scaled it: scale that, do not replace it
           craftHolder.add(craft)
         }
       }
