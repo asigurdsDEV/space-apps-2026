@@ -271,13 +271,13 @@ function launch(k: Kit, score: LaunchScore) {
   // Bigger vehicles thump harder.
   const events = k.gain(score.loudness)
   events.connect(k.out)
-  // The explosion is driven into soft clipping for grit, and sent into a long echo off the ground and the clouds.
+  // The explosion (and the storm's lightning) is driven into soft clipping for grit, and sent into a long echo off the ground and the clouds.
   const blast = k.gain(score.loudness)
   k.chain(blast, k.shape(SATURATE), k.gain(0.9), k.out)
   const echo = k.add(k.ctx.createConvolver())
   echo.buffer = echoes(k.ctx)
   k.chain(blast, k.filter('lowpass', 1800), echo, k.gain(0.7), k.out)
-  k.sound.cue = (name, when, rand) => k.cue(name, when, rand, name === 'crack' ? blast : events)
+  k.sound.cue = (name, when, rand) => k.cue(name, when, rand, name === 'crack' || name === 'zap' || name === 'thunder' ? blast : events)
 
   const mix: LaunchMix = mixAt(score, 0)
   let last = -1

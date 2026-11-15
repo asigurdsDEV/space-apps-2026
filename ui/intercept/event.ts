@@ -16,6 +16,24 @@ export function unitInterval(seed: number): number {
   return t / 4294967296
 }
 
+/** Chance a sandbox simulation launches into a thunderstorm and is struck by lightning. Its own band of the same roll, so it never comes with the interception. */
+export const LIGHTNING_PROBABILITY = 0.2
+
+/** True when this seed falls in the lightning band, just above the interception's. */
+export function lightningStruck(seed: number): boolean {
+  const u = unitInterval(seed)
+  return u >= INTERCEPTION_PROBABILITY && u < INTERCEPTION_PROBABILITY + LIGHTNING_PROBABILITY
+}
+
+/** `?lightning=1` or `?lightning=0` on the page, as `?intercept=` does for the interception. */
+export function lightningOverride(): boolean | undefined {
+  if (typeof window === 'undefined') return undefined
+  const value = new URLSearchParams(window.location.search).get('lightning')
+  if (value === '1') return true
+  if (value === '0') return false
+  return undefined
+}
+
 /** True when this seed falls inside `probability`. Not a guidance or targeting calculation. */
 export function interceptionTriggered(seed: number, probability = INTERCEPTION_PROBABILITY): boolean {
   return unitInterval(seed) < probability

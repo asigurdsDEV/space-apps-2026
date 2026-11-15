@@ -2,7 +2,7 @@
 // The Web Audio graph that plays it is in engine.ts; the live player and the React hooks are in ambience.ts.
 import type { Tone } from './model'
 import { altitudeM } from '../scene3d/launch/flight'
-import { EVENT_AT, INTERCEPT, missionTime, stageAt, type LaunchTimeline, type StageId } from '../scene3d/launch/timeline'
+import { EVENT_AT, INTERCEPT, STORM, missionTime, stageAt, type LaunchTimeline, type StageId } from '../scene3d/launch/timeline'
 import type { Propellant, RocketSpec } from '../scene3d/launch/vehicles'
 
 export type Place = 'control' | 'cabin' | 'launch'
@@ -22,7 +22,7 @@ export interface Burst {
 /** A note; `hold` keeps it at full level to the end (a beep) instead of dying away (a ping). */
 export type Note = Tone & { hold?: boolean }
 export type CuePart = Note | Burst
-export type CueName = 'whoomp' | 'light' | 'thud' | 'click' | 'clunk' | 'crack' | 'flyby' | 'missile' | 'relay' | 'valve' | 'caution' | 'tap' | 'tone'
+export type CueName = 'whoomp' | 'light' | 'thud' | 'click' | 'clunk' | 'crack' | 'flyby' | 'missile' | 'thunder' | 'zap' | 'relay' | 'valve' | 'caution' | 'tap' | 'tone'
 
 const tone = (freq: number, at: number, dur: number, gain: number, wave: OscillatorType = 'sine', to?: number): Tone => ({ kind: 'tone', wave, freq, to, at, dur, gain })
 const burst = (filter: Burst['filter'], freq: number, at: number, dur: number, gain: number, attack = 0.002, q?: number): Burst => ({ kind: 'burst', filter, freq, q, at, dur, attack, gain })
@@ -69,6 +69,10 @@ export const CUES: Record<CueName, CuePart[]> = {
   flyby: [burst('lowpass', 700, 0, 3.4, 2.2, 1.0), burst('bandpass', 1800, 0.5, 2.6, 1.2, 0.6, 0.7), tone(230, 0.7, 2.4, 0.06, 'sawtooth', 120), burst('lowpass', 160, 0.8, 2.5, 3, 0.2)],
   // Its missile's motor lights: a crack, then a tearing roar that runs away.
   missile: [burst('highpass', 1500, 0, 0.12, 0.25, 0.002), burst('bandpass', 900, 0.05, 1.5, 1.4, 0.06, 0.6), burst('lowpass', 400, 0.05, 1.2, 1.2, 0.05), tone(110, 0, 0.5, 0.12, 'sine', 60)],
+  // Thunder from lightning a few kilometres off: a ripping crackle, then a long low roll.
+  thunder: [burst('lowpass', 900, 0, 0.45, 0.45, 0.03), burst('lowpass', 260, 0.04, 1.5, 3.2, 0.12), burst('bandpass', 90, 0.08, 1.45, 4.5, 0.2, 0.7)],
+  // Lightning right on the rocket: a deafening snap, a tearing crack and the boom of the air it splits.
+  zap: [burst('highpass', 3000, 0, 0.06, 1.0, 0.0005), burst('lowpass', 8000, 0, 0.18, 1.4, 0.0008), burst('bandpass', 1200, 0.01, 0.35, 1.2, 0.002, 0.6), burst('lowpass', 300, 0.03, 1.5, 4, 0.01), tone(50, 0.01, 1.4, 0.5, 'sine', 25)],
   // Spacecraft room: a relay closes behind a panel.
   relay: [burst('bandpass', 3000, 0, 0.02, 0.07, 0.001), burst('bandpass', 1500, 0.012, 0.03, 0.07, 0.001), tone(150, 0, 0.03, 0.006)],
   // Spacecraft room: a valve ticks over, with a breath of gas.
@@ -169,6 +173,11 @@ export function launchScore(spec: RocketSpec, timeline: LaunchTimeline): LaunchS
     if (s.id === 'deploy') score.cues.push({ t: event(EVENT_AT.deploy), cue: 'click' })
     if (s.id === 'failure') score.cues.push({ t: (score.lostAt = event(EVENT_AT.failure)), cue: 'crack' })
   }
+  if (timeline.struck) {
+    STORM.flashes.forEach((at, i) => score.cues.push({ t: at + STORM.thunderDelay[i]!, cue: 'thunder' }))
+    score.cues.push({ t: score.lostAt - STORM.strikeLead, cue: 'zap' })
+    score.cues.sort((a, b) => a.t - b.t)
+  }
   if (timeline.intercepted) {
     score.cues.push({ t: score.lostAt + INTERCEPT.buzz - 1, cue: 'flyby' }, { t: score.lostAt + INTERCEPT.fire, cue: 'missile' })
     score.cues.sort((a, b) => a.t - b.t)
@@ -219,7 +228,8 @@ export function mixAt(score: LaunchScore, t: number, out: LaunchMix = { roar: 0,
   out.roar = power * Math.exp(-km / 18)
   out.cutoff = 9000 / (1 + 2.5 * Math.max(0, km - (air ? 12 : 0)))
   out.crackle = met < 0 ? score.coreCrackle : score.crackle
-  out.hiss = lost ? 0.7 * Math.exp(-(t - score.lostAt) / 1.4) : id === 'ignition' ? ramp(s, 0, 0.3) : id === 'liftoff' && !air ? 1 - ramp(s, 0.6, 2.4) : 0
+  // A storm launch: rain drums down all the way through.
+  out.hiss = timeline.struck ? Math.max(0.5, lost ? 0.7 * Math.exp(-(t - score.lostAt) / 1.4) : 0, id === 'ignition' ? ramp(s, 0, 0.3) : 0) : lost ? 0.7 * Math.exp(-(t - score.lostAt) / 1.4) : id === 'ignition' ? ramp(s, 0, 0.3) : id === 'liftoff' && !air ? 1 - ramp(s, 0.6, 2.4) : 0
   // The push of the air peaks at max-Q and is gone on either side of it.
   out.buffet = power * Math.exp(-(((met - score.maxq) / 18) ** 2))
   out.hum = !space ? 0 : t < score.meco ? 0.85 : t >= score.ses && t < score.seco ? 0.6 : 0

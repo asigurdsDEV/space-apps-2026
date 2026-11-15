@@ -30,7 +30,12 @@ export interface LaunchTimeline {
   failed: boolean
   /** The sandbox's fictional interception: an F-22 fires on the climbing rocket (an 'intercept' shot before the failure). */
   intercepted: boolean
+  /** The sandbox's lightning strike: it launches into a thunderstorm and a bolt hits it soon after lift-off. */
+  struck: boolean
 }
+
+/** The storm: screen times (seconds from the start) of the lightning in the clouds, and how much later each one's thunder is heard. The strike on the rocket comes STRIKE_LEAD seconds before the blast. */
+export const STORM = { flashes: [0.7, 2.2, 3.3, 4.5, 5.6, 7.0], thunderDelay: [2.1, 1.4, 1.6, 0.9, 1.2, 1.0], strikeLead: 0.35 } as const
 
 /** The interception's moments, in screen seconds before the blast: the F-22 comes into view, roars past the camera, fires, and passes the rocket. */
 export const INTERCEPT = { enter: -8.6, buzz: -6.3, fire: -5.4, pass: -4.4 } as const
@@ -43,7 +48,7 @@ interface Shot { id: StageId; seconds: number; met: [number, number]; title: str
 /** A shot that covers `span` real seconds, with the event at `at` (0 to 1) of the way through. */
 const around = (event: number, at: number, span: number): [number, number] => [event - at * span, event + (1 - at) * span]
 
-function shots(spec: RocketSpec, failed: boolean, cause?: string, intercepted = false): Shot[] {
+function shots(spec: RocketSpec, failed: boolean, cause?: string, intercepted = false, struck = false): Shot[] {
   const ev = spec.events
   const name = spec.name
   const start: Shot[] = spec.airLaunch
@@ -63,6 +68,19 @@ function shots(spec: RocketSpec, failed: boolean, cause?: string, intercepted = 
       : { id: 'pitch', seconds: 2.2, met: [14, 22], title: 'Pitch-over', caption: 'It tips over on purpose: orbit is about going sideways, fast.', detail: 'The rocket tips over on purpose. Getting to orbit is mostly about going sideways very fast, not just going up.' },
     { id: 'maxq', seconds: 2.5, met: around(ev.maxq, EVENT_AT.maxq, 8), title: 'Max-Q', caption: 'Max-Q: the moment the air pushes hardest on the rocket.', detail: 'Max-Q is when the air pushes hardest on the rocket: it is already fast and the air is still thick. After this the air thins and the ride gets easier.' },
   ]
+  if (struck) {
+    // Real: lightning destroyed Atlas-Centaur 67 in 1987; Apollo 12 was struck twice in 1969 and flew on.
+    const stormy: Partial<Record<StageId, Pick<Shot, 'caption' | 'detail'>>> = {
+      countdown: { caption: 'A thunderstorm rolls over the pad. Rain hammers the rocket.', detail: 'A thunderstorm has rolled in over the pad: heavy rain, and lightning in the clouds. Real launch teams wait for storms like this to pass. This is the sandbox: it launches anyway.' },
+      ignition: { caption: 'The engines light as lightning flickers in the clouds.', detail: 'The engines light while lightning flickers through the clouds. A rocket and its long, hot exhaust plume make a tall path for lightning to follow.' },
+      liftoff: { caption: 'It lifts off into the storm.', detail: 'The rocket climbs into the thunderstorm. Its plume trails all the way back to the ground, like a wire reaching up into the clouds.' },
+    }
+    return [...start.map((shot) => ({ ...shot, ...stormy[shot.id] })), {
+      id: 'failure', seconds: 8, met: [8, 18], title: 'Lightning strike',
+      caption: 'A huge bolt of lightning hits the rocket.',
+      detail: 'Lightning hits the rocket, and it breaks up. It has happened for real: in 1987 lightning destroyed an Atlas-Centaur rocket and the satellite it carried, and Apollo 12 was struck twice in 1969 but flew on. That is why launches wait for storms to pass.',
+    }]
+  }
   if (intercepted) {
     // Fiction, for the sandbox only: no rocket launch has ever been shot down.
     return [...start, ...climb, {
@@ -102,13 +120,14 @@ function shots(spec: RocketSpec, failed: boolean, cause?: string, intercepted = 
 }
 
 /** The stages of the launch for a launch-vehicle row (any row, or none: unknown vehicles get a generic rocket). */
-export function launchTimeline(vehicle: VehicleLike | RocketSpec | undefined, options: { failed?: boolean; cause?: string; intercepted?: boolean } = {}): LaunchTimeline {
+export function launchTimeline(vehicle: VehicleLike | RocketSpec | undefined, options: { failed?: boolean; cause?: string; intercepted?: boolean; struck?: boolean } = {}): LaunchTimeline {
   const spec = vehicle && 'events' in vehicle ? vehicle : rocketSpec(vehicle)
   const intercepted = options.intercepted === true
-  const failed = options.failed === true || intercepted
+  const struck = options.struck === true && !intercepted
+  const failed = options.failed === true || intercepted || struck
   let t = 0
-  const stages = shots(spec, failed, options.cause, intercepted).map(({ seconds, ...shot }): LaunchStage => ({ ...shot, start: t, end: (t += seconds) }))
-  return { stages, duration: t, failed, intercepted }
+  const stages = shots(spec, failed, options.cause, intercepted, struck).map(({ seconds, ...shot }): LaunchStage => ({ ...shot, start: t, end: (t += seconds) }))
+  return { stages, duration: t, failed, intercepted, struck }
 }
 
 /** The stage on screen at screen time `t`. Clamps: before the start gives the first stage, after the end the last. */

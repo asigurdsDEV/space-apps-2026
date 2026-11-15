@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { INTERCEPTION_PROBABILITY, interceptionTriggered, keepInterception, openInterception, unitInterval } from './event'
+import { INTERCEPTION_PROBABILITY, interceptionTriggered, keepInterception, lightningStruck, openInterception, unitInterval } from './event'
 
 describe('interception roll', () => {
   it('is the same value every time for one seed', () => {
@@ -23,4 +23,13 @@ describe('interception roll', () => {
     expect(openInterception(7, INTERCEPTION_PROBABILITY, false).triggered).toBe(false)
   })
 
+  it('strikes with lightning near one in five, never on a launch that is intercepted', () => {
+    let hits = 0
+    for (let seed = 0; seed < 1000; seed++) {
+      if (lightningStruck(seed)) hits++
+      if (lightningStruck(seed)) expect(interceptionTriggered(seed)).toBe(false)
+    }
+    expect(hits / 1000).toBeGreaterThan(0.15)
+    expect(hits / 1000).toBeLessThan(0.25)
+  })
 })
