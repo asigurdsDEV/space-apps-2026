@@ -29,6 +29,18 @@ describe('catalogs', () => {
     }
   })
 
+  it('give every part a description the 3D help can show: full sentences, 6 to 35 words', () => {
+    for (const ds of catalogs) {
+      for (const row of rowsAsObjects(ds)) {
+        const text = String(row.description ?? '')
+        const words = text.split(/\s+/).filter(Boolean).length
+        expect(words, `${ds.id}.${row.id}: "${text}"`).toBeGreaterThanOrEqual(6)
+        expect(words, `${ds.id}.${row.id}: "${text}"`).toBeLessThanOrEqual(35)
+        expect(text, `${ds.id}.${row.id}`).toMatch(/[.!?)]$/)
+      }
+    }
+  })
+
   it('have unique kebab-case ids, rows the right length, and units for every numeric column', () => {
     for (const ds of catalogs) {
       const ids = ds.data.rows.map((r) => r[0])
