@@ -20,17 +20,15 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 ## cursor@kaipo
 
 **Branch:** kaipo-cursor/deploy-check
-**Last updated:** 2026-11-14 22:50
+**Last updated:** 2026-11-15 01:05
 
 ### Working on right now
-Surface probe: walk a real NASADEM patch with NASA POWER temperature. Not committed yet.
 
 ### Files / folders I'm touching (hands off)
-- `ui/probe/`
-- `app/App.tsx`, `app/World.tsx`, `app/WorldMenu.tsx` (button and screen only)
-- `package.json` / `package-lock.json` (`geotiff`)
 
 ### Just finished
+
+**Survey crew (on main):** only the host moves the landing spot. Guests press Q to float down to it. Players on the ground see each other, and their suit is taken off the ship until they come back. Decision 012.
 
 **Deployment check (P0):** Pages and Vercel both serve the app at commit `d70c4e8`. Each host's `game-assets.json` lists 45 files and every URL returned HTTP 200 (Pages base `/space-apps-2026/`, Vercel base `/`). Vercel production is deployment `dpl_Cq7xhw4P4aFipP2rTYrt5aegyTmC` at https://kimchispacemission.vercel.app. The Earth shader chunk has `uHasClouds` and the crew chunk has the name tag. `/api/ice` returned 200 with a TURN relay. Cache/gate source was not edited. A second device was not used this pass; the last cross-device join is still the 2026-11-14 note in `docs/MULTIPLAYER_TEST.md`. Kaipo can see other players.
 

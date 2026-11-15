@@ -646,7 +646,16 @@ function Flight({ session, config, daily, online, skipLaunch, onLaunchDone }: { 
       <>
         <WalkTo screen="flight" />
         <Suspense fallback={<p className="app-training-loading" aria-busy="true">Loading flight training…</p>}>
-          <Training state={state} onClose={() => showTraining(false)} />
+          <Training
+            state={state}
+            onClose={() => showTraining(false)}
+            survey={online ? {
+              host: me.is_host,
+              seat: Math.max(0, players.findIndex((p) => p.player_id === me.player_id)),
+              report: session.reportSurvey,
+              subscribe: session.subscribeSurvey,
+            } : undefined}
+          />
         </Suspense>
         {/* The same key as below keeps it mounted, so the story does not start over when the player comes back. */}
         <StoryLayer key="story" screen="flight" events={events} scenarioId={state.scenario_id} design={state} onCutscene={holdClock} shown={SHOWN_BY_APP} />

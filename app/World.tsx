@@ -190,7 +190,16 @@ export function World({ active, config, onExit, onCampaignNext }: WorldProps) {
     return (
       <div className="app-world app-world-training game-theme" data-theme="dark">
         <Suspense fallback={<p className="app-training-loading" aria-busy="true">Loading flight training…</p>}>
-          <Training state={state} onClose={() => setTraining(false)} />
+          <Training
+            state={state}
+            onClose={() => setTraining(false)}
+            survey={roomCode !== null ? {
+              host: me.is_host,
+              seat: Math.max(0, players.findIndex((p) => p.player_id === me.player_id)),
+              report: session.reportSurvey,
+              subscribe: session.subscribeSurvey,
+            } : undefined}
+          />
         </Suspense>
       </div>
     )

@@ -44,6 +44,37 @@ export interface Session {
   reportPose(pose: { x: number; z: number; yaw: number }): void
   /** The other players, where they last stood. Called at once with the current list. */
   subscribeCrew(listener: (crew: readonly CrewPose[]) => void): () => void
+  /** Surface survey. Solo ignores it. The host's lat/lon is the only landing spot. */
+  reportSurvey(report: SurveyReport): void
+  /** The host's landing spot, and whoever is floating on it. Called at once. */
+  subscribeSurvey(listener: (spot: SurveySpot, crew: readonly SurveyBody[]) => void): () => void
+}
+
+/** Where this player is floating on the survey patch. `down` leaves the ship. */
+export interface SurveyReport {
+  down: boolean
+  x: number
+  z: number
+  yaw: number
+  lat: number
+  lon: number
+}
+
+/** The landing spot the host is flying. `landed` is true once the host is on the ground. */
+export interface SurveySpot {
+  lat: number
+  lon: number
+  placed: boolean
+  landed: boolean
+}
+
+/** Another player on the survey patch. Same floor axes as a room pose. */
+export interface SurveyBody {
+  player_id: string
+  name: string
+  x: number
+  z: number
+  yaw: number
 }
 
 /** One other player, on the floor of the room you share. */
@@ -66,6 +97,28 @@ function wrapYaw(yaw: number): number {
 function clampPose(pose: { x: number; z: number; yaw: number }): { x: number; z: number; yaw: number } {
   const n = (v: number, lim: number) => Math.max(-lim, Math.min(lim, Number.isFinite(v) ? v : 0))
   return { x: n(pose.x, 40), z: n(pose.z, 40), yaw: wrapYaw(pose.yaw) }
+}
+
+const EMPTY_SPOT: SurveySpot = { lat: 0, lon: 0, placed: false, landed: false }
+
+function clampSurvey(raw: SurveyReport): SurveyReport {
+  const n = (v: number, lim: number) => Math.max(-lim, Math.min(lim, Number.isFinite(v) ? v : 0))
+  let lon = Number.isFinite(raw.lon) ? raw.lon : 0
+  lon = ((((lon + 180) % 360) + 360) % 360) - 180
+  return {
+    down: raw.down === true,
+    x: n(raw.x, 80),
+    z: n(raw.z, 80),
+    yaw: wrapYaw(raw.yaw),
+    lat: n(raw.lat, 90),
+    lon,
+  }
+}
+
+function surveyChanged(prev: SurveyReport | undefined, next: SurveyReport): boolean {
+  if (!prev || prev.down !== next.down) return true
+  if (Math.abs(prev.lat - next.lat) >= 0.01 || Math.abs(prev.lon - next.lon) >= 0.01) return true
+  return poseMoved(prev, next)
 }
 
 const POSE_MS = 100
@@ -169,6 +222,11 @@ export function createSoloSession(game: Game, options: SoloSessionOptions = {}):
     reportPose() {},
     subscribeCrew(listener) {
       listener([])
+      return () => {}
+    },
+    reportSurvey() {},
+    subscribeSurvey(listener) {
+      listener(EMPTY_SPOT, [])
       return () => {}
     },
   }
@@ -283,6 +341,12 @@ export function createHostSession(
   const crewListeners = new Set<(crew: readonly CrewPose[]) => void>()
   let ownPose: { x: number; z: number; yaw: number } | undefined
   let ownPoseAt = 0
+  let spot: SurveySpot = EMPTY_SPOT
+  /** Players floating on the survey patch. They are left out of the ship. */
+  const surveyAt = new Map<string, { x: number; z: number; yaw: number }>()
+  const surveyListeners = new Set<(spot: SurveySpot, crew: readonly SurveyBody[]) => void>()
+  let ownSurvey: SurveyReport | undefined
+  let ownSurveyAt = 0
 
   function build(): SessionSnapshot {
     return { ...game.getSnapshot(), players, me: players[0], notice, stage }
@@ -365,6 +429,15 @@ export function createHostSession(
     const out: CrewPose[] = []
     for (const [id, pose] of poses) {
       const player = players.find((p) => p.player_id === id)
+      if (player && id !== hostId && !surveyAt.has(id)) out.push({ player_id: id, name: player.name, ...pose })
+    }
+    return out
+  }
+
+  function surveyCrew(): SurveyBody[] {
+    const out: SurveyBody[] = []
+    for (const [id, pose] of surveyAt) {
+      const player = players.find((p) => p.player_id === id)
       if (player && id !== hostId) out.push({ player_id: id, name: player.name, ...pose })
     }
     return out
@@ -375,11 +448,18 @@ export function createHostSession(
     for (const listener of [...crewListeners]) listener(crew)
   }
 
+  function notifySurvey(): void {
+    const crew = surveyCrew()
+    for (const listener of [...surveyListeners]) listener(spot, crew)
+  }
+
   function rosterChanged(): void {
     players = room.players
     for (const id of [...poses.keys()]) if (!players.some((p) => p.player_id === id)) poses.delete(id)
+    for (const id of [...surveyAt.keys()]) if (!players.some((p) => p.player_id === id)) surveyAt.delete(id)
     broadcast({ type: 'roster', payload: { players } })
     notifyCrew()
+    notifySurvey()
     refresh()
   }
 
@@ -450,6 +530,25 @@ export function createHostSession(
         notifyCrew()
         return
       }
+      case 'survey': {
+        if (!players.some((p) => p.player_id === from)) return
+        const now = Date.now()
+        const prev = surveyAt.get(from)
+        const down = message.payload.down
+        if (now - (poseAt.get(`survey:${from}`) ?? 0) < 50 && (prev !== undefined) === down) return
+        poseAt.set(`survey:${from}`, now)
+        const body = clampSurvey(message.payload)
+        // A guest cannot move the landing spot. Only their body on the patch is kept.
+        if (down) surveyAt.set(from, body)
+        else surveyAt.delete(from)
+        broadcast({
+          type: 'survey',
+          payload: { down, x: body.x, z: body.z, yaw: body.yaw, lat: spot.lat, lon: spot.lon, placed: spot.placed, player_id: from },
+        })
+        notifyCrew()
+        notifySurvey()
+        return
+      }
       // roster, state, rejected and ended only go from the host to guests: ignored here.
     }
   })
@@ -468,7 +567,10 @@ export function createHostSession(
     for (const player of players) if (!player.is_host) room.leave(player.player_id)
     players = room.players
     poses.clear()
+    surveyAt.clear()
+    spot = EMPTY_SPOT
     notifyCrew()
+    notifySurvey()
     setSticky(`The online room was lost (${error?.message ?? 'connection closed'}). You can keep playing on this device.`)
   })
 
@@ -519,6 +621,7 @@ export function createHostSession(
       stopStatus?.()
       listeners.clear()
       crewListeners.clear()
+      surveyListeners.clear()
       // After the current task, so a LocalTransport still delivers `ended`.
       queueMicrotask(() => transport.close())
     },
@@ -536,6 +639,29 @@ export function createHostSession(
       listener(crewList())
       return () => {
         crewListeners.delete(listener)
+      }
+    },
+    reportSurvey(raw) {
+      if (closed) return
+      const next = clampSurvey(raw)
+      const now = Date.now()
+      const sameEdge = !ownSurvey || ownSurvey.down === next.down
+      if (sameEdge && ownSurvey && now - ownSurveyAt < POSE_MS) return
+      if (!surveyChanged(ownSurvey, next)) return
+      ownSurvey = next
+      ownSurveyAt = now
+      spot = { lat: next.lat, lon: next.lon, placed: true, landed: next.down }
+      if (next.down) surveyAt.set(hostId, next)
+      else surveyAt.delete(hostId)
+      broadcast({ type: 'survey', payload: { ...next, placed: true, player_id: hostId } })
+      notifyCrew()
+      notifySurvey()
+    },
+    subscribeSurvey(listener) {
+      surveyListeners.add(listener)
+      listener(spot, surveyCrew())
+      return () => {
+        surveyListeners.delete(listener)
       }
     },
   }
@@ -588,6 +714,11 @@ export function createGuestSession(transport: SessionTransport, name: string, op
   const crewListeners = new Set<(crew: readonly CrewPose[]) => void>()
   let ownPose: { x: number; z: number; yaw: number } | undefined
   let ownPoseAt = 0
+  let spot: SurveySpot = EMPTY_SPOT
+  const surveyAt = new Map<string, { x: number; z: number; yaw: number }>()
+  const surveyListeners = new Set<(spot: SurveySpot, crew: readonly SurveyBody[]) => void>()
+  let ownSurvey: SurveyReport | undefined
+  let ownSurveyAt = 0
 
   function build(): SessionSnapshot {
     return { state, events, paused, speed, players, me, notice, stage }
@@ -597,6 +728,15 @@ export function createGuestSession(transport: SessionTransport, name: string, op
     const out: CrewPose[] = []
     for (const [id, pose] of poses) {
       const player = players.find((p) => p.player_id === id)
+      if (player && id !== myId && !surveyAt.has(id)) out.push({ player_id: id, name: player.name, ...pose })
+    }
+    return out
+  }
+
+  function surveyCrew(): SurveyBody[] {
+    const out: SurveyBody[] = []
+    for (const [id, pose] of surveyAt) {
+      const player = players.find((p) => p.player_id === id)
       if (player && id !== myId) out.push({ player_id: id, name: player.name, ...pose })
     }
     return out
@@ -605,6 +745,11 @@ export function createGuestSession(transport: SessionTransport, name: string, op
   function notifyCrew(): void {
     const crew = crewList()
     for (const listener of [...crewListeners]) listener(crew)
+  }
+
+  function notifySurvey(): void {
+    const crew = surveyCrew()
+    for (const listener of [...surveyListeners]) listener(spot, crew)
   }
 
   function refresh(): void {
@@ -636,7 +781,9 @@ export function createGuestSession(transport: SessionTransport, name: string, op
           joined = true
         }
         for (const id of [...poses.keys()]) if (!players.some((p) => p.player_id === id)) poses.delete(id)
+        for (const id of [...surveyAt.keys()]) if (!players.some((p) => p.player_id === id)) surveyAt.delete(id)
         notifyCrew()
+        notifySurvey()
         break
       }
       case 'pose': {
@@ -644,6 +791,21 @@ export function createGuestSession(transport: SessionTransport, name: string, op
         if (!id || id === myId || !players.some((p) => p.player_id === id)) return
         poses.set(id, clampPose(message.payload))
         notifyCrew()
+        return
+      }
+      case 'survey': {
+        const id = message.payload.player_id
+        const sender = id ? players.find((p) => p.player_id === id) : undefined
+        if (sender?.is_host && message.payload.placed) {
+          const site = clampSurvey(message.payload)
+          spot = { lat: site.lat, lon: site.lon, placed: true, landed: message.payload.down }
+        }
+        if (id && id !== myId && players.some((p) => p.player_id === id)) {
+          if (message.payload.down) surveyAt.set(id, clampSurvey(message.payload))
+          else surveyAt.delete(id)
+        }
+        notifyCrew()
+        notifySurvey()
         return
       }
       case 'state': {
@@ -733,6 +895,7 @@ export function createGuestSession(transport: SessionTransport, name: string, op
       stopStatus?.()
       listeners.clear()
       crewListeners.clear()
+      surveyListeners.clear()
       // After the current task, so a LocalTransport still delivers `leave`.
       queueMicrotask(() => transport.close())
     },
@@ -750,6 +913,25 @@ export function createGuestSession(transport: SessionTransport, name: string, op
       listener(crewList())
       return () => {
         crewListeners.delete(listener)
+      }
+    },
+    reportSurvey(raw) {
+      if (closed || stage === 'closed') return
+      const next = clampSurvey(raw)
+      const now = Date.now()
+      const sameEdge = !ownSurvey || ownSurvey.down === next.down
+      if (sameEdge && ownSurvey && now - ownSurveyAt < POSE_MS) return
+      if (!surveyChanged(ownSurvey, next)) return
+      ownSurvey = next
+      ownSurveyAt = now
+      // lat/lon are filled in so the message is valid. The host keeps its own spot.
+      post({ type: 'survey', payload: { ...next, placed: false } })
+    },
+    subscribeSurvey(listener) {
+      surveyListeners.add(listener)
+      listener(spot, surveyCrew())
+      return () => {
+        surveyListeners.delete(listener)
       }
     },
   }

@@ -21,6 +21,27 @@ describe('flight training', () => {
     expect(html).toContain('aria-label="Flight control pad"')
   })
 
+  it('lets a guest follow the host spot and does not give them the flight controls', () => {
+    const html = renderToStaticMarkup(
+      <Training
+        state={state}
+        onClose={() => {}}
+        survey={{
+          host: false,
+          seat: 1,
+          report() {},
+          subscribe(listener) {
+            listener({ lat: 36.1, lon: -112.14, placed: true, landed: false }, [])
+            return () => {}
+          },
+        }}
+      />,
+    )
+    expect(html).toContain('Only the host can move the landing spot')
+    expect(html).not.toContain('s3d-flight')
+    expect(html).not.toContain('Flight control pad')
+  })
+
   it('reads the player’s part ids from the design', () => {
     const parts = partIds({ params: { bus: 'cubesat-6u', instruments: 'camera-basic,ir-spectrometer', budget_usd: 5 } })
     expect(parts).toEqual(['cubesat-6u', 'camera-basic', 'ir-spectrometer'])

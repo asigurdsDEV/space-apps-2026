@@ -432,6 +432,53 @@ describe('where people stand', () => {
     host.close()
     guests[1].close()
   })
+
+  it('lets only the host move the survey spot, and takes a landed player off the ship', async () => {
+    const { host, guests, hostWire, wires } = await startRoom('Gus')
+    const ship: string[][] = []
+    const onGround: { name: string; x: number }[][] = []
+    let spot = { placed: false, lat: 0, lon: 0, landed: false }
+    host.subscribeCrew((crew) => ship.push(crew.map((p) => p.name)))
+    guests[0].subscribeSurvey((next, crew) => {
+      spot = next
+      onGround.push(crew.map((p) => ({ name: p.name, x: p.x })))
+    })
+    guests[0].reportPose({ x: 2, z: 0, yaw: 0 })
+    await settle()
+    expect(ship.at(-1)).toEqual(['Gus'])
+
+    host.reportSurvey({ down: false, x: 0, z: 0, yaw: 0, lat: 36.1, lon: -112.1 })
+    await settle()
+    expect(spot).toMatchObject({ placed: true, landed: false })
+    expect(spot.lat).toBeCloseTo(36.1)
+    expect(ship.at(-1)).toEqual(['Gus'])
+
+    guests[0].reportSurvey({ down: true, x: 3, z: 1, yaw: 0.4, lat: 1, lon: 2 })
+    await settle()
+    expect(spot.lat).toBeCloseTo(36.1)
+    expect(spot.lon).toBeCloseTo(-112.1)
+    expect(spot.landed).toBe(false)
+    expect(ship.at(-1)).toEqual([])
+
+    const hostSaw: { name: string; x: number }[][] = []
+    host.subscribeSurvey((_next, crew) => hostSaw.push(crew.map((p) => ({ name: p.name, x: p.x }))))
+    expect(hostSaw.at(-1)).toEqual([{ name: 'Gus', x: 3 }])
+
+    const hanaOnShip: string[][] = []
+    guests[0].subscribeCrew((crew) => hanaOnShip.push(crew.map((p) => p.name)))
+    host.reportPose({ x: 1, z: 0, yaw: 0 })
+    await settle()
+    expect(hanaOnShip.at(-1)).toEqual(['Hana'])
+    host.reportSurvey({ down: true, x: -2, z: 4, yaw: 0, lat: 36.1, lon: -112.1 })
+    await settle()
+    expect(spot.landed).toBe(true)
+    expect(hanaOnShip.at(-1)).toEqual([])
+    expect(onGround.at(-1)).toEqual([{ name: 'Hana', x: -2 }])
+    expect(hostWire.invalid).toEqual([])
+    expect(wires[0].invalid).toEqual([])
+    guests[0].close()
+    host.close()
+  })
 })
 
 describe('same screen', () => {

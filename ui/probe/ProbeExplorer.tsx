@@ -3,6 +3,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
+import { mountCrew, type CrewPose } from '../crew/crew'
 import { createFps } from '../fps/controller'
 import type { Obstacle } from '../fps/model'
 import { FpsPrompt } from '../fps/Prompt'
@@ -28,6 +29,12 @@ export interface ProbeExplorerProps {
   /** Ground chosen from orbit. Defaults to the Grand Canyon patch. */
   lat?: number
   lon?: number
+  /** Spreads the crew so two players do not start inside each other. */
+  seat?: number
+  /** Other players already floating on this patch. */
+  crew?: readonly CrewPose[]
+  /** Where this player is floating, so the others can draw them. */
+  onMove?: (pose: { x: number; z: number; yaw: number }) => void
 }
 
 /** Metres of clear air between your feet and the tallest ground in the patch. */
@@ -163,13 +170,17 @@ function groundMesh(grid: HeightGrid, texture: THREE.Texture | null, family: Gro
   return { mesh, exaggerate }
 }
 
-export default function ProbeExplorer({ onClose, lat = SURFACE.lat, lon = SURFACE.lon }: ProbeExplorerProps) {
+export default function ProbeExplorer({ onClose, lat = SURFACE.lat, lon = SURFACE.lon, seat = 0, crew, onMove }: ProbeExplorerProps) {
   const stage = useRef<HTMLDivElement>(null)
   const boots = useRef<HTMLElement>(null)
   const kind = useRef<HTMLElement>(null)
   const waterNow = useRef(false)
   const close = useRef(onClose)
   close.current = onClose
+  const crewNow = useRef(crew)
+  const moveNow = useRef(onMove)
+  crewNow.current = crew
+  moveNow.current = onMove
   const named = lat === SURFACE.lat && lon === SURFACE.lon
   const site = {
     lat,
@@ -287,12 +298,13 @@ export default function ProbeExplorer({ onClose, lat = SURFACE.lat, lon = SURFAC
       return sampleHeight(grid.heights, grid.cols, grid.rows, u, v)
     }
     const fps = createFps(renderer.domElement, camera, {
-      start: [0, 0, 4],
+      start: [Math.min(seat, 3) * 1.6, 0, 4],
       yaw: 0,
       reducedMotion: true,
       onLock: setLocked,
     })
     fps.setPlace([], fence(WALK_RADIUS_M))
+    const bodies = mountCrew(scene, { float: true })
 
     const onResize = () => {
       renderer.setSize(box.clientWidth, box.clientHeight)
@@ -307,6 +319,9 @@ export default function ProbeExplorer({ onClose, lat = SURFACE.lat, lon = SURFAC
       const dt = Math.min(0.1, (now - then) / 1000)
       then = now
       fps.update(dt)
+      bodies.set(crewNow.current ?? [])
+      bodies.update(dt)
+      moveNow.current?.(fps.feet())
       camera.position.y += Math.sin(now * 0.0016) * 0.16
       const feet = fps.feet()
       tether.position.set(feet.x, 0, feet.z)
@@ -320,6 +335,7 @@ export default function ProbeExplorer({ onClose, lat = SURFACE.lat, lon = SURFAC
 
     return () => {
       cancelAnimationFrame(frame)
+      bodies.dispose()
       fps.dispose()
       window.removeEventListener('resize', onResize)
       sky?.dispose()
@@ -336,7 +352,7 @@ export default function ProbeExplorer({ onClose, lat = SURFACE.lat, lon = SURFAC
       renderer.dispose()
       renderer.domElement.remove()
     }
-  }, [grid, site.skyHorizon, site.skyTop])
+  }, [grid, seat, site.skyHorizon, site.skyTop])
 
   return (
     <section className="probe-screen" aria-labelledby="probe-title">

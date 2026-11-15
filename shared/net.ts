@@ -33,6 +33,12 @@ export type NetMessage =
   | { type: 'leave'; payload: Record<string, never> }
   /** Where this player is standing. A guest omits `player_id`; the host stamps it from the connection and relays it. */
   | { type: 'pose'; payload: { x: number; z: number; yaw: number; player_id?: string } }
+  /**
+   * Surface survey. `down` means this player is on the ground, so the ship hides them.
+   * `lat`/`lon` are the landing spot. Only the host's values are kept; a guest's are ignored.
+   * `x`/`z`/`yaw` are where they float on that patch. It does not change the sim.
+   */
+  | { type: 'survey'; payload: { down: boolean; x: number; z: number; yaw: number; lat: number; lon: number; placed: boolean; player_id?: string } }
   // host -> everyone
   | { type: 'roster'; payload: { players: Player[] } }
   | { type: 'state'; payload: { state: SimState; events: SimEvent[] } }
@@ -243,6 +249,23 @@ function messageOk(v: unknown): boolean {
         Math.abs(p.x) <= 40 &&
         Math.abs(p.z) <= 40 &&
         Math.abs(p.yaw) <= Math.PI + 0.01 &&
+        optional(p.player_id, (id) => isStr(id, MAX_NAME_LENGTH) && id !== '')
+      )
+    case 'survey':
+      return (
+        isObj(p) &&
+        typeof p.down === 'boolean' &&
+        typeof p.placed === 'boolean' &&
+        isNum(p.x) &&
+        isNum(p.z) &&
+        isNum(p.yaw) &&
+        isNum(p.lat) &&
+        isNum(p.lon) &&
+        Math.abs(p.x) <= 80 &&
+        Math.abs(p.z) <= 80 &&
+        Math.abs(p.yaw) <= Math.PI + 0.01 &&
+        Math.abs(p.lat) <= 90 &&
+        Math.abs(p.lon) <= 180 &&
         optional(p.player_id, (id) => isStr(id, MAX_NAME_LENGTH) && id !== '')
       )
     case 'roster':

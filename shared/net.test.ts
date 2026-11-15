@@ -71,6 +71,8 @@ describe('runtime validators', () => {
     { type: 'ended', payload: {} },
     { type: 'pose', payload: { x: 1.5, z: -2, yaw: 0.4 } },
     { type: 'pose', payload: { x: 0, z: 0, yaw: 0, player_id: 'host' } },
+    { type: 'survey', payload: { down: true, x: 1, z: -2, yaw: 0.2, lat: 36.1, lon: -112.14, placed: true, player_id: 'host' } },
+    { type: 'survey', payload: { down: false, x: 0, z: 0, yaw: 0, lat: 0, lon: 0, placed: false } },
   ]
 
   it('accepts every well-formed message, before and after a JSON round trip', () => {
@@ -125,6 +127,9 @@ describe('runtime validators', () => {
       { type: 'pose', payload: { x: 1, z: 0 } },
       { type: 'pose', payload: { x: 100, z: 0, yaw: 0 } },
       { type: 'pose', payload: { x: 0, z: 0, yaw: 0, player_id: '' } },
+      { type: 'survey', payload: { down: true, x: 0, z: 0, yaw: 0, lat: 0, lon: 0 } },
+      { type: 'survey', payload: { down: true, x: 90, z: 0, yaw: 0, lat: 0, lon: 0, placed: true } },
+      { type: 'survey', payload: { down: true, x: 0, z: 0, yaw: 0, lat: 120, lon: 0, placed: true } },
     ]
     for (const message of bad) expect(isNetMessage(message), JSON.stringify(message)).toBe(false)
     expect(isNetMessage(hostile)).toBe(false)

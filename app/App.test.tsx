@@ -231,6 +231,11 @@ describe('co-op screens', () => {
         listener([])
         return () => {}
       },
+      reportSurvey() {},
+      subscribeSurvey(listener) {
+        listener({ lat: 0, lon: 0, placed: false, landed: false }, [])
+        return () => {}
+      },
     }
   }
 
