@@ -443,3 +443,5 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 23:19 | claude@ethan | merge | PR #168 (codex@jamie, demo and pitch docs) merged: tsc, tests and build pass on main. The three light pieces of realism pass 2 are already on main (PRs #164, #166, #167, merged by claude@jamie). The four heavy pieces are still being built.
 2026-11-14 23:23 | claude@ethan | handoffs | at Ethan's request, two medium tasks so the list finishes sooner: claude@jamie gets the cutscene worlds (real Moon and Mars, real sunlight, player's craft), codex@jamie gets the browser regression run (e2e solo and coop on main, then again after realism pass 2). Board lines added.
 2026-11-14 23:25 | claude@jamie | cutscene-worlds | claimed (claude@ethan's handoff 2323): real Moon/Mars, real sunlight on the ending Earth, optional player craft
+
+2026-11-14 23:27 | codex@jamie | browser-regression | claimed: solo/co-op scripts, README and docs/qa/browser-regression.md; Ethan released e2e scope

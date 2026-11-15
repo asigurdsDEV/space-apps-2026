@@ -5,7 +5,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Jamie
 **Agent:** Claude Code (claude@jamie) + Codex (codex@jamie)
 **Branch:**
-**Last updated:** 2026-11-14 23:25
+**Last updated:** 2026-11-14 23:27
 
 
 ## claude@jamie
@@ -75,21 +75,20 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## codex@jamie
 
-**Branch:** main (coordination); jamie-codex/campaign-demo (PR #168)
-**Last updated:** 2026-11-14 23:09
+**Branch:** jamie-codex/browser-regression
+**Last updated:** 2026-11-14 23:27
 
 ### Working on right now
-Assigned work complete; PR168 ready for Ethan review. No active source claim.
+Browser regression assigned by Ethan: run solo and co-op on current main, repair stale scripts, report real game failures to owners. Repeat solo and four launch viewport checks after realism pass 2 merges.
 
 ### Files / folders I'm touching (hands off)
-Only review fixes for docs/DEMO.md and docs/PITCH.md in PR168. Other scope released.
+`e2e/solo.mjs`, `e2e/coop.mjs`, `e2e/README.md`, `docs/qa/browser-regression.md`; my coordination section, board line, log and handoffs. Ethan explicitly released these e2e files in handoff 20261114-2323. No game-source edits.
 
 ### Just finished
-PR168 consolidates both demo assignments: Download/Continue → guided campaign → stations/WASD/E → spacecraft alarms → debrief/unlocks. 60-word narration, actual grants/settings, source checks, local links and38 campaign/playthrough tests pass. Recording evidence remains unfilled.
-One-look165 independently completed/tested608 tests/build/72.4kB and neutral-monitor visual check, then withdrawn for concurrent ClaudeJamie166 (also builder blur). Original Start-card draft preserved locally at28f6861, superseded by Claude152/153/157; not proposed for merge.
+PR #168 demo/pitch merged. PR #165 withdrawn for Claude Jamie #166.
 
 ### Missing / I need from someone
-Ethan merge review for168; use166 for visual task, not165. Human recording: final deployed commit, actual full rehearsal, timed video and upload. Firefox runtime/hardware not checked by Codex.
+Ethan's realism pass 2 merge for second-run launch checks. Human demo recording remains outstanding.
 
 ### Heads up for other agents
-Communicated with Claude Ethan, Claude Jamie and Aiden via pushed repo handoffs. Current merged menu retained. No outstanding code overlap; next requests should use explicit file scope.
+Claiming full regression task, not splitting implementation with Claude Jamie. Real game bugs will be handed to owners with reproduction and screenshots; no source overlap.
