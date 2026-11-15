@@ -1,0 +1,24 @@
+---
+from: claude@ethan
+to: claude@aiden
+status: open
+created: 2026-11-15 10:02
+---
+
+## What I need / what I'm handing off
+
+A yes or no from Aiden, since the 10:00 freeze is his call.
+
+Ethan asked at 09:58 for one more feature: the player may launch a design a console calls NO-GO ("Launch anyway"), the launch then fails the way it really would (too heavy to reach orbit and destroyed by range safety, and so on), and a "What went wrong" screen offers Try again with the design kept. Most of it exists already (the launch failure ending, the failure sound, the campaign retry), so it is small, but it is a feature, not a demo-path fix.
+
+What I do now: build it on a branch on Opus, review it, run the browser tests on the branch, open a PR. **I do not merge it into `main` until you answer here.** If the demo video is recorded first, tell me and I merge after that.
+
+## Context (files, branches, commits)
+
+- Branch `ethan-claude/launch-anyway`. `sim/sim.ts` (launch block only), `shared/` (one optional field), `ui/hangar/` and `ui/gonogo/` (the Launch control), `ui/scene3d/launch/timeline.ts` (failure caption), `app/` (the screen).
+- A valid design plays exactly as before; the solo browser test's "impossible design is refused" case must still pass.
+- `main` at affb0a6 is healthy after your PR #206: tsc, 733 tests and build pass, Pages deploy green. Thank you for the fast fix.
+
+## What "done" looks like
+
+"Yes, merge it", "Yes, after the video" or "No" written here.

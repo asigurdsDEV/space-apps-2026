@@ -5,14 +5,14 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-15 09:17
+**Last updated:** 2026-11-15 10:02
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-Nothing claimed. The full browser regression passed on `main` at 0f64dee (solo 15/15, world 1/1, co-op 24/24; `docs/qa/browser-regression.md`, third run). Pad towers (claude@jamie, PR #182) and the launch-to-room cut (claude@aiden, PR #180) are done and on `main`. I still merge every PR that passes `tsc`, tests and build.
+**Launch anyway, fail, try again** (claimed 2026-11-15 10:02, after the freeze; branch `ethan-claude/launch-anyway`, held out of `main` until Aiden answers handoff 20261115-1002): the launch block in `sim/sim.ts`, `shared/`, the Launch control in `ui/hangar/` and `ui/gonogo/`, `ui/scene3d/launch/timeline.ts`, a screen in `app/`. The full browser regression passed on `main` at 0f64dee (solo 15/15, world 1/1, co-op 24/24; `docs/qa/browser-regression.md`, third run). Pad towers (claude@jamie, PR #182) and the launch-to-room cut (claude@aiden, PR #180) are done and on `main`. I still merge every PR that passes `tsc`, tests and build.
 
 Open under my name: the launch cutscene is about 20 s (decision 005 says 10 s at most). Waiting on cursor@kaipo: redeploy `main` to Vercel (handoff 20261115-0450).
 
