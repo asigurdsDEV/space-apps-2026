@@ -58,6 +58,7 @@ void main() {
  * uBody: 0 Earth, 1 Moon, 2 Mars. uSun: world-space direction to the Sun.
  * Optional real NASA maps (maps/index.ts): uMap + uHasMap, and for Earth uNight + uHasNight.
  * Without them (uHasMap 0) the body is drawn procedurally.
+ * Optional uSunset 1 (Earth): the ground along the day/night line is lit orange-red. Left out, nothing changes.
  */
 export const planetShader = {
   vertexShader: VERTEX,
@@ -70,6 +71,7 @@ uniform sampler2D uNight;
 uniform float uHasNight;
 uniform sampler2D uHeight;
 uniform float uHasHeight;
+uniform float uSunset;
 varying vec3 vObj;
 varying vec3 vWorldN;
 varying vec3 vWorldPos;
@@ -264,7 +266,9 @@ void main() {
   // Moon dust scatters light back toward the Sun, so the lit disc stays bright to its edge (Lommel-Seeliger), unlike a matte ball.
   // Only where the Sun is well up: near the terminator it would turn every crater wall into a hard black-and-white blob.
   if (uBody > 0.5 && uBody < 1.5) sunlit = mix(sunlit, 2.0 * sunlit / (sunlit + max(dot(n, v), 0.05)), 0.7 * smoothstep(0.1, 0.5, dot(normalize(mat3(modelMatrix) * p), uSun)));
-  vec3 lit = col * (0.012 + 1.25 * sunlit);
+  // Sunlight that skims the Earth has crossed a long path of air, which scatters its blue away: what lands along the day/night line is orange-red.
+  vec3 low = mix(vec3(1.0), mix(vec3(1.0, 0.34, 0.1), vec3(1.0), smoothstep(0.0, 0.17, d)), uSunset);
+  vec3 lit = col * (0.012 + 1.25 * sunlit * low);
 
   // Sun glint on the oceans.
   vec3 hv = normalize(uSun + v);
@@ -290,6 +294,7 @@ void main() {
     // horizon. It depends only on the angle, so it holds from the pad's altitude to a far view, at any scene scale.
     float veil = 1.0 - exp(-0.04 * (1.0 / max(dot(n, v), 0.04) - 1.0));
     vec3 air = mix(vec3(0.16, 0.38, 0.95), vec3(0.62, 0.8, 1.0), veil) * smoothstep(-0.2, 0.35, d);
+    air = mix(air, vec3(0.55, 0.23, 0.08) * smoothstep(-0.2, 0.1, d), uSunset * (1.0 - smoothstep(0.0, 0.17, d)));
     lit = mix(lit, air, 0.85 * veil);
   } else if (uBody > 1.5) {
     // Mars: a thin dusty rim, a from-afar effect; just above the surface every angle is grazing, so fade it out.
@@ -346,13 +351,14 @@ void main() {
 `,
 }
 
-/** Drawn on the back faces of a slightly larger sphere, added on top. */
+/** Drawn on the back faces of a slightly larger sphere, added on top. Optional uSunset 1 (Earth): the thin sunset arc at the limb. */
 export const atmosphereShader = {
   vertexShader: VERTEX,
   fragmentShader: /* glsl */ `
 uniform vec3 uSun;
 uniform vec3 uColor;
 uniform float uThickness;
+uniform float uSunset;
 varying vec3 vObj;
 varying vec3 vWorldN;
 varying vec3 vWorldPos;
@@ -367,7 +373,92 @@ void main() {
   // At the day/night line light crosses the most air: orange sunsets on Earth, blue ones on Mars,
   // which is just the air's colour reversed (uColor.bgr).
   vec3 tint = mix(uColor, uColor.bgr, 0.6 * exp(-pow((sun + 0.05) / 0.18, 2.0)));
-  gl_FragColor = vec4(tint * glow * day * 1.8, 1.0);
+  // Sunset seen from orbit: where the Sun is behind the limb its light has skimmed the thickest air, so the rim there is
+  // not a broad blue glow but a thin arc, orange against the ground and blue above it. \`low\` is the Sun's height (its sine)
+  // where this line of sight passes closest to the ground; deep in the night the plain rim returns.
+  float low = dot(normalize(n - v * dot(n, v) + 1e-5), uSun); // + 1e-5: never the zero vector, whose normal is not a number
+  float dusk = uSunset * (1.0 - smoothstep(-0.05, 0.15, low)) * smoothstep(-0.6, -0.3, low);
+  vec3 arc = mix(vec3(0.2, 0.45, 1.0), vec3(1.0, 0.4, 0.1), smoothstep(0.88, 0.995, depth)) * pow(depth, 14.0) * 0.4 * smoothstep(-0.5, 0.0, low);
+  gl_FragColor = vec4(mix(tint * glow * day * 1.8, arc, dusk), 1.0);
+}
+`,
+}
+
+/**
+ * The aurora during a geomagnetic storm, drawn on a shell 350 km above the Earth (radius 1.055) that turns with it.
+ * uStorm 0 to 1 (model.ts stormGlow), uRipple seconds. Each pixel looks through four heights of the real curtain:
+ * green oxygen light (557.7 nm) from 100 km up, fading into the fainter red (630 nm) above 250 km.
+ */
+export const auroraShader = {
+  vertexShader: VERTEX,
+  fragmentShader: /* glsl */ `
+uniform vec3 uSun;
+uniform float uStorm;
+uniform float uRipple;
+uniform mat4 modelMatrix;
+varying vec3 vWorldPos;
+${NOISE}
+void main() {
+  // The geomagnetic pole (80.7 N, 72.7 W, and its opposite in the south) in the map's frame: the ovals circle it, not the geographic pole.
+  vec3 pole = vec3(0.0481, 0.9869, 0.1543);
+  mat3 turn = mat3(modelMatrix); // the Earth is only turned, never scaled, so "vector * turn" turns back into the map's frame
+  vec3 sun = uSun * turn;
+  vec3 midnight = -normalize(sun - pole * dot(sun, pole));
+  vec3 eye = cameraPosition - modelMatrix[3].xyz;
+  vec3 ray = normalize(vWorldPos - cameraPosition);
+  float b = dot(eye, ray);
+  vec3 glow = vec3(0.0);
+  // A different start height per pixel, so edge-on at the limb the four samples blend into one layer instead of four lines.
+  float j = fract(52.9829189 * fract(dot(gl_FragCoord.xy, vec2(0.06711056, 0.00583715))));
+  for (int i = 0; i < 4; i++) {
+    float h = (float(i) + j) / 4.0;
+    float r = mix(1.016, 1.055, h);
+    float inside = b * b - dot(eye, eye) + r * r;
+    if (inside <= 0.0) continue;
+    // Front faces see the near side of each height, back faces the far side past the limb (the planet hides the rest).
+    float t = -b + (gl_FrontFacing ? -1.0 : 1.0) * sqrt(inside);
+    if (t <= 0.0) continue;
+    vec3 hit = eye + ray * t;
+    vec3 p = normalize(hit * turn);
+    float m = dot(p, pole);
+    vec3 around = normalize(p - pole * m + 1e-5);
+    float mid = dot(around, midnight); // 1 at magnetic midnight, -1 at noon
+    // The oval sits near 67 degrees magnetic latitude at midnight and 74 at noon; a severe storm pushes it toward the equator.
+    float wander = noise(around * 3.0 + vec3(0.0, sign(m) * 7.0, uRipple * 0.03)) - 0.5;
+    float oval = radians(19.5 + 11.0 * smoothstep(0.6, 1.0, uStorm) + 3.5 * mid + 3.0 * wander);
+    float band = exp(-pow((acos(min(abs(m), 1.0)) - oval) / radians(1.5 + 2.0 * uStorm), 2.0));
+    // Curtains: fine rays along the field lines inside broad bright and dim stretches of the oval.
+    vec3 q = around * 23.0 + p * 5.0 + vec3(uRipple * 0.05, sign(m) * 3.0, h * 0.6);
+    float rays = (0.45 + 0.55 * smoothstep(0.25, 0.8, 0.65 * noise(q) + 0.35 * noise(q * 2.7))) * (0.5 + 0.5 * noise(around * 4.0 + vec3(uRipple * 0.02, sign(m) * 11.0, 0.0)));
+    // Brightest around magnetic midnight; in daylight the sunlit air outshines it.
+    float seen = (0.35 + 0.65 * smoothstep(-1.0, 1.0, mid)) * (1.0 - smoothstep(-0.26, -0.08, dot(p, sun)));
+    // A thin glowing layer looks brighter edge-on, where the eye looks through more of it.
+    float slant = min(1.0 / max(abs(dot(normalize(hit), ray)), 0.05), 4.0);
+    vec3 colour = mix(vec3(0.16, 1.0, 0.3), vec3(1.0, 0.07, 0.1), smoothstep(0.5, 1.0, h)) * mix(1.0, 0.4, h);
+    glow += colour * band * rays * seen * slant;
+  }
+  gl_FragColor = vec4(glow * 0.36 * sqrt(uStorm), 1.0);
+}
+`,
+}
+
+/** The stars as round points: `size` is each star's width in CSS pixels, `tint` its colour times its brightness. */
+export const starShader = {
+  vertexShader: /* glsl */ `
+attribute float size;
+attribute vec3 tint;
+uniform float uPixels;
+varying vec3 vTint;
+void main() {
+  vTint = tint;
+  gl_PointSize = size * uPixels;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}
+`,
+  fragmentShader: /* glsl */ `
+varying vec3 vTint;
+void main() {
+  gl_FragColor = vec4(vTint * smoothstep(0.5, 0.15, length(gl_PointCoord - 0.5)), 1.0);
 }
 `,
 }

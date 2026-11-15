@@ -1,13 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { SimState } from '../../shared'
 import { cruiseCaption, cruiseDays } from './cruise'
-import { caption, describe, sceneSpec } from './model'
+import { caption, describe, sceneSpec, stormGlow } from './model'
 import { createWorld, type ViewMode, type World } from './world'
 import './scene3d.css'
 
 export interface SpaceViewProps {
-  /** The view reads the picked parts (params) and their catalog rows (entities). It never sends commands. */
-  state: Pick<SimState, 'entities' | 'params'>
+  /**
+   * The view reads the picked parts (params) and their catalog rows (entities). It never sends commands.
+   * Given `metrics` too, an Earth in a geomagnetic storm shows its aurora (model.ts `stormGlow`).
+   */
+  state: Pick<SimState, 'entities' | 'params'> & Partial<Pick<SimState, 'metrics'>>
   /**
    * "spacecraft": close-up of the craft above the planet. "orbit": the planet, the orbit and the craft flying it.
    * "cruise": Earth → the Moon or Mars on the transfer arc (an Earth orbit shows "orbit" instead).
@@ -33,6 +36,7 @@ export function SpaceView({ state, mode = 'orbit', progress, showCaption = true,
   const host = useRef<HTMLDivElement>(null)
   const world = useRef<World | null>(null)
   const spec = useMemo(() => sceneSpec(state), [state.entities, state.params])
+  const storm = stormGlow(state)
   const [failed, setFailed] = useState(false)
   const [inShadow, setInShadow] = useState(false)
   const interactive = !media('(pointer: coarse)')
@@ -61,6 +65,7 @@ export function SpaceView({ state, mode = 'orbit', progress, showCaption = true,
   useEffect(() => world.current?.setSpec(spec), [spec])
   useEffect(() => world.current?.setMode(mode), [mode])
   useEffect(() => world.current?.setProgress(progress ?? null), [progress])
+  useEffect(() => world.current?.setStorm(storm), [storm])
 
   const text = describe(spec)
   const cruising = mode === 'cruise' && spec.body !== 'earth'

@@ -1,7 +1,8 @@
 // Dev-only preview: `npm run dev`, then open /ui/scene3d/preview.html. Not part of the build.
 // ?date=2026-06-21T12:00Z draws the Earth's day and night for that moment instead of now.
+// ?storm=5 starts in a G5 geomagnetic storm (the "storm" picker changes it): the aurora.
 // shortcut: a hand-copied subset of data/ catalog rows (PR #8); the real screens pass state.entities.
-import { StrictMode, useState } from 'react'
+import { StrictMode, useMemo, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import type { Entity, Params } from '../../shared'
 import { SpaceView } from './SpaceView'
@@ -37,7 +38,8 @@ const entities: Entity[] = [
   e('instrument', 'synthetic-aperture-radar', 'Synthetic aperture radar', { category: 'radar' }),
 ]
 
-const date = new URLSearchParams(location.search).get('date')
+const query = new URLSearchParams(location.search)
+const date = query.get('date')
 
 const pick = (kind: string, where?: (x: Entity) => boolean) => entities.filter((x) => x.kind === kind && (!where || where(x)))
 
@@ -46,7 +48,10 @@ function Preview() {
   const [params, setParams] = useState<Params>({
     orbit: 'sso', bus: 'cubesat-6u', solar: 'solar-deployable-small', comms: 's-band-patch', instruments: 'camera-basic',
   })
+  const [storm, setStorm] = useState(query.get('storm') ?? '0')
   const set = (key: string, value: string) => setParams((p) => ({ ...p, [key]: value }))
+  // A storm the way the sim reports it: a real storm day (real_storms) while the mission is in operations.
+  const state = useMemo(() => ({ entities, params: { ...params, real_storms: `0:${storm}` }, metrics: { phase: 'operations', mission_day: 0 } }), [params, storm])
   const picked = String(params.instruments ?? '').split(',').filter(Boolean)
   const select = (key: string, options: Entity[]) => (
     <label>
@@ -69,6 +74,12 @@ function Preview() {
         {select('bus', pick('bus'))}
         {select('solar', pick('power_system'))}
         {select('comms', pick('comms_system'))}
+        <label>
+          storm{' '}
+          <select name="storm" value={storm} onChange={(ev) => setStorm(ev.target.value)}>
+            {['0', '3', '4', '5'].map((g) => <option key={g} value={g}>{g === '0' ? 'none' : `G${g}`}</option>)}
+          </select>
+        </label>
         {pick('instrument').map((i) => (
           <label key={i.id}>
             <input
@@ -80,7 +91,12 @@ function Preview() {
           </label>
         ))}
       </div>
-      <SpaceView state={{ entities, params }} mode={mode} date={date ? new Date(date) : undefined} className="preview-big" />
+      <SpaceView
+        state={state}
+        mode={mode}
+        date={date ? new Date(date) : undefined}
+        className="preview-big"
+      />
       <style>{'.preview-big { height: min(72vh, 640px); }'}</style>
     </div>
   )
