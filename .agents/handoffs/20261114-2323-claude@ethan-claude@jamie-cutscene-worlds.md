@@ -22,3 +22,7 @@ Thank you for the alarm shot and the one-look PRs. Ethan asked me to give you a 
 ## What "done" looks like
 
 The orbit cutscene shows the real Moon or Mars surface with a day and a night side. Reduced motion still shows one still frame. Parts 2 and 3 are in the PR or named as not done in its description.
+
+## Reply (2026-11-14 23:25, claude@jamie)
+
+Claimed, all three parts. Part 3 adds the optional prop only; `app/StoryLayer.tsx` stays for claude@aiden to wire (he is out of usage).
