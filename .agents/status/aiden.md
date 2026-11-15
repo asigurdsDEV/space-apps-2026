@@ -96,20 +96,20 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** aiden-codex/guided-campaign
-**Last updated:** 2026-11-14 18:10
+**Branch:** aiden-codex/guided-campaign — PR #156
+**Last updated:** 2026-11-14 18:42
 
 ### Working on right now
-Aiden requests guided missions with a larger next budget after success. Claiming guided solo campaign: existing First Light Easy $12M → Moon Normal $300M → Mars Normal $500M, win-only unlock, persistent local progress, no loss of current grant on retry, no repeat-win money farming. Preserve existing free play/Daily/online and Jamie's merged Start flow. Lock push before code.
+Implementation complete in PR #156; checking CI/coordinator handoff. No new source claim. Ethan's1840 realism/UI redesign is respected; no follow-up edits in its claimed files.
 
 ### Files / folders I'm touching (hands off)
-New `ui/campaign/` model, storage, Board/Result components, CSS, tests, README; additive `app/App.tsx`, `app/App.test.tsx`, `app/World.tsx`, `app/WorldMenu.tsx` + test; `ui/hangar/MissionControl.tsx` optional guide prop; own decision011 + additive `.agents/CONTRACTS.md` campaign metadata/local-progress paragraph; own coordination/handoff and new `docs/qa/guided-campaign.md`. Exact integration heads-up to Ethan/Jamie; no ui/start, data, sim, net, scene3d/parts, interior/control, crew, Claude section/branch or docs/CHALLENGE2 edits.
+None. Guided campaign scope released to coordinator review/redesign integration: ui/campaign, additive App/World/WorldMenu and optional MissionControl guide. PR156 preserves #153's one-screen children, current models/motion and original ui/start source. No data/sim/net/model/Claude section or branch edits.
 
 ### Just finished
-PR #144 on current main (#135–#142 integrated): explicit Download → actual completed-file progress → Continue. All 47 generated/public game assets cached, failure blocks Continue, retry reuses completed files. Origin-stopped reload and first-person play through launch/planning anomaly pass without exceptions. Launch fills 1280×1000 and1920×1080; cards/title/gauges separated. Part and option explanations; help/radio/E/menu do not overlap at1280×800 and756×469. Classic/no-WebGL bypass pass. 550 tests/71 files, build/typecheck/size72.0kB pass. docs/qa/preflight-assets.md records executed evidence. Preserved team's cabin, hall, Earth and crew additions; no owner branches edited.
+PR #156: guided solo board, win-only ordered unlocks and fixed assignment grants ($12M Earth → $300M Moon → $500M Mars), saved browser progress, funded retries, no repeated-win money stacking. Existing free play/Daily/online kept; explicit world=classic links retain original free-play/e2e landing. All three actual configs proven winnable through sim+anomalies. Browser Earth win awarded$300M; Continue started fresh Moon; reload retained1/3 and locked Mars. Fresh-origin failure retained$12M; actual W/E retry relaunched; next failure still0/3. Fixed the end Menu/cutscene race: observed exactly one dialog in each phase. Production gate/board/free-play smoke passed. 578 tests/76files, typecheck/build/size72.0kB. Decision011 + additive app metadata/local progress contract; docs/qa/guided-campaign.md distinguishes tested/untested. Earlier #144 is merged and Kaipo's manual deployment report is recorded above.
 
 ### Missing / I need from someone
-Budget/missing sections in handoff1801: part replacement cost/remaining-budget preview + compatibility/next-objective cues, first-person debrief/weather parity, mission activities with visible outcomes (training currently unscored/local). Existing Easy/Sandbox should be clear before changing all budgets. Jamie keeps active Start flow; Ethan keeps realism/model/sim scope. No source assignment claimed for anyone. Caleb/Kaipo acceptance still needs actual new-player/laptop/co-op results. Prior #144 merged and Kaipo reports manual production deploy #144–147 at17:38; automatic Git integration not yet verified, despite Aiden reporting app installed.
+Ethan review/merge #156, preserve guide prop and result-menu disabled interlock during1840 redesign. Kaipo publish merged build to existing Vercel project, verify ordinary URL Download→campaign and explicit world=classic→old Start, then cross-device acceptance. Caleb physical-laptop/zoom acceptance; Jamie demo narration can use guided sequence. Budget previews/3D weather/results parity from1801 assessment remain proposed follow-ups; no new claims. Campaign is solo/browser-local, not a shared co-op wallet or cloud save. Git auto-deployment remains unverified.
 
 ### Heads up for other agents
 All-handoff 1713 has exact isolated next actions; existing 1640 owner tasks remain. The gate warms/downloads code and models; it cannot guarantee GPU frame rate or permanent cache storage. API/ICE/signaling remain on the network. Offline local preview lazy-import failure fixed; live-host confirmation still pending. Decision numbered010 to preserve Kaipo's009 crew pose. Astra read-only design review complete; Sol implementation.

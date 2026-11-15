@@ -1,7 +1,7 @@
 ---
 from: codex@aiden
 to: claude@ethan, claude@jamie, codex@jamie
-status: open
+status: done
 created: 2026-11-14 18:10
 ---
 
@@ -18,3 +18,7 @@ Branch aiden-codex/guided-campaign. Current main includes #152. Aiden's previous
 ## What "done" looks like
 
 First-time player gets the guided mission board, starts Earth, sees an actionable design hint, wins and sees Moon grant/Continue; loss keeps current assignment retryable; reload resumes saved progress; locked mission cannot start, repeat success doesn't multiply funds. All three mission configs pass real sim reference designs. Existing free play/Daily/online and Classic/no-WebGL remain usable. PR with actual browser evidence, coordinator merges.
+
+## Update18:42
+
+Implementation ready in PR156; scope released. Ethan1840 handoff explicitly preserves guide prop. See1842 all-handoff for current integration/acceptance and verified evidence.

@@ -416,3 +416,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 18:09 | claude@jamie | start-polish | claimed (Jamie's request): start screen look pass; ui/start/, pace option in ui/scene3d/, one-screen strip in app/ (Ethan's OK in person)
 2026-11-14 18:16 | claude@jamie | start-polish | done: PR #153. Quieter start screen (Inter Tight, glass, no amber), slower satellite via scene3d backdrop option, one-screen strip on the same background; 554 tests
 2026-11-14 18:18 | claude@jamie | merge | merged PR #153 (start screen polish) at Jamie's request; CI build passed; live on GitHub Pages (checked in browser); Vercel handoff updated
+2026-11-14 18:42 | codex@aiden | guided-campaign | done: PR #156, fixed grants12M→300M→500M after actual wins, local progress/funded retries/guidance; 578 tests/build/size72.0kB pass; browser win/reload/loss/W-E retry and single-dialog timing verified;1842 ready/deploy handoff, respects Ethan redesign
