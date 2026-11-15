@@ -2,7 +2,7 @@
 // shows is also in the step's own text. start.css draws and animates it; reduced motion holds it still.
 import type { StartMode } from './model'
 
-export type Step = 'menu' | 'setup' | 'mission' | 'difficulty' | 'satellite'
+export type Step = 'menu' | 'setup' | 'mission' | 'difficulty' | 'satellite' | 'team'
 
 const CONSOLES = ['PLAN', 'SPACECRAFT', 'SCIENCE', 'COMMS'] // the four GO / NO-GO consoles (ui/gonogo)
 const PLAN = [
@@ -21,7 +21,7 @@ export interface DiagramProps {
 }
 
 export function Diagram({ step, mode, scenarioId, bars }: DiagramProps) {
-  if (step === 'satellite') return null // the panel is the whole story there
+  if (step === 'satellite' || step === 'team') return null // the panel is the whole story there
   return (
     <div className="ss-diagram" aria-hidden="true" key={step}>
       {step === 'menu' && <>

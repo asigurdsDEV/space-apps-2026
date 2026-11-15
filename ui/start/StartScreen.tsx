@@ -47,7 +47,7 @@ const modes: { mode: StartMode; title: string; detail: string }[] = [
 ]
 const LEVELS = ['easy', 'normal', 'hard'] as const
 const STEPS: Step[] = ['menu', 'setup', 'mission', 'difficulty']
-const HEADINGS: Record<Step, string> = { menu: 'First Flight', setup: 'Mission setup', mission: 'Choose your mission', difficulty: 'Choose difficulty', satellite: 'The spacecraft' }
+const HEADINGS: Record<Step, string> = { menu: 'First Flight', setup: 'Mission setup', mission: 'Choose your mission', difficulty: 'Choose difficulty', satellite: 'The spacecraft', team: 'About the team' }
 /** Each mission's icon is a small globe painted with the real NASA map of where it goes (ui/scene3d/maps). */
 export const GLOBES: Record<string, string> = {
   demo: `url(${earthClouds}), url(${earthDay})`,
@@ -149,7 +149,7 @@ export function StartScreen({ scenarios, onStart, scenarioPreview, dailyMission,
       {shown && <SpaceView className="ss-bg" state={{ entities: PARTS, params: shown.params }} mode="orbit" showCaption={false} backdrop onCraftClick={() => openSpacecraft.current()} />}
       {/* Inter Tight, a free stand-in for Ferrari Sans; without the network the system sans is used. React hoists it into <head>. */}
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500&display=swap" precedence="default" />
-      <div className="ss-masthead"><span className="ss-brand"><span aria-hidden="true">✦</span> First Flight</span><span>A space mission design game</span><span className="ss-edition">NASA Space Apps · 2026</span></div>
+      <div className="ss-masthead"><span className="ss-brand"><span aria-hidden="true">✦</span> First Flight</span><span>A space mission design game</span><button className="ss-team-link" type="button" onClick={() => go('team')}>About the team</button><span className="ss-edition">NASA Space Apps · 2026</span></div>
       <form id="mission-setup" className={`ss-stage${fading ? ' is-fading' : ''}`} onSubmit={submit} onChange={() => setValidation(null)} aria-busy={busy}>
         <div className="ss-side">
           {step === 'menu' && <header className="ss-intro">
@@ -161,7 +161,7 @@ export function StartScreen({ scenarios, onStart, scenarioPreview, dailyMission,
         </div>
         <fieldset className="ss-panel" disabled={busy || fading}>
           {step !== 'menu' && <>
-            <p className="ss-panel-kicker">{step === 'satellite' ? `${shown?.title.split(':')[0] ?? 'Mission'} · starting design` : `Step ${stepNumber} of ${joining ? 1 : 3}`}</p>
+            <p className="ss-panel-kicker">{step === 'team' ? 'Kimchi Trenchers' : step === 'satellite' ? `${shown?.title.split(':')[0] ?? 'Mission'} · starting design` : `Step ${stepNumber} of ${joining ? 1 : 3}`}</p>
             <h1 className="ss-step-title" ref={heading} tabIndex={-1}>{HEADINGS[step]}</h1>
           </>}
 
@@ -173,22 +173,6 @@ export function StartScreen({ scenarios, onStart, scenarioPreview, dailyMission,
               <p className="ss-hint"><time dateTime={dailyMission.date}>{dailyMission.date}</time> (UTC) · {dailyScenario.title}</p>
               <button className="ss-daily-button" type="button" onClick={playDaily}>Play daily mission</button>
             </section>}
-            <section className="ss-team" aria-labelledby={`${id}-team`}>
-              <h2 id={`${id}-team`}>About the team</h2>
-              <p className="ss-hint">Six students at the University of Washington</p>
-              <ul>
-                {TEAM.map(member => {
-                  const face = member.photo
-                    ? <img src={member.photo} alt="" width={56} height={56} loading="lazy" />
-                    : <span className="ss-team-initials" aria-hidden="true">{member.name.split(' ').map(word => word[0]).join('')}</span>
-                  return <li key={member.name}>
-                    {member.linkedin
-                      ? <a href={member.linkedin} target="_blank" rel="noreferrer" aria-label={`${member.name} on LinkedIn`}>{face}<span>{member.name}</span></a>
-                      : <>{face}<span>{member.name}</span></>}
-                  </li>
-                })}
-              </ul>
-            </section>
           </>}
 
           {step === 'setup' && <>
@@ -248,9 +232,25 @@ export function StartScreen({ scenarios, onStart, scenarioPreview, dailyMission,
             </dl> : <p className="ss-hint">This mission starts with no parts picked.</p>}
           </>}
 
+          {step === 'team' && <div className="ss-team">
+              <p className="ss-hint">Six students at the University of Washington</p>
+              <ul>
+                {TEAM.map(member => {
+                  const face = member.photo
+                    ? <img src={member.photo} alt="" width={72} height={72} loading="lazy" />
+                    : <span className="ss-team-initials" aria-hidden="true">{member.name.split(' ').map(word => word[0]).join('')}</span>
+                  return <li key={member.name}>
+                    {member.linkedin
+                      ? <a href={member.linkedin} target="_blank" rel="noreferrer" aria-label={`${member.name} on LinkedIn`}>{face}<span>{member.name}</span></a>
+                      : <>{face}<span>{member.name}</span></>}
+                  </li>
+                })}
+              </ul>
+            </div>}
+
           {message && <p className="ss-error" role="alert">{message}</p>}
           {step !== 'menu' && <div className="ss-nav">
-            <button className="ss-back" type="button" onClick={() => go(step === 'satellite' ? 'menu' : STEPS[stepNumber - 1]!)}>{step === 'satellite' ? 'Back to menu' : 'Back'}</button>
+            <button className="ss-back" type="button" onClick={() => go(step === 'satellite' || step === 'team' ? 'menu' : STEPS[stepNumber - 1]!)}>{step === 'satellite' || step === 'team' ? 'Back to menu' : 'Back'}</button>
             {step === 'setup' && <button className="ss-primary" type="submit">{joining ? (busy ? 'Connecting…' : 'Join room') : 'Next'}</button>}
             {step === 'difficulty' && <button className="ss-primary" type="submit" disabled={!scenario}>{busy ? 'Connecting…' : mode === 'host' ? 'Create room' : 'Start mission'}</button>}
           </div>}
