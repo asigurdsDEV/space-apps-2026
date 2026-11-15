@@ -219,7 +219,8 @@ function anomaly(scene: THREE.Scene, camera: THREE.PerspectiveCamera, spec?: Cra
   return {
     update(progress, elapsedMs, aspect) {
       const blink = Math.abs(Math.sin(elapsedMs / 160))
-      alarm.intensity = blink * 8
+      // Point lights fall off with distance, so it takes this much for the red wash to read on the craft.
+      alarm.intensity = blink * 60
       const e = ease(progress)
       craft.rotation.y = 0.7 + e * 0.25
       camera.position.set(0.35, 0.7, lerp(distance(aspect, 3.2), distance(aspect, 2.3), e))
