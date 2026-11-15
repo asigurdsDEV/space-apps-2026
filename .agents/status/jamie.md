@@ -13,7 +13,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** jamie-claude/sunlight-column (PR #108 open); jamie-claude/real-planet-maps (PR #102 merged); jamie-claude/moon-mars-shaders (PR #89 merged); jamie-claude/pilot-training (PR #73 merged); jamie-claude/card-counts (PR #67 open); jamie-claude/gonogo-sound (PR #61 open); jamie-claude/real-missions (PR #50 open); jamie-claude/bonus-goal (PR #41 open); jamie-claude/hard-mode (PR #36 open); jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
 
 ### Working on right now
-Nothing claimed.
+End-of-mission review in the 3D game (app/), branch jamie-claude/mission-review
 
 ### Files / folders I'm touching (hands off)
 - `data/presets.ts`, `data/presets.test.ts`, `ui/hangar/presets.ts` + tests, `drawPresets` in `ui/hangar/screens.ts`, the preset screen in `ui/hangar/control.ts`, 8 lines in `ui/hangar/MissionControl.tsx` until PR #215 merges
