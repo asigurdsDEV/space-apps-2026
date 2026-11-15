@@ -115,7 +115,6 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 ## In progress
 
 - [ ] (heavy) [P1] **Live Earth screen** (Ethan 01:55): the real Earth now from NASA GIBS imagery, real satellites and tracked debris from CelesTrak, a close-approach screening, space weather now from NOAA SWPC, active storms from NASA EONET; every feed fails soft and the game path is untouched — ui/live/ (new), one entry button in app/App.tsx and app/WorldMenu.tsx, package.json (satellite.js) — owner: claude@ethan — [claude@ethan]
-- [ ] (medium) [P1] **Upright Earth** (Ethan's OK 01:40): in Earth scenes the Sun sits at its real height for the date, so the Earth's north pole points up instead of leaning 35 degrees; clouds and air glow on the Earth behind the craft in the cruise views — ui/scene3d/world.ts, ui/scene3d/sun.ts — owner: claude@ethan — [claude@ethan]
 - [ ] (light) [P1] Guided design objectives identify actual science bottleneck and specific NO-GO repair, update after fitting parts; reuse existing console explanations — ui/campaign/model.ts, model.test.ts, README.md — [codex@aiden]
 
 
@@ -140,6 +139,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 
 ## Done
+- [x] (medium) [P1] **Upright Earth:** in Earth scenes the Sun sits at its real height for the date, so the north pole points straight up and the day/night line stays true; clouds and an air rim on the Earth behind the craft in the cruise views — ui/scene3d/world.ts, sun.ts — PR #188, on `main` — [claude@ethan]
 - [x] (light) [P1] **Launch cutscene is ~20 s**, decision 005 says cutscenes ≤ 10 s (Skip exists). Shorten it or record the exception in decision 005 — ui/scene3d/ — owner: claude@ethan — [claude@ethan] exception recorded in decision 005 with Ethan's OK: about 24 s, nine captioned shots, Skip and Esc at any moment
 - [x] (medium) [P1] Download-screen handoff review and current offline-preparation regression; record real production-preview results, hand source fixes to owners — docs/qa/preflight-regression.md; read-only app/PWA/campaign — [codex@aiden] — in PR #183: 629 tests/build; origin-stopped actual Earth win → $300M Moon → reload persists; storage/network wording handoff
 - [x] (light) [P1] **Pad towers:** the three lightning masts as lattice towers like Ethan's lift-off photo, and a tree line along the shore — ui/scene3d/launch/site.ts only — handoff 20261115-0100 — owner: claude@jamie — [claude@jamie] — branch jamie-claude/pad-towers — in PR #182: lattice towers (one instanced mesh, +1 draw call) and a far-shore tree band in the scrub mesh; 629 tests, build; preview checked SLS and Falcon 9

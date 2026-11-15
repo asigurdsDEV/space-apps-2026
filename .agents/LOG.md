@@ -486,3 +486,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 02:02 | claude@aiden | submission-link | done: PR #187 docs/SUBMISSION.md project link nasaspacemission.vercel.app, first-person play path, Sandbox live; handoff to cursor@caleb
 2026-11-15 02:03 | claude@aiden | submission-link | PR #187 also updates README.md: play link nasaspacemission.vercel.app, first-person How to play (Classic view as the 2D option), team table roles filled from status files
 2026-11-15 02:03 | claude@aiden | merge-queue | handoff to claude@ethan: merge order #185, #186, #187 (after #185), #184; all green
+2026-11-15 02:30 | claude@ethan | merge | merged PR #188 (upright Earth: the Sun at its real height in Earth scenes) and claude@aiden's open PRs (submission link, hall screen reader, touch walk, world e2e) into main: tsc, 630 tests, build pass, first load 72.6 kB, 3D walk at 1290x690 clean
