@@ -21,7 +21,7 @@ function sceneFor(id: CutsceneId, scenarioId: string) {
 }
 
 /** CAPCOM's line hides itself after this, so it never sits on top of a control for long. */
-const LINE_MS = 9000
+const LINE_MS = 6000
 
 const NO_EVENTS: readonly SimEvent[] = []
 
@@ -33,9 +33,11 @@ export interface StoryLayerProps {
   onCutscene?: (playing: boolean) => void
   /** Cutscenes the app already showed itself (the 3D launch), so the plain one is not played again. */
   shown?: readonly string[]
+  /** First-person radio subtitle, with no menu/button over the scene. */
+  immersive?: boolean
 }
 
-export function StoryLayer({ screen, events = NO_EVENTS, scenarioId, onCutscene, shown }: StoryLayerProps) {
+export function StoryLayer({ screen, events = NO_EVENTS, scenarioId, onCutscene, shown, immersive = false }: StoryLayerProps) {
   /** Beats whose cutscene has played on this screen. */
   const [played, setPlayed] = useState<string[]>([])
   /** The beat whose line was closed (or timed out). */
@@ -69,5 +71,10 @@ export function StoryLayer({ screen, events = NO_EVENTS, scenarioId, onCutscene,
     )
   }
   if (closed === key) return null
+  if (immersive) return (
+    <aside className="app-world-radio" role="status" aria-live="polite" aria-label="CAPCOM">
+      <span>CAPCOM</span><p>{LINES[beat.line]}</p>
+    </aside>
+  )
   return <CapcomPopout key={key} line={beat.line} onClose={() => setClosed(key)} />
 }

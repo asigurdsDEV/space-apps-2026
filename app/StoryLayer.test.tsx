@@ -18,6 +18,13 @@ describe('StoryLayer', () => {
     expect(html).not.toContain('st-cutscene')
   })
 
+  it('keeps first-person radio as a subtitle without a dismiss menu', () => {
+    const html = renderToStaticMarkup(<StoryLayer immersive screen="design" scenarioId="demo" />)
+    expect(html).toContain('app-world-radio')
+    expect(html).toContain('aria-live="polite"')
+    expect(html).not.toContain('<button')
+  })
+
   it('plays the ending when the mission ends', () => {
     const end: SimEvent = { type: 'scenario_ended', tick: 1, t_s: 1, payload: { reason: 'x', summary: { outcome: 'success' } as Summary } }
     expect(renderToStaticMarkup(<StoryLayer screen="flight" events={[end]} scenarioId="demo" />)).toContain(LINES['ending-success'])

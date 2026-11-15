@@ -34,7 +34,7 @@ export function FpsPrompt({ aimed, blocked, locked, touch }: FpsPromptProps) {
           Click to look around · <kbd>W</kbd>
           <kbd>A</kbd>
           <kbd>S</kbd>
-          <kbd>D</kbd> walk
+          <kbd>D</kbd> walk · <kbd>E</kbd> use
         </p>
       )}
     </div>

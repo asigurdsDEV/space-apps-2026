@@ -350,10 +350,45 @@ h1.app-bar-title {
   position: absolute;
   inset: 0;
 }
-.app-world-bar {
+.app-world-menu-button {
   position: absolute;
-  top: var(--game-space-2);
-  right: var(--game-space-2);
-  display: flex;
-  gap: var(--game-space-2);
+  top: 16px;
+  right: 20px;
+}
+.app-world-menu-button[hidden] { display: none; }
+.app-world-menu {
+  width: min(360px, calc(100vw - 48px));
+  max-height: calc(100dvh - 48px);
+  overflow: auto;
+  box-sizing: border-box;
+  padding: 24px;
+  border: 1px solid var(--game-border);
+  border-radius: 16px;
+  background: var(--game-panel);
+  color: var(--game-text);
+  font-family: var(--game-font);
+}
+.app-world-menu::backdrop { background: rgb(2 5 12 / 0.78); }
+.app-world-menu h1 { margin: 0; font-size: 1.5rem; }
+.app-world-menu button { display: block; width: 100%; margin-top: 12px; }
+.app-world-controls { margin: 20px 0 0; line-height: 1.8; color: var(--game-muted); font-size: 0.85rem; }
+.app-world-radio {
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  max-width: min(440px, calc(100% - 40px));
+  box-sizing: border-box;
+  padding: 10px 14px;
+  border-left: 3px solid var(--game-accent);
+  border-radius: 4px;
+  background: rgb(4 9 20 / 0.85);
+  color: var(--game-text);
+  font: 0.9rem/1.4 var(--game-font);
+  pointer-events: none;
+}
+.app-world-radio span { color: var(--game-accent); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; }
+.app-world-radio p { margin: 4px 0 0; }
+.app-world.is-menu-open .app-world-radio { visibility: hidden; }
+@media (max-height: 500px) {
+  .app-world-radio { bottom: 12px; max-width: min(360px, calc(100% - 40px)); font-size: 0.8rem; }
 }

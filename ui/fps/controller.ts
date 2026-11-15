@@ -39,8 +39,8 @@ const MOUSE = 0.0022
 const KEY_TURN = 1.9 // radians per second with the arrow keys
 const BOB = 0.035
 
-const typing = (t: EventTarget | null) =>
-  t instanceof HTMLElement && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))
+const usingUi = (t: EventTarget | null) =>
+  t instanceof HTMLElement && (t.isContentEditable || !!t.closest('button, a, input, textarea, select, [role="dialog"], dialog'))
 
 /** Keys that walk or turn, by `code` (layout-independent: WASD stays where it is on AZERTY). */
 const MOVE_KEYS: Record<string, [number, number]> = { KeyW: [1, 0], KeyS: [-1, 0], KeyA: [0, -1], KeyD: [0, 1] }
@@ -77,7 +77,8 @@ export function createFps(element: HTMLElement, camera: PerspectiveCamera, optio
   }
 
   const onKeyDown = (e: KeyboardEvent) => {
-    if (!enabled || typing(e.target) || e.metaKey || e.ctrlKey || e.altKey) return
+    if (e.code === 'Escape') { release(); return }
+    if (!enabled || usingUi(e.target) || e.metaKey || e.ctrlKey || e.altKey) return
     if (e.code === 'KeyE' || (e.code === 'Enter' && locked)) {
       if (!e.repeat) interact()
     } else if (!(e.code in MOVE_KEYS) && !(e.code in TURN_KEYS) && !e.code.startsWith('Shift')) return
@@ -92,6 +93,8 @@ export function createFps(element: HTMLElement, camera: PerspectiveCamera, optio
     keys.clear()
     tapped.clear()
     touch = { forward: 0, right: 0 }
+    pendingLook = [0, 0]
+    drag = null
   }
   const onVisibility = () => document.hidden && release()
 
@@ -99,6 +102,7 @@ export function createFps(element: HTMLElement, camera: PerspectiveCamera, optio
   let drag: { id: number; x: number; y: number } | null = null
   const onClick = () => {
     if (!enabled) return
+    element.parentElement?.focus()
     if (locked) return interact()
     const lock = element.requestPointerLock?.() as Promise<void> | undefined
     lock?.catch?.(() => {}) // refused (iframe, too soon after Esc): drag to look still works
@@ -115,7 +119,7 @@ export function createFps(element: HTMLElement, camera: PerspectiveCamera, optio
     if (!locked && enabled && e.pointerType === 'mouse') drag = { id: e.pointerId, x: e.clientX, y: e.clientY }
   }
   const onPointerMove = (e: PointerEvent) => {
-    if (!drag || drag.id !== e.pointerId) return
+    if (!enabled || !drag || drag.id !== e.pointerId) return
     look(e.clientX - drag.x, e.clientY - drag.y)
     drag = { ...drag, x: e.clientX, y: e.clientY }
   }
@@ -133,6 +137,7 @@ export function createFps(element: HTMLElement, camera: PerspectiveCamera, optio
   element.addEventListener('pointerdown', onPointerDown)
   addEventListener('pointermove', onPointerMove)
   addEventListener('pointerup', onPointerUp)
+  addEventListener('pointercancel', onPointerUp)
 
 
   const api: Fps = {
@@ -165,6 +170,7 @@ export function createFps(element: HTMLElement, camera: PerspectiveCamera, optio
         changed = true
       }
       const bob = options.reducedMotion || moved === 0 ? 0 : BOB * Math.abs(Math.sin(walked * 2.4))
+      if (camera.position.y !== EYE + bob) changed = true
       camera.position.set(pos[0], EYE + bob, pos[2])
       camera.rotation.set(pitch, yaw, 0)
 
@@ -195,9 +201,11 @@ export function createFps(element: HTMLElement, camera: PerspectiveCamera, optio
       dirty = true
     },
     setMove(forward, right) {
+      if (!enabled) return
       touch = { forward, right }
     },
     addLook(dx, dy) {
+      if (!enabled) return
       pendingLook = [pendingLook[0] + dx, pendingLook[1] + dy]
     },
     interact,
@@ -223,6 +231,7 @@ export function createFps(element: HTMLElement, camera: PerspectiveCamera, optio
       element.removeEventListener('pointerdown', onPointerDown)
       removeEventListener('pointermove', onPointerMove)
       removeEventListener('pointerup', onPointerUp)
+      removeEventListener('pointercancel', onPointerUp)
       if (locked) document.exitPointerLock?.()
     },
   }

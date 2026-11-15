@@ -5,6 +5,7 @@
 import * as THREE from 'three'
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
+import { roomLoop } from '../fps/room-loop'
 import { createFps, type Fps, type FpsOptions } from '../fps/controller'
 import type { Bar } from '../builder/model'
 import { formatValue } from '../builder/model'
@@ -29,6 +30,7 @@ export interface RoomScreens {
 
 export interface ControlRoom {
   fps: Fps
+  setActive(on: boolean): void
   show(screens: RoomScreens): void
   dispose(): void
 }
@@ -440,18 +442,20 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
   const observer = new ResizeObserver(resize)
   observer.observe(host)
   resize()
-  let last = performance.now()
-  let frame = requestAnimationFrame(function loop(now) {
-    const moved = fps.update((now - last) / 1000)
-    last = now
+  const loop = roomLoop((_now, dt) => {
+    const moved = fps.update(dt)
     if (moved || dirty) for (const m of models) m.visible = m.position.distanceTo(camera.position) < NEAR
     if (moved || dirty) renderer.render(scene, camera)
     dirty = false
-    frame = requestAnimationFrame(loop)
   })
 
   return {
     fps,
+    setActive(on) {
+      fps.setEnabled(on)
+      dirty = true
+      loop.setActive(on)
+    },
     show(s) {
       const key = s.racks.map((r) => `${r.key}:${r.items.map((i) => i.part.id).join(',')}`).join('|')
       if (key !== rackKey) {
@@ -486,7 +490,7 @@ export function createControlRoom(host: HTMLElement, options: Omit<FpsOptions, '
     },
     dispose() {
       disposed = true
-      cancelAnimationFrame(frame)
+      loop.dispose()
       observer.disconnect()
       fps.dispose()
       disposeObject(scene)
