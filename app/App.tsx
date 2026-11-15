@@ -21,7 +21,7 @@ import { awardMission, canStartMission, MISSIONS } from '../ui/campaign/model'
 import { readCampaign, saveCampaign } from '../ui/campaign/storage'
 import { LobbyScreen } from '../ui/lobby'
 import { MissionScreen, stars } from '../ui/mission'
-import { LaunchView as SceneLaunchView } from '../ui/scene3d'
+import { LaunchGate as SceneLaunchView } from '../ui/intercept/LaunchGate'
 import { designFromHash, SharePanel } from '../ui/share'
 import { dailyMissionForDate, StartScreen, type DailyMissionRequest, type StartRequest } from '../ui/start'
 import { BuilderTutorial } from '../ui/tutorial'
@@ -579,7 +579,7 @@ function Design({ session, config }: { session: Session; config: Config }) {
  * successful launch, between the poll and the mission screen, until it calls `onDone` (it has
  * its own Skip). Set this to null and the game goes straight to the mission screen.
  */
-const LaunchView = SceneLaunchView as ComponentType<{ state: SimState; onDone: () => void; failed?: boolean; cause?: string }> | null
+const LaunchView = SceneLaunchView as ComponentType<{ state: SimState; onDone: () => void; onDesign?: () => void; failed?: boolean; cause?: string }> | null
 /** The story layer's plain launch cutscene is not played on top of the real one. */
 const SHOWN_BY_APP = ['launch']
 /** Survey: fly to a place on Earth, then float above that ground. Loaded only when the player opens it. */
@@ -682,7 +682,7 @@ function Flight({ session, config, daily, online, skipLaunch, onLaunchDone, camp
     return (
       <>
         <WalkTo screen="launch" />
-        <LaunchView state={state} onDone={done} failed={state.metrics.outcome === 'launch_failure' && fault !== ''} cause={launchCause(fault)} />
+        <LaunchView state={state} onDone={done} onDesign={() => { holdClock(false); setLaunchDone(false); session.send({ type: 'reset', payload: {} }) }} failed={state.metrics.outcome === 'launch_failure' && fault !== ''} cause={launchCause(fault)} />
       </>
     )
   }

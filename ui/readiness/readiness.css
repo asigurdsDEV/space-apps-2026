@@ -1,0 +1,25 @@
+.rdy {
+  color: #f5f6f8;
+  background: rgb(10 12 16 / 0.82);
+  border: 1px solid rgb(255 255 255 / 0.14);
+  border-radius: 14px;
+  padding: 10px 12px;
+  font: 0.85rem/1.35 var(--game-font, system-ui, sans-serif);
+  max-height: min(52vh, 520px);
+  overflow: auto;
+}
+.mc > .rdy { position: absolute; top: 12px; left: 12px; z-index: 4; width: min(340px, calc(100% - 24px)); }
+.rdy-head { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.rdy-head h2, .rdy-kicker { margin: 0; }
+.rdy-kicker { font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.7; }
+.rdy-banner { margin: 6px 0; font-weight: 800; letter-spacing: 0.04em; }
+.rdy-green { color: #8ee0a8; }
+.rdy-yellow { color: #f0d080; }
+.rdy-red { color: #ff9b90; }
+.rdy-meter { height: 6px; border-radius: 99px; background: rgb(255 255 255 / 0.12); overflow: hidden; }
+.rdy-meter span { display: block; height: 100%; background: currentColor; }
+.rdy-rows { list-style: none; margin: 8px 0 0; padding: 0; }
+.rdy-rows li { display: flex; flex-direction: column; gap: 2px; padding: 6px 0; border-top: 1px solid rgb(255 255 255 / 0.08); }
+.rdy-rows strong { font-weight: 650; }
+.rdy-rows p { margin: 0; opacity: 0.85; }
+.rdy-note { margin: 8px 0 0; opacity: 0.7; font-size: 0.75rem; }

@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { rolesOf, type Command, type Dataset, type Player, type SimState } from '../../shared'
+import { ReadinessPanel } from '../readiness/ReadinessPanel'
+import { isEngineeringSandbox } from '../readiness/report'
 import {
   DEFAULT_SLOTS,
   ROLE_TITLES,
@@ -177,6 +179,7 @@ export function MissionBuilder({ state, send, slots = DEFAULT_SLOTS, players = N
       </div>
 
       <aside className={`mb-side${panelOpen ? ' is-open' : ''}`} aria-label="Mission budgets">
+        {isEngineeringSandbox(state.scenario_id) && <ReadinessPanel entities={state.entities} params={state.params} />}
         <h2 className="mb-sr">Flight consoles</h2>
         <ul className="mb-consoles">
           {poll(state.issues).map((c) => {

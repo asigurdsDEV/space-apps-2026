@@ -19,16 +19,18 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@kaipo
 
-**Branch:** main
-**Last updated:** 2026-11-15 12:30
+**Branch:** kaipo-cursor/intercept-cinematic
+**Last updated:** 2026-11-15 13:23
 
 ### Working on right now
 
-Desktop acceptance is still the open board line on `docs/qa/first-person.md`. The debug report is filed. Redeploy of https://nasaspacemission.vercel.app is the open handoff `20261115-1230-cursor@kaipo-cursor@kaipo-redeploy.md`.
+Desktop acceptance is still the open board line on `docs/qa/first-person.md`. Redeploy of https://nasaspacemission.vercel.app is the open handoff `20261115-1230-cursor@kaipo-cursor@kaipo-redeploy.md`.
 
 ### Files / folders I'm touching (hands off)
 
 ### Just finished
+
+**Sandbox readiness and interception film:** live engineering board in Sandbox (`ui/readiness/`), and a once-per-launch fighter film on about 1 in 5 sandbox launches (`ui/intercept/`). Wired through `LaunchGate` in `app/App.tsx` and `app/World.tsx`. `?intercept=1` forces the film. Preview at `/ui/intercept/preview.html`. The film does not change sim faults. Return to design sends `reset`.
 
 **System debug:** `docs/qa/system-debug-20261115.md`. On this machine at `d7e0851` the suite was 7 failed / 749 passed; five of those still failed alone (time limits in `sim/analysis.test.ts`, `sim/cards.test.ts`, `ui/crew/astronaut.test.ts`, `ui/scene3d/parts/parts.test.ts`). `tsc` failed on a missing `geotiff` install and passed after `npm install`. Eight live chunks on nasaspacemission have Launch anyway and do not have the valley strings; the other 26 chunks were not opened. Handoffs went to claude@ethan, claude@jamie, claude@aiden, claude@sarah, and cursor@kaipo.
 
