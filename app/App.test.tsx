@@ -9,6 +9,8 @@ import { DIFFICULTIES, scenarios } from '../data'
 import { App, GameScreen, Room, roomError, SCENARIOS, weatherStart, withCards } from './App'
 import { createGame } from './game'
 import { createSoloSession, type Session, type SessionSnapshot } from './session'
+import { DailyEventDialog } from './DailyEventDialog'
+import { eventMission, withEvent, type DailyEvent } from './dailyEvent'
 
 const config: Config = { ...demoConfig, params: { ...demoConfig.params, random_failures: false } }
 
@@ -287,5 +289,54 @@ describe('co-op screens', () => {
     expect(online).toContain('Only Hana (Spacecraft)')
     expect(online).toContain('aria-label="Dismiss message"')
     expect(screen(session)).not.toContain('app-crew-menu')
+  })
+})
+
+describe('a daily built on a real event', () => {
+  const event = (kind: DailyEvent['kind'], card: DailyEvent['card']): DailyEvent =>
+    ({ kind, card, title: 'Severe storm: Typhoon <b>A</b>', text: 'NASA’s event tracker lists Typhoon A.', source: 'NASA EONET', asOf: '2026-11-12T06:00:00.000Z' })
+  const daily = { date: '2026-11-15', scenarioId: 'mars', seed: 20261115, difficulty: 'normal' as const, name: 'Ada' }
+
+  it('shows the event, its source and time, and three real buttons before it starts', () => {
+    const html = renderToStaticMarkup(
+      <DailyEventDialog event={event('severe-storm', 'station-bumped')} mission="First Light" onStart={() => {}} onCancel={() => {}} />,
+    )
+    expect(html).toMatch(/^<dialog class="game-theme app-world-menu app-daily-event" data-theme="dark" aria-labelledby="[^"]+">/)
+    expect(html).toContain('Today’s event</h1>')
+    expect(html).toContain('<h2>Severe storm: Typhoon &lt;b&gt;A&lt;/b&gt;</h2>') // feed text is text, never markup
+    expect(html).toContain('NASA’s event tracker lists Typhoon A.')
+    expect(html).toContain('Today’s daily mission is First Light.')
+    expect(html).toContain('Source: NASA EONET, as of <time dateTime="2026-11-12T06:00:00.000Z">12 Nov 2026, 06:00 UTC</time>.')
+    expect(html.match(/<button type="button" class="game-button"[^>]*>([^<]+)/g)?.map((b) => b.replace(/.*>/, ''))).toEqual(['Start daily mission', 'See it live', 'Cancel'])
+  })
+
+  it('flies First Light with the event’s card as the first alarm, through the same params every game gets', () => {
+    const cases = [['solar-storm', 'geomagnetic-storm'], ['severe-storm', 'station-bumped'], ['debris', 'debris-pass']] as const
+    for (const [kind, card] of cases) {
+      const mission = eventMission(daily, event(kind, card))
+      const flown = withCards(withEvent({ ...SCENARIOS.find((s) => s.scenario_id === mission.scenarioId)!, seed: mission.seed }, mission.event))
+      expect(flown.title).toContain('First Light')
+      expect(flown.params.anomaly_cards).toBe(DIFFICULTIES.normal.anomaly_cards)
+      const game = createGame({ config: flown, datasets: fixtureDatasets, sim: simCore })
+      const session = createSoloSession(game)
+      // A 12U bus has the thruster the debris card needs.
+      for (const [key, value] of Object.entries({ ...goodDesign, bus: 'cubesat-12u' })) session.send({ type: 'set_param', payload: { key, value } })
+      session.send({ type: 'launch', payload: {} })
+      session.send({ type: 'set_speed', payload: { multiplier: 60 } })
+      for (let i = 0; i < 400 && !session.getSnapshot().state.metrics.decision_card; i++) game.advance(1000)
+      expect(session.getSnapshot().state.metrics.decision_card).toBe(card)
+      expect(session.getSnapshot().state.metrics.cards_drawn).toBe(card)
+    }
+  })
+
+  it('keeps its record in a slot of its own, and its share card still says Daily', () => {
+    const mission = eventMission(daily, event('severe-storm', 'station-bumped'))
+    expect(mission.seed).not.toBe(daily.seed)
+    const { game, session } = soloSession()
+    session.send({ type: 'launch', payload: {} })
+    session.send({ type: 'set_speed', payload: { multiplier: 60 } })
+    for (let i = 0; i < 100; i++) game.advance(1000)
+    const html = renderToStaticMarkup(<GameScreen session={session} config={config} onExit={() => {}} daily={mission} />)
+    expect(html).toContain('Daily 2026-11-15')
   })
 })

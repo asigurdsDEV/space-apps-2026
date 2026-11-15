@@ -22,11 +22,13 @@ import { LobbyScreen } from '../ui/lobby'
 import { MissionScreen, stars } from '../ui/mission'
 import { LaunchView as SceneLaunchView } from '../ui/scene3d'
 import { designFromHash, SharePanel } from '../ui/share'
-import { dailyMissionForDate, StartScreen, type DailyMission, type DailyMissionRequest, type StartRequest } from '../ui/start'
+import { dailyMissionForDate, StartScreen, type DailyMissionRequest, type StartRequest } from '../ui/start'
 import { BuilderTutorial } from '../ui/tutorial'
 import '../ui/theme/theme.css'
 import '../ui/learn/learn.css'
 import { Crew, Notice, RoomCode } from './Crew'
+import { DailyEventDialog } from './DailyEventDialog'
+import { eventMission, loadDailyEvent, withEvent, type DailyEvent, type DailyPlay } from './dailyEvent'
 import { ErrorBoundary } from './ErrorBoundary'
 import { StoryLayer } from './StoryLayer'
 import { WalkTo } from './Walk'
@@ -98,8 +100,8 @@ export interface Active {
   session: Session
   /** Online rooms only. */
   roomCode: string | null
-  /** Set when this game is today's daily mission. */
-  daily?: DailyMission
+  /** Set when this game is today's daily mission (with the real event it is built on, when there is one). */
+  daily?: DailyPlay
   /** Solo guided assignment; free play and Daily never award campaign funding. */
   campaign?: string
 }
@@ -134,6 +136,19 @@ export function App() {
   const link = useRef(typeof location === 'undefined' ? '' : location.hash)
   // Same day, same scenario and same seed for everyone (ui/start/daily.ts).
   const daily = dailyMissionForDate(new Date(useUtcDay()), PROGRAM)
+  /** Today's real event (app/dailyEvent.ts), looked up while the Start screen shows so the Play button never waits on the network. */
+  const [todays, setTodays] = useState<{ date: string; event: DailyEvent } | null>(null)
+  /** The daily the player asked for, while the "Today's event" dialog is open. */
+  const [asking, setAsking] = useState<DailyMissionRequest | null>(null)
+  const date = daily?.date
+  const onStart = !active && !guided
+  useEffect(() => {
+    if (!onStart || !date) return
+    let gone = false
+    void loadDailyEvent(date).then((event) => { if (!gone && event) setTodays({ date, event }) })
+    return () => { gone = true }
+  }, [onStart, date])
+  const event = todays?.date === date ? todays?.event : undefined
 
   useEffect(() => { setPersistent(saveCampaign(progress)) }, [progress])
   useEffect(() => {
@@ -165,15 +180,18 @@ export function App() {
     return game
   }
 
-  const playSolo = (config: Config, name: string, daily?: DailyMission, campaign?: string) =>
+  const playSolo = (config: Config, name: string, daily?: DailyPlay, campaign?: string) =>
     setActive({ session: createSoloSession(newGame(config), { name, drive: startDriver }), roomCode: null, daily, campaign })
 
-  // The daily mission is the scenario as written (Normal) with the day's seed.
-  const playDaily = (request: DailyMissionRequest) => {
-    const config = getScenario(request.scenarioId)
+  // The daily mission is the scenario as written (Normal) with the day's seed; with a real event, the Earth-orbit mission that meets it first.
+  const flyDaily = (request: DailyMissionRequest, event?: DailyEvent) => {
+    const mission = event ? eventMission(request, event) : request
+    const config = getScenario(mission.scenarioId)
     if (!config) return setError('Today’s mission is missing from this version of the game.')
-    playSolo({ ...config, seed: request.seed }, request.name, request)
+    playSolo(withEvent({ ...config, seed: mission.seed }, event), mission.name, mission)
   }
+  // No event yet (the feeds are slow or silent): today's ordinary daily starts at once.
+  const playDaily = (request: DailyMissionRequest) => (event ? setAsking(request) : flyDaily(request))
 
   // One seat holding no role, so all four roles' controls work on this device. No network, no lobby.
   const playSameScreen = (config: Config) => {
@@ -247,7 +265,7 @@ export function App() {
           <StartScreen
             scenarios={scenarios}
             scenarioPreview={getScenario}
-            dailyMission={daily}
+            dailyMission={daily && event ? eventMission(daily, event) : daily}
             onDailyMission={playDaily}
             onStart={start}
             busy={busy}
@@ -255,6 +273,10 @@ export function App() {
           >
             <SameScreen disabled={busy} onPlay={playSameScreen} />
           </StartScreen>
+          {asking && event && (
+            <DailyEventDialog event={event} mission={getScenario(eventMission(asking, event).scenarioId)?.title}
+              onStart={() => { setAsking(null); flyDaily(asking, event) }} onCancel={() => setAsking(null)} />
+          )}
         </>
       )}
     </div>
@@ -327,7 +349,10 @@ export function Room({ active, onExit, onCampaignNext }: { active: Active; onExi
   /** Each player reads the briefing on their own screen and goes on when they are ready. */
   const [briefed, setBriefed] = useState(false)
   // A guest learns the scenario from the host's state.
-  const config = SCENARIOS.find((scenario) => scenario.scenario_id === state.scenario_id)
+  const scenario = SCENARIOS.find((scenario) => scenario.scenario_id === state.scenario_id)
+  // An event daily flies with its event's params, so the what-if reruns (here and in app/World.tsx) fly the same mission.
+  const event = active.daily?.event
+  const config = useMemo(() => scenario && withEvent(scenario, event), [scenario, event])
   const briefing = !briefed && state.metrics.phase === 'design'
   useScreen(
     stage === 'lobby' || stage === 'closed' ? stage : briefing ? 'briefing' : 'game',
@@ -387,7 +412,7 @@ export interface GameScreenProps {
   /** Online rooms only: adds the crew menu (room code, roster, role picker) to the top bar. */
   roomCode?: string | null
   /** Set when this game is today's daily mission: its record and share card are kept apart. */
-  daily?: DailyMission
+  daily?: DailyPlay
   /** Switching from the 3D room after watching this flight's launch. */
   skipLaunch?: boolean
   /** Switch back to the walkable game. Omitted when the page itself loaded as classic. */
@@ -562,7 +587,7 @@ export function weatherStart(config: Config, seed: number): string {
 }
 
 /** Everything after launch: (the launch sequence,) cruise and operations, then the results with the personal best. */
-function Flight({ session, config, daily, online, skipLaunch, onLaunchDone }: { session: Session; config: Config; daily?: DailyMission; online?: boolean; skipLaunch?: boolean; onLaunchDone?: () => void }) {
+function Flight({ session, config, daily, online, skipLaunch, onLaunchDone }: { session: Session; config: Config; daily?: DailyPlay; online?: boolean; skipLaunch?: boolean; onLaunchDone?: () => void }) {
   const { state, events, paused, speed, players, me } = useSession(session)
   // A late joiner, a reload, or a switch from the walkable game lands mid-mission: no launch to watch.
   const [launchDone, setLaunchDone] = useState(() => skipLaunch || session.getSnapshot().state.t_s > 86400)
@@ -699,7 +724,8 @@ function Flight({ session, config, daily, online, skipLaunch, onLaunchDone }: { 
         realMissions={REAL_MISSIONS}
         onDecide={decide}
         canDecide={canSend(me.role, { type: 'resolve_decision', payload: { decision_id: '', option_id: '' } }, players.map((p) => p.role), console)}
-        spaceWeather={weather && typeof day === 'number' ? weather.weatherForMissionDay(weatherStart(config, daily?.seed ?? config.seed), day) : null}
+        // An event daily flies today's real event, not the seed's historical weather.
+        spaceWeather={weather && typeof day === 'number' && !daily?.event ? weather.weatherForMissionDay(weatherStart(config, daily?.seed ?? config.seed), day) : null}
       />
       {summary && typeof summary.score === 'number' && (
         <div className="app-best">
