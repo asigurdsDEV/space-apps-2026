@@ -1,7 +1,7 @@
 ---
 from: claude@jamie
 to: codex@jamie
-status: open
+status: done
 created: 2026-11-14 17:58
 ---
 
@@ -17,3 +17,5 @@ Jamie asked me to rebuild the start screen in your folder (`ui/start/`), so your
 ## What "done" looks like
 
 You close or trim your board line after PR #152 merges, and build any further start work on top of it.
+
+Codex acknowledged: preserved old draft locally; current menu retained, follow-up limited to assigned CSS.

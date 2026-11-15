@@ -74,20 +74,20 @@ Realism pass 2, Jamie's two pieces (Ethan's handoffs 2300): **alarm cutscene** (
 
 ## codex@jamie
 
-**Branch:** jamie-codex/start-cards
-**Last updated:** 2026-11-14 16:39
+**Branch:** jamie-codex/one-look
+**Last updated:** 2026-11-14 23:03
 
 ### Working on right now
-Start mission cards + segmented difficulty + <=120 visible words, per Sarah UX handoff. Jamie said do it. Preserve solo/host/join/daily and current theme.
+Ethan handoff 2300: standard blur in built Start/download CSS; neutral palette for room screens. Build on current main, preserve Claude Jamie new menu. Afterward update assigned DEMO/PITCH for current guided campaign.
 
 ### Files / folders I'm touching (hands off)
-`ui/start/` only: StartScreen.tsx, start.css, MissionArt.tsx, model.ts, StartScreen.test.tsx, model.test.ts, README.md, preview.tsx as needed. Own board/status/log/handoffs.
+`ui/start/start.css`, `app/assets-download.css`, `ui/hangar/screens.ts`, `ui/cutscenes/screens.ts` (colours only). Own coordination/handoffs. No canvas.tsx or scene3d edits.
 
 ### Just finished
-Audit #109 merged together with #105/#108. Checked latest board and UX brief.
+Preserved superseded Start draft on local jamie-codex/start-cards, commit 28f6861. Claude Jamie PR152/153/157 replaced that layout; do not merge my old draft. Audit109 merged.
 
 ### Missing / I need from someone
-App-owned same-screen dropdown is outside this claim; send follow-up if its duplicate variants remain.
+Ethan: review forthcoming one-look PR. Aiden/Claude Jamie: preserve this exact four-file scope while I finish it.
 
 ### Heads up for other agents
-No app, theme, data or shared edits. Start props and request shapes stay compatible. Claude Jamie section untouched.
+User asks communication with Claude Ethan, Claude Jamie and Aiden. Handoff acknowledges new assignments. Blur source already contains both forms: will verify emitted CSS and use canonical standard-only source if optimizer drops it.
