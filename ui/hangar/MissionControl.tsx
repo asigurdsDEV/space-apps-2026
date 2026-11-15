@@ -161,7 +161,7 @@ export function MissionControl({ state, send, players = NO_PLAYERS, me, title, g
 
   const part = aimed?.id.startsWith('rack:') ? state.entities.find((e) => e.id === aimed.id.split(':')[2]) : undefined
   const aimedStation = aimed?.id.startsWith('station:') ? stationList.find((s) => `station:${s.key}` === aimed.id) : undefined
-  const help = partHelp(part) ?? (aimedStation ? { title: aimedStation.slot.label, text: aimedStation.slot.hint ?? 'Open the menu to see the parts on offer.' }
+  const help = partHelp(part) ?? (aimedStation ? { title: aimedStation.slot.label, text: 'Open the menu to see the parts on offer.' }
     : aimed?.id === 'launch'
     ? { title: 'Launch mission', text: 'Check all four consoles. A red NO-GO blocks launch; warnings may still reduce the science you bring home.' }
     : aimed?.id === 'fix' ? { title: 'Try the fix', text: 'Try the best single change on a fresh design. Your finished mission record is kept.' }

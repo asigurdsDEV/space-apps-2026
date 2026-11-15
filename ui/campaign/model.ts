@@ -38,9 +38,9 @@ export function designGuide(state: Pick<SimState, 'metrics' | 'issues'>): string
   const error = state.issues.find((i) => i.severity === 'error')
   if (error) return ({
     budget: 'Over budget · Fit a cheaper part or rocket',
-    power: 'Power NO-GO · Check the power and battery racks',
-    mass: 'Mass NO-GO · Check the bus and rocket racks',
-    comms: 'Radio NO-GO · Check the radio rack',
+    power: 'Power NO-GO · Check the Power and Battery stations',
+    mass: 'Mass NO-GO · Check the Bus and Rocket stations',
+    comms: 'Radio NO-GO · Check the Radio station',
     data: 'Data NO-GO · Check the radio and instruments',
     time: 'Schedule NO-GO · Choose faster-building parts',
     design: 'Design NO-GO · Check orbit and part compatibility',

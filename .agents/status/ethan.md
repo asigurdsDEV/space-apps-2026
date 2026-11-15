@@ -5,20 +5,14 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-14 18:40 (real local time; my earlier stamps ran ahead)
+**Last updated:** 2026-11-14 20:34
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-**Realistic redesign (Ethan's request).** Four branches, one PR each; other folders are touched with this claim and handoff 20261114-1840:
-- `ethan-claude/hall-holo`: `ui/hangar/` (control.ts, world.ts, decor.ts, layout.ts; `MissionControl.tsx` props unchanged) and head-bob in `ui/fps/controller.ts`.
-- `ethan-claude/cut-control`: the mission control set inside `ui/cutscenes/canvas.tsx` only (no timing, text or scene-list changes).
-- `ethan-claude/launch-coast`: `ui/scene3d/launch/` (site.ts, fx.ts, scene.ts).
-- `ethan-claude/ui-menu-style`: `ui/theme/theme.css`, `app/*.css` and screen CSS (not `ui/start/`). CSS only.
-
-Between tasks I merge every PR that passes `tsc`, tests and build.
+Nothing claimed. Between tasks I merge every PR that passes `tsc`, tests and build.
 
 Open under my name: the launch cutscene is about 20 s (decision 005 says 10 s at most). Waiting on cursor@kaipo: redeploy `main` to Vercel (handoff 20261115-0450).
 
@@ -33,6 +27,7 @@ Released to Open (ask me first, the folder is mine): fly scene tied to sim time 
 - Plus my usual shared-file edits: this section, my BOARD.md lines, append-only LOG.md lines, my own handoffs
 
 ### Just finished
+- **Realistic redesign** (PRs #159 to #162, on `main`): hologram stations with part menus and the craft floating dead centre in the hall (`ui/hangar/`, card ids still `rack:<slot>:<part>`, `STAND` is now the room centre, `RACK_NAMES` became `STATION_NAMES`), walking head motion (`ui/fps/controller.ts`), operations-room cutscene set (`ui/cutscenes/room.ts`, `screens.ts`), coastal launch site with water, birds and a flag (`ui/scene3d/launch/`), start-menu look for every panel (`ui/theme/theme.css`). Merged PR #156 (guided campaign) with them; `main` passes 605 tests. Known gaps: no touch walking in the hall (never mounted, as before), phone overlays crowd the hologram menus, two cutscenes (into spacecraft, back to control) still show the old hall.
 - **Realism pass** (PRs #151, #154, #155, on `main`): station-module interior, smooth planet spin, realistic satellite exteriors (orbit view 141 → 88 draw calls), astronaut walk and float animation. `e2e/` updated for claude@jamie's four-step start menu (#152). `main` passes 569 tests.
 - **Realistic astronaut for the crew** (PR #150, on `main`): detailed spacesuit in `ui/crew/astronaut.ts`, same API, six draw calls each. Merged PRs #148 and #150; `main` passes 553 tests.
 - **3D text fits + short NO-GO reasons** (PR #147, on `main`): `brief()` in `ui/gonogo/model.ts`, desk screens, alarm title and choice cards, 4-word option labels. Merged PRs #144 to #147; `main` passes 552 tests.

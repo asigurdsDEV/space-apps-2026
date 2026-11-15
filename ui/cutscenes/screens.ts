@@ -4,7 +4,7 @@ import { getDatasets, PROGRAM, scenarios } from '../../data'
 import { catalogEntities, evaluateDesign, findPart, formatUsd, instrumentIds, SLOTS } from '../../sim'
 import type { Entity } from '../../shared'
 import { brief, poll } from '../gonogo/model'
-import { RACK_NAMES, shortLabel } from '../hangar/layout'
+import { STATION_NAMES, shortLabel } from '../hangar/layout'
 import earthUrl from '../scene3d/maps/earth-day.jpg?inline'
 import marsUrl from '../scene3d/maps/mars.jpg?inline'
 import moonUrl from '../scene3d/maps/moon.jpg?inline'
@@ -61,7 +61,7 @@ export function missionFacts() {
     },
     solar_w: num(slot('solar'), 'power_w'),
     duty: num(instrument, 'duty_cycle'),
-    slots: rows.map(([key, part, figure]) => ({ slot: RACK_NAMES[key] ?? key, part: part ? shortLabel(part) : 'Not picked', figure: part ? figure : '' })),
+    slots: rows.map(([key, part, figure]) => ({ slot: STATION_NAMES[key] ?? key, part: part ? shortLabel(part) : 'Not picked', figure: part ? figure : '' })),
     budgets: report.budgets,
     flight: report.flight,
     calls: poll(report.issues),
