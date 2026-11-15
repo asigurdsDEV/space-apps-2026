@@ -584,6 +584,9 @@ export function summary(state: SimState): Summary {
     why.push(`The spacecraft flew for ${Math.round(day)} days but returned ${points(science)} of the ${points(goal)} science points needed.`)
   } else if (outcome === 'launch_failure') {
     why.push(`The launch failed. ${launcher ? launcher.name : 'This launch vehicle'} succeeds about ${Math.round(metric(m, 'launch_reliability') * 100)}% of the time. More reliable launch vehicles cost more.`)
+  } else if (outcome === 'spacecraft_failure' && str(m, 'end_reason')) {
+    // An anomaly card's gamble ended it (debris, drag, a flat battery, lost contact): say so, not the bus's failure odds.
+    why.push(`The spacecraft was lost on day ${Math.floor(day)} of ${Math.round(planned)} after a risky choice on an anomaly. The safer choice would have kept it flying.`)
   } else if (outcome === 'spacecraft_failure') {
     why.push(`The spacecraft failed on day ${Math.floor(day)} of ${Math.round(planned)}. The chance of ${bus ? bus.name : 'this bus'} surviving a mission like this one is about ${Math.round(metric(m, 'bus_reliability') * 100)}%. A more reliable bus or an orbit with less radiation improves the odds.`)
   } else if (outcome === 'in_flight') {

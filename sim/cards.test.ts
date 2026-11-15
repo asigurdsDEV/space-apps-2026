@@ -4,8 +4,8 @@ import { describe, expect, it } from 'vitest'
 import type { Command, Config, ParamValue, SimEvent, SimState } from '../shared'
 import { canSend, isCommand } from '../shared'
 import { getDatasets, getScenario } from '../data'
-import { cardSchedule, CARDS } from './cards'
-import { flyMission, init, pendingDecision, step, summary } from './index'
+import { cardById, cardContext, cardSchedule, CARDS } from './cards'
+import { flyMission, init, partsOf, pendingDecision, step, summary } from './index'
 
 const WINS: Record<string, Record<string, ParamValue>> = {
   demo: { bus: 'cubesat-12u', instruments: 'camera-basic,ir-spectrometer', solar: 'solar-deployable-large', comms: 'x-band-transmitter' },
@@ -109,10 +109,12 @@ describe('anomaly cards', () => {
     }
     const earth = seen('demo')
     expect(earth.has('dust-storm')).toBe(false)
+    expect(earth.has('debris-pass')).toBe(true)
     expect(earth.size).toBeGreaterThan(2)
     const mars = seen('mars')
     expect(mars.has('geomagnetic-storm')).toBe(false)
     expect(mars.has('radiation-zone')).toBe(false)
+    expect(mars.has('debris-pass')).toBe(false)
     expect(mars.has('dust-storm')).toBe(true)
   }, 20_000) // 50 full missions: over the 5 s default on GitHub's runner
 
@@ -122,7 +124,7 @@ describe('anomaly cards', () => {
       .map((seed) => play(withCards('demo', 3, seed), WINS.demo, () => 'b'))
       .find((r) => r.state.metrics.end_reason)
     expect(lost).toBeDefined()
-    expect(['reentry', 'lost_contact']).toContain(lost!.state.metrics.end_reason)
+    expect(['reentry', 'lost_contact', 'debris_hit']).toContain(lost!.state.metrics.end_reason)
     expect(lost!.state.t_s).toBeLessThan(365 * 86400)
     expect(['spacecraft_failure', 'success']).toContain(lost!.state.metrics.outcome)
   })
@@ -143,13 +145,37 @@ describe('anomaly cards', () => {
   })
 
   it('every card has two options, a console, and a sourced story', () => {
-    expect(CARDS.length).toBe(8)
+    expect(CARDS.length).toBe(9)
     for (const card of CARDS) {
       expect(card.options.map((o) => o.id)).toEqual(['a', 'b'])
       expect(card.body.length).toBeLessThan(200)
       expect(card.story.source_url).toMatch(/^https:\/\//)
     }
   })
+
+  it('debris-pass: Earth orbits and a bus with a thruster only, moving away costs one day, holding course mostly works and can end the mission', () => {
+    const card = cardById('debris-pass')!
+    const entities = init(getScenario('demo')!, getDatasets()).entities
+    const orbits = partsOf(entities, 'orbit')
+    expect(orbits.map((o) => o.props.central_body)).toEqual(expect.arrayContaining(['earth', 'moon', 'mars']))
+    for (const orbit of orbits) expect(card.when(cardContext({ orbit: orbit.id, bus: 'cubesat-12u' }, entities, 50, 1, 1))).toBe(orbit.props.central_body === 'earth')
+    // No thruster, no dodge: the 3U and 6U CubeSats never get this card.
+    for (const bus of ['cubesat-3u', 'cubesat-6u']) expect(card.when(cardContext({ orbit: 'sso', bus }, entities, 50, 1, 1))).toBe(false)
+    expect(card.options[0].effects(cardContext({}, entities, 50, 1, 1))).toEqual([{ kind: 'lose_days', days: 1 }])
+
+    // Fly it: hold course on every debris card, play every other card safe.
+    const runs = Array.from({ length: 25 }, (_, i) => play(withCards('demo', 3, i + 1), WINS.demo, (id) => (id === 'debris-pass' ? 'b' : 'a')))
+    const said = runs.flatMap((r) => r.events.flatMap((e) => (e.type === 'decision_resolved' && e.payload.card_id === 'debris-pass' ? [e.payload.message] : [])))
+    const hits = runs.filter((r) => r.state.metrics.end_reason === 'debris_hit')
+    expect(hits.length).toBeGreaterThan(0)
+    expect(hits.length).toBeLessThan(said.length / 4)
+    expect(hits[0].state.status).toBe('ended')
+    // The debrief blames the choice, not the bus.
+    const lost = hits.find((r) => r.state.metrics.outcome === 'spacecraft_failure')!
+    expect(String(summary(lost.state).why)).toMatch(/lost on day \d+ of 365 after a risky choice on an anomaly/)
+    expect(String(summary(lost.state).why)).not.toMatch(/reliable bus/)
+    expect(said).toContain('The debris passed by. Nothing was lost.')
+  }, 20_000)
 
   it('schedules one draw per slice of the operations phase', () => {
     expect(cardSchedule(0, 0, 365, [])).toEqual([])
