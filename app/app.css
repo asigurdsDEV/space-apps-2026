@@ -350,10 +350,19 @@ h1.app-bar-title {
   position: absolute;
   inset: 0;
 }
+/* Flight training is a page of its own, taller than a phone screen. */
+.app-world-training {
+  overflow: auto;
+  background: var(--game-bg);
+}
 .app-world-bar {
   position: absolute;
   top: var(--game-space-2);
   right: var(--game-space-2);
   display: flex;
   gap: var(--game-space-2);
+  /* A fourth button (Flight training) goes on a second row, clear of the look-around hint in the middle. */
+  flex-wrap: wrap-reverse;
+  justify-content: flex-end;
+  max-width: 26rem;
 }
