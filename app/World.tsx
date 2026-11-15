@@ -136,7 +136,7 @@ export function World({ active, config, onExit }: WorldProps) {
   }, [hold, roomCode, session])
   useEffect(() => {
     if (!flying) setLaunched(session.getSnapshot().state.t_s > 86400)
-    else if (!launched) playSound('launch')
+    else if (!launched && !classic) playSound('launch')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [flying])
 
@@ -144,7 +144,20 @@ export function World({ active, config, onExit }: WorldProps) {
     if (training && !canTrain) setTraining(false)
   }, [training, canTrain])
 
-  if (classic) return <GameScreen session={session} config={config} onExit={onExit} roomCode={roomCode} daily={daily} skipLaunch={launched} />
+  if (classic) {
+    return (
+      <GameScreen
+        session={session}
+        config={config}
+        onExit={onExit}
+        roomCode={roomCode}
+        daily={daily}
+        skipLaunch={launched}
+        onFirstPerson={() => setClassic(false)}
+        onLaunchDone={() => setLaunched(true)}
+      />
+    )
+  }
 
   const onCutscene = (playing: boolean) => {
     setCutscene(playing)
