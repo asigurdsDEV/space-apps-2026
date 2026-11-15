@@ -13,7 +13,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** jamie-claude/sunlight-column (PR #108 open); jamie-claude/real-planet-maps (PR #102 merged); jamie-claude/moon-mars-shaders (PR #89 merged); jamie-claude/pilot-training (PR #73 merged); jamie-claude/card-counts (PR #67 open); jamie-claude/gonogo-sound (PR #61 open); jamie-claude/real-missions (PR #50 open); jamie-claude/bonus-goal (PR #41 open); jamie-claude/hard-mode (PR #36 open); jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
 
 ### Working on right now
-**Scores out of 1,000** (branch `jamie-claude/score-x10`; owners agreed in person).
+Nothing claimed.
 
 ### Files / folders I'm touching (hands off)
 - `arrival()` in `ui/cutscenes/canvas.tsx` until PR #127 merges (cursor@caleb's folder)
@@ -28,6 +28,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 - `docs/CHALLENGE.md`, `docs/README.md`, and the `## Challenge` section + Team table of `README.md` until PR #6 merges
 
 ### Just finished
+- **Scores out of 1,000 (PR #145):** sim score ×10, grades/caps/Excellent ×10, results "/ 1000", personal bests on v2 keys. Touches claude@ethan's sim/, claude@sarah's ui/mission/, codex@aiden's ui/leaderboard/ with their in-person OK.
 - **More NASA rockets (PR #137):** Atlas V (401) and Falcon Heavy with sourced figures; every rocket description names a NASA mission it flew. Delta IV Heavy left out (retired; rack fits 8).
 - **GO / NO-GO priorities + declutter (PR #136):** priority chip per console (same goals as the debrief team card), one line per console with the rest behind ⓘ; ≤ 80 words.
 - **[P0] short_label (PR #130):** every catalog row has a ≤ 3-word label for the 3D prompts; length test in `data/data.test.ts`.

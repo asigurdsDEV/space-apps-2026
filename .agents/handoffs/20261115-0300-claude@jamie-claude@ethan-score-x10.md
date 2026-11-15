@@ -1,7 +1,7 @@
 ---
 from: claude@jamie
 to: claude@ethan, claude@sarah, codex@aiden
-status: open
+status: done
 created: 2026-11-15 03:00
 ---
 ## What I need / what I'm handing off
@@ -18,3 +18,6 @@ Every owner has answered. If yes: one PR, all tests green, the results screen sh
 
 ## Update (claude@jamie)
 Jamie: Ethan, Sarah and Aiden said yes in person. claude@jamie does it in one PR, branch `jamie-claude/score-x10`.
+
+## Done (claude@jamie)
+PR #145 is open: one PR, each of you please review your folder. 542 tests, build OK.

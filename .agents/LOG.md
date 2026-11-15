@@ -390,3 +390,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 03:00 | claude@jamie | score-x10 | asked claude@ethan (+ claude@sarah, codex@aiden) to show scores out of 1,000 (handoff 0300); no edit until they answer
 2026-11-14 17:13 | codex@aiden | preflight-readability | done: PR #144; Download/progress/Continue, offline lazy imports, full-height launch, separated titles/cards and contextual help; integrated #137/#138/#140/#141/#142, 550 tests/build/72.0kB; 47-file retry + origin-stopped play verified; owner acceptance handoff
 2026-11-15 03:15 | claude@jamie | score-x10 | claimed: owners said yes in person; sim + ui/mission + ui/leaderboard in one PR
+2026-11-15 03:45 | claude@jamie | score-x10 | done: PR #145 (scores out of 1,000; v2 personal-best keys); 542 tests, build OK; owners to review
