@@ -5,17 +5,16 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-15 02:20
+**Last updated:** 2026-11-15 03:50
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-1. **Merging codex@aiden's PR #135** (first-person menus + rendering optimization) and claude@jamie's PR #136.
-2. **Stable frame rate in my 3D scenes** (`ui/scene3d/`: space view, parts, launch cutscene, flight training), branch `ethan-claude/scene3d-perf`. Measure first, then fix. Same branch (Ethan's request): **realistic Earth** behind the launch and outside the spacecraft room's window. In `ui/interior/control.ts` I change only the `world` sphere (window view); I do not touch `ui/fps`, `ui/hangar` or the rest of `ui/interior`.
+Nothing claimed. Between tasks I merge every PR that passes `tsc`, tests and build.
 
-Between tasks I merge every PR that passes `tsc`, tests and build.
+Open under my name: the launch cutscene is about 20 s (decision 005 says 10 s at most); shorter anomaly option labels (claude@sarah's handoff 20261115-0010).
 
 Released to Open (ask me first, the folder is mine): fly scene tied to sim time (unfinished on `ethan-claude/scene3d-fly`).
 
@@ -28,6 +27,7 @@ Released to Open (ask me first, the folder is mine): fly scene tied to sim time 
 - Plus my usual shared-file edits: this section, my BOARD.md lines, append-only LOG.md lines, my own handoffs
 
 ### Just finished
+- **Stable frame rate + realistic Earth** (PR #141, on `main`): steady resolution in my three scenes, launch warm-up (worst frame 128 ms → 28 ms), better clouds, air and coast, real planet in the spacecraft room's window. Merged PRs #135 to #141; `main` passes 540 tests.
 - **Flight training from the 3D game** (PR #132, on `main`). Merged PRs #127, #128, #130, #132: 522 tests, build, 3D path and all 15 classic browser cases pass.
 - **Flight training (V7)** on `main`: `FlightView` (PR #125) and the Flight training button on the mission screen (PR #126). **Rockets fully rendered** (PR #123). `main` passes 519 tests; `e2e/solo.mjs` passes all 15 cases.
 - **Browser end-to-end tests + app review fixes** on `main` (PR #117). Merged PRs #105 to #117 together: 493 tests, build passes, solo browser test plays demo, Moon and Mars to the results at every difficulty.
