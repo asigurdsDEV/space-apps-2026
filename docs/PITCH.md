@@ -2,15 +2,16 @@
 
 ## 30-second narration
 
-“Can your team build a spacecraft that brings its science home? In GO / NO-GO, four mission-control roles balance mass, power, cost and communications. Design, launch, and respond to anomalies inspired by real missions. Fly through real NASA space weather, where solar storms hit on the days they really happened, then compare your spacecraft with a real mission in the debrief. Every result explains a trade-off, so your next design is a better-informed decision.”
+“Build a space program from Earth to Mars. Walk into mission control, fit your spacecraft, and balance power, science and cost. Launch, then answer alarms inside your spacecraft. NASA’s real space-weather records put storms on the days they happened. Bring the science home to unlock the next mission and its funding. Every choice teaches a trade-off. What will you build?”
 
-Record this 63-word narration against the timed shots in [DEMO.md](DEMO.md). Time a spoken take and shorten pauses to stay within 30 seconds; the word count is not a timing guarantee.
+This is 60 words. Time the spoken take; word count alone does not guarantee 30 seconds. Follow the edited shots in [DEMO.md](DEMO.md).
 
 ## Presenter notes
 
-- Show the stronger radio and science payload together: collecting data helps only if you can send it home.
-- Real NASA SPDF OMNI measurements drive play (PR #99). Each mission replays a real date window. The geomagnetic-storm anomaly card fires on the days real G3+ storms happened, names the date, and the storm's NOAA level sets the drag risk. The weather strip shows the same real day. Drag from everyday F10.7 is not modelled. Say “real NASA space weather: storms hit on the days they really happened.”
-- The debrief matches the player's design to a sourced real mission; the anomaly cards use historical stories with simplified, seeded gameplay effects.
-- Four roles can cooperate online through host-authoritative PeerJS/WebRTC. Use solo or one-screen play for recording unless the venue multiplayer rehearsal passes.
-- Catalog prices, resource values, science points and failure probabilities are educational approximations. This is not flight-qualified mission planning. See [NASA_SOURCES.md](NASA_SOURCES.md).
-- The current game includes 3D spacecraft, a launch sequence, story captions and mission art. Walkable room mounting and interactive flight training must be verified on the recording build before appearing in the video.
+- The default desktop route is Download game → Continue to game → guided mission board. Guided missions are solo: Earth → Moon → Mars unlock only after successful missions. Their fixed grants are $12M, $300M and $500M; retries do not accumulate money. Progress is saved in this browser, with a temporary fallback if storage is unavailable.
+- In mission control, use WASD to walk, mouse/arrows to look and E to interact with stations. Fit parts, inspect resource gauges, get GO and launch. In the spacecraft room, respond to alarms at the affected module. Escape opens the menu; Classic view remains an alternative interface.
+- Show a better science payload and radio together: collecting data helps only when it can be sent home. The campaign’s first mission uses Easy settings; do not label its $12M grant as Normal’s $8M budget.
+- Real NASA SPDF OMNI measurements schedule the geomagnetic-storm card on real G3+ storm days and supply its date and severity. The consequences are a simplified game model, not a prediction. Everyday F10.7-driven drag is not modelled. If the recording view does not show a weather strip, show the dated card itself; do not fabricate an overlay.
+- Free play, Daily and online rooms are separate from campaign progression. Four roles can cooperate through PeerJS/WebRTC; the campaign is not a shared co-op wallet. Flight training is optional practice and does not earn campaign progress.
+- Catalog prices, resource values, science points and failure probabilities are educational approximations, not flight-qualified mission planning. NASA maps depict the bodies; the gameplay model is team-authored. See [NASA_SOURCES.md](NASA_SOURCES.md).
+- Use the 3D debrief and next-assignment funding as the video ending. The sourced real-mission comparison is available in the Classic results view; do not promise that it appears on the 3D wall.
