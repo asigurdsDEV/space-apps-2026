@@ -85,13 +85,13 @@ export type Facts = ReturnType<typeof missionFacts>
 // ---- Drawing. Every screen is laid out on 960 × 540 and scaled to its canvas.
 type Ctx = CanvasRenderingContext2D
 const FONT = '"Inter Tight", system-ui, sans-serif'
-const BG = '#050a12'
-const INK = '#e8f2f7'
-const DIM = '#8299aa'
-const LINE = 'rgba(130,200,220,0.2)'
-const TEAL = '#3fe0d0'
-const GO = '#4be3a4'
-const WARN = '#ffc857'
+const BG = '#050608'
+const INK = '#f2f3f5'
+const DIM = '#9a9ea7'
+const LINE = 'rgba(255,255,255,0.18)'
+const TEAL = '#e6e8ec' // was cyan: white and grey like the start menu (claude@ethan's handoff 2300)
+const GO = '#d9dce2'
+const WARN = '#b8bcc4'
 const NO = '#ff6b78'
 /** The map on the ground-track screen, in 960 × 540 screen units. */
 const MAP = { y: 48, h: 480 }
@@ -158,27 +158,27 @@ function chip(g: Ctx, label: string, right: number, y: number, color: string, fi
 function track(g: Ctx, f: Facts, map?: CanvasImageSource) {
   const o = f.orbit
   header(g, 'GROUND TRACK', `${f.name}  ·  ${o.name}  ·  ${o.altitude_m / 1000} km  ·  ${(o.inclination_rad * DEG).toFixed(1)}°  ·  ${(o.period_s / 60).toFixed(1)} min`)
-  g.fillStyle = '#071a2c'
+  g.fillStyle = '#0b0c0f'
   g.fillRect(0, MAP.y, 960, MAP.h)
   if (map) {
     g.drawImage(map, 0, MAP.y, 960, MAP.h)
-    g.fillStyle = 'rgba(3,10,22,0.42)' // dim the photo so the track and grid read on top of it
+    g.fillStyle = 'rgba(5,6,8,0.42)' // dim the photo so the track and grid read on top of it
     g.fillRect(0, MAP.y, 960, MAP.h)
   }
   const px = (lon: number) => ((lon + 180) / 360) * 960
   const py = (lat: number) => MAP.y + ((90 - lat) / 180) * MAP.h
   for (let d = -180; d <= 180; d += 30) {
-    g.fillStyle = d === 0 ? 'rgba(160,230,240,0.34)' : 'rgba(160,230,240,0.14)'
+    g.fillStyle = d === 0 ? 'rgba(225,228,234,0.34)' : 'rgba(225,228,234,0.14)'
     g.fillRect(px(d), MAP.y, 1, MAP.h)
     if (Math.abs(d) <= 90) g.fillRect(0, py(d), 960, 1)
-    if (d > -180 && d < 180) text(g, `${Math.abs(d)}°${d < 0 ? 'W' : d > 0 ? 'E' : ''}`, px(d) + 4, MAP.y + MAP.h - 10, 11, 'rgba(220,240,250,0.6)')
+    if (d > -180 && d < 180) text(g, `${Math.abs(d)}°${d < 0 ? 'W' : d > 0 ? 'E' : ''}`, px(d) + 4, MAP.y + MAP.h - 10, 11, 'rgba(235,237,241,0.6)')
   }
   // The orbit before, this one and the two after: each pass crosses the equator further west.
   const p = { lat: 0, lon: 0 }
   g.lineWidth = 2.5
   g.lineJoin = 'round'
   for (let n = -1; n <= 2; n++) {
-    g.strokeStyle = n === 0 ? WARN : n < 0 ? 'rgba(255,200,87,0.35)' : 'rgba(255,200,87,0.7)'
+    g.strokeStyle = n === 0 ? WARN : n < 0 ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.7)'
     g.setLineDash(n > 0 ? [7, 7] : [])
     g.beginPath()
     let last = 0
@@ -193,7 +193,7 @@ function track(g: Ctx, f: Facts, map?: CanvasImageSource) {
   }
   g.setLineDash([])
   const shift = (360 * o.period_s) / 86400
-  g.fillStyle = 'rgba(5,10,18,0.78)'
+  g.fillStyle = 'rgba(6,7,9,0.78)'
   g.fillRect(16, MAP.y + 14, 318, 62)
   g.fillStyle = WARN
   g.fillRect(30, MAP.y + 33, 30, 3)
@@ -297,7 +297,7 @@ function budgets(g: Ctx, f: Facts) {
     text(g, label, 40, y - 12, 17, DIM, 500)
     g.letterSpacing = '0px'
     text(g, value, 920, y - 12, 24, bad ? WARN : INK, 400, 'right')
-    g.fillStyle = 'rgba(130,200,220,0.14)'
+    g.fillStyle = 'rgba(220,222,228,0.14)'
     g.fillRect(40, y + 14, 880, 10)
     g.fillStyle = bad ? WARN : GO
     g.fillRect(40, y + 14, 880 * Math.min(1, limit > 0 ? used / limit : 0), 10)
@@ -333,9 +333,9 @@ function telemetry(g: Ctx, f: Facts) {
     g.letterSpacing = '0px'
     text(g, value, 40, top + 54, 38, INK, 300)
     text(g, note, 40, top + 92, 14, DIM)
-    g.fillStyle = 'rgba(130,200,220,0.05)'
+    g.fillStyle = 'rgba(220,222,228,0.05)'
     g.fillRect(x0, top, w, h)
-    g.fillStyle = 'rgba(20,40,70,0.9)'
+    g.fillStyle = 'rgba(24,26,31,0.9)'
     for (let n = 0; n < 2; n++) g.fillRect(x0 + ((n + 1 - eclipse) / 2) * w, top, (eclipse / 2) * w, h)
     g.fillStyle = LINE
     g.fillRect(x0, top + h, w, 1)
