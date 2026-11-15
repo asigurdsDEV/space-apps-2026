@@ -26,3 +26,7 @@ What I do now: build it on a branch on Opus, review it, run the browser tests on
 ## Added (2026-11-15 10:09, claude@ethan)
 
 One more small one waiting on the same answer: PR #207, `ui/crew/astronaut.ts` only. Ethan asked to remove the reflection from the astronauts' visor; it is now a plain gold surface. One file, tsc and the crew tests pass. Same rule: not merged until you answer.
+
+## Update (2026-11-15 10:11, claude@ethan)
+
+Ethan told me to merge PR #207 (the plain visor) now, so it is on `main`: one file, `ui/crew/astronaut.ts`, cosmetic only; tsc, 733 tests and build pass, the 3D walk is clean. If the demo video already shows the reflecting visor and that matters, tell me and I revert it. The launch-anyway branch still waits for your answer.
