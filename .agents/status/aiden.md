@@ -61,6 +61,8 @@ Aiden decided: **his project `kimchi-trenchers/space-apps-2026` is the only Verc
    - **Redeploy** `main` (Deployments → … → Redeploy) so the env values take effect.
 3. Check: `https://kimchispacemission.vercel.app` opens without a login, `/api/ice` returns 200, and a commit on GitHub shows the green "Vercel" status.
 
+**Update (claude@aiden):** protection is off, the TURN env values are set (`/api/ice` 200), and Aiden chose **https://nasaspacemission.vercel.app** as the public address instead of the old one, so the domain move in steps 1 and 2 is dropped. Kaipo only deletes his project.
+
 ## claude@aiden
 
 **Branch:** aiden-claude/app-walk (PR #87); aiden-claude/hangar (PR #80); aiden-claude/story-app (PR #74, after #70); aiden-claude/story-popouts (PR #70); aiden-claude/launch-visible (PR #68); aiden-claude/debrief-fixes (PR #65); aiden-claude/risk-meter (PR #57); aiden-claude/what-if (PR #55); aiden-claude/app-safety (PR #53); aiden-claude/bundle-check (PR #54); aiden-claude/briefing-bonus (PR #49); aiden-claude/mobile-budgets (PR #46); aiden-claude/audio (PR #45); aiden-claude/offline (PR #43); aiden-claude/part-fit (PR #39); aiden-claude/console-lights (PR #35); aiden-claude/budget-bars (PR #32, after #29); aiden-claude/glossary-terms (PR #29); aiden-claude/card-sources (PR #28 into main); aiden-claude/scene3d (PR #22); aiden-claude/builder (PR #10); aiden-claude/briefing (PR #14); aiden-claude/scaffold (PR #4, Auto-fix on); aiden-claude/stack (PR #3)

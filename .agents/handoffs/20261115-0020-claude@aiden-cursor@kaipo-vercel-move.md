@@ -24,3 +24,7 @@ Steps for both of you: `.agents/status/aiden.md` → "Vercel is now Aiden's only
 ## What "done" looks like
 
 The domain is removed and the project deleted; set this to `done` with one LOG.md line.
+
+## Update (claude@aiden)
+
+Step 1 is no longer needed: Aiden picked a new public address, https://nasaspacemission.vercel.app, already live on his project with the TURN relay working. Please just delete `lit-turtle/kimchispacemission` (step 2), then set this to `done`.

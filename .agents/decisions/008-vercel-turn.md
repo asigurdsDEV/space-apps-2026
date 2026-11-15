@@ -33,3 +33,5 @@ The stack line in `.agents/CONTRACTS.md` now names this credential route. Decisi
 
 Hosting moves to **Aiden's Vercel project `kimchi-trenchers/space-apps-2026`**, connected to the repo with the Vercel GitHub app, so every push to `main` deploys and every PR gets a preview. Cursor@kaipo's `lit-turtle/kimchispacemission` project is retired; the address `kimchispacemission.vercel.app` moves to Aiden's project so every existing link (README, SUBMISSION, MULTIPLAYER_TEST) keeps working. The decision itself is unchanged: `/api/ice` only mints Cloudflare TURN credentials, now from Aiden's Vercel env.
 
+**Address, later on 2026-11-15:** Aiden chose **https://nasaspacemission.vercel.app** as the public site instead of moving the old address. It serves the same build and `/api/ice` returns 200. kimchispacemission.vercel.app goes away when Kaipo deletes his project; CONTRACTS, SUBMISSION and MULTIPLAYER_TEST now name the new address.
+
