@@ -532,3 +532,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 12:25 | claude@jamie | team-page | done, PR #213: About the team moves to its own page linked top right (ui/start/ only); tsc, 143 tests, CI green; waits for Jamie's merge
 2026-11-15 12:30 | claude@jamie | team-page | merged PR #213 into main on Jamie's instruction (ui/start/ only); CI build green
 2026-11-15 12:40 | claude@jamie | team-sarah | done, PR #214: Sarah Youn's headshot + LinkedIn on the team page (ui/start/ only); tsc, 143 tests; waits for Jamie's merge
+2026-11-15 12:45 | claude@jamie | team-sarah | merged PR #214 into main on Jamie's instruction (ui/start/ only); CI build green
