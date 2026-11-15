@@ -18,6 +18,8 @@ import type { Command, Player, SimState } from '../../shared'
 import { createControlRoom, type ControlRoom } from './control'
 import { interactables, menu, MENU_RANGE, obstacles, paramOf, STAND, START, stations, type Debrief } from './layout'
 import type { CrewPose } from '../crew/crew'
+import { presetsFor } from '../../data/presets'
+import { presetSpots, presetTiles } from './presets'
 
 export interface MissionControlProps {
   state: SimState
@@ -118,6 +120,7 @@ export function MissionControl({ state, send, players = NO_PLAYERS, me, title, g
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  const presets = useMemo(() => presetsFor(state.scenario_id), [state.scenario_id])
   const stationList = useMemo(() => stations(state), [state.entities, state.params])
   const calls = useMemo(() => poll(state.issues), [state.issues])
   const question = useMemo(() => launchAnywayQuestion(state.issues), [state.issues])
@@ -163,14 +166,19 @@ export function MissionControl({ state, send, players = NO_PLAYERS, me, title, g
       objective: typeof state.params.objective_text === 'string' ? state.params.objective_text : undefined,
       launchUtc: typeof state.params.start_utc === 'string' ? state.params.start_utc : undefined,
       debrief: debrief && { grade: debrief.grade, score: debrief.score, outcome: debrief.outcome, fix: debrief.fix?.change },
+      presets: presetTiles(presets, state.params),
     })
     const launchBlocked = calls.some((c) => c.call === 'no-go') ? 'A console says NO-GO' : undefined
     const launchAnyway = question ? () => setAsking(question) : undefined
-    r.fps.setPlace(interactables(stationList, { send: (c) => sendWithSound.current(c), launchBlocked, launchAnyway, debrief, menu: openMenu, armed, toggle }), walls)
+    // Rocket presets on the back wall; in co-op each player loads only the slots their console may set.
+    const loadPreset = (commands: Command[]) => (playSound('click'), commands.forEach(send))
+    const mayPreset = (key: string) => !who.current.coop || slotAccess(key, who.current.players, who.current.me).canEdit
+    const spots = debrief ? [] : presetSpots(presets, loadPreset, mayPreset)
+    r.fps.setPlace([...interactables(stationList, { send: (c) => sendWithSound.current(c), launchBlocked, launchAnyway, debrief, menu: openMenu, armed, toggle }), ...spots], walls)
     // Dev builds only: QA reads the stations and the open menu from the console (`__hall()`), next to `__fps`.
     if (import.meta.env.DEV) Object.assign(window, { __hall: () => ({ centre: [STAND[0], STAND[2]], stations: stationList.map((s) => ({ key: s.key, at: s.at, picked: s.picked })), open: openMenu?.key ?? null, cards: (openMenu?.cards ?? []).map((c) => ({ id: c.id, at: c.at, picked: c.picked })), params: state.params }) })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state, stationList, calls, question, walls, title, debrief, openMenu, armed])
+  }, [state, stationList, calls, question, walls, title, debrief, openMenu, armed, presets])
 
   useEffect(() => room.current?.setActive(enabled && !asking), [enabled, asking])
   useEffect(() => {

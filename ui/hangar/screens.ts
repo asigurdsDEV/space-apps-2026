@@ -10,6 +10,7 @@ import mars from '../scene3d/maps/mars.jpg?inline'
 import moon from '../scene3d/maps/moon.jpg?inline'
 import type { Metrics } from '../../shared'
 import { shortLabel, STATION_NAMES, type Debrief, type Station } from './layout'
+import { CELL, PRESET_CANVAS, presetCell, type PresetTile } from './presets'
 import { BODY_DAY_S, flightPlan, groundTrack, trackLines, trackRevs, westShift } from './wall'
 
 type G = CanvasRenderingContext2D
@@ -459,4 +460,32 @@ export function drawTiles(g: G, s: DeskScreens, map?: CanvasImageSource) {
   figure('Science forecast', `${Math.round(num(m.science_expected))}${goal ? ` / ${Math.round(goal)}` : ''}`, 'points by the end of the mission', goal && num(m.science_expected) < goal ? WARN : TEXT)
   tile(`Track over ${BODY_NAMES[s.track.body]}`, (x, y) => drawTrackOn(g, s.track, map, x + (w - 320) / 2, y + 46, 320, 160, 2.2))
   figure('Odds', pct(num(m.launch_reliability) * num(m.bus_reliability)), 'launch and spacecraft both hold')
+}
+
+/** The rocket preset wall (presets.ts): each preset's name and rocket only. No scores, grades or science. */
+export function drawPresets(g: G, tiles: readonly PresetTile[]) {
+  const { w: W, h: H } = PRESET_CANVAS
+  backdrop(g, W, H)
+  header(g, W, 'Rocket presets', 'Press E to load', 0.8)
+  tiles.forEach((t, i) => {
+    const [u, v] = presetCell(i, tiles.length)
+    const cw = CELL.w * W - 16
+    const ch = CELL.h * H - 16
+    const x = u * W - cw / 2
+    const y = v * H - ch / 2
+    g.fillStyle = t.loaded ? 'rgba(245,246,248,0.16)' : 'rgba(245,246,248,0.06)'
+    g.beginPath()
+    g.roundRect(x, y, cw, ch, 14)
+    g.fill()
+    if (t.loaded) {
+      g.strokeStyle = TEXT
+      g.lineWidth = 3
+      g.stroke()
+    }
+    g.font = face(34, 500)
+    g.letterSpacing = '0px'
+    wrap(g, t.name, cw - 32, 2).forEach((line, k) => text(g, line, x + 16, y + 44 + k * 40, 34, TEXT, 'left', cw - 32, 500))
+    caps(g, t.rocket, x + 16, y + ch - (t.loaded ? 62 : 28), 20, MUTED, 'left', cw - 32)
+    if (t.loaded) caps(g, 'Loaded', x + 16, y + ch - 28, 20, TEXT)
+  })
 }
