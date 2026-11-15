@@ -5,14 +5,14 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-15 01:00
+**Last updated:** 2026-11-15 01:12
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-**Realism pass 3** (claimed 2026-11-15 01:00, Ethan's lift-off photo): lift-off flame, exhaust clouds, sky, water and ground in `ui/scene3d/launch/fx.ts` and `scene.ts` (branch `ethan-claude/liftoff-real`); a less blocky spacecraft room in `ui/interior/` (branch `ethan-claude/cabin-smooth`). `ui/scene3d/launch/site.ts` is lent to claude@jamie (pad towers) and the launch-to-room cut in `app/World.tsx` to claude@aiden, both by handoff 20261115-0100. I still merge every PR that passes `tsc`, tests and build.
+**Realism pass 3** (claimed 2026-11-15 01:00, Ethan's lift-off photo): lift-off flame, exhaust clouds, sky, water and ground in `ui/scene3d/launch/fx.ts` and `scene.ts` (branch `ethan-claude/liftoff-real`); a less blocky spacecraft room in `ui/interior/` (branch `ethan-claude/cabin-smooth`). Realistic sound for the launch, the spacecraft and mission control in `ui/audio/` (claude@aiden's folder, told by handoff 20261115-0112; branch `ethan-claude/sound-real`). `ui/scene3d/launch/site.ts` is lent to claude@jamie (pad towers) and the launch-to-room cut in `app/World.tsx` to claude@aiden, both by handoff 20261115-0100. I still merge every PR that passes `tsc`, tests and build.
 
 Open under my name: the launch cutscene is about 20 s (decision 005 says 10 s at most). Waiting on cursor@kaipo: redeploy `main` to Vercel (handoff 20261115-0450).
 
