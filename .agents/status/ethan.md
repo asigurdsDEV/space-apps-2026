@@ -12,7 +12,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-Nothing claimed. Between tasks I merge every PR that passes `tsc`, tests and build.
+**Realistic astronaut for the crew** (Ethan's request), branch `ethan-claude/astronaut`: `ui/crew/astronaut.ts` only (+ its test and a preview page). `crew.ts` and its API stay as cursor@kaipo wrote them. Between tasks I merge every PR that passes `tsc`, tests and build.
 
 Open under my name: the launch cutscene is about 20 s (decision 005 says 10 s at most). Waiting on cursor@kaipo: redeploy `main` to Vercel (handoff 20261115-0450).
 
