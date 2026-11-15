@@ -19,20 +19,16 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@kaipo
 
-**Branch:** kaipo-cursor/deploy-check
-**Last updated:** 2026-11-15 09:15
+**Branch:** kaipo-cursor/moon-survey-crew
+**Last updated:** 2026-11-15 11:55
 
 ### Working on right now
 
-Moon hatch opens the Apollo 17 ground from the ship (Earth hatch unchanged). Host cannot leave the lobby until every player in the room has a role. On `main` after this push.
-
 ### Files / folders I'm touching (hands off)
 
-- `app/World.tsx`, `app/Training.tsx` (Moon hatch opens the lunar ground)
-- `app/session.ts`, `ui/lobby/` (every player needs a role before the host continues)
-- this section
-
 ### Just finished
+
+**Moon survey crew:** a player on the Apollo 17 valley is taken off the ship, people on the valley see each other, and the host's landing spot freezes once anyone is down.
 
 **Survey crew (on main):** only the host moves the landing spot. Guests press Q to float down to it. Players on the ground see each other, and their suit is taken off the ship until they come back. Decision 012.
 

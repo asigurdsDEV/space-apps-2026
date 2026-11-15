@@ -3,6 +3,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
+import { mountCrew, type CrewPose } from '../crew/crew'
 import { createFps } from '../fps/controller'
 import { EYE } from '../fps/model'
 import { FpsPrompt } from '../fps/Prompt'
@@ -26,12 +27,32 @@ async function loadPatch(signal: AbortSignal): Promise<{ meta: PatchMeta; height
   return { meta, heights: new Float32Array(bytes) }
 }
 
-export default function LunarExplorer({ onClose, leaveLabel = 'Back to orbit' }: { onClose: () => void; leaveLabel?: string }) {
+export interface LunarExplorerProps {
+  onClose: () => void
+  leaveLabel?: string
+  /** Where this player stands. Defaults to the Apollo 17 landing site. */
+  lat?: number
+  lon?: number
+  /** Spreads the crew so two players do not start inside each other. */
+  seat?: number
+  /** Other players already walking this valley. */
+  crew?: readonly CrewPose[]
+  /** Where this player is walking, so the others can draw them. */
+  onMove?: (pose: { x: number; z: number; yaw: number }) => void
+}
+
+export default function LunarExplorer({ onClose, leaveLabel = 'Back to orbit', lat, lon, seat = 0, crew, onMove }: LunarExplorerProps) {
   const stage = useRef<HTMLDivElement>(null)
   const elev = useRef<HTMLElement>(null)
   const where = useRef<HTMLElement>(null)
   const close = useRef(onClose)
   close.current = onClose
+  const crewNow = useRef(crew)
+  const moveNow = useRef(onMove)
+  const place = useRef({ lat, lon, seat })
+  crewNow.current = crew
+  moveNow.current = onMove
+  place.current = { lat, lon, seat }
   const [patch, setPatch] = useState<{ meta: PatchMeta; heights: Float32Array } | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [locked, setLocked] = useState(false)
@@ -64,7 +85,14 @@ export default function LunarExplorer({ onClose, leaveLabel = 'Back to orbit' }:
     if (!box || !patch) return
     const { meta, heights } = patch
     const size = patchMetres(meta, meta.radius_m)
-    const start = localXZ(meta.lat, meta.lon, meta, size.width, size.depth)
+    const aim = localXZ(place.current.lat ?? meta.lat, place.current.lon ?? meta.lon, meta, size.width, size.depth)
+    const inset = 8
+    const clamp = (v: number, half: number) => Math.max(-half + inset, Math.min(half - inset, v))
+    const pad = { x: clamp(aim.x, size.width / 2), z: clamp(aim.z, size.depth / 2) }
+    const start = {
+      x: clamp(pad.x + Math.min(place.current.seat, 3) * 1.6, size.width / 2),
+      z: pad.z,
+    }
     const renderer = new THREE.WebGLRenderer({ antialias: true })
     renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5))
     renderer.setSize(box.clientWidth, box.clientHeight)
@@ -94,12 +122,13 @@ export default function LunarExplorer({ onClose, leaveLabel = 'Back to orbit' }:
       new THREE.CylinderGeometry(0.2, 0.2, 2.4, 8),
       new THREE.MeshStandardMaterial({ color: 0xf0e2b0, emissive: 0x4a3814, roughness: 0.45 }),
     )
-    mast.position.set(start.x, groundY(start.x, start.z) + 1.2, start.z)
+    mast.position.set(pad.x, groundY(pad.x, pad.z) + 1.2, pad.z)
     scene.add(mast)
 
     const fps = createFps(renderer.domElement, camera, { start: [start.x, 0, start.z], yaw: 0, onLock: setLocked })
     fps.teleport([start.x, 0, start.z], 0, -0.28)
     fps.setPlace([], patchFence(size.width, size.depth))
+    const bodies = mountCrew(scene, { ground: groundY })
     let last = { x: start.x, z: start.z, h: groundY(start.x, start.z) }
 
     const onResize = () => {
@@ -115,6 +144,8 @@ export default function LunarExplorer({ onClose, leaveLabel = 'Back to orbit' }:
       const dt = Math.min(0.1, (now - then) / 1000)
       then = now
       fps.update(dt)
+      bodies.set(crewNow.current ?? [])
+      bodies.update(dt)
       let feet = fps.feet()
       let h = groundY(feet.x, feet.z)
       const dist = Math.hypot(feet.x - last.x, feet.z - last.z)
@@ -125,6 +156,7 @@ export default function LunarExplorer({ onClose, leaveLabel = 'Back to orbit' }:
       } else if (dist > 0) {
         last = { x: feet.x, z: feet.z, h }
       }
+      moveNow.current?.(feet)
       camera.position.y += h
       const spot = groundPoint(feet.x, feet.z, meta, size.width, size.depth)
       if (elev.current) elev.current.textContent = `${Math.round(h + meta.min_m).toLocaleString()} m`
@@ -136,6 +168,7 @@ export default function LunarExplorer({ onClose, leaveLabel = 'Back to orbit' }:
 
     return () => {
       cancelAnimationFrame(frame)
+      bodies.dispose()
       fps.dispose()
       window.removeEventListener('resize', onResize)
       geometry.dispose()
@@ -157,6 +190,7 @@ export default function LunarExplorer({ onClose, leaveLabel = 'Back to orbit' }:
           <p>
             Apollo 17, from SLDEM2015 elevation and an LROC WAC photo. The eye is {EYE.toFixed(1)} m above the ground.
             Q or Esc leaves the surface. This does not change the mission.
+            {crew && crew.length > 0 ? ' Other crew on this ground stand where they are walking.' : ''}
           </p>
         </div>
         <button type="button" className="game-button" onClick={onClose}>{leaveLabel}</button>

@@ -482,6 +482,11 @@ describe('where people stand', () => {
     expect(spot.landed).toBe(false)
     expect(ship.at(-1)).toEqual([])
 
+    host.reportSurvey({ down: false, x: 0, z: 0, yaw: 0, lat: 10, lon: 20 })
+    await settle()
+    expect(spot.lat).toBeCloseTo(36.1)
+    expect(spot.lon).toBeCloseTo(-112.1)
+
     const hostSaw: { name: string; x: number }[][] = []
     host.subscribeSurvey((_next, crew) => hostSaw.push(crew.map((p) => ({ name: p.name, x: p.x }))))
     expect(hostSaw.at(-1)).toEqual([{ name: 'Gus', x: 3 }])

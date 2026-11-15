@@ -37,6 +37,15 @@ describe('crew in a room', () => {
     expect(Math.abs(lift(false))).toBeLessThan(0.01)
   })
 
+  it('stands a body on uneven ground when the place provides a height', () => {
+    const scene = new Scene()
+    const crew = mountCrew(scene, { ground: () => 40 })
+    crew.set([member])
+    settle(crew)
+    expect(scene.children[0]!.children[0]!.position.y).toBeCloseTo(40)
+    crew.dispose()
+  })
+
   it('walks smoothly on poses that arrive ten times a second', () => {
     const scene = new Scene()
     const crew = mountCrew(scene)
