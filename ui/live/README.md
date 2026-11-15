@@ -169,10 +169,11 @@ On 2026-11-15 10:12 UTC the real answers were: ISS 117.5 km (a Cosmos 2251 piece
 
 ### Tying space weather to the game
 
-Kp comes with NOAA's storm level: `g` 0 to 5 and a label. The game's storm cards fire on real G3 or stronger days, which is Kp 7 or more: "A storm like the ones in your mission would read Kp 7 or more."
+Kp comes with NOAA's storm level: `g` 0 to 5 and a label (below storm level: under 3 "quiet", 3 "unsettled", 4 "active"). The flare class is shown with its size in NASA's plain words: A and B very small, C small, M medium, X large. The game's storm cards fire on real G3 or stronger days, which is Kp 7 or more: "A storm like the ones in your mission would read Kp 7 or more."
 
 ## Checked against the real world
 
+- A second check by hand at 11:03 UTC, with no SGP4 library (a Kepler orbit with the J2 drift, from the same CelesTrak elements): the ISS at 15.59° S, 38.48° E, 417 km, 27,582 km/h against the screen's 15.6° S, 38.4° E, 419 km, 27,580 km/h; the closest debris pass for the ISS 117 km in 13.2 minutes from the same Cosmos 2251 piece (screen: 117 km in 13 min) and for NOAA-20 29 km in 44.0 minutes (screen: 29 km in 44 min). The Sun overhead point from an almanac formula was 18.5° S, 9.6° E against the screen's 19.2° S, 9.8° E, which puts the day and night line within about 80 km.
 - The ISS position from these elements matched an independent tracker (wheretheiss.at) at the same second to 0.02° (35.831°, -149.825° against 35.841°, -149.842°), with the same height (422.3 km) and speed (27,583 km/h).
 - GOES-19 comes out at 75.19°W over the equator, 35,789 km up; NOAA parks it at 75.2°W.
 - The screening is tested on circular orbits whose closest pass is known exactly (1.5 km, between two coarse samples, found to 0.01 km and 5 ms), and against real SGP4 with a copy of the ISS 0.1° behind it.
