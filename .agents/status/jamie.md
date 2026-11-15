@@ -34,6 +34,7 @@ Nothing claimed.
 - `docs/CHALLENGE.md`, `docs/README.md`, and the `## Challenge` section + Team table of `README.md` until PR #6 merges
 
 ### Just finished
+- **Live Earth trip time (PR #212):** after Fly to a place, the distance from the picked satellite to the place and the time at its speed. `ui/live/` only.
 - **About the team (PR #210, merged):** team section on the start menu under the daily mission: 6 round headshots (Sarah initials, no LinkedIn), names link to LinkedIn, "Six students at the University of Washington". `ui/start/` only.
 - **Live Earth: fly to a place (PR #209):** address or coordinates search; the camera dives from space to 500 m over the place in 4 s with Esri close-up tiles fading in; Back to space. Coordinates stay in the page, an address goes to OpenStreetMap once. `ui/live/` only.
 - **Playtest fixes (PR #200):** launch no longer black for its first seconds (flag shader NaN spread by bloom on real GPUs); easier score; Live Earth continent names + opt-in "Show where I am"; dimmer, shaded module behind the hatchway; quiet generated background music except during the launch; the game is now First Light Program.

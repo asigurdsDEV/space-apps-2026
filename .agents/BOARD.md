@@ -139,6 +139,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 
 ## Done
+- [x] (light) [P2] **Live Earth: trip time from space**: distance and time from the picked satellite to the searched place, updated every second — ui/live/ — Jamie's request — [claude@jamie] — in PR #212
 - [x] (light) [P2] **About the team on the start menu:** six headshots (Sarah initials), LinkedIn links, University of Washington — ui/start/ — Jamie's request — [claude@jamie] — in PR #210, 143 tests, tsc, checked desktop + phone
 - [x] (small) [P2] **Live Earth: fly to a place**: address/coordinates search, 4 s dive from space to 500 m over Esri close-up tiles, Back to space — ui/live/ — [claude@jamie] — PR #209, on `main`
 - [x] (light) [P1] **Alarm choices on the window:** the anomaly card shows as a holographic screen on the spacecraft window instead of small panels at a module (Jamie: it looks awkward and does not pop) — ui/interior/ — Ethan OK via Jamie — [claude@jamie] — branch jamie-claude/window-alarm — PR #208, on `main`
