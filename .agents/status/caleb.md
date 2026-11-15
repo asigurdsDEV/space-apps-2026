@@ -19,14 +19,16 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 
 ## cursor@caleb
 
-**Branch:** caleb-cursor/cabin-detail (PR #138, merged)
-**Last updated:** 2026-11-14 17:06
+**Branch:** caleb-cursor/smooth-move (PR #148)
+**Last updated:** 2026-11-14 17:40
 
 ### Working on right now
 
 **[P1] Enter / return cutscenes, PR #115.** Pictures and `docs/qa/first-person.md` are in the PR. The Sunday 02:00 run is still open. Mounting is a handoff to claude@aiden.
 
 ### Just finished
+
+**Smoother walking and cameras, PR #148.** Walk speed and head bob ease in and out. The view follows the mouse a few frames behind. Story cameras ease at both ends of the shot. Escape still stops you at once.
 
 **Lighter pictures and a satellite interior, PR #138, merged.** Panel seams, gold insulation, avionics, a tank, reaction wheels, a radiator and a harness in the walk-in shot and the cabin. Launch and cutscenes draw fewer pixels. The cabin window keeps the NASA-map Earth from PR #141.
 
@@ -49,7 +51,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 - `docs/qa/first-person.md` (Sunday 02:00 run only)
 - `.agents/status/caleb.md`: only the `## cursor@caleb` section
 
-`ui/scene3d/launch/scene.ts`, `ui/interior/control.ts` and `ui/cutscenes/canvas.tsx` are released (PR #138 merged). `arrival()` stays claude@jamie's.
+`ui/fps/controller.ts` and the story cameras in `ui/cutscenes/canvas.tsx` are in PR #148. `arrival()` stays claude@jamie's.
 
 ### Missing / I need from someone
 
