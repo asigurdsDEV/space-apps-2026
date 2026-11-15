@@ -19,13 +19,15 @@ export interface SpaceViewProps {
   showCaption?: boolean
   /** A page background: slower orbit, no locator ring (read once, when the view opens). */
   backdrop?: boolean
+  /** Called when the spacecraft is clicked or tapped (orbit mode, read once). */
+  onCraftClick?: () => void
   /** Sizes the view; the default height is in scene3d.css. */
   className?: string
 }
 
 const media = (q: string) => typeof window !== 'undefined' && window.matchMedia(q).matches
 
-export function SpaceView({ state, mode = 'orbit', progress, showCaption = true, className, backdrop }: SpaceViewProps) {
+export function SpaceView({ state, mode = 'orbit', progress, showCaption = true, className, backdrop, onCraftClick }: SpaceViewProps) {
   const host = useRef<HTMLDivElement>(null)
   const world = useRef<World | null>(null)
   const spec = useMemo(() => sceneSpec(state), [state.entities, state.params])
@@ -42,6 +44,7 @@ export function SpaceView({ state, mode = 'orbit', progress, showCaption = true,
         interactive,
         onShadow: setInShadow,
         backdrop,
+        onCraftClick,
       })
     } catch {
       setFailed(true) // no WebGL

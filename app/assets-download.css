@@ -1,9 +1,72 @@
-.ga-page { min-height: 100dvh; box-sizing: border-box; display: grid; place-items: center; padding: 32px 20px; }
-.ga-card { width: min(600px, 100%); box-sizing: border-box; padding: clamp(20px, 4vw, 40px); }
-.ga-card h1 { font-size: clamp(2rem, 4vw, 3rem); margin: 12px 0 20px; }
-.ga-progress { margin: 28px 0; }
-.ga-progress label { display: flex; justify-content: space-between; gap: 16px; font-weight: 600; }
-.ga-progress progress { display: block; width: 100%; height: 20px; margin-top: 12px; accent-color: var(--game-accent); }
-.ga-progress p { min-height: 1.5em; color: var(--game-muted); font-size: 0.85rem; }
-.ga-card button { display: block; width: 100%; margin-top: 12px; }
-.ga-controls { margin: 24px 0 0; font-size: 0.8rem; line-height: 1.8; color: var(--game-muted); }
+/* The download screen, in the start screen's look (ui/start/start.css): black space, quiet glass, white only, Inter Tight. */
+.ga-page {
+  min-height: 100dvh;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  padding: 32px 20px;
+  color: #f5f6f8;
+  /* A faint planet glow rising from below, and a few stars. */
+  background:
+    radial-gradient(ellipse 90% 45% at 50% 115%, rgb(110 150 230 / 0.22), transparent 70%),
+    radial-gradient(1px 1px at 18% 22%, rgb(255 255 255 / 0.7), transparent),
+    radial-gradient(1px 1px at 72% 14%, rgb(255 255 255 / 0.5), transparent),
+    radial-gradient(1px 1px at 86% 58%, rgb(255 255 255 / 0.6), transparent),
+    radial-gradient(1px 1px at 9% 71%, rgb(255 255 255 / 0.45), transparent),
+    radial-gradient(1px 1px at 43% 8%, rgb(255 255 255 / 0.4), transparent),
+    #000002;
+  font: 400 16px/1.55 "Inter Tight", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.ga-page *, .ga-page *::before, .ga-page *::after { box-sizing: border-box; }
+.ga-card {
+  width: min(520px, 100%);
+  padding: clamp(28px, 5vw, 48px);
+  border: 1px solid rgb(255 255 255 / 0.14);
+  border-radius: 22px;
+  background: rgb(10 12 16 / 0.4);
+  backdrop-filter: blur(22px) saturate(1.3);
+  -webkit-backdrop-filter: blur(22px) saturate(1.3);
+  animation: ga-in 900ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@keyframes ga-in { from { opacity: 0; transform: translateY(12px); filter: blur(6px); } }
+.ga-eyebrow { margin: 0; color: rgb(245 246 248 / 0.6); font-size: 0.68rem; letter-spacing: 0.32em; text-transform: uppercase; }
+.ga-card h1 { margin: 18px 0 20px; font-size: clamp(2rem, 4.5vw, 2.8rem); font-weight: 400; line-height: 1.05; letter-spacing: -0.03em; }
+.ga-card p { margin: 0 0 8px; }
+.ga-muted, .ga-controls, .ga-progress p { color: rgb(245 246 248 / 0.6); }
+.ga-progress { margin: 32px 0 28px; }
+.ga-progress label { display: flex; justify-content: space-between; gap: 16px; color: rgb(245 246 248 / 0.6); font-size: 0.68rem; letter-spacing: 0.24em; text-transform: uppercase; }
+.ga-progress label span { color: #fff; letter-spacing: 0.08em; font-variant-numeric: tabular-nums; }
+.ga-progress progress { display: block; width: 100%; height: 2px; margin: 14px 0 12px; border: 0; border-radius: 2px; background: rgb(255 255 255 / 0.14); appearance: none; overflow: hidden; }
+.ga-progress progress::-webkit-progress-bar { background: rgb(255 255 255 / 0.14); }
+.ga-progress progress::-webkit-progress-value { background: #fff; transition: width 400ms ease; }
+.ga-progress progress::-moz-progress-bar { background: #fff; }
+.ga-progress p { min-height: 1.5em; font-size: 0.82rem; }
+.ga-error { padding-left: 12px; border-left: 1px solid #ff8f8f; color: #ffb3b3; }
+.ga-primary {
+  display: block;
+  width: 100%;
+  min-height: 52px;
+  margin-top: 12px;
+  padding: 14px 24px;
+  border: 0;
+  border-radius: 14px;
+  background: #fff;
+  color: #0b0c0e;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 300ms ease;
+}
+.ga-primary:not(:disabled):hover { background: rgb(255 255 255 / 0.86); }
+.ga-primary:disabled { opacity: 0.5; cursor: progress; }
+.ga-primary:focus-visible { outline: 1px solid #fff; outline-offset: 4px; }
+.ga-controls { margin: 28px 0 0; font-size: 0.78rem; line-height: 1.9; }
+.ga-controls kbd { font: inherit; color: #fff; letter-spacing: 0.08em; }
+/* After the download: one line and one button. */
+.ga-ready { text-align: center; }
+.ga-ready .ga-primary { margin-top: 32px; }
+@media (prefers-reduced-motion: reduce) { .ga-card { animation: none; } }
