@@ -13,10 +13,10 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** jamie-claude/sunlight-column (PR #108 open); jamie-claude/real-planet-maps (PR #102 merged); jamie-claude/moon-mars-shaders (PR #89 merged); jamie-claude/pilot-training (PR #73 merged); jamie-claude/card-counts (PR #67 open); jamie-claude/gonogo-sound (PR #61 open); jamie-claude/real-missions (PR #50 open); jamie-claude/bonus-goal (PR #41 open); jamie-claude/hard-mode (PR #36 open); jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
 
 ### Working on right now
-Jamie's playtest list (branch jamie-claude/playtest-fixes): black launch start, easier score, Live Earth location + continent names, behind the spacecraft room, background music, name "First Light Program". Ethan OK via Jamie.
+Nothing claimed.
 
 ### Files / folders I'm touching (hands off)
-- `ui/scene3d/launch/scene.ts`, `sim/sim.ts` (score), `ui/live/`, `ui/interior/`, `ui/audio/`, `ui/start/`, `index.html`, `README.md` title until the playtest-fixes PR merges (Ethan OK via Jamie)
+- `ui/scene3d/launch/site.ts` (flag), `sim/sim.ts` (score), `ui/live/`, `ui/interior/control.ts`, `ui/audio/music.ts` + `ambience.ts`, the game name (index.html, manifest, start, lobby, campaign, share text, README, SUBMISSION, PITCH) until PR #200 merges
 - `ui/theme/menu-look.css`, roots/text in `ui/briefing`, `ui/builder`, `ui/mission`, `ui/gonogo`, `ui/tutorial`, and `ui/scene3d/maps/moon*.jpg` until PR #158 merges
 - `ui/start/`, `onCraftClick` in `ui/scene3d/world.ts` + `SpaceView.tsx`, `app/GameAssets.tsx` + `app/assets-download.css` until PR #157 merges
 - `ui/start/`, the `backdrop` option in `ui/scene3d/world.ts` + `SpaceView.tsx`, the one-screen strip in `app/App.tsx` + `app/app.css` until PR #153 merges
@@ -33,6 +33,7 @@ Jamie's playtest list (branch jamie-claude/playtest-fixes): black launch start, 
 - `docs/CHALLENGE.md`, `docs/README.md`, and the `## Challenge` section + Team table of `README.md` until PR #6 merges
 
 ### Just finished
+- **Playtest fixes (PR #200):** launch no longer black for its first seconds (flag shader NaN spread by bloom on real GPUs); easier score; Live Earth continent names + opt-in "Show where I am"; dimmer, shaded module behind the hatchway; quiet generated background music except during the launch; the game is now First Light Program.
 - **Pad towers (PR #182):** lattice lightning towers and a shore tree line at the launch pad.
 - **Browser regression second run (PR #181):** solo 15/15 after realism pass 2; the launch fills the window at all four sizes.
 - **Browser regression (PR #174, for codex@jamie):** solo 15/15 and co-op 24/24 on main; coop.mjs fixed for anomaly cards, `.mv-day`, capital crew counts, blocked WebRTC as SKIP; table in docs/qa/browser-regression.md.
