@@ -165,10 +165,12 @@ void main() {
   float f2 = 1.0 - smoothstep(100.0, 800.0, dist);
   float f3 = (1.0 - smoothstep(400.0, 3500.0, dist)) * (1.0 - 0.6 * inlet);
   float f4 = (1.0 - smoothstep(2500.0, 14000.0, dist)) * (1.0 - 0.8 * inlet);
+  // The long trains come in groups, one strong where the other is weak, so the two never weave an even lattice.
+  float ph4 = dot(p, vec2(-0.78, 0.62)) * 0.2 - uTime * 1.4 + jit * 0.6;
   vec2 slope = vec2(0.94, 0.34) * 0.03 * f1 * cos(dot(p, vec2(0.94, 0.34)) * 3.7 - uTime * 6.0 + jit * 2.3)
     + vec2(0.57, -0.82) * 0.03 * f2 * cos(dot(p, vec2(0.57, -0.82)) * 1.46 - uTime * 3.8 + jit * 1.7)
-    + vec2(-0.3, 0.954) * 0.045 * f3 * cos(dot(p, vec2(-0.3, 0.954)) * 0.57 - uTime * 2.4 + jit)
-    + vec2(-0.78, 0.62) * 0.04 * f4 * cos(dot(p, vec2(-0.78, 0.62)) * 0.2 - uTime * 1.4 + jit * 0.6);
+    + vec2(-0.3, 0.954) * 0.045 * f3 * (0.4 + 1.2 * local) * cos(dot(p, vec2(-0.3, 0.954)) * 0.57 - uTime * 2.4 + jit)
+    + vec2(-0.78, 0.62) * 0.04 * f4 * (1.6 - 1.2 * local) * cos(ph4);
   // Wind ripples carried along by the current: the inlet drains east to the sea, the sea sets toward the beach.
   vec2 drift = mix(vec2(-0.3, 0.5), vec2(1.0, 0.08), inlet) * uTime;
   vec2 w1 = p * 0.9 - drift * 1.2;
@@ -183,8 +185,12 @@ void main() {
   refl = normalize(refl);
   float fresnel = (0.03 + 0.97 * pow(1.0 - max(dot(n, v), 0.0), 5.0)) * mix(1.0, 0.6, distant);
   // Sand shows through at the edge, then turquoise shallows, deep blue a few hundred meters out.
-  vec3 deep = mix(lin(vec3(0.16, 0.42, 0.45)), lin(vec3(0.05, 0.19, 0.34)), smoothstep(0.0, 6.0 * U + 300.0, shore));
-  vec3 body = mix(sandCol * 0.6, deep, smoothstep(0.0, 0.12 * U + 2.0, shore)) * light;
+  // The marsh ponds lie inland of the waterline, where shore is negative: they get a depth of their own.
+  float depth = max(shore, pond * 80.0);
+  vec3 deep = mix(lin(vec3(0.16, 0.42, 0.45)), lin(vec3(0.05, 0.19, 0.34)), smoothstep(0.0, 6.0 * U + 300.0, depth));
+  vec3 body = mix(sandCol * 0.6, deep, smoothstep(0.0, 0.12 * U + 2.0, depth)) * light;
+  // Wave faces turned to the Sun are brighter. From the air the mirror is weak, so this is what shows the swell.
+  body *= 1.0 + 2.5 * dot(slope, uSun.xz);
   // Slow streaks on the inlet's surface show which way it flows.
   body *= 1.0 + 0.3 * inlet * (noise2(vec2(p.x * 1.5 - uTime * 2.5, p.y * 12.0) / U) - 0.5);
   vec3 water = mix(body, skyColor(refl), fresnel);
@@ -196,8 +202,11 @@ void main() {
   // Foam: a thin line lapping the banks, and rows of surf rolling up the sea beach.
   float lap = (1.0 - smoothstep(0.0, 0.035 * U + 0.6 + (0.02 * U + 0.4) * sin(uTime * 1.3 + local * 40.0), shore));
   float surf = smoothstep(0.55, 0.95, sin(shore * 0.22 + uTime * 0.8 + local * 5.0)) * (1.0 - smoothstep(8.0, 55.0, shore)) * (1.0 - inlet);
-  float foam = max(lap, surf * (0.4 + 0.6 * noise2(p * 0.12 + uTime * 0.15)));
-  water = mix(water, vec3(0.92) * light, clamp(foam, 0.0, 1.0) * (1.0 - pond));
+  // A few whitecaps on the open sea, breaking on the crests of the long swell. Seen from far only: close up they are squiggles.
+  float caps = smoothstep(0.9, 1.0, sin(ph4)) * smoothstep(0.75, 0.83, noise2(p * 0.035 + 31.0 - drift * 0.03)) * (1.0 - inlet) * smoothstep(60.0, 250.0, shore) * smoothstep(250.0, 1000.0, dist) * (1.0 - smoothstep(2500.0, 9000.0, dist));
+  float foam = max(max(lap, caps * 0.45), surf * (0.4 + 0.6 * noise2(p * 0.12 + uTime * 0.15)));
+  // Only along the coast: the ponds are still, and inland of the waterline, where shore is below zero.
+  water = mix(water, vec3(0.92) * light, clamp(foam, 0.0, 1.0) * step(-0.02 * U - 1.0, shore));
   col = mix(col, water, sea);
   // Haze toward the horizon; thinner when looking down from high up.
   float haze = 1.0 - exp(-dist * mix(0.00004, 0.000012, smoothstep(2000.0, 20000.0, cameraPosition.y)));

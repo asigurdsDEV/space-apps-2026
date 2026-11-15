@@ -307,7 +307,7 @@ export function buildPad(height: number, footprint: number, bellDrop: number, sk
   add(new THREE.CylinderGeometry(ball * 0.2, ball * 0.26, ballY, 12), white, wx, ballY / 2, wz)
   for (let i = 0; i < 6; i++) {
     const a = (i * Math.PI) / 3
-    add(bar(wx + Math.cos(a) * ball * 1.05, 0, wz + Math.sin(a) * ball * 1.05, wx + Math.cos(a) * ball * 0.72, ballY - ball * 0.5, wz + Math.sin(a) * ball * 0.72, ball * 0.045), white, 0, 0, 0)
+    add(bar(wx + Math.cos(a) * ball * 1.05, 0, wz + Math.sin(a) * ball * 1.05, wx + Math.cos(a) * ball * 0.72, ballY - ball * 0.5, wz + Math.sin(a) * ball * 0.72, ball * 0.075), white, 0, 0, 0)
   }
   // Propellant spheres at the edge of the pad, each on a skirt with a vent stack and an insulated line to the mount.
   for (const [x, z, r] of site.spheres) {

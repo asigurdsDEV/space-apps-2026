@@ -444,7 +444,8 @@ export function createLaunchScene(container: HTMLElement, options: LaunchSceneOp
       case 'pitch':
         // From above and behind, looking up the coast, so the tilt, the smoke trail and the shoreline all show.
         onAxis(0.35, target)
-        eye.copy(target).add(tmp.set(1.1 * H, lerp(0.9, 1.3, p) * H, 3.0 * H))
+        // On a tall screen, swing further east: the narrow view would otherwise cut the assembly building off.
+        eye.copy(target).add(tmp.set(Math.min(0.8 + 0.3 * tall, 1.55) * H, lerp(0.9, 1.3, p) * H, 3.0 * H))
         fov = 38
         break
       case 'maxq':

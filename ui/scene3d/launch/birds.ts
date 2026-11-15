@@ -28,9 +28,11 @@ float hash1(float n) { return fract(sin(n * 127.1) * 43758.5453); }
 void main() {
   float id = float(gl_InstanceID);
   vec3 rnd = vec3(hash1(id + 0.1), hash1(id + 0.37), hash1(id + 0.73));
-  // Before launch: strung out to the west of the tower, drifting east with a slow bob.
+  // Before launch: strung out over the inlet between the pad and the countdown camera (it stands 3.3 uH south), west
+  // of its line of sight to the rocket and fanning out with distance from it, so near and far birds are all in frame.
   vec3 cruise = vec3(0.075 + 0.03 * rnd.y, 0.0, -0.012) * uH;
-  vec3 at = vec3(-1.05 + 0.75 * rnd.x, 0.34 + 0.2 * rnd.y, 0.25 + 0.6 * rnd.z) * uH + cruise * uTime;
+  float south = 0.3 + 1.5 * rnd.z;
+  vec3 at = vec3(0.24 * south - (0.06 + 0.34 * rnd.x) * (3.2 - south), 0.34 + 0.2 * rnd.y, south) * uH + cruise * uTime;
   at.y += sin(uTime * 0.9 + id) * 0.008 * uH;
   // The noise reaches each bird a moment apart; then it flees as fast as it can.
   float s = max(uScatter - rnd.z * 0.5, 0.0);
@@ -43,7 +45,7 @@ void main() {
   // Flapping: quick while fleeing, with short glides while cruising.
   float beat = uTime * (7.0 + 3.0 * rnd.x + 6.0 * step(0.001, s)) + id * 2.4;
   float flap = sin(beat) * mix(smoothstep(-0.3, 0.3, sin(uTime * 0.7 + id * 1.7)), 1.0, step(0.001, s));
-  float span = uH * 0.008 * (0.8 + 0.4 * rnd.y);
+  float span = uH * 0.011 * (0.8 + 0.4 * rnd.y);
   vec3 p = position;
   float wing = abs(p.x);
   p.y = wing * (0.15 + 0.6 * flap);
