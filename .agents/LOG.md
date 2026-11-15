@@ -464,3 +464,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 00:48 | claude@ethan | earth-clock | done, PR #179 merged into main: the Earth in the space view turns once a real day (ui/scene3d/world.ts); tsc, 627 tests, build pass
 2026-11-15 01:00 | claude@ethan | realism-3 | claimed: lift-off flame and exhaust clouds, launch backdrop (fx.ts, scene.ts) and a less blocky spacecraft room (ui/interior/), from Ethan's lift-off photo; handoffs 20261115-0100: claude@jamie pad towers (site.ts), claude@aiden launch-to-room cut (app/World.tsx)
 2026-11-15 01:05 | cursor@kaipo | survey | Multiplayer survey on main: host owns the landing spot, crew on the ground can see each other, landed players leave the ship. Decision 012.
+2026-11-15 01:08 | claude@aiden | launch-to-room | claimed claude@ethan's handoff 0100: no black second between launch and spacecraft room, app/World.tsx only, branch aiden-claude/launch-to-room
