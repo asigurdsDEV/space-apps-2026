@@ -15,6 +15,9 @@ import { Briefing } from '../ui/briefing'
 import { MissionBuilder } from '../ui/builder'
 import { GoNoGoPoll } from '../ui/gonogo'
 import { LocalLeaderboard } from '../ui/leaderboard'
+import { CampaignBoard } from '../ui/campaign/CampaignBoard'
+import { awardMission, canStartMission, MISSIONS } from '../ui/campaign/model'
+import { readCampaign, saveCampaign } from '../ui/campaign/storage'
 import { LobbyScreen } from '../ui/lobby'
 import { MissionScreen, stars } from '../ui/mission'
 import { LaunchView as SceneLaunchView } from '../ui/scene3d'
@@ -97,6 +100,8 @@ export interface Active {
   roomCode: string | null
   /** Set when this game is today's daily mission. */
   daily?: DailyMission
+  /** Solo guided assignment; free play and Daily never award campaign funding. */
+  campaign?: string
 }
 
 /** Today's UTC date (YYYY-MM-DD). Checked every minute and when the page gets focus again, so the daily mission turns over at UTC midnight. */
@@ -118,12 +123,28 @@ function useUtcDay(): string {
 /** Start screen until a session exists, then the room (lobby, briefing, game, or "room closed"). */
 export function App() {
   const [active, setActive] = useState<Active | null>(null)
+  const [guided, setGuided] = useState(true)
+  const [campaignRun, setCampaignRun] = useState(0)
+  const [progress, setProgress] = useState(readCampaign)
+  const [persistent, setPersistent] = useState(true)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   /** A design from a shared link (ui/share) that no game has taken yet. */
   const link = useRef(typeof location === 'undefined' ? '' : location.hash)
   // Same day, same scenario and same seed for everyone (ui/start/daily.ts).
   const daily = dailyMissionForDate(new Date(useUtcDay()), PROGRAM)
+
+  useEffect(() => { setPersistent(saveCampaign(progress)) }, [progress])
+  useEffect(() => {
+    if (!active?.campaign) return
+    const id = active.campaign
+    const check = () => {
+      const { state, events } = active.session.getSnapshot()
+      if (state.status === 'ended') setProgress((previous) => awardMission(previous, id, state, events))
+    }
+    check()
+    return active.session.subscribe(check)
+  }, [active])
 
   // A link pasted while the page is open: change the design on screen, or keep it for the next game.
   useEffect(() => {
@@ -143,8 +164,8 @@ export function App() {
     return game
   }
 
-  const playSolo = (config: Config, name: string, daily?: DailyMission) =>
-    setActive({ session: createSoloSession(newGame(config), { name, drive: startDriver }), roomCode: null, daily })
+  const playSolo = (config: Config, name: string, daily?: DailyMission, campaign?: string) =>
+    setActive({ session: createSoloSession(newGame(config), { name, drive: startDriver }), roomCode: null, daily, campaign })
 
   // The daily mission is the scenario as written (Normal) with the day's seed.
   const playDaily = (request: DailyMissionRequest) => {
@@ -187,6 +208,15 @@ export function App() {
     else void playOnline(request.name, config, null)
   }
 
+  const startCampaign = (id: string, name: string) => {
+    const mission = MISSIONS.find((m) => m.id === id)
+    if (!mission || !canStartMission(progress, id)) return
+    active?.session.close()
+    // Retrying the same assignment must reset the room and its cutscene state too.
+    setCampaignRun((run) => run + 1)
+    playSolo(mission.config, name, undefined, id)
+  }
+
   const exit = () => {
     active?.session.close()
     setActive(null)
@@ -199,16 +229,20 @@ export function App() {
     return () => removeEventListener('pagehide', exit)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active])
-  useScreen(active ? 'room' : 'start', active ? undefined : '')
+  useScreen(active ? 'room' : guided ? 'campaign' : 'start', active ? undefined : '')
 
   return (
     <div className="game-theme app">
       {active ? (
         <ErrorBoundary resetKey={active} actions={[{ label: 'Main menu', run: exit }]}>
-          <Room active={active} onExit={exit} />
+          <Room key={campaignRun} active={active} onExit={exit}
+            onCampaignNext={(id) => startCampaign(id, active.session.getSnapshot().me.name)} />
         </ErrorBoundary>
+      ) : guided ? (
+        <CampaignBoard progress={progress} persistent={persistent} onStart={startCampaign} onFreePlay={() => setGuided(false)} />
       ) : (
         <>
+          <button type="button" className="game-button campaign-return" onClick={() => setGuided(true)}>Guided missions</button>
           <StartScreen
             scenarios={scenarios}
             scenarioPreview={getScenario}
@@ -285,7 +319,7 @@ function Closed({ title, text, onExit }: { title: string; text: string; onExit: 
 }
 
 /** Picks the screen for the session's stage. */
-export function Room({ active, onExit }: { active: Active; onExit: () => void }) {
+export function Room({ active, onExit, onCampaignNext }: { active: Active; onExit: () => void; onCampaignNext?: (id: string) => void }) {
   const { session, roomCode } = active
   const { stage, notice, state, players, me } = useSession(session)
   /** Each player reads the briefing on their own screen and goes on when they are ready. */
@@ -325,7 +359,7 @@ export function Room({ active, onExit }: { active: Active; onExit: () => void })
     )
   }
   // Decision 007: the game is first-person 3D (app/World.tsx). ?world=classic, the Classic view button or no WebGL: these 2D screens.
-  if (WORLD_3D) return <World active={active} config={config} onExit={onExit} />
+  if (WORLD_3D) return <World active={active} config={config} onExit={onExit} onCampaignNext={onCampaignNext} />
   // shortcut: the WalkTo lines below do nothing without the old walk-behind-the-screens hall (removed: it hid each screen for up to 2.4 s and drew a second 3D scene); delete them once nobody needs classic's history.
   return (
     <>

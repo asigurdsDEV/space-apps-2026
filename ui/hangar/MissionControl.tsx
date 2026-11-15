@@ -22,6 +22,8 @@ export interface MissionControlProps {
   players?: readonly Player[]
   me?: Player
   title: string
+  /** Guided campaign's current task; free play keeps the ordinary room hint. */
+  guide?: string
   /** After the flight: the grade on the wall, "Design again" at the launch button, the fix at the stand. */
   debrief?: Debrief
   /** False during cutscenes and pop-outs: no walking, mouse released. */
@@ -43,7 +45,7 @@ function lengthText(days: unknown): string {
   return days >= 330 ? `${Math.round(days / 365)} year${Math.round(days / 365) === 1 ? '' : 's'}` : `${Math.round(days)} days`
 }
 
-export function MissionControl({ state, send, players = NO_PLAYERS, me, title, debrief, enabled = true, onFailed, className, reportPose, subscribeCrew }: MissionControlProps) {
+export function MissionControl({ state, send, players = NO_PLAYERS, me, title, guide, debrief, enabled = true, onFailed, className, reportPose, subscribeCrew }: MissionControlProps) {
   const host = useRef<HTMLDivElement>(null)
   const room = useRef<ControlRoom | null>(null)
   const [failed, setFailed] = useState(false)
@@ -137,7 +139,7 @@ export function MissionControl({ state, send, players = NO_PLAYERS, me, title, d
         <p className="mc-fallback">This view needs WebGL, which is off in this browser.</p>
       ) : (
         enabled && <FpsPrompt aimed={aimed} blocked={aimed && blocked(aimed)} locked={locked} help={help}
-          objective={debrief ? 'Read the debrief · Try the fix at the spacecraft stand' : 'Fit parts at the racks · Check GO / NO-GO · Walk to Launch'} />
+          objective={debrief ? 'Read the debrief · Try the fix at the spacecraft stand' : guide ?? 'Fit parts at the racks · Check GO / NO-GO · Walk to Launch'} />
       )}
     </div>
   )
