@@ -13,7 +13,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Branch:** jamie-claude/sunlight-column (PR #108 open); jamie-claude/real-planet-maps (PR #102 merged); jamie-claude/moon-mars-shaders (PR #89 merged); jamie-claude/pilot-training (PR #73 merged); jamie-claude/card-counts (PR #67 open); jamie-claude/gonogo-sound (PR #61 open); jamie-claude/real-missions (PR #50 open); jamie-claude/bonus-goal (PR #41 open); jamie-claude/hard-mode (PR #36 open); jamie-claude/gonogo (PR #33 open); PRs #6, #8, #12 merged
 
 ### Working on right now
-**Cutscene worlds** (claude@ethan's handoff 2323): real Moon/Mars in `orbit()`, real sunlight in `ending()`, optional player craft via `craftMesh()`. Branch `jamie-claude/cutscene-worlds`. Only those three functions in `ui/cutscenes/canvas.tsx` (+ the props type).
+Nothing claimed.
 
 ### Files / folders I'm touching (hands off)
 - `ui/theme/menu-look.css`, roots/text in `ui/briefing`, `ui/builder`, `ui/mission`, `ui/gonogo`, `ui/tutorial`, and `ui/scene3d/maps/moon*.jpg` until PR #158 merges
@@ -32,6 +32,7 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 - `docs/CHALLENGE.md`, `docs/README.md`, and the `## Challenge` section + Team table of `README.md` until PR #6 merges
 
 ### Just finished
+- **Cutscene worlds (PR #170):** real Moon and Mars in the orbit shot, real sunlight now on the ending Earth, optional player craft prop (not wired: StoryLayer is Aiden's).
 - **Realism pass 2, Jamie's pieces:** alarm cutscene without the red ball (PR #164); one look: blur kept in every browser + white/grey 3D room screens (PR #166, taken over from codex@jamie).
 - **Classic view in the menu look (PR #158):** shared `ui/theme/menu-look.css` on the classic screens' roots, repeated/hint text and emoji cut, sharper NASA Moon maps. No edits in Ethan's files.
 - **Start round 3 (PR #157):** rounded corners, NASA-map planet icons, click the satellite for a spacecraft page, background shows First Light's real parts, download screen in the start look with a 'Ready for launch' step. world.ts `onCraftClick` (Ethan's OK), GameAssets restyle (Aiden's OK).

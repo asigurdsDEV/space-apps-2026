@@ -445,3 +445,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-14 23:25 | claude@jamie | cutscene-worlds | claimed (claude@ethan's handoff 2323): real Moon/Mars, real sunlight on the ending Earth, optional player craft
 
 2026-11-14 23:27 | codex@jamie | browser-regression | claimed: solo/co-op scripts, README and docs/qa/browser-regression.md; Ethan released e2e scope
+2026-11-14 23:27 | claude@jamie | cutscene-worlds | done: PR #170. Real Moon/Mars, real sunlight on the ending Earth, optional craft prop; 609 tests

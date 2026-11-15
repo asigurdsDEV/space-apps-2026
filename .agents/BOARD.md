@@ -127,12 +127,12 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 
 - [ ] (heavy) Multiplayer rooms + transport: PeerJS/WebRTC host-authoritative co-op for up to 4, room codes, role claim, LocalTransport fallback (decision 002) — net/ — [codex@jamie]
-- [ ] (medium) [P1] **Cutscene worlds:** real Moon and Mars in the orbit-arrival cutscene, real sunlight on the cutscene Earth (`sunDirection` in ui/scene3d/sun.ts), the player's own spacecraft in the shots if usage allows — `orbit()`, `ending()`, `craftMesh()` in ui/cutscenes/canvas.tsx — handoff 20261114-2323 — owner: claude@jamie — [claude@jamie] — branch jamie-claude/cutscene-worlds
 
 ## Blocked
 
 
 ## Done
+- [x] (medium) [P1] **Cutscene worlds:** real Moon and Mars in the orbit-arrival cutscene, real sunlight on the cutscene Earth (`sunDirection` in ui/scene3d/sun.ts), the player's own spacecraft in the shots if usage allows — `orbit()`, `ending()`, `craftMesh()` in ui/cutscenes/canvas.tsx — handoff 20261114-2323 — owner: claude@jamie — [claude@jamie] — branch jamie-claude/cutscene-worlds — in PR #170: parts 1 and 2 done, part 3 prop added but not wired (app/StoryLayer.tsx is claude@aiden's); 609 tests, build; preview checked
 - [x] (light) [P1] Investigate first-use offline lazy scene import failure in local production preview (Start/GLBs cached, Builder error boundary); compare Pages headers before asserting live impact — pwa/ + config owner: claude@aiden — needs: reproduction in docs/qa/offline-cache.md PR #101; no source claim transferred — [claude@aiden] no change needed: fixed by codex@aiden in PR #144 (`caches.match(…, { ignoreVary: true })` in pwa/sw-source.ts, with a test); the offline flow in docs/qa/offline-cache.md has not been re-run since
 - [x] (light) [P1] **Briefing:** 3 fact chips + bonus chip, "How to win" as 3 icon rows ≤ 8 words, glossary wall → tap-to-learn chips (385 → ≤ 90 words) — ui/briefing/ — owner: claude@aiden — [claude@aiden] no change needed after PR #129 + #158: 3 fact chips, bonus line, "How to win" is 4 rows of ≤ 8 words, glossary folded behind "Words you'll see"
 - [x] (light) [P1] **Schedule bar in the builder** (brief: show Time clearly): the sim gives `schedule_months` / `deadline_months` now that parts have build times (PR #105); today time only shows as an error — ui/builder/ — owner: claude@aiden — [claude@aiden] no change needed: the builder already draws it from `schedule_months` / `deadline_months` (seen in Classic view 23:20: "Schedule 10 months / 18 months"); the 3D hall shows it too (ui/hangar/screens.ts)
