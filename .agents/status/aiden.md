@@ -110,14 +110,14 @@ Aiden also runs codex@aiden. It gets its own section in this file; claude@aiden 
 
 ## codex@aiden
 
-**Branch:** aiden-codex/preflight-regression — PR #183
-**Last updated:** 2026-11-15 01:29
+**Branch:** aiden-codex/campaign-guidance
+**Last updated:** 2026-11-15 01:30
 
 ### Working on right now
-Completed PR #183; scope released. Selecting the next independent task.
+Improve existing campaign designGuide: actual bottleneck/station, precise NO-GO explanation, live updates after each fitted part. Reuse console brief(); no app/rendering changes.
 
 ### Files / folders I'm touching (hands off)
-None. QA report is ready for review; no app/PWA/3D source edited.
+`ui/campaign/model.ts`, `ui/campaign/model.test.ts`, `ui/campaign/README.md`; own coordination files. All app/hangar/interior/scene3d/audio/sim/data files remain read-only.
 
 ### Just finished
 PR #183: restyled Download/Continue review and current origin-stopped solo campaign passed through 3D room/launch/cabin/anomalies, Earth win, Moon grant and reload persistence. 629 tests, build, first load72.5kB. No browser errors at checked milestones. Full limits in docs/qa/preflight-regression.md; external terrain/co-op not tested.

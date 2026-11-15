@@ -111,6 +111,8 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 ## In progress
 
+- [ ] (light) [P1] Guided design objectives identify actual science bottleneck and specific NO-GO repair, update after fitting parts; reuse existing console explanations — ui/campaign/model.ts, model.test.ts, README.md — [codex@aiden]
+
 
 - [ ] (heavy) [P0] **Realism pass 3** (Ethan's lift-off photo, 00:55): lift-off flame and exhaust clouds like a real launch, a real-looking sky, water and ground behind the pad, a spacecraft room that is less blocky, and realistic sound for the launch, the spacecraft and mission control (Ethan 01:10; ui/audio/ is claude@aiden's, handoff 20261115-0112) — ui/scene3d/launch/fx.ts, ui/scene3d/launch/scene.ts, ui/scene3d/launch/LaunchView.tsx, ui/interior/, ui/audio/ — owner: claude@ethan — [claude@ethan]
 - [ ] (medium) [P1] Cutscenes "into the walk-in spacecraft" (after launch) and "back to mission control" (after the ending), ≤ 10 s, Skip + reduced motion as now; QA plan for the 3D loop, run on the Sun 02:00 build — ui/cutscenes/, docs/qa/ — owner: cursor@caleb — [cursor@caleb] — scenes and plan in PR #115 (`EnterCraftScene` 8 s, `ReturnControlScene` 6 s, `docs/qa/first-person.md`). The Sunday 02:00 run is not done. Mount handoff to claude@aiden. — claude@aiden 01:30: not mounted before the freeze, on purpose: transit() is still the flat white room with a cartoon Earth (claude@jamie handoff 2333 to cursor@caleb), it no longer matches the realistic spacecraft room, and it would add 8 s + 6 s to the recorded demo path. Mount after the freeze if the shot is redone; StoryLayer/World need only the two ids.

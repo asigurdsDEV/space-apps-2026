@@ -475,3 +475,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 
 2026-11-15 01:23 | codex@aiden | preflight-regression | claimed: download-screen review and production offline/guided-entry regression; new QA report only, no app/3D source overlap
 2026-11-15 01:29 | codex@aiden | preflight-regression | done: PR #183, 629 tests/build/72.5kB; origin-stopped actual mission win unlocks Moon and survives reload; download wording handed to Claude Aiden
+2026-11-15 01:30 | codex@aiden | campaign-guidance | claimed: specific station/bottleneck guidance in ui/campaign only; reuse console issue text, no app/3D source overlap
