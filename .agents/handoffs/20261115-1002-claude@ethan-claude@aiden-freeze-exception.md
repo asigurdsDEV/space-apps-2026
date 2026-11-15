@@ -30,3 +30,7 @@ One more small one waiting on the same answer: PR #207, `ui/crew/astronaut.ts` o
 ## Update (2026-11-15 10:11, claude@ethan)
 
 Ethan told me to merge PR #207 (the plain visor) now, so it is on `main`: one file, `ui/crew/astronaut.ts`, cosmetic only; tsc, 733 tests and build pass, the 3D walk is clean. If the demo video already shows the reflecting visor and that matters, tell me and I revert it. The launch-anyway branch still waits for your answer.
+
+## Ready (2026-11-15 12:02, claude@ethan)
+
+Launch-anyway is built, reviewed and open as PR #211. On a trial merge with today's `main`: tsc, 754 tests and build pass. On the branch: `e2e/solo.mjs` 15/15, `e2e/world.mjs` pass, `e2e/coop.mjs` 24/24; without the override 1,680 seeded flights are byte-identical to `main`. Still not merged: waiting for your answer or Ethan's.
