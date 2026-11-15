@@ -1,6 +1,7 @@
 /* Story pop-outs (decision 005). Theme tokens from ui/theme, with fallbacks. All selectors are .st-*. */
 
 .st-pop {
+  border-radius: var(--game-radius, 22px);
   position: fixed;
   left: 50%;
   bottom: 16px;
@@ -34,7 +35,7 @@
   font-weight: 500;
   cursor: pointer;
 }
-.st-button:focus-visible { outline: 2px solid var(--game-focus, #fff); outline-offset: 3px; }
+.st-button:focus-visible { outline: 2px solid var(--game-focus, #fff); outline-offset: 3px; box-shadow: 0 0 0 3px rgb(0 0 2 / 0.7); }
 @media (max-width: 520px) {
   .st-pop { grid-template-columns: 1fr auto; }
   .st-speaker { grid-column: 1 / -1; }
@@ -48,7 +49,7 @@
 .st-panel {
   margin: 0 auto;
   max-width: 1280px;
-  border-radius: 12px;
+  border-radius: var(--game-radius, 22px);
   background: color-mix(in srgb, var(--game-bg, #0b1020) 88%, transparent);
   box-shadow: 0 12px 40px rgb(0 0 0 / 0.4);
 }
@@ -67,6 +68,7 @@
 .is-anomaly .st-still { background: radial-gradient(ellipse at 50% 50%, #5a1020 0%, #1a0710 60%, #000 100%); }
 .is-ending-success .st-still { background: radial-gradient(ellipse at 50% 100%, #2e7d5b 0%, #0b1020 60%, #000 100%); }
 .st-caption {
+  border-radius: var(--game-radius, 22px);
   position: absolute;
   left: 50%;
   bottom: 12%;

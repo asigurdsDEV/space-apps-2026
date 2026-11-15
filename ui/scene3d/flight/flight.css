@@ -30,6 +30,7 @@
 
 /* A target's name, moved over the target every frame by scene.ts. */
 .s3d-flight-tag {
+  border-radius: 8px;
   position: absolute;
   left: 0;
   top: 0;

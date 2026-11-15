@@ -22,7 +22,7 @@
   min-height: 44px; /* a finger-sized target, like every other control */
   padding: 6px 16px;
   border: 1px solid var(--game-border, currentColor);
-  border-radius: 8px;
+  border-radius: var(--game-radius-control, 14px);
   background: transparent;
   color: inherit;
 }

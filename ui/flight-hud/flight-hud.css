@@ -15,7 +15,7 @@
   border: 1px solid var(--game-line, rgb(255 255 255 / 0.14));
   background: var(--game-glass, rgb(10 12 16 / 0.6));
   backdrop-filter: var(--game-glass-blur, blur(18px));
-  border-radius: var(--game-radius, 0);
+  border-radius: var(--game-radius, 22px);
   padding: 10px 14px;
 }
 .fh button {
@@ -23,7 +23,7 @@
   color: inherit;
   background: transparent;
   border: 1px solid var(--game-border, #6c7078);
-  border-radius: var(--game-radius-control, 0);
+  border-radius: var(--game-radius-control, 14px);
   padding: 8px 14px;
   min-height: 44px;
   cursor: pointer;
@@ -31,6 +31,7 @@
 .fh button:focus-visible {
   outline: 2px solid var(--game-focus, #fff);
   outline-offset: 3px;
+  box-shadow: 0 0 0 3px rgb(0 0 2 / 0.7);
 }
 .fh button:disabled {
   opacity: 0.45;
@@ -69,7 +70,7 @@
   color: var(--game-muted, #9aa5c4);
 }
 .fh-target.is-next {
-  font-weight: 600;
+  font-weight: 500;
 }
 
 /* focused target: centre, below the crosshair */

@@ -18,11 +18,11 @@
 .bf-inner { max-width: 760px; margin: 0 auto; }
 .bf-kicker { margin: 0; color: var(--bf-muted); font-size: 0.7rem; letter-spacing: 0.32em; text-transform: uppercase; }
 .bf-title { margin: 14px 0 16px; font-size: clamp(2rem, 5vw, 3rem); line-height: 1.05; }
-.bf-objective { margin: 0 0 24px; padding: 12px 14px; font-size: 1.1rem; border-left: 1px solid var(--bf-accent); background: var(--bf-panel); }
+.bf-objective { margin: 0 0 24px; padding: 12px 14px; font-size: 1.1rem; border-left: 1px solid var(--bf-accent); background: var(--bf-panel); border-radius: var(--game-radius-control, 14px); }
 .bf h2 { margin: 32px 0 12px; color: var(--bf-muted); font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase; }
 
 .bf-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 0; }
-.bf-fact { background: var(--bf-panel); border: 1px solid var(--bf-line); padding: 14px 16px; }
+.bf-fact { background: var(--bf-panel); border: 1px solid var(--bf-line); padding: 14px 16px; border-radius: var(--game-radius-control, 14px); }
 .bf-fact dt { color: var(--bf-muted); font-size: 0.85rem; }
 .bf-fact dd { margin: 0; }
 .bf-fact-value { font-size: 1.4rem; font-weight: 400; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
@@ -32,7 +32,7 @@
 .bf-win li { margin-bottom: 6px; }
 
 .bf-terms { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 0; }
-.bf-term { background: var(--bf-panel); border: 1px solid var(--bf-line); padding: 12px 16px; }
+.bf-term { background: var(--bf-panel); border: 1px solid var(--bf-line); padding: 12px 16px; border-radius: var(--game-radius-control, 14px); }
 .bf-term dt { font-weight: 500; }
 .bf-term dd { margin: 2px 0 0; color: var(--bf-muted); font-size: 0.9rem; }
 
@@ -47,6 +47,6 @@
 }
 
 /* Bonus star goal (data/ bonus_goal, labels from ui/mission BONUS_GOALS). */
-.bf-bonus { margin: 16px 0 0; padding: 12px 16px; border: 1px solid var(--bf-line); color: var(--bf-text); }
+.bf-bonus { margin: 16px 0 0; padding: 12px 16px; border: 1px solid var(--bf-line); color: var(--bf-text); border-radius: var(--game-radius-control, 14px); }
 .bf-bonus > span[aria-hidden] { color: var(--game-warning, #805200); }
 .bf-bonus-hint { color: var(--bf-muted); }

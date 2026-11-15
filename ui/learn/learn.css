@@ -12,7 +12,7 @@
   padding: 0 0.15em;
   border: none;
   border-bottom: 1px dashed var(--game-accent, #2557c7);
-  border-radius: var(--game-radius-control, 0.35rem);
+  border-radius: 0; /* a radius would bend the dashed underline */
   background: transparent;
   color: var(--game-accent, #2557c7);
   font: inherit;
@@ -41,7 +41,7 @@
   max-width: calc(100vw - 1rem);
   padding: 0.65rem 0.75rem;
   border: 1px solid var(--game-line, #75839a);
-  border-radius: var(--game-radius, 0.75rem);
+  border-radius: var(--game-radius-control, 0.75rem);
   background: var(--game-panel, #ffffff);
   color: var(--game-text, #17243c);
   font: 400 0.88rem/1.5 var(--game-font, system-ui, sans-serif);

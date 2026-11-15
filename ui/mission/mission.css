@@ -68,7 +68,7 @@
 .mv-card {
   background: var(--mv-card);
   border: 1px solid var(--mv-line);
-  border-radius: 0;
+  border-radius: var(--game-radius, 22px);
   padding: 14px 16px;
 }
 
@@ -82,14 +82,14 @@
 .mv-speeds {
   display: inline-flex;
   border: 1px solid var(--mv-line);
-  border-radius: 0;
+  border-radius: var(--game-radius-control, 14px);
   overflow: hidden;
 }
 .mv button {
   color: var(--mv-text);
   background: transparent;
   border: 1px solid var(--mv-control);
-  border-radius: 0;
+  border-radius: var(--game-radius-control, 14px);
   padding: 6px 14px;
   cursor: pointer;
   min-height: 44px;
@@ -97,12 +97,13 @@
 .mv button:focus-visible {
   outline: 2px solid var(--game-focus, #fff);
   outline-offset: 3px;
+  box-shadow: 0 0 0 3px rgb(0 0 2 / 0.7); /* shows the ring over the day side of the planet */
 }
 .mv button:disabled {
   opacity: 0.45;
   cursor: default;
 }
-.mv-speeds button {
+.mv .mv-speeds button {
   border: 0;
   border-radius: 0;
   border-right: 1px solid var(--mv-line);
@@ -174,7 +175,7 @@
 }
 .mv-stats div {
   border: 1px solid var(--mv-line);
-  border-radius: 0;
+  border-radius: var(--game-radius-control, 14px);
   padding: 10px 12px;
 }
 .mv-stats dt {
@@ -200,7 +201,7 @@
   flex: none;
   width: 88px;
   height: 88px;
-  border-radius: 0;
+  border-radius: var(--game-radius-control, 14px);
   display: grid;
   place-items: center;
   font-size: 3.2rem;
@@ -226,7 +227,7 @@
 .mv-decision {
   background: var(--mv-card);
   border: 1px solid var(--mv-warn);
-  border-radius: 0;
+  border-radius: var(--game-radius, 22px);
   padding: 20px 22px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
   display: grid;
@@ -251,9 +252,9 @@
 .mv-decision__badge {
   background: var(--mv-warn);
   color: #1a1200;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.08em;
-  border-radius: 0;
+  border-radius: 6px;
   padding: 2px 8px;
 }
 .mv .mv-decision__title {
@@ -288,7 +289,7 @@
   flex: none;
   width: 26px;
   height: 26px;
-  border-radius: 0;
+  border-radius: 6px;
   display: grid;
   place-items: center;
   background: var(--mv-info);
@@ -339,13 +340,24 @@
   flex: none;
   white-space: nowrap;
 }
+/* One white button on the screen ("Design a new mission"); "Try it" is an outline. */
+.mv .mv-fixes button.mv-primary:not(:disabled) {
+  background: transparent;
+  border-color: var(--mv-control);
+  color: var(--mv-text);
+  min-height: 44px;
+  padding: 6px 14px;
+}
+.mv .mv-fixes button.mv-primary:not(:disabled):hover {
+  background: color-mix(in srgb, var(--mv-text) 5%, transparent);
+  border-color: color-mix(in srgb, var(--mv-text) 60%, transparent);
+}
 .mv-fixes li {
   display: flex;
   gap: 12px;
   align-items: center;
   justify-content: space-between;
   border-top: 1px solid var(--mv-line);
-  border-radius: 0;
   padding: 10px 0 0;
 }
 .mv-share pre {
@@ -354,7 +366,7 @@
   font-size: 0.9rem;
   font-family: inherit;
   border: 1px solid var(--mv-line);
-  border-radius: 0;
+  border-radius: var(--game-radius-control, 14px);
   padding: 12px;
 }
 
@@ -366,7 +378,7 @@
   align-items: baseline;
   margin: 0;
   padding: 8px 12px;
-  border-radius: 0;
+  border-radius: var(--game-radius-control, 14px);
   background: var(--mv-card);
   border: 1px solid var(--mv-line);
   border-left: 2px solid var(--mv-tone);
@@ -412,7 +424,7 @@
   position: relative;
   height: min(72vh, 680px);
   min-height: 420px;
-  border-radius: 0;
+  border-radius: var(--game-radius, 22px);
   overflow: hidden;
   border: 1px solid var(--mv-line);
   background: #02040a;
@@ -440,14 +452,14 @@
   margin: 0;
   align-items: center;
   padding: 6px 8px;
-  border-radius: 0;
+  border-radius: var(--game-radius-control, 14px);
   background: var(--mv-glass);
   backdrop-filter: var(--mv-glass-blur);
 }
 .mv-phase {
   width: 10px;
   height: 10px;
-  border-radius: 0;
+  border-radius: 8px;
   background: var(--mv-line);
   transition: width 0.3s ease;
 }
@@ -474,7 +486,7 @@
 }
 .mv-day {
   padding: 6px 12px;
-  border-radius: 0;
+  border-radius: var(--game-radius-control, 14px);
   background: var(--mv-glass);
   backdrop-filter: var(--mv-glass-blur);
   font-size: 0.85rem;
@@ -494,7 +506,7 @@
 .mv-speeds {
   display: inline-flex;
   border: 1px solid var(--mv-control);
-  border-radius: 0;
+  border-radius: var(--game-radius-control, 14px);
   overflow: hidden;
 }
 
@@ -506,7 +518,7 @@
   z-index: 2;
   margin: 0;
   padding: 6px 12px;
-  border-radius: 0;
+  border-radius: var(--game-radius-control, 14px);
   background: var(--mv-glass);
   backdrop-filter: var(--mv-glass-blur);
   border: 1px solid var(--mv-line);
@@ -527,7 +539,7 @@
   max-width: min(560px, calc(100% - 24px));
   margin: 0;
   padding: 10px 16px;
-  border-radius: 0;
+  border-radius: var(--game-radius-control, 14px);
   background: var(--mv-glass);
   backdrop-filter: var(--mv-glass-blur);
   border: 1px solid var(--mv-line);
@@ -557,7 +569,7 @@
   align-items: center;
   padding: 10px 12px;
   border: 1px solid var(--mv-line);
-  border-radius: 0;
+  border-radius: var(--game-radius-control, 14px);
   background: var(--mv-glass);
   backdrop-filter: var(--mv-glass-blur);
 }
@@ -615,7 +627,7 @@
 /* folded extras */
 .mv-more {
   border: 1px solid var(--mv-line);
-  border-radius: 0;
+  border-radius: var(--game-radius, 22px);
   background: var(--mv-card);
   padding: 10px 14px;
 }
@@ -701,7 +713,7 @@
   align-items: center;
   position: relative;
   padding: 18px;
-  border-radius: 0;
+  border-radius: var(--game-radius, 22px);
   background: var(--mv-card);
   border: 1px solid var(--mv-line);
   overflow: hidden;

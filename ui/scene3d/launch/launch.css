@@ -19,9 +19,9 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  text-shadow: 0 1px 3px rgb(0 0 0 / 0.9);
 }
 .s3d-launch-clock {
+  border-radius: var(--game-radius-control, 14px);
   padding: 6px 12px;
   border: 1px solid var(--game-line, rgb(255 255 255 / 0.14));
   background: var(--game-glass, rgb(10 12 16 / 0.6));
@@ -29,9 +29,21 @@
   font: 500 1.1rem/1.3 var(--game-font, system-ui, sans-serif);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.04em;
-  text-shadow: none;
 }
-.s3d-launch-name { font-weight: 500; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* On glass like the clock: bare white text on the daytime sky was 3:1. */
+.s3d-launch-name {
+  padding: 8px 12px;
+  border: 1px solid var(--game-line, rgb(255 255 255 / 0.14));
+  border-radius: var(--game-radius-control, 14px);
+  background: var(--game-glass, rgb(10 12 16 / 0.6));
+  backdrop-filter: var(--game-glass-blur, blur(18px));
+  font-weight: 500;
+  font-size: 0.9rem;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .s3d-launch-buttons { margin-left: auto; display: flex; gap: 8px; }
 .s3d-launch-button {
   min-height: 44px;
@@ -42,13 +54,14 @@
   backdrop-filter: var(--game-glass-blur, blur(18px));
   color: inherit;
   font: 500 0.78rem/1 var(--game-font, system-ui, sans-serif);
-  text-shadow: none;
   cursor: pointer;
 }
 .s3d-launch-button:hover { border-color: rgb(255 255 255 / 0.6); }
-.s3d-launch-button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+/* The dark band inside the ring keeps it visible on the daytime sky. */
+.s3d-launch-button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; box-shadow: 0 0 0 3px rgb(0 0 2 / 0.7); }
 .s3d-launch-button.is-primary { background: #fff; border-color: #fff; color: #0b0c0e; }
 .s3d-launch-caption {
+  border-radius: var(--game-radius, 22px);
   position: absolute;
   left: 12px;
   right: 12px;

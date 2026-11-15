@@ -28,7 +28,7 @@
   font-size: 0.9rem;
   pointer-events: none;
 }
-.hg-where { padding: 6px 12px; border: 1px solid var(--game-line, rgb(255 255 255 / 0.14)); background: var(--game-glass, rgb(10 12 16 / 0.6)); backdrop-filter: var(--game-glass-blur, blur(18px)); }
+.hg-where { padding: 6px 12px; border: 1px solid var(--game-line, rgb(255 255 255 / 0.14)); background: var(--game-glass, rgb(10 12 16 / 0.6)); backdrop-filter: var(--game-glass-blur, blur(18px)); border-radius: var(--game-radius-control, 14px); }
 .hg-nav { display: flex; gap: 8px; pointer-events: auto; }
 .hg-button {
   min-height: 44px;
@@ -42,7 +42,7 @@
   cursor: pointer;
 }
 .hg-button:disabled { opacity: 0.4; cursor: default; }
-.hg-button:focus-visible { outline: 2px solid var(--game-focus, #fff); outline-offset: 3px; }
+.hg-button:focus-visible { outline: 2px solid var(--game-focus, #fff); outline-offset: 3px; box-shadow: 0 0 0 3px rgb(0 0 2 / 0.7); }
 
 /* Mission control you play in (decision 007): fills its box; the app gives it the whole window. */
 .mc {

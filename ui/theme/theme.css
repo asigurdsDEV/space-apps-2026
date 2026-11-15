@@ -53,8 +53,9 @@
   --game-space-4: 1rem;
   --game-space-6: 1.5rem;
   --game-space-8: 2rem;
-  --game-radius: 0;
-  --game-radius-control: 0;
+  /* The start menu's corners: 22px boxes, 14px controls. */
+  --game-radius: 22px;
+  --game-radius-control: 14px;
   /* Panels laid over the 3D game, which is dark in both themes. The backdrop is blurred and dimmed,
      so grey text stays AA even over the launch sky and the day side of the Earth.
      Write only `backdrop-filter`: the build adds -webkit- itself, and when a rule has both it keeps only
@@ -83,12 +84,12 @@
 .game-theme :where(h2) { font-size: clamp(1.3rem, 3vw, 1.75rem); letter-spacing: -0.02em; }
 .game-theme :where(h3) { font-size: 1.05rem; letter-spacing: -0.01em; }
 .game-theme :where(summary, th, legend) { font-weight: 500; }
-/* 600 is the heaviest weight index.html loads. */
-.game-theme :where(strong, b) { font-weight: 600; }
+/* Regular and Medium only, as the start menu: index.html loads no heavier weight, and a faked bold smears. */
+.game-theme :where(strong, b) { font-weight: 500; }
 .game-theme :where(a) { color: var(--game-accent); text-underline-offset: 0.2em; }
 .game-theme :where(button, input, select, textarea) { font: inherit; accent-color: var(--game-accent); }
 .game-theme :where(:focus-visible) { outline: 2px solid var(--game-focus); outline-offset: 3px; }
-.game-theme :where(kbd) { display: inline-block; min-width: 1.5em; padding: 0 0.35em; border: 1px solid var(--game-line); font: inherit; font-size: 0.85em; letter-spacing: 0.04em; text-align: center; }
+.game-theme :where(kbd) { display: inline-block; min-width: 1.5em; padding: 0 0.35em; border: 1px solid var(--game-line); border-radius: 6px; font: inherit; font-size: 0.85em; letter-spacing: 0.04em; text-align: center; }
 
 .game-panel {
   min-width: 0;
@@ -161,10 +162,10 @@
 .game-theme :is(button, .game-button):not(:disabled):hover { border-color: color-mix(in srgb, var(--game-text) 60%, transparent); }
 .game-theme .game-button:not(:disabled):hover { background-color: color-mix(in srgb, var(--game-text) 5%, transparent); }
 
-/* Square, as the start menu is. */
-.game-theme :is(input, select, textarea, button, fieldset, form, section, details, dialog, figure, dl > div, .game-panel, [class$="-panel"], [class*="card"], [class*="tile"], [class*="art"], [class*="stat"], [class*="fact"]) {
-  border-radius: 0 !important;
-}
+/* Rounded, as the start menu is. Not !important, so a screen can square a full-window view or a joined
+   row of buttons. The start screen (ui/start) sets its own corners. */
+.game-theme :is(input, select, textarea, button):where(:not(.ss-root *)) { border-radius: var(--game-radius-control); }
+.game-theme :is(fieldset, dialog, figure, .game-panel, [class$="-panel"], [class*="card"]):where(:not(.ss-root *)) { border-radius: var(--game-radius); }
 /* The main action: white, dark text. */
 .game-theme :is([class*="primary"], button[type="submit"]):not(:disabled) {
   background: var(--game-accent);

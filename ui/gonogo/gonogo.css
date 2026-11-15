@@ -10,7 +10,7 @@
 .gng-no-go { border-color: var(--game-danger, #c62828); }
 .gng-no-go .gng-call { color: var(--game-danger, #c62828); }
 .gng-waiting { opacity: 0.6; }
-.gng-priority { display: inline-block; margin-top: var(--game-space-1, 4px); padding: 2px 8px; font-size: 0.75rem; background: var(--game-surface-2, rgba(127, 127, 127, 0.15)); color: var(--game-muted, #666); }
+.gng-priority { display: inline-block; margin-top: var(--game-space-1, 4px); padding: 2px 8px; font-size: 0.75rem; background: var(--game-surface-2, rgba(127, 127, 127, 0.15)); color: var(--game-muted, #666); border-radius: 6px; }
 .gng-line { margin: var(--game-space-2, 8px) 0 0; font-size: 0.9rem; }
 .gng-more { margin-top: var(--game-space-1, 4px); font-size: 0.85rem; }
 .gng-more summary { cursor: pointer; display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; font-size: 1.1rem; }

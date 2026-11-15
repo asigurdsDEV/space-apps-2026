@@ -151,6 +151,7 @@ h1.app-bar-title {
   text-align: right;
 }
 .app-tag {
+  border-radius: 6px;
   margin-left: var(--game-space-2);
   padding: 1px var(--game-space-2);
   border: 1px solid var(--game-line);
@@ -185,6 +186,8 @@ h1.app-bar-title {
   align-items: end;
   gap: var(--game-space-4) var(--game-space-8);
 }
+/* The start screen draws these as a top rule and an underline, which a corner radius would bend. */
+.app-same-screen > .game-panel, .app-same-screen .game-field { border-radius: 0; }
 .app-same-screen p {
   margin: 0;
   max-width: 46ch;
@@ -352,6 +355,8 @@ h1.app-bar-title {
   background: var(--game-glass);
   backdrop-filter: var(--game-glass-blur);
 }
+/* The dark band inside the focus ring keeps it visible over a bright room. */
+.app-world-menu-button:focus-visible { box-shadow: 0 0 0 3px rgb(0 0 2 / 0.7); }
 .app-world-menu-button[hidden] { display: none; }
 .app-world-menu {
   width: min(360px, calc(100vw - 48px));
@@ -368,9 +373,11 @@ h1.app-bar-title {
 }
 .app-world-menu::backdrop { background: rgb(0 0 2 / 0.55); }
 .app-world-menu h1 { margin: 0; font-size: 1.5rem; }
-.app-world-menu button { display: block; width: 100%; margin-top: 12px; }
+/* flex, not block: the sound button's icon and label need their gap and centre line. */
+.app-world-menu button { display: flex; justify-content: center; width: 100%; margin-top: 12px; }
 .app-world-controls { margin: 20px 0 0; line-height: 1.8; color: var(--game-muted); font-size: 0.85rem; }
 .app-world-radio {
+  border-radius: var(--game-radius, 22px);
   position: absolute;
   left: 20px;
   bottom: 20px;
