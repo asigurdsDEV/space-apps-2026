@@ -40,7 +40,10 @@ function generic(spec: RocketSpec): RocketModel {
 
   put(upper, tube(s2.radius, s2.radius, s2.length, 40), skin({ base: grey, seams: [0.05, 0.95] }, Math.PI * 2 * s2.radius, s2.length, st.px))
   const vac = Math.min(s2.radius * 0.62, interstage.topRadius * 0.8)
-  engines(upper, k, st.heat.s2, [[0, 0]], vac, Math.min(vac * 2, interstage.length * 0.85), 0)
+  // Room above the throat for the engine's pumps, and the bell still ends inside the interstage.
+  const head = Math.min(vac, 0.8) * 0.9
+  const vacLen = Math.min(vac * 2, interstage.length * 0.85 - head)
+  engines(upper, k, st.heat.s2, [[0, 0]], vac, vacLen, -head, { vac: true })
   const flare = F.radius > s2.radius * 1.05 ? F.length * 0.1 : 0
   const barrel = F.length - Math.min(F.length * 0.5, F.radius * 3.2)
   const profile: Profile = [[s2.radius, 0], ...(flare ? [[F.radius, flare] as [number, number]] : []), [F.radius, barrel], ...ogive(F.radius, F.length - barrel, barrel)]
@@ -51,7 +54,7 @@ function generic(spec: RocketSpec): RocketModel {
     nozzles: {
       s1: { y: -R * 1.05, radius: n > 1 ? R * 0.85 : R * 0.5, propellant: s1.propellant, engines: spots, exit },
       booster: B ? { y: -B.radius * 1.1, radius: B.radius * 0.72, propellant: 'solid', engines: [[0, 0]], exit: B.radius * 0.72 } : null,
-      s2: { y: -Math.min(vac * 2, interstage.length * 0.85), radius: vac, propellant: s2.propellant, engines: [[0, 0]], exit: vac },
+      s2: { y: -head - vacLen, radius: vac, propellant: s2.propellant, engines: [[0, 0]], exit: vac },
     },
     footprint: B ? R + B.radius * 2.3 : Math.max(R, F.radius),
   })

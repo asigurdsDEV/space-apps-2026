@@ -1,8 +1,10 @@
+import * as THREE from 'three'
 import { describe, expect, it } from 'vitest'
 import { getDataset } from '../../../data'
 import { catalogEntities } from '../../../sim/parts'
 import { FLEET } from './fleet'
 import { cluster, triangles } from './kit'
+import { fold } from './payload'
 import { buildRocket } from './rocket'
 import { launchTimeline } from './timeline'
 import { KNOWN, rocketHeight, rocketSpec } from './vehicles'
@@ -54,6 +56,59 @@ describe('the fleet', () => {
       // The cinematic has a booster shot exactly when the model has boosters to drop.
       expect(launchTimeline(s).stages.some((x) => x.id === 'boosters'), s.id).toBe(m.boosters.length > 0)
     }
+  })
+
+  it('carries a shared launch as twenty satellites of four kinds on one dispenser, a draw call each', () => {
+    const m = buildRocket(spec('rideshare'))
+    expect(m.others).toHaveLength(20)
+    expect(new Set(m.others.map((o) => o.geometry)).size).toBe(4)
+    expect(new Set(m.others.map((o) => o.material)).size).toBe(1)
+    // Stage, engine, fairing walls, dispenser and satellites together: fewer meshes than the old stack of boxes (45).
+    let meshes = 0
+    m.upper.traverse((o) => { if (o instanceof THREE.Mesh) meshes++ })
+    expect(meshes).toBeLessThan(40)
+    // Every satellite hangs clear of the fairing wall, and under the sphere the player's spacecraft may fill.
+    for (const o of m.others) {
+      o.geometry.computeBoundingBox()
+      const box = o.geometry.boundingBox!
+      const inner = Math.hypot(o.position.x, o.position.z)
+      expect(inner + box.max.z * o.scale.x).toBeLessThan(spec('rideshare').fairing.radius * 0.92)
+      // A satellite may be rolled a quarter turn, so its widest side counts as its height.
+      const top = o.position.y + Math.max(box.max.x, box.max.y, -box.min.x, -box.min.y) * o.scale.x
+      expect(top).toBeLessThan(m.payload.position.y - Math.sqrt(m.payloadRadius ** 2 - inner ** 2))
+    }
+  })
+
+  it('stands the spacecraft on a fitting that reaches the underside of its bus, wherever the bus is', () => {
+    for (const id of ['falcon-9', 'rideshare', 'electron']) {
+      const m = buildRocket(spec(id))
+      const before = m.upper.children.length
+      const craft = new THREE.Group()
+      const bus = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.3, 0.4))
+      bus.userData.part = 'bus'
+      bus.position.set(0.2, 0.1, 0)
+      craft.add(bus, new THREE.Mesh(new THREE.BoxGeometry(2, 0.02, 0.2)))
+      m.payload.scale.setScalar(m.payloadRadius)
+      m.payload.add(craft)
+      expect(m.upper.children.length, id).toBe(before + 1)
+      const fitting = new THREE.Box3().setFromObject(m.upper.children[before]!)
+      const under = new THREE.Box3().setFromObject(bus)
+      expect(fitting.max.y, id).toBeCloseTo(under.min.y, 1)
+      expect(fitting.max.y - fitting.min.y, id).toBeGreaterThan(0.1 * m.payloadRadius)
+      // Its top ring sits under the bus, not under the middle of the whole craft.
+      expect(fitting.max.x, id).toBeGreaterThan(0.2 * m.payloadRadius)
+    }
+  })
+
+  it('repeats an atlas tile by mirroring, never leaving the tile', () => {
+    expect(fold(0)).toBeCloseTo(fold(2), 9)
+    expect(fold(0.25, 2)).toBeCloseTo(fold(0.5), 9)
+    expect(fold(1.25)).toBeCloseTo(fold(0.75), 9)
+    for (const x of [-3.2, -0.01, 0, 0.5, 1, 1.01, 7.7]) {
+      expect(fold(x)).toBeGreaterThan(0)
+      expect(fold(x)).toBeLessThan(1)
+    }
+    expect(fold(1)).toBeGreaterThan(fold(0))
   })
 
   it('lays engines out in a ring, with or without one in the middle', () => {

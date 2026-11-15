@@ -1,6 +1,8 @@
 // Dev-only (used by preview.tsx, not part of the build): rockets side by side at true relative scale in
 // plain daylight, for checking shapes and paint against photos of the real vehicles.
 import * as THREE from 'three'
+import { buildCraft } from '../craft'
+import type { CraftSpec } from '../model'
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js'
 import { skinBytes, triangles } from './kit'
 import { buildRocket } from './rocket'
@@ -31,7 +33,8 @@ function label(text: string, size: number): THREE.Sprite {
   return sprite
 }
 
-export function showHangar(host: HTMLElement, specs: RocketSpec[], view: HangarView): void {
+/** With `craft`, the fairings are off and that spacecraft sits on the stack: what the fairing-separation shot uncovers. `upperOnly` drops the first stage and boosters too, baring the upper-stage engine. */
+export function showHangar(host: HTMLElement, specs: RocketSpec[], view: HangarView, craft?: CraftSpec, upperOnly = false): void {
   const renderer = new THREE.WebGLRenderer({ antialias: true })
   renderer.setPixelRatio(window.devicePixelRatio)
   renderer.toneMapping = THREE.ACESFilmicToneMapping
@@ -47,17 +50,33 @@ export function showHangar(host: HTMLElement, specs: RocketSpec[], view: HangarV
 
   let x = 0
   let tallest = 0
+  // With one rocket opened up, the camera looks at its payload: zoom 1 frames the whole payload space.
+  let focus: { at: THREE.Vector3; size: number } | null = null
   for (const spec of specs) {
     const before = skinBytes()
     const model = buildRocket(spec)
     // Skins shared with a rocket built earlier in the line-up are not counted again.
     const stats = `${spec.id}  ${model.height.toFixed(1)} m  ${Math.round(triangles(model.root) / 100) / 10}k tris  ${((skinBytes() - before) / 1e6).toFixed(1)} MB skins`
     console.info(stats)
+    if (upperOnly) {
+      model.stage1.visible = false
+      for (const b of model.boosters) b.group.visible = false
+    }
+    if (craft) {
+      model.fairing.forEach((half, i) => {
+        half.position.x = (i ? -2.4 : 2.4) * spec.fairing.radius
+        half.rotation.z = i ? 0.5 : -0.5
+      })
+      if (model.escape) model.escape.visible = false
+      model.payload.scale.setScalar(model.payloadRadius)
+      model.payload.add(buildCraft(craft))
+    }
     x += model.footprint + 3
     model.root.position.x = x
     scene.add(model.root, label(stats, specs.length > 4 ? 1.7 : 1.2).translateX(x).translateY(-9 - (specs.indexOf(spec) % 2) * 2))
     x += model.footprint + 3
     tallest = Math.max(tallest, model.height)
+    if (craft && specs.length === 1) focus = { at: model.payload.getWorldPosition(new THREE.Vector3()), size: spec.fairing.length }
   }
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(x + 200, 200).rotateX(-Math.PI / 2), new THREE.MeshStandardMaterial({ color: 0x8b8f96, roughness: 0.95 }))
   floor.position.set(x / 2, -6.5, 0)
@@ -70,8 +89,8 @@ export function showHangar(host: HTMLElement, specs: RocketSpec[], view: HangarV
     renderer.setSize(w, h, false)
     camera.aspect = w / h
     const half = Math.tan((camera.fov * Math.PI) / 360)
-    const dist = (Math.max((tallest + 16) / 2 / half, x / 2 / half / camera.aspect) * 1.05) / view.zoom
-    const target = new THREE.Vector3(x * view.cx, -8 + (tallest + 16) * view.cy, 0)
+    const dist = (focus ? focus.size / half : Math.max((tallest + 16) / 2 / half, x / 2 / half / camera.aspect) * 1.05) / view.zoom
+    const target = focus ? focus.at.clone().add(new THREE.Vector3((view.cx - 0.5) * focus.size, (view.cy - 0.5) * focus.size, 0)) : new THREE.Vector3(x * view.cx, -8 + (tallest + 16) * view.cy, 0)
     const yaw = (view.yaw * Math.PI) / 180
     const pitch = (view.pitch * Math.PI) / 180
     camera.position.set(Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), Math.cos(yaw) * Math.cos(pitch)).multiplyScalar(dist).add(target)
