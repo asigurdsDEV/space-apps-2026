@@ -13,6 +13,8 @@ Game plan (screens, folders, MVP): `docs/GAME_PLAN.md`.
 - [ ] (medium) [P2] Fly scene tied to sim time (craft position from `t_s`, ground stations, downlink beam, part highlight) — ui/scene3d/ — released by claude@ethan 13:55 so it does not block anyone; unfinished work is on branch `ethan-claude/scene3d-fly`. Ask claude@ethan before taking it (the folder is his)
 
 ### Realism pass 2: the easier pieces (Ethan's screenshots, split at his request; handoffs 20261114-2300)
+- [ ] (light) [P1] **Pad towers:** the three lightning masts as lattice towers like Ethan's lift-off photo, and a tree line along the shore — ui/scene3d/launch/site.ts only — handoff 20261115-0100 — owner: claude@jamie — [claude@ethan]
+- [ ] (light) [P1] **Launch to spacecraft room:** no black second after the launch ends or is skipped — app/World.tsx only — handoff 20261115-0100 — owner: claude@aiden — [claude@ethan]
 
 ### Interactive 3D overhaul (Aiden: both modes, spacecraft flight first; plan PR #69)
 These are new work packages, not active claims. Suggested owners claim only their isolated scope with the normal lock push. Ethan keeps ui/scene3d/, part models, launch/fly branches, app/sim/shared/e2e. No immediate change or response is needed from him; V7 is a later integration checkpoint. Existing Start/Lobby/Tutorial graphics remain codex@jamie's current task.
@@ -110,6 +112,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 ## In progress
 
+- [ ] (heavy) [P0] **Realism pass 3** (Ethan's lift-off photo, 00:55): lift-off flame and exhaust clouds like a real launch, a real-looking sky, water and ground behind the pad, and a spacecraft room that is less blocky — ui/scene3d/launch/fx.ts, ui/scene3d/launch/scene.ts, ui/interior/ — owner: claude@ethan — [claude@ethan]
 - [ ] (medium) [P0] **Browser regression after tonight's merges:** run e2e/solo.mjs and e2e/coop.mjs on main, fix the scripts where the flow changed, hand real game failures to their owners, result table in docs/qa/; re-run when realism pass 2 lands and check the launch fills the window at four sizes — e2e/, docs/qa/ — handoff 20261114-2323 — owner: codex@jamie — [claude@jamie] (taken over at Jamie's request: codex@jamie is out of usage until 04:00 and had pushed no work) — branch jamie-claude/browser-regression — in PR #174: solo 15/15, co-op 24/24 on main a577c85, four script fixes, no game failures; second run + four-size launch check waits for realism pass 2
 - [ ] (medium) [P1] Cutscenes "into the walk-in spacecraft" (after launch) and "back to mission control" (after the ending), ≤ 10 s, Skip + reduced motion as now; QA plan for the 3D loop, run on the Sun 02:00 build — ui/cutscenes/, docs/qa/ — owner: cursor@caleb — [cursor@caleb] — scenes and plan in PR #115 (`EnterCraftScene` 8 s, `ReturnControlScene` 6 s, `docs/qa/first-person.md`). The Sunday 02:00 run is not done. Mount handoff to claude@aiden.
 - [ ] (light) [P1] **Walk + cutscenes on a phone and with reduced motion / a screen reader:** hall and panels at 375 px, reduced motion cuts straight to each station, screen reader hears the screens not the hall, cutscene Skip/Escape works — app/Walk.tsx, app/StoryLayer.tsx, app/app.css — owner: claude@aiden — [claude@aiden]
