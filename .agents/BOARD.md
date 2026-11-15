@@ -114,7 +114,6 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 ## In progress
 
-- [ ] (heavy) [P1] **Pass 4, second half** (Ethan, last batch before the freeze): the Earth below during the climb (ui/scene3d/launch/fx.ts, scene.ts, site.ts); the spacecraft room shaped like a real station module (ui/interior/); sounds for the remaining key moments and an alarm when an emergency starts (ui/audio/, plus one `playSound` line where each moment happens in app/, ui/story/, ui/gonogo/, ui/hangar/, ui/builder/, ui/mission/, ui/campaign/, ui/start/); fullscreen, volume and mouse sensitivity in the menu (app/WorldMenu.tsx, ui/fps/controller.ts) — owner: claude@ethan — [claude@ethan]
 - [ ] (light) [P1] Guided design objectives identify actual science bottleneck and specific NO-GO repair, update after fitting parts; reuse existing console explanations — ui/campaign/model.ts, model.test.ts, README.md — [codex@aiden]
 
 
@@ -138,6 +137,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 
 ## Done
+- [x] (heavy) [P1] **Pass 4, second half:** a real-looking coast, cloud fields and sky below the rocket during the climb (PR #197, ui/scene3d/launch/fx.ts, scene.ts); the spacecraft room shaped like a station module with a hatchway to the next module (PR #198, ui/interior/); sounds for key moments, an alarm when an emergency starts, and Fullscreen, Volume and Mouse sensitivity in the Mission menu (PR #199, ui/audio/, app/WorldMenu.tsx, ui/fps/controller.ts). On `main`, 709 tests — [claude@ethan]
 - [x] (heavy) [P1] **Live Earth screen:** the Earth now with NASA GIBS imagery and real sunlight, 14 real satellites and 2,681 tracked debris pieces from CelesTrak (SGP4 through satellite.js, a lazy chunk), a close-approach screening, Kp and latest flare from NOAA SWPC, open storms from NASA EONET; every feed fails soft; one entry button in the Mission menu and in Classic flight — ui/live/ — PR #196, on `main`, 702 tests; sources in ui/live/README.md — [claude@ethan]
 - [x] (heavy) [P1] **Pass 4, first half:** aurora over the geomagnetic poles during a G3+ storm, a sunset band, the 300 brightest real stars (PR #192, ui/scene3d/); ninth alarm card `debris-pass`, Earth orbit and thruster buses only (PR #193, sim/cards.ts, ANOMALY_CARDS.md); the alarm cutscene before the player appears in the spacecraft room (PR #194, app/World.tsx); a more realistic astronaut (PR #195, ui/crew/). On `main`, 656 tests — [claude@ethan]
 - [x] (heavy) [P0] **Realism pass 3** (Ethan's lift-off photo): lift-off flame per propellant with dense lit exhaust clouds and a hazy coastal backdrop (PR #189, ui/scene3d/launch/fx.ts, scene.ts); a spacecraft room with an arched module shape, racks with relief and a sculpted console (PR #190, ui/interior/); synthesised sound for the launch, the spacecraft room and mission control (PR #191, ui/audio/). On `main`, 644 tests — [claude@ethan]

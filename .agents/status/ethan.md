@@ -5,14 +5,14 @@ Only you and your agent edit this file. Everyone else reads it. Update it every 
 **Human:** Ethan
 **Agent:** Claude Code
 **Branch:** ethan-claude/app-loop
-**Last updated:** 2026-11-15 04:31
+**Last updated:** 2026-11-15 04:41
 
 ## claude@ethan
 
 **Branch:** ethan-claude/integration (base: every open code PR merged together, pushed); work branches ethan-claude/sim-data, ethan-claude/app-loop; PRs #2, #5, #7 open
 
 ### Working on right now
-**Pass 4, second half** (since 2026-11-15 03:38): `ui/scene3d/launch/fx.ts`, `scene.ts`, `site.ts` (`ethan-claude/climb-earth`); `ui/interior/` (`ethan-claude/cabin-station`); `ui/audio/`, `app/WorldMenu.tsx`, `ui/fps/controller.ts` and one `playSound` line at each key moment in other folders (`ethan-claude/sound-moments`). Pad towers (claude@jamie, PR #182) and the launch-to-room cut (claude@aiden, PR #180) are done and on `main`. I still merge every PR that passes `tsc`, tests and build.
+Nothing claimed; running the full browser regression on `main`. Pad towers (claude@jamie, PR #182) and the launch-to-room cut (claude@aiden, PR #180) are done and on `main`. I still merge every PR that passes `tsc`, tests and build.
 
 Open under my name: the launch cutscene is about 20 s (decision 005 says 10 s at most). Waiting on cursor@kaipo: redeploy `main` to Vercel (handoff 20261115-0450).
 
@@ -27,6 +27,10 @@ Released to Open (ask me first, the folder is mine): fly scene tied to sim time 
 - Plus my usual shared-file edits: this section, my BOARD.md lines, append-only LOG.md lines, my own handoffs
 
 ### Just finished
+- **Pass 4, second half** (PRs #197, #198, #199, on `main`; each reviewed once on Opus):
+  - Climb (`ui/scene3d/launch/fx.ts`, `scene.ts`): the ground is built in kilometres (beach, shelf water, lagoons, marsh, crawlerway), with cloud fields and a haze band at max-Q; pad close-ups and space shots unchanged. Known: far buildings still read as white boxes from the air; booster separation still uses the orbit view.
+  - Spacecraft room (`ui/interior/`): flat rack ceiling, stand-off corners with strip lights, deck seat tracks, a hatchway opposite the window with a painted view of the next module. Known: the section is 8 m by 3.4 m, not square.
+  - Sound (`ui/audio/`): `radio-in`, `radio-out`, `join`, `alarm` one-shots; the alarm plays once per alarm with the anomaly cutscene. Menu settings in `app/WorldMenu.tsx`: Fullscreen, Volume (`getVolume`/`setVolume` in `ui/audio/audio.ts`), Mouse sensitivity (`mouseSensitivity`/`setMouseSensitivity` in `ui/fps/controller.ts`). One `playSound` line was added in `app/StoryLayer.tsx` and a few `ui/` folders. Known: no GO chime per console in the 3D hall; the results menu opens with a click on its own.
 - **Live Earth screen** (PR #196, on `main`; data layer, screen, two reviews): new folder `ui/live/` (read `ui/live/README.md` for every feed, its terms, cache rule and accuracy limit). Entry: "Live Earth" in the Mission menu (`app/WorldMenu.tsx`) and beside "Survey the planet" in Classic (`app/App.tsx`). New dependency `satellite.js` (MIT), lazy. Run `npm install` after pulling. Known: the feeds are not yet listed in `docs/NASA_SOURCES.md`; the online (crew) path was not run; the picture is 2048 px wide; no refetch while the screen stays open.
 - **Pass 4, first half** (PRs #192 to #195, on `main`; each built on Fable and reviewed once on Opus):
   - `ui/scene3d/`: aurora ovals during a G3+ storm (`SpaceView` now also reads `state.metrics`), a thin sunset band, 300 real bright stars with a test, a faint Milky Way. Known: the storm card covers the Earth while the aurora is on, so players may rarely see it; showing G1 and G2 needs `ui/mission/MissionView.tsx` (claude@sarah's).
