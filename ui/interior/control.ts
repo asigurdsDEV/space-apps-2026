@@ -16,7 +16,7 @@ import { atmosphereShader, cloudShader, planetShader, toScreen } from '../scene3
 import { sunDirection } from '../scene3d/sun'
 import type { CraftSpec } from '../scene3d/model'
 import type { Decision } from '../../shared'
-import { choiceSpots, choiceTitleAt, DASH, dialAngle, HATCH, moduleFor, ROOM, section, SPEEDS, STANDOFF, START, WINDOW, type Gauge, type Module } from './layout'
+import { choiceSpots, choiceTitleAt, DASH, dialAngle, HATCH, HATCHWAY, moduleFor, ROOM, section, SPEEDS, STANDOFF, START, WINDOW, type Gauge, type Module } from './layout'
 import { mountCrew, type CrewPose } from '../crew/crew'
 
 export interface CabinScreens {
@@ -92,7 +92,7 @@ function hullMap() {
   return map
 }
 
-/** Two metres square of deck: plates a metre wide and two long, laid staggered along the module, with a tie-down ring in each and a few scuffs. */
+/** Two metres square of deck: panels a metre square like the rack faces, a seam round each, a quarter-turn latch in every corner, a tie-down ring or a printed label on some, a few scuffs. */
 function floorMap() {
   const map = painted(512, 512, (g) => {
     const rnd = seeded(5)
@@ -107,21 +107,33 @@ function floorMap() {
       g.lineTo(x + (rnd() - 0.5) * 24, y + (rnd() - 0.5) * 80)
       g.stroke()
     }
-    /** A seam: a dark line with a thin bright edge beside it. */
-    const seam = (x: number, y: number, w: number, h: number) => {
-      g.fillStyle = 'rgba(52, 58, 70, 0.6)'
-      g.fillRect(x - 1.5, y - 1.5, w + 3, h + 3)
-      g.fillStyle = 'rgba(255, 255, 255, 0.22)'
-      g.fillRect(x + 1.5, y + 1.5, w ? w : 1, h ? h : 1)
-    }
-    for (const col of [0, 1]) {
-      seam(col * 256, 0, 0, 512)
-      seam(col * 256, col * 256, 256, 0)
-      g.strokeStyle = 'rgba(90, 97, 110, 0.75)'
-      g.lineWidth = 3
-      g.beginPath()
-      g.arc(col * 256 + 128, ((col * 256 + 256) % 512) + 40, 9, 0, Math.PI * 2)
-      g.stroke()
+    for (const [i, [col, row]] of ([[0, 0], [1, 0], [0, 1], [1, 1]] as const).entries()) {
+      const x = col * 256, y = row * 256
+      // A seam: a dark line with a thin bright edge inside it.
+      g.strokeStyle = 'rgba(52, 58, 70, 0.62)'
+      g.lineWidth = 5
+      g.strokeRect(x, y, 256, 256)
+      g.strokeStyle = 'rgba(255, 255, 255, 0.2)'
+      g.lineWidth = 1.5
+      g.strokeRect(x + 4.5, y + 4.5, 247, 247)
+      for (const [lx, ly] of [[26, 26], [230, 26], [26, 230], [230, 230]] as const) {
+        g.fillStyle = 'rgba(64, 70, 82, 0.8)'
+        g.beginPath()
+        g.arc(x + lx, y + ly, 7, 0, Math.PI * 2)
+        g.fill()
+        g.fillStyle = 'rgba(214, 219, 227, 0.9)'
+        g.fillRect(x + lx - 5, y + ly - 1, 10, 2)
+      }
+      if (i % 3 === 0) {
+        g.strokeStyle = 'rgba(90, 97, 110, 0.75)'
+        g.lineWidth = 3
+        g.beginPath()
+        g.arc(x + 128, y + 128, 9, 0, Math.PI * 2)
+        g.stroke()
+      } else {
+        g.fillStyle = i === 1 ? 'rgba(232, 235, 240, 0.8)' : 'rgba(61, 111, 196, 0.75)'
+        g.fillRect(x + 150, y + 22, 44, 12)
+      }
     }
   })
   map.wrapS = map.wrapT = THREE.RepeatWrapping
@@ -334,13 +346,14 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   const D = z1 - z0
 
   // ---- Light comes from somewhere: the strips where wall meets ceiling, and the window. The rest falls into shade.
-  const STRIP = 2.1
-  const FILL = 0.22
-  const fill = new THREE.HemisphereLight(0xc4cee0, 0x23252b, FILL)
+  // Flat, bright and a little cool, like a station lab: the deck sends almost as much light back up as the strips send down.
+  const STRIP = 2.3
+  const FILL = 0.75
+  const fill = new THREE.HemisphereLight(0xdbe4f4, 0x7d838f, FILL)
   scene.add(fill)
   const strips = [-1.4, 1.5].flatMap((z) => [x0 + 1, x1 - 1].map((x) => {
-    const lamp = new THREE.PointLight(0xfff2e2, STRIP, 9, 1.8)
-    lamp.position.set(x, y1 - 0.5, z)
+    const lamp = new THREE.PointLight(0xf1f5ff, STRIP, 9, 1.8)
+    lamp.position.set(x, y1 - 0.4, z)
     scene.add(lamp)
     return lamp
   }))
@@ -373,8 +386,8 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
     return mesh
   }
 
-  // ---- The module: a barrel of ring frames like a space-station lab. Racks stand off the walls in relief, and the
-  // stand-off corners between wall and ceiling carry the lights and the cable trays.
+  // ---- The module: a square section like a space-station lab. All four faces are racks and panels, and the chamfered
+  // stand-off corners between them carry the lights, the vents and the cable trays.
   const half = section().map(([x, y]) => new THREE.Vector2(x, y))
   const SECTION = [...half, ...half.slice(0, -1).reverse().map((p) => new THREE.Vector2(-p.x, p.y))] // right deck, over the crown, to the left deck
   const CROWN = half.at(-1)!.y
@@ -394,7 +407,9 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   const bow = new THREE.Shape(SECTION)
   bow.holes.push(new THREE.Path(roundRect(WINDOW.w - 0.04, WINDOW.h - 0.04, 0.24).getPoints(6).map((p) => p.set(p.x + WINDOW.x, p.y + WINDOW.y))))
   put(hull, new THREE.ShapeGeometry(bow), 0, 0, z0)
-  put(hull, new THREE.ShapeGeometry(new THREE.Shape(SECTION)).rotateY(Math.PI), 0, 0, z1)
+  const aft = new THREE.Shape(SECTION)
+  aft.holes.push(new THREE.Path(roundRect(HATCHWAY.w + HATCHWAY.rim, HATCHWAY.w + HATCHWAY.rim, HATCHWAY.r + HATCHWAY.rim / 2).getPoints(6).map((p) => p.set(p.x, p.y + HATCHWAY.y))))
+  put(hull, new THREE.ShapeGeometry(aft).rotateY(Math.PI), 0, 0, z1)
   fitted(hull, wallMat)
 
   // Fittings, merged so each material is one draw call.
@@ -414,14 +429,14 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   put(metals, new THREE.LatheGeometry([[0.58, 0], [0.58, 0.006], [0.565, 0.014], [0.44, 0.014]].map(([r, y]) => new THREE.Vector2(r, y)), 48), HATCH[0], 0, HATCH[2])
   for (let i = 0; i < 12; i++) put(darks, new THREE.CylinderGeometry(0.012, 0.012, 0.008, 6), HATCH[0] + Math.cos(i * 0.5236) * 0.53, 0.016, HATCH[2] + Math.sin(i * 0.5236) * 0.53)
 
-  // A ring frame every metre: deck to crown and down again, standing proud of the lining.
-  const RIB = 0.14
+  // A thin frame in the seam between racks every metre, round the whole section, just proud of the rack fronts.
+  const RIB = 0.11
   const band = new THREE.Shape([...SECTION, ...SECTION.map((p, i) => p.clone().addScaledVector(leftOf(SECTION, i), RIB)).reverse()])
-  const rib = new THREE.ExtrudeGeometry(band, { depth: 0.058, bevelEnabled: true, bevelSize: 0.006, bevelThickness: 0.006, bevelSegments: 1 }).translate(0, 0, -0.029)
-  for (let k = 0; k <= D; k++) put(metals, rib.clone(), 0, 0, z0 + k + (k === 0 ? 0.035 : k === D ? -0.035 : 0))
+  const rib = new THREE.ExtrudeGeometry(band, { depth: 0.036, bevelEnabled: false }).translate(0, 0, -0.018)
+  for (let k = 0; k <= D; k++) put(skins, tint(rib.clone(), 0x9aa0aa), 0, 0, z0 + k + (k === 0 ? 0.02 : k === D ? -0.02 : 0))
 
   // ---- Racks, built once each and stood along the walls. Local frame: u across the rack, y up, z off the wall.
-  const SKIN = { white: 0xc9cdd3, pale: 0xb9bec6, fabric: 0xc8c1ae, back: 0x2a2e35, strap: 0x5d626c, skirt: 0x6a707b, blue: 0x3d6fc4, amber: 0xd08a2c }
+  const SKIN = { white: 0xc9cdd3, pale: 0xb9bec6, fabric: 0xd3d0c6, back: 0x2a2e35, strap: 0x5d626c, skirt: 0x6a707b, blue: 0x3d6fc4, amber: 0xd08a2c }
   type Kit = { skins: Pieces; metals: Pieces; darks: Pieces; lamps: Pieces }
   /** A rounded slab on a rack, centred at (u, y), w × h, standing from `base` to `base + d` off the wall. With a colour it joins the painted mesh. */
   const slab = (list: Pieces, u: number, y: number, w: number, h: number, d: number, base = 0.03, colour?: number, r = 0.02) => {
@@ -444,6 +459,13 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
     }
   }
   const disc = (r: number, d: number, n = 40) => new THREE.CylinderGeometry(r, r, d, n).rotateX(FACING)
+  /** The dark backing of an overhead rack face. */
+  const backing = (k: Kit) => put(k.skins, tint(new THREE.BoxGeometry(0.95, 0.95, 0.02), SKIN.back), 0, 0, 0.03)
+  /** A plain door with a latch at each top corner: lighter than a locker, for the faces you only look up at. */
+  const door = (k: Kit, u: number, y: number, w: number, h: number, colour: number) => {
+    slab(k.skins, u, y, w - 0.02, h - 0.02, 0.07, 0.03, colour)
+    for (const s of [-1, 1]) put(k.darks, new THREE.BoxGeometry(0.07, 0.024, 0.006), u + s * (w / 2 - 0.1), y + h / 2 - 0.07, 0.102)
+  }
   const Y0 = 0.18 // racks stand 2.2 m tall above the cove
   const racks = ([
     // Stowage lockers.
@@ -515,6 +537,30 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
     },
     // Low drawers, for the end wall under the window.
     (k) => lockers(k, Y0 + 0.335, 0.65),
+    // Overhead, a metre square about its own middle: two doors.
+    (k) => {
+      backing(k)
+      door(k, -0.2325, 0, 0.465, 0.95, SKIN.pale)
+      door(k, 0.2325, 0, 0.465, 0.95, SKIN.white)
+      slab(k.skins, 0.33, -0.3, 0.08, 0.04, 0.004, 0.099, SKIN.blue)
+    },
+    // Overhead: a wide door and an air return grille.
+    (k) => {
+      backing(k)
+      door(k, 0, 0.165, 0.93, 0.62, SKIN.white)
+      door(k, 0, -0.31, 0.93, 0.33, SKIN.pale)
+      for (let i = 0; i < 5; i++) put(k.darks, new THREE.BoxGeometry(0.42, 0.014, 0.006), -0.17, -0.25 - i * 0.03, 0.102)
+      slab(k.skins, 0.3, -0.31, 0.1, 0.05, 0.004, 0.099, SKIN.amber)
+    },
+    // Overhead: stowage bags under straps.
+    (k) => {
+      backing(k)
+      for (const [u, y, w, h, d] of [[-0.235, 0.2, 0.44, 0.5, 0.13], [0.235, 0.22, 0.44, 0.46, 0.1], [0, -0.27, 0.9, 0.36, 0.12]] as const) {
+        slab(k.skins, u, y, w, h, d, 0.04, SKIN.fabric, 0.05)
+        for (const s of [-1, 1]) put(k.skins, tint(new THREE.BoxGeometry(0.035, h - 0.1, 0.008), SKIN.strap), u + s * w * 0.24, y, 0.04 + d)
+        put(k.skins, tint(new THREE.BoxGeometry(0.11, 0.06, 0.004), SKIN.white), u, y + h * 0.18, 0.04 + d)
+      }
+    },
   ] as ((k: Kit) => void)[]).map((build) => {
     const k: Kit = { skins: [], metals: [], darks: [], lamps: [] }
     build(k)
@@ -523,25 +569,29 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
     return k
   })
   const fittings: Kit = { skins, metals, darks, lamps }
-  const rackAt = (kind: number, turn: number, x: number, z: number) => {
-    const to = new THREE.Matrix4().makeRotationY(turn).setPosition(x, 0, z)
+  const fit = (kind: number, to: THREE.Matrix4) => {
     for (const key of ['skins', 'metals', 'darks', 'lamps'] as const) for (const g of racks[kind]![key]) fittings[key].push(g.clone().applyMatrix4(to))
-    // Baked shade: rack fronts darken gently towards the deck, and again up under the stand-off's overhang.
+    // Baked shade: rack fronts darken gently towards the deck, and again up under the stand-off's overhang (not on the ceiling, which the strips light).
     for (const g of skins.slice(-racks[kind]!.skins.length)) {
       const at = g.getAttribute('position')
       const c = g.getAttribute('color')
       for (let i = 0; i < c.count; i++) {
-        const k = (0.66 + 0.34 * smooth(at.getY(i), 0.1, 1.5)) * (1 - 0.2 * smooth(at.getY(i), 2, 2.4))
+        const k = (0.66 + 0.34 * smooth(at.getY(i), 0.1, 1.5)) * (1 - 0.2 * smooth(at.getY(i), 2, 2.4) * (1 - smooth(at.getY(i), 2.9, 3.3)))
         c.setXYZ(i, c.getX(i) * k, c.getY(i) * k, c.getZ(i) * k)
       }
     }
   }
+  const rackAt = (kind: number, turn: number, x: number, z: number, y = 0) => fit(kind, new THREE.Matrix4().makeRotationY(turn).setPosition(x, y, z))
   for (let k = 0; k < D; k++) {
     rackAt([1, 0, 3, 2, 0, 1][k]!, FACING, x0, z0 + 0.5 + k)
     rackAt([3, 1, 0, 2, 3, 0][k]!, -FACING, x1, z0 + 0.5 + k)
   }
   for (const [i, x] of [-3.5, -2.5, -1.5, 1.5, 2.5, 3.5].entries()) rackAt([2, 0, 1, 3, 2, 0][i]!, Math.PI, x, z1)
   for (const x of [-2.5, -1.5, 1.5, 2.5]) rackAt(4, Math.PI, x, z1)
+  for (let x = -2.5; x < 3; x++) rackAt(4, Math.PI, x, z1, 0.47) // a second row up to the ceiling, right across over the hatchway
+  // The ceiling is a face of racks too: doors, air returns, and bags strapped overhead along one side.
+  const overhead = new THREE.Matrix4().makeBasis(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, -1, 0))
+  for (let i = 0; i < 6; i++) for (let k = 0; k < D; k++) fit(i === 0 && k > 2 ? 8 : (i + k) % 3 ? 6 : 7, overhead.clone().setPosition(i - 2.5, CROWN, z0 + 0.5 + k))
   for (let x = -2.5; x < 3; x++) rackAt(5, 0, x, z0)
   rackAt(0, 0, -3.5, z0)
   rackAt(2, 0, 3.5, z0)
@@ -555,18 +605,21 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
       put(rails, new THREE.CylinderGeometry(0.017, 0.017, 0.72, 12), x + out * (RIB + 0.07), 1.72, z)
       for (const y of [1.42, 2.02]) put(rails, new THREE.CylinderGeometry(0.012, 0.012, 0.08, 8).rotateZ(FACING), x + out * (RIB + 0.035), y, z)
     }
-    put(rails, new THREE.BoxGeometry(0.34, 0.014, D), x + out * 0.33, 0.007, 0)
+    // The lower stand-off: a chamfered corner between the racks and the deck, with an air return grille in every other bay.
+    const skirt = new THREE.Matrix4().makeRotationZ((-out * Math.PI) / 4).setPosition(x + out * 0.14, 0.08, 0)
+    put(skins, tint(new THREE.BoxGeometry(0.25, 0.02, D - 0.1), SKIN.pale), 0, 0, 0, skirt)
+    for (let k = 0; k < D; k += 2) for (let i = 0; i < 3; i++) put(darks, new THREE.BoxGeometry(0.024, 0.006, 0.6), (i - 1) * 0.055, 0.012, z0 + 0.5 + k, skirt)
     // Two cables drop from the tray beside a frame and plug into the rack below.
     for (const z of [-1, 1]) {
       for (const [dz, r] of [[0, 0.013], [0.03, 0.009]] as const)
-        put(darks, new THREE.TubeGeometry(new THREE.CatmullRomCurve3([[0.19, 2.54, 0.07], [0.2, 2.36, 0.07], [0.19, 2.05, 0.08], [0.17, 1.86, 0.1], [0.125, 1.78, 0.15]].map(([off, y, along]) => new THREE.Vector3(x + out * off!, y, z + along! + dz))), 20, r, 6))
+        put(darks, new THREE.TubeGeometry(new THREE.CatmullRomCurve3([[0.21, 2.67, 0.07], [0.2, 2.4, 0.07], [0.19, 2.05, 0.08], [0.17, 1.86, 0.1], [0.125, 1.78, 0.15]].map(([off, y, along]) => new THREE.Vector3(x + out * off!, y, z + along! + dz))), 20, r, 6))
       put(metals, new THREE.BoxGeometry(0.03, 0.03, 0.09), x + out * 0.185, 2.2, z + 0.09)
       put(darks, new THREE.CylinderGeometry(0.03, 0.03, 0.03, 16).rotateZ(FACING), x + out * 0.115, 1.78, z + 0.165)
     }
     // Shade where the deck meets the wall.
     put(shades, fadeStrip(D, 0.9).rotateX(-FACING).rotateY(-out * FACING), x + out * 0.45, 0.004, 0)
   }
-  // The stand-off corners: a luminaire in every bay, and a tray of cables running the length of the module.
+  // The stand-off corners: a strip light in every bay, an air diffuser in every other one, and a tray of cables the length of the module.
   const rnd = seeded(3)
   const LAMP = 0xeef3ff
   const up = new THREE.Vector2(STANDOFF.to[0] - STANDOFF.from[0], STANDOFF.to[1] - STANDOFF.from[1]).normalize()
@@ -575,40 +628,75 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
       .makeBasis(new THREE.Vector3(side * up.x, up.y, 0), new THREE.Vector3(-side * up.y, up.x, 0), new THREE.Vector3(0, 0, side))
       .setPosition((side * (STANDOFF.from[0] + STANDOFF.to[0])) / 2, (STANDOFF.from[1] + STANDOFF.to[1]) / 2, 0)
     for (let k = 0; k < D; k++) {
-      put(guns, rounded(0.36, 0.05, 0.86, 0.02), 0.1, 0.022, z0 + 0.5 + k, to)
-      put(lamps, tint(new THREE.BoxGeometry(0.26, 0.012, 0.78), LAMP), 0.1, 0.05, z0 + 0.5 + k, to)
+      const z = z0 + 0.5 + k
+      put(guns, rounded(0.3, 0.05, 0.9, 0.02), 0.3, 0.022, z, to)
+      put(lamps, tint(new THREE.BoxGeometry(0.17, 0.012, 0.84), LAMP), 0.3, 0.05, z, to)
+      if (k % 2) {
+        put(skins, tint(rounded(0.26, 0.024, 0.66, 0.01, 1), SKIN.white), -0.03, 0.012, z, to)
+        for (let i = 0; i < 4; i++) put(darks, new THREE.BoxGeometry(0.026, 0.006, 0.56), -0.03 + (i - 1.5) * 0.052, 0.026, z, to)
+      } else put(skins, tint(new THREE.BoxGeometry(0.1, 0.004, 0.05), k % 4 ? SKIN.amber : SKIN.blue), -0.03, 0.002, z + 0.3, to)
     }
-    put(darks, new THREE.BoxGeometry(0.2, 0.016, D - 0.1), -0.25, 0.008, 0, to)
-    for (const [i, [x, r]] of ([[-0.31, 0.016], [-0.265, 0.012], [-0.215, 0.019]] as const).entries()) {
+    put(darks, new THREE.BoxGeometry(0.2, 0.016, D - 0.1), -0.39, 0.008, 0, to)
+    for (const [i, [x, r]] of ([[-0.45, 0.016], [-0.405, 0.012], [-0.355, 0.019]] as const).entries()) {
       const run = new THREE.CatmullRomCurve3(Array.from({ length: 13 }, (_, j) => new THREE.Vector3(x + (rnd() - 0.5) * 0.02, 0.016 + r + rnd() * 0.014, -D / 2 + 0.06 + (j * (D - 0.12)) / 12)))
       put(i === 1 ? rails : darks, new THREE.TubeGeometry(run, 72, r, 6), 0, 0, 0, to)
     }
   }
-  // Two seat tracks let into the deck, running the length of the module.
-  for (const x of [-1, 1]) put(guns, new THREE.BoxGeometry(0.06, 0.008, D - 0.3), x, 0.004, 0)
-  const LOW = CROWN - RIB - 0.006 // the beacon hangs under the middle ring frame
+  // Seat tracks let into the deck the length of the module, with a low blue handrail on the outer pair; two more handrails overhead.
+  for (const x of [-2.6, -1, 1, 2.6]) put(guns, new THREE.BoxGeometry(0.06, 0.008, D - 0.3), x, 0.004, 0)
+  const bar = (x: number, y: number, z: number, off: number) => {
+    put(rails, new THREE.CylinderGeometry(0.016, 0.016, 0.62, 10).rotateX(FACING), x, y + off, z)
+    for (const s of [-1, 1]) put(rails, new THREE.CylinderGeometry(0.011, 0.011, Math.abs(off), 8), x, y + off / 2, z + s * 0.26)
+  }
+  for (const x of [-2.6, 2.6]) for (const z of [-1.45, 0.2]) bar(x, 0.008, z, 0.03)
+  for (const x of [-2, 2]) for (const z of [-1.5, 1.5]) bar(x, CROWN - RIB, z, -0.06)
+  const LOW = CROWN - RIB - 0.004 // the beacon hangs where four overhead racks meet
   put(shades, fadeStrip(W, 0.9).rotateX(-FACING), 0, 0.004, z1 - 0.45)
   put(shades, fadeStrip(W, 0.9).rotateX(-FACING).rotateY(Math.PI), 0, 0.004, z0 + 0.45)
   put(shades, fadeStrip(W, 0.8), 0, 0.4, z0 + 0.004)
-  // The hatch in the end wall: a rim, a stepped door, a centre window, a handle, latches, and two ports above it.
-  const hz = z1 - 0.02
-  put(metals, new THREE.TorusGeometry(0.93, 0.07, 12, 56), 0, 1.5, hz)
-  put(darks, new THREE.TorusGeometry(0.875, 0.012, 6, 56), 0, 1.5, hz - 0.045)
-  put(darks, new THREE.TorusGeometry(0.64, 0.01, 6, 48), 0, 1.5, hz - 0.125)
-  put(hatch, new THREE.CylinderGeometry(0.87, 0.87, 0.06, 56).rotateX(FACING), 0, 1.5, hz - 0.01)
-  put(hatch, new THREE.CylinderGeometry(0.6, 0.66, 0.1, 48).rotateX(FACING), 0, 1.5, hz - 0.07)
-  put(darks, new THREE.TorusGeometry(0.19, 0.03, 10, 32), 0, 1.5, hz - 0.12)
-  put(darks, new THREE.CylinderGeometry(0.17, 0.17, 0.02, 32).rotateX(FACING), 0, 1.5, hz - 0.115)
-  put(darks, rounded(0.06, 0.38, 0.05, 0.02), 0.42, 1.5, hz - 0.17)
-  for (const y of [1.36, 1.64]) put(darks, new THREE.BoxGeometry(0.05, 0.05, 0.06), 0.42, y, hz - 0.14)
-  for (let i = 0; i < 8; i++) {
-    const a = ((i + 0.5) / 8) * Math.PI * 2
-    put(metals, rounded(0.12, 0.12, 0.07, 0.015), Math.cos(a) * 0.76, 1.5 + Math.sin(a) * 0.76, hz - 0.05)
+  // The hatchway to the next module: a thick blue-grey frame through the end wall with a soft seal inside it, and two air ports above.
+  const HW = HATCHWAY
+  put(hatch, ring(HW.w, HW.w, HW.r, HW.rim, 0.46, 0.03).rotateY(Math.PI), 0, HW.y, z1 + 0.4)
+  put(darks, ring(HW.w - 0.09, HW.w - 0.09, HW.r - 0.045, 0.045, 0.12, 0.012).rotateY(Math.PI), 0, HW.y, z1 + 0.16)
+  for (const p of roundRect(HW.w + HW.rim, HW.w + HW.rim, HW.r + HW.rim / 2).getSpacedPoints(24).slice(1))
+    put(darks, new THREE.CylinderGeometry(0.016, 0.016, 0.014, 6).rotateX(FACING), p.x, HW.y + p.y, z1 - 0.062)
+  for (const x of [-0.6, 0.6]) {
+    put(metals, new THREE.TorusGeometry(0.13, 0.02, 8, 32), x, 2.7, z1 - 0.02)
+    put(darks, new THREE.CylinderGeometry(0.115, 0.115, 0.02, 32).rotateX(FACING), x, 2.7, z1 - 0.015)
   }
-  for (const x of [-0.82, 0.82]) {
-    put(metals, new THREE.TorusGeometry(0.17, 0.022, 10, 32), x, 2.66, hz - 0.02)
-    put(darks, new THREE.CylinderGeometry(0.15, 0.15, 0.02, 32).rotateX(FACING), x, 2.66, hz - 0.015)
+  // Beyond it the station goes on: a short stretch of the next module. Its light is painted on (nothing of the cabin's reaches it), and you cannot walk there.
+  const next: Pieces = []
+  const lit = (w: number, h: number, d: number, colour: number, x: number, y: number, z: number, turn = 0) => put(next, tint(new THREE.BoxGeometry(w, h, d), colour).rotateZ(turn), x, y, z1 + 0.4 + z)
+  const N = 1.3 // half its section, about the hatchway's middle
+  lit(N * 2, N * 2, 0.04, 0xcfd4dc, 0, HW.y, 6)
+  // Each face: a darker sheet that shows as the seams between six rack fronts.
+  for (const [dx, dy] of [[0, -1], [0, 1], [-1, 0], [1, 0]] as const) {
+    lit(dx ? 0.04 : N * 2, dx ? N * 2 : 0.04, 6, 0x8e96a3, dx * N, HW.y + dy * N, 3)
+    for (let k = 0; k < 6; k++) lit(dx ? 0.04 : N * 2 - 0.7, dx ? N * 2 - 0.7 : 0.04, 0.96, (dx ? 0xdde1e7 : dy > 0 ? 0xe9edf3 : 0xa4aab4) - (k % 2) * 0x0a0a0a, dx * (N - 0.02), HW.y + dy * (N - 0.02), k + 0.5)
   }
+  for (const s of [-1, 1]) {
+    for (const t of [-1, 1]) lit(0.56, 0.03, 6, 0xbfc5ce, s * (N - 0.19), HW.y + t * (N - 0.19), 3, (-s * t * Math.PI) / 4) // its own stand-offs
+    lit(0.18, 0.03, 5.6, 0xffffff, s * (N - 0.21), HW.y + N - 0.21, 3, (-s * Math.PI) / 4)
+    for (const z of [1.5, 3.5]) lit(0.03, 0.03, 0.7, 0x3d6fc4, s * (N - 0.06), HW.y + 0.25, z)
+    lit(0.02, 0.05, 0.1, s > 0 ? 0xd08a2c : 0x3d6fc4, s * (N - 0.05), HW.y - 0.3, 2.5)
+  }
+  // Bags strapped along one side.
+  for (const [y, h, z] of [[-0.62, 0.44, 2.4], [-0.16, 0.42, 2.45], [-0.6, 0.48, 3.0]] as const) {
+    lit(0.26, h, 0.5, 0xe6e2d6, -N + 0.15, HW.y + y, z)
+    lit(0.27, h + 0.01, 0.04, 0x6d727c, -N + 0.15, HW.y + y, z)
+  }
+  put(next, tint(ring(1.1, 1.1, 0.26, 0.16, 0.05, 0), 0x6c7c93), 0, HW.y, z1 + 6.3) // the far hatch, closed
+  lit(1.14, 1.14, 0.02, 0x555d6b, 0, HW.y, 5.96)
+  // Brighter with distance, as a lit room is through a doorway.
+  for (const g of next) {
+    const at = g.getAttribute('position')
+    const c = g.getAttribute('color')
+    for (let i = 0; i < c.count; i++) {
+      const k = 0.8 + 0.2 * smooth(at.getZ(i), z1, z1 + 5)
+      c.setXYZ(i, c.getX(i) * k, c.getY(i) * k, c.getZ(i) * k)
+    }
+  }
+  lamps.push(...next)
 
   // ---- The window: a thick bolted frame through the hull, a gasket, and an inner pane that mirrors a little of the room.
   put(metals, ring(WINDOW.w - 0.1, WINDOW.h - 0.1, 0.22, 0.24, 0.38, 0.02), WINDOW.x, WINDOW.y, z0 - 0.26)
@@ -722,6 +810,16 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   // A grab bar along the front of the blade.
   put(metals, new THREE.CylinderGeometry(0.014, 0.014, 3.7, 12).rotateZ(FACING), 0, 0.868, DASH.z + 0.365)
   for (let i = 0; i < 5; i++) put(metals, new THREE.CylinderGeometry(0.008, 0.008, 0.07, 8).rotateX(FACING), (i - 2) * 0.9, 0.868, DASH.z + 0.335)
+  // A laptop on an arm clamped behind the left end of the blade, over the console where nobody walks.
+  const lap = new THREE.Matrix4().makeRotationX(0.16).setPosition(-HALF_DESK + 0.2, 1.43, DASH.z - 0.14)
+  put(guns, rounded(0.32, 0.018, 0.22, 0.006, 1), 0, 0, 0, lap)
+  put(darks, new THREE.BoxGeometry(0.27, 0.004, 0.1), 0, 0.011, -0.03, lap)
+  const lid = lap.clone().multiply(new THREE.Matrix4().makeRotationX(-0.3).setPosition(0, 0.008, -0.11))
+  put(guns, rounded(0.32, 0.21, 0.012, 0.005, 1), 0, 0.105, 0, lid)
+  put(darks, new THREE.BoxGeometry(0.29, 0.18, 0.002), 0, 0.105, 0.007, lid)
+  for (const [i, w] of [0.12, 0.2, 0.08].entries()) put(lamps, tint(new THREE.BoxGeometry(w, 0.008, 0.001), i ? 0x7f8794 : 0x39c79a), -0.125 + w / 2, 0.17 - i * 0.026, 0.009, lid)
+  put(metals, new THREE.TubeGeometry(new THREE.CatmullRomCurve3([[0, 0.9, -0.31], [0.01, 1.12, -0.36], [0, 1.32, -0.3], [0, 1.415, -0.16]].map(([x, y, z]) => new THREE.Vector3(-HALF_DESK + 0.2 + x!, y, DASH.z + z!))), 16, 0.012, 8))
+  for (const [y, z] of [[1.12, -0.36], [1.32, -0.3]] as const) put(darks, new THREE.SphereGeometry(0.024, 10, 8), -HALF_DESK + 0.2, y, DASH.z + z)
   put(shades, flatOn(DASH.w + 1.3, 2), 0, 0.005, DASH.z + 0.05)
   put(shades, flatOn(DASH.w + 0.3, 1), 0, 0.007, DASH.z - 0.05)
   /** Onto the control shelf, x along the desk and z metres in front of DASH.z; and onto the face of the instrument panel. */
@@ -794,7 +892,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   const beacon = new THREE.Mesh(new THREE.SphereGeometry(0.1, 32, 16, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2).translate(0, LOW - 0.035, 0), beaconMat)
   scene.add(beacon)
   const alarmLight = new THREE.PointLight(0xff2a1a, 0, 12, 2)
-  alarmLight.position.set(0, y1 - 0.3, 0)
+  alarmLight.position.set(0, y1 - 0.6, 0) // clear of the flat ceiling, so it washes the room and does not burn a spot overhead
   scene.add(alarmLight)
   // A red wash on the wall behind the module that raised the alarm, pulsing with the beacon.
   const washMat = new THREE.MeshBasicMaterial({ map: blob, color: 0xff3b2f, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false })
@@ -809,7 +907,7 @@ export function createCabin(host: HTMLElement, options: Omit<FpsOptions, 'start'
   fitted(rails, new THREE.MeshStandardMaterial({ color: 0x29426f, roughness: 0.45, metalness: 0.5 }))
   fitted(lamps, new THREE.MeshBasicMaterial({ vertexColors: true, toneMapped: false }))
   fitted(skins, skinMat)
-  fitted(hatch, new THREE.MeshStandardMaterial({ map: brushed, color: 0xa9aeb7, roughness: 0.42, metalness: 0.3 }))
+  fitted(hatch, new THREE.MeshStandardMaterial({ color: 0x8799b5, roughness: 0.6, metalness: 0.1 }))
   fitted(shades, shadeMat).renderOrder = 1
   fitted(glows, glowMat).renderOrder = 1
   // Daylight from the window, pooled on the control shelf and on the deck in front of the console. It follows the Sun outside.
