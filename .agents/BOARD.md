@@ -139,7 +139,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 
 ## Done
-- [x] (small) [P2] **Live Earth: fly to a place**: address/coordinates search, 4 s dive from space to 500 m over Esri close-up tiles, Back to space — ui/live/ — [claude@jamie] — in PR #209
+- [x] (small) [P2] **Live Earth: fly to a place**: address/coordinates search, 4 s dive from space to 500 m over Esri close-up tiles, Back to space — ui/live/ — [claude@jamie] — PR #209, on `main`
 - [x] (light) [P1] **Alarm choices on the window:** the anomaly card shows as a holographic screen on the spacecraft window instead of small panels at a module (Jamie: it looks awkward and does not pop) — ui/interior/ — Ethan OK via Jamie — [claude@jamie] — branch jamie-claude/window-alarm — PR #208, on `main`
 - [x] (light) [P1] **Guided missions board matches the main menu:** same masthead, title, glass panel, buttons and mission globes; reuses ui/start/start.css — ui/campaign/CampaignBoard.tsx, campaign.css, `GLOBES` export in ui/start/StartScreen.tsx — Jamie's request — [claude@jamie] — in PR #203, 150 tests, tsc; light theme not checked
 - [x] (heavy) [P1] **Daily mission from a live event:** the daily takes the day's event from the Live Earth feeds (geomagnetic storm, else open severe storm, else tracked debris), shows it in a "Today's event" box with source and time and a link to Live Earth, flies First Light and brings the matching alarm card first; offline it is the ordinary daily — app/dailyEvent.ts, app/DailyEventDialog.tsx, app/App.tsx, optional sim param `headline_card` — PR #201, on `main`, 730 tests, e2e/solo.mjs 15/15 — [claude@ethan]
