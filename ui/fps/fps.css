@@ -89,4 +89,9 @@
 .fps-help strong { display: block; font-weight: 500; }
 .fps-help p { margin: 5px 0 0; }
 .app-world .app-world-radio { bottom: 64px; max-width: min(440px, calc((100% - 60px) / 2)); }
+/* Touch screens: the thumb pads take the bottom edge, so the prompt, help and CAPCOM sit above them. */
+.fps-touch { position: absolute; left: 0; right: 0; bottom: 0; }
+.fps-overlay--touch .fps-prompt { bottom: 150px; }
+.fps-overlay--touch .fps-help { bottom: 196px; }
+.app-world:has(.fps-overlay--touch) .app-world-radio { bottom: 196px; }
 @media (max-height: 500px) { .fps-help { padding: 8px 12px; font-size: 0.75rem; line-height: 1.35; } }

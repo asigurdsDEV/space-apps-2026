@@ -1,7 +1,12 @@
 // First-person controls and contextual inspection help (decisions 007 and 010).
 
+import { useState } from 'react'
+import { WalkTouchControls } from '../pilot-input'
+import { currentFps } from './controller'
 import type { Interactable } from './model'
 import type { InspectionHelp } from './help'
+
+const coarse = () => typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches
 
 export interface FpsPromptProps {
   aimed?: Interactable
@@ -15,10 +20,13 @@ export interface FpsPromptProps {
   objective?: string
 }
 
-export function FpsPrompt({ aimed, blocked, locked, touch, help, objective }: FpsPromptProps) {
+export function FpsPrompt({ aimed, blocked, locked, touch: touchProp, help, objective }: FpsPromptProps) {
+  // A phone or tablet: codex@aiden's thumb pads walk, look and use (the prompt is only shown while the room takes input).
+  const [touchScreen] = useState(coarse)
+  const touch = touchProp ?? touchScreen
   const why = aimed?.disabled ?? blocked
   return (
-    <div className="fps-overlay">
+    <div className={`fps-overlay${touch ? ' fps-overlay--touch' : ''}`}>
       <span className={`fps-dot${aimed ? ' fps-dot--on' : ''}`} />
       <p className="fps-prompt" aria-live="polite">
         {aimed ? (
@@ -40,6 +48,19 @@ export function FpsPrompt({ aimed, blocked, locked, touch, help, objective }: Fp
           <kbd>D</kbd> walk · <kbd>E</kbd> use
           {objective && <span className="fps-objective">{objective}</span>}
         </p>
+      )}
+      {touch && (
+        <>
+          {objective && <p className="fps-hint">{objective}</p>}
+          <div className="fps-touch">
+            <WalkTouchControls
+              onMove={([right, forward]) => currentFps()?.setMove(forward, right)}
+              onLook={([dx, dy]) => currentFps()?.addLook(dx, dy)}
+              onInteract={() => currentFps()?.interact()}
+              interactLabel="Use"
+            />
+          </div>
+        </>
       )}
     </div>
   )
