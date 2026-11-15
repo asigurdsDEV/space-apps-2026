@@ -153,12 +153,14 @@ describe('anomaly cards', () => {
     }
   })
 
-  it('debris-pass: Earth orbits only, moving away costs one day, holding course mostly works and can end the mission', () => {
+  it('debris-pass: Earth orbits and a bus with a thruster only, moving away costs one day, holding course mostly works and can end the mission', () => {
     const card = cardById('debris-pass')!
     const entities = init(getScenario('demo')!, getDatasets()).entities
     const orbits = partsOf(entities, 'orbit')
     expect(orbits.map((o) => o.props.central_body)).toEqual(expect.arrayContaining(['earth', 'moon', 'mars']))
-    for (const orbit of orbits) expect(card.when(cardContext({ orbit: orbit.id }, entities, 50, 1, 1))).toBe(orbit.props.central_body === 'earth')
+    for (const orbit of orbits) expect(card.when(cardContext({ orbit: orbit.id, bus: 'cubesat-12u' }, entities, 50, 1, 1))).toBe(orbit.props.central_body === 'earth')
+    // No thruster, no dodge: the 3U and 6U CubeSats never get this card.
+    for (const bus of ['cubesat-3u', 'cubesat-6u']) expect(card.when(cardContext({ orbit: 'sso', bus }, entities, 50, 1, 1))).toBe(false)
     expect(card.options[0].effects(cardContext({}, entities, 50, 1, 1))).toEqual([{ kind: 'lose_days', days: 1 }])
 
     // Fly it: hold course on every debris card, play every other card safe.

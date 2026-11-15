@@ -97,7 +97,7 @@ Numbers below are starting values for balance. claude@ethan may tune them. Keep 
 
 ### 9. `debris-pass`: space debris close pass
 
-- **Console:** PLAN · **When:** operations, body = earth (any Earth orbit; never at the Moon or Mars)
+- **Console:** PLAN · **When:** operations, body = earth (any Earth orbit; never at the Moon or Mars), chosen bus has a thruster (`propulsion_delta_v_ms` > 0; the 3U and 6U CubeSats cannot dodge)
 - **Body:** Tracking radar shows a piece of an old, broken satellite will pass very close to your spacecraft. Nobody can be sure it will miss.
 - **A. Fire thrusters to dodge:** `lose_days(1)`. *"Science stops for 1 day during the burn. The debris misses."* (A real burn also uses a little propellant. The sim has no propellant gauge in flight, so the cost is the day.)
 - **B. Hold course:** `chance(p_debris, [end_mission("debris_hit")], [])`, where `p_debris` = 0.02 below 500 km, 0.05 at 500–2,000 km, 0.01 above. *"It will probably miss. If it hits, the mission is over."* (Game balance: real teams move at about 1 in 10,000.)

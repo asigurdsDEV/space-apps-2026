@@ -37,6 +37,8 @@ export interface CardContext {
   fast_radio: boolean
   /** NOAA level (3 to 5) of the real storm that triggered the storm card, 0 when storms are not real data. */
   storm_g: number
+  /** The chosen bus has a thruster (`propulsion_delta_v_ms` > 0), so it can dodge. */
+  thrusters: boolean
 }
 
 /**
@@ -97,6 +99,7 @@ export function cardContext(params: Params, entities: Entity[], ops_day: number,
     battery: !battery || wh <= sizes[0] ? (battery ? 'small' : 'none') : wh >= sizes[sizes.length - 1] ? 'large' : 'mid',
     fast_radio: !!radio && radios.length > 0 && num(radio.props, 'data_rate_bps') > Math.min(...radios),
     storm_g,
+    thrusters: !!bus && num(bus.props, 'propulsion_delta_v_ms') > 0,
   }
 }
 
@@ -340,7 +343,8 @@ export const CARDS: Card[] = [
     title: 'Space debris close pass',
     body: 'Tracking radar shows a piece of an old, broken satellite will pass very close to your spacecraft. Nobody can be sure it will miss.',
     console: 'mission-planning',
-    when: (c) => c.body === 'earth',
+    // A CubeSat with no thruster cannot dodge, so it never gets this choice.
+    when: (c) => c.body === 'earth' && c.thrusters,
     options: [
       { id: 'a', label: 'Fire thrusters to dodge', effect_text: 'Science stops for 1 day during the burn. The debris misses.', effects: () => [{ kind: 'lose_days', days: 1 }] },
       {
