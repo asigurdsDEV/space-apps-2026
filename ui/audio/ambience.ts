@@ -64,9 +64,9 @@ if (typeof window !== 'undefined') {
   document.addEventListener('visibilitychange', sync)
   const unlock = () => {
     gesture = true
-    removeEventListener('pointerdown', unlock, true)
-    removeEventListener('keydown', unlock, true)
-    sync()
+    // Some browsers leave a context that was made outside a gesture suspended until the next one.
+    if (!live) sync()
+    else if (ctx && ctx.state !== 'running') void ctx.resume().catch(() => {})
   }
   addEventListener('pointerdown', unlock, true)
   addEventListener('keydown', unlock, true)

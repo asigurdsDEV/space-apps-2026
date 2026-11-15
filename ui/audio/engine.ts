@@ -252,17 +252,24 @@ function launch(k: Kit, score: LaunchScore) {
   const mix: LaunchMix = mixAt(score, 0)
   let last = -1
   let next = 0
-  const to = (param: AudioParam, value: number, when: number) => param.setTargetAtTime(value, when, 0.03)
+  const params = [roar.gain, air.frequency, crackle.gain, buffet.gain, hiss.gain, wind.gain, jet.gain, hum.gain]
+  const now = params.map(() => -1)
+  // Only layers that changed are rescheduled: most hold still for most of a shot.
+  const to = (i: number, value: number, when: number) => {
+    if (value === now[i]) return
+    now[i] = value
+    params[i]!.setTargetAtTime(value, when, 0.03)
+  }
   k.sound.frame = (t, when) => {
     mixAt(score, t, mix)
-    to(roar.gain, 0.36 * score.loudness * mix.roar, when)
-    to(air.frequency, mix.cutoff, when)
-    to(crackle.gain, 2.6 * mix.crackle, when)
-    to(buffet.gain, 0.07 * score.loudness * mix.buffet, when)
-    to(hiss.gain, 0.05 * mix.hiss, when)
-    to(wind.gain, 0.02 * mix.wind, when)
-    to(jet.gain, 0.027 * mix.jet, when)
-    to(hum.gain, 0.0095 * score.loudness * mix.hum, when)
+    to(0, 0.36 * score.loudness * mix.roar, when)
+    to(1, mix.cutoff, when)
+    to(2, 2.6 * mix.crackle, when)
+    to(3, 0.07 * score.loudness * mix.buffet, when)
+    to(4, 0.05 * mix.hiss, when)
+    to(5, 0.02 * mix.wind, when)
+    to(6, 0.027 * mix.jet, when)
+    to(7, 0.0095 * score.loudness * mix.hum, when)
     // A jump (seek, replay, a long stall) fires nothing; ordinary frames fire the cues they pass.
     if (t < last || t - last > 0.5) next = score.cues.findIndex((c) => c.t > t)
     else for (; next >= 0 && next < score.cues.length && score.cues[next]!.t <= t; next++) k.sound.cue(score.cues[next]!.cue, when)
