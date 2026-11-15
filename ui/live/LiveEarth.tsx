@@ -4,8 +4,8 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import {
-  fetchDebris, fetchImagery, fetchSatellites, fetchSpaceWeather, fetchStorms, IMAGERY_SATELLITE_ID, epochIso, loadOrbits, screenApproaches,
-  WINDOW_MINUTES, type Debris, type Feed, type FlareNow, type Imagery, type KpNow, type Orbits, type Satellites, type Screening, type Storm,
+  fetchDebris, findPlace, fetchImagery, parseCoords, fetchSatellites, fetchSpaceWeather, fetchStorms, IMAGERY_SATELLITE_ID, epochIso, loadOrbits, screenApproaches,
+  WINDOW_MINUTES, type Debris, type Place, type Feed, type FlareNow, type Imagery, type KpNow, type Orbits, type Satellites, type Screening, type Storm,
 } from './index'
 import { createLiveScene, type Layer, type LiveScene } from './scene'
 import { approachText, count, dayText, flareText, kpText, placeText, timeText, whenText } from './text'
@@ -46,6 +46,21 @@ export default function LiveEarth({ onClose }: { onClose: () => void }) {
       () => setHere('no'),
       { maximumAge: 600_000, timeout: 20_000 },
     )
+  }
+  // The search box: typed coordinates stay in the page; an address goes to OpenStreetMap once, when Go is pressed.
+  const [query, setQuery] = useState('')
+  const [found, setFound] = useState<Place | 'looking' | string | null>(null)
+  const search = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!query.trim() || found === 'looking') return
+    setFound('looking')
+    const place = await findPlace(query)
+    setFound(place)
+    if (typeof place === 'object') scene.current?.flyTo(place.lat, place.lon, place.name)
+  }
+  const backToSpace = () => {
+    scene.current?.flyOut()
+    setFound(null)
   }
   /** null while it runs; false when the satellite itself could not be followed. */
   const [screening, setScreening] = useState<Screening | false | null>(null)
@@ -184,6 +199,23 @@ export default function LiveEarth({ onClose }: { onClose: () => void }) {
           </div>
 
           <div className="le-item">
+            <h2 className="game-eyebrow">Fly to a place</h2>
+            <form className="le-search" onSubmit={search}>
+              <input className="game-field" type="search" aria-label="Address or coordinates" placeholder="Address, or 40.7, -74.0" value={query} onChange={(e) => setQuery(e.target.value)} />
+              <button type="submit" className="game-button" disabled={found === 'looking' || noGlobe}>{found === 'looking' ? 'Finding…' : 'Go'}</button>
+            </form>
+            {found && typeof found === 'object' ? (
+              <>
+                <p>Over {found.name} ({placeText(found.lat, found.lon)}).</p>
+                <button type="button" className="game-button" onClick={backToSpace}>Back to space</button>
+                <p className="le-source">Close-up pictures: Esri World Imagery (Maxar, Earthstar Geographics), not taken today.{parseCoords(query) ? '' : ' Address found by OpenStreetMap Nominatim.'}</p>
+              </>
+            ) : (
+              <p className="le-source">{typeof found === 'string' && found !== 'looking' ? found : 'Coordinates stay on this device. An address is sent once to OpenStreetMap to find it.'}</p>
+            )}
+          </div>
+
+          <div className="le-item">
             <h2 className="game-eyebrow">Satellite</h2>
             {!sats ? <p className="game-muted">Finding the satellites…</p>
               : !sats.feed.ok ? <p className="game-muted">Satellites unavailable. {sats.feed.reason}</p>
@@ -273,6 +305,7 @@ export default function LiveEarth({ onClose }: { onClose: () => void }) {
             {everySatellite.map(({ name, state: at }) => <li key={name}>{name}: {at ? `${count(at.altKm)} km above ${placeText(at.lat, at.lon)}` : 'position unknown'}.</li>)}
             {storms?.ok && storms.data.map((storm) => <li key={storm.id}>{storm.name}: last reported at {placeText(storm.lat, storm.lon)} on {dayText(storm.at)}.</li>)}
             {here && typeof here === 'object' && <li>You: {placeText(here.lat, here.lon)}.</li>}
+            {found && typeof found === 'object' && <li>Searched: {found.name}, {placeText(found.lat, found.lon)}.</li>}
             <li>Continents named on the globe: North America, South America, Europe, Africa, Asia, Australia, Antarctica.</li>
             {clouds.map((cloud) => <li key={cloud.name}>{count(cloud.count!)} tracked pieces of {cloud.name} debris. {cloud.cause}</li>)}
           </ul>
