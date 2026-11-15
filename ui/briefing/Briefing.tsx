@@ -4,6 +4,7 @@ import { BONUS_GOALS } from '../mission'
 import { HOW_TO_WIN, KEY_TERM_IDS, briefingFacts } from './model'
 import '../theme/theme.css'
 import './briefing.css'
+import '../theme/menu-look.css' // Classic view in the main menu's look
 
 export interface BriefingProps {
   /** The scenario being played (title + params). Available before the sim starts. */
@@ -20,8 +21,9 @@ export function Briefing({ config, onStart, onBack }: BriefingProps) {
   const bonusCode = config.params.bonus_goal
   const bonus = typeof bonusCode === 'string' ? BONUS_GOALS[bonusCode] : undefined
 
+  // .menu-look sits on a wrapper so the briefing keeps its plain class="bf".
   return (
-    <main className="bf">
+    <div className="menu-look"><main className="bf">
       <div className="bf-inner">
         <p className="bf-kicker">Mission briefing</p>
         <h1 className="bf-title">{config.title}</h1>
@@ -82,6 +84,6 @@ export function Briefing({ config, onStart, onBack }: BriefingProps) {
           </button>
         </div>
       </div>
-    </main>
+    </main></div>
   )
 }

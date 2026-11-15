@@ -38,7 +38,6 @@
 
 .mb-title { margin: 0 0 16px; font-size: 1.5rem; }
 .mb-muted { color: var(--mb-muted); font-weight: normal; }
-.mb-hint { color: var(--mb-muted); font-size: 0.85rem; margin: 2px 0 8px; }
 .mb-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
 .mb-slot {
@@ -103,7 +102,6 @@
 }
 .mb-launch:disabled { opacity: 0.45; cursor: not-allowed; }
 .mb-launch:focus-visible, .mb-table input:focus-visible { outline: 2px solid var(--mb-accent); outline-offset: 2px; }
-.mb-objective { margin: -8px 0 16px; padding: 10px 12px; border-left: 3px solid var(--mb-accent); background: var(--mb-panel); border-radius: 0 6px 6px 0; }
 .mb-table td:nth-child(2) { min-width: 11rem; }
 
 /* co-op roles */
@@ -148,7 +146,7 @@
 .mb-badge.is-bad { color: var(--mb-bad); }
 .mb-table tr.is-dim td { opacity: 0.55; }
 .mb-table tr.is-dim td:nth-child(2) { opacity: 1; }
-.mb-table tr.is-dim .mb-name, .mb-table tr.is-dim .mb-hint { opacity: 0.55; }
+.mb-table tr.is-dim .mb-name { opacity: 0.55; }
 
 /* Risk meter (chance prop): test flights with random failures. */
 .mb-chance { margin: 14px 0 6px; padding-top: 10px; border-top: 1px solid var(--mb-line); }
