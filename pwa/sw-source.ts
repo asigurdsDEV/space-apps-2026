@@ -30,6 +30,11 @@ self.addEventListener('fetch', (event) => {
   const request = event.request
   if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return
 
+  // Submission pages must not replace the cached game entry on navigation.
+  const path = new URL(request.url).pathname
+  const demo = new URL('demo/', self.registration.scope).pathname
+  if (path === demo.slice(0, -1) || path.startsWith(demo)) return
+
   const page = request.mode === 'navigate'
   const manifest = request.url === url('game-assets.json')
   // Only build-listed static files belong in this cache; API credentials must stay on the network.

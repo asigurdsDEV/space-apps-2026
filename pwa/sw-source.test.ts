@@ -33,3 +33,17 @@ it('serves allowlisted static modules regardless of Origin Vary, while leaving A
   handlers.get('fetch')!({ request: { method: 'GET', mode: 'cors', url: origin + '/api/ice' }, respondWith: (r: Promise<Response>) => { response = r } })
   expect(response).toBeUndefined()
 })
+
+it.each(['/', '/space-apps-2026/'])('leaves the demo on the network without touching the cached game at scope %s', (base) => {
+  const handlers = new Map<string, (event: unknown) => void>()
+  const origin = 'https://example.test'
+  const worker = { registration: { scope: origin + base }, location: { origin }, addEventListener: (name: string, cb: (event: unknown) => void) => handlers.set(name, cb) }
+  const touched: string[] = []
+  const caches = { match: () => { touched.push('cache') }, open: () => { touched.push('cache') } }
+  const fetch = () => { touched.push('network') }
+  new Function('self', 'caches', 'fetch', serviceWorkerSource(['index.html'], 'v1'))(worker, caches, fetch)
+  for (const file of ['demo', 'demo/', 'demo/index.html', 'demo/first-flight-demo.mp4']) {
+    handlers.get('fetch')!({ request: { method: 'GET', mode: 'navigate', url: origin + base + file }, respondWith: () => touched.push('intercepted') })
+  }
+  expect(touched).toEqual([])
+})

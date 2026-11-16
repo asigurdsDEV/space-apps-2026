@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Watch First Flight's 30-second gameplay demonstration: design a spacecraft, make mission decisions, learn from failure, and explore Live Earth." />
+    <meta name="theme-color" content="#000002" />
+    <title>First Flight — 30-second gameplay demo</title>
+    <style>
+      @font-face { font-family: "Inter Tight"; src: url("./fonts/InterTight.ttf") format("truetype"); font-weight: 100 900; font-display: swap; }
+      * { box-sizing: border-box; }
+      html { color-scheme: dark; background: #000002; }
+      body { margin: 0; color: #f5f6f8; background: radial-gradient(ellipse at top, #ffffff09, transparent 70%); font: 400 17px/1.5 "Inter Tight", "Helvetica Neue", sans-serif; }
+      main { width: min(1200px, 100%); margin: auto; padding: clamp(20px, 4vw, 48px) 20px; }
+      h1 { margin: 0; font-size: clamp(32px, 5vw, 48px); font-weight: 500; letter-spacing: -.03em; }
+      .intro { margin: 8px 0 24px; color: #b7bac0; }
+      video { display: block; width: 100%; height: auto; border: 1px solid #ffffff24; border-radius: 22px; background: #000; }
+      nav { display: flex; flex-wrap: wrap; gap: 12px; margin: 20px 0; }
+      a { color: inherit; text-underline-offset: 4px; }
+      nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 10px 18px; border: 1px solid #ffffff38; border-radius: 14px; background: #ffffff09; text-decoration: none; }
+      nav a:hover { background: #ffffff14; border-color: #ffffff80; }
+      :focus-visible { outline: 2px solid white; outline-offset: 4px; }
+      details { padding: 16px 20px; border: 1px solid #ffffff24; border-radius: 22px; background: #ffffff09; color: #b7bac0; }
+      summary { cursor: pointer; color: #f5f6f8; }
+      details p { margin: 12px 0; }
+      details ul { padding-left: 22px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>First Flight</h1>
+      <p class="intro">30-second gameplay demonstration · Spacecraft design, mission decisions, learning from failure, and Live Earth.</p>
+      <video controls playsinline preload="metadata" width="1920" height="1080" poster="./poster.jpg" aria-label="First Flight 30-second gameplay demonstration">
+        <source src="./first-flight-demo.mp4" type="video/mp4" />
+        Your browser cannot play this video. <a href="./first-flight-demo.mp4">Download the MP4</a>.
+      </video>
+      <nav aria-label="Project links">
+        <a href="https://nasaspacemission.vercel.app/">Play First Flight</a>
+        <a href="https://github.com/asigurdsDEV/space-apps-2026">View the repository</a>
+        <a href="./first-flight-demo.mp4" download>Download MP4</a>
+        <a href="./captions.srt" download>Download captions</a>
+      </nav>
+      <details>
+        <summary>About this recording and transcript</summary>
+        <p>Rendered from the game at 1080p and 60 fps. The crew introduction is a staged local rehearsal. Spacecraft selection, the anomaly response, and the tested fix use the actual simulator. Live Earth imagery, weather and orbit source dates remain visible.</p>
+        <ul>
+          <li>Students form a mission crew and design an Earth-observing satellite.</li>
+          <li>A larger spacecraft raises bus capacity from 4 to 9 kg and design cost from $5.05M to $6.59M.</li>
+          <li>The crew launches, deploys, and chooses how to respond to a ground-station interruption.</li>
+          <li>The failed mission scores 369. A same-mission simulator rerun with a faster radio succeeds at 967.</li>
+          <li>Live Earth shows the ISS, orbital debris, a typhoon and space weather using NASA, NOAA and CelesTrak sources.</li>
+          <li>First Flight is free and open source, built for students in under-resourced STEM classrooms.</li>
+        </ul>
+        <p>Music: <em>On the Map's Edge</em> — Jo Wandrini, supplied for the approved edit. Soundtrack rights are separate from the repository's MIT license. Page font: Inter Tight, under the <a href="./fonts/OFL.txt">SIL Open Font License</a>.</p>
+      </details>
+    </main>
+    <script>
+      // Existing players get the demo-route cache guard without installing a worker for new viewers.
+      if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistration().then(registration => registration?.update()).catch(() => {})
+    </script>
+  </body>
+</html>
