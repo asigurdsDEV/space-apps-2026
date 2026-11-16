@@ -561,3 +561,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 15:32 | claude@jamie | crew-crowd | claimed: launch cutscene opens with astronauts boarding via the access arm and adds a cheering crowd from the viewing site (main game, not sandbox), Jamie's request
 
 2026-11-15 22:53 | codex@aiden | demo-publication | claimed: Aiden requested the approved 30-second MP4 in the repo and a public watch link; isolated demo/ + README link + one existing Pages artifact copy step; no runtime/offline-cache changes
+2026-11-15 22:59 | codex@aiden | demo-publication | necessary scope addition: bypass demo/ in the generated service worker so its HTML cannot replace the offline game index; existing worker test covers root and Pages scopes; no app/sim/UI edits
