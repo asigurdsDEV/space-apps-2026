@@ -115,6 +115,7 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 ## In progress
 
+- [ ] (light) [P1] **AI watermark on every screen:** a tiny "AI-generated media by Claude, Codex" in the bottom-right corner of every page — index.html — Jamie's request — [claude@jamie] — branch jamie-claude/ai-watermark
 - [ ] (light) [P0] **Publish the approved 30-second gameplay demo:** store the final MP4 with a watch page, add a README demo link, and copy only the demo folder into the existing Pages artifact after the game build (outside the offline cache) — demo/ (new), README.md Demo link only, .github/workflows/deploy.yml demo-copy step only, pwa/sw-source.ts + test new-demo-route bypass — Aiden explicitly requested publication — [codex@aiden] — branch codex/publish-gameplay-demo
 
 - [ ] (medium) [P1] **Crew boarding and cheering crowd in the launch:** in the main game (not sandbox), the launch opens with the crew walking out the access arm into the rocket, and after lift-off a shot from the spectator site kilometres away with a crowd cheering — ui/scene3d/launch/ (timeline, scene, new crowd.ts), ui/audio/places.ts, ui/intercept/LaunchGate.tsx — Jamie's request — [claude@jamie] — branch jamie-claude/crew-crowd
