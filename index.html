@@ -16,9 +16,27 @@
     <meta property="og:description" content="Design, launch and fly a space mission. Balance mass, power, budget and data to bring the science home." />
     <meta property="og:url" content="https://asigurdsdev.github.io/space-apps-2026/" />
     <meta name="twitter:card" content="summary" />
+    <style>
+      /* AI disclosure on every screen: tiny, in the bottom-right corner, over the 3D views, never in the way of a click. */
+      .ai-mark {
+        position: fixed;
+        right: max(6px, env(safe-area-inset-right));
+        bottom: max(4px, env(safe-area-inset-bottom));
+        z-index: 2147483647;
+        font: 500 10px/1.2 'Inter Tight', system-ui, sans-serif;
+        letter-spacing: 0.02em;
+        color: rgb(255 255 255 / 0.7);
+        padding: 1px 5px;
+        border-radius: 4px;
+        background: rgb(0 0 0 / 0.38);
+        pointer-events: none;
+        user-select: none;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
+    <small class="ai-mark">AI-generated media by Claude, Codex</small>
     <script type="module" src="/app/main.tsx"></script>
   </body>
 </html>
