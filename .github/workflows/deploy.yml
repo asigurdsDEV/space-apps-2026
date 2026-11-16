@@ -27,6 +27,8 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
+      - name: Include the submission demo outside the game's offline cache
+        run: cp -R demo dist/demo
       - run: npm run size # first-load JS + CSS must stay under the limit in scripts/check-size.mjs
       - if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v5

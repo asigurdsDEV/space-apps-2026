@@ -1,0 +1,40 @@
+1
+00:00:00,100 --> 00:00:02,000
+First Flight
+Missions built together.
+
+2
+00:00:02,000 --> 00:00:04,700
+Choose a spacecraft for an Earth-observation mission.
+
+3
+00:00:04,700 --> 00:00:07,600
+More capacity costs more.
+4 → 9 kg capacity · $5.05M → $6.59M total cost
+
+4
+00:00:07,600 --> 00:00:11,600
+Launch your design. Deploy your satellite.
+
+5
+00:00:11,600 --> 00:00:16,200
+Pay for ground stations—or risk losing data.
+
+6
+00:00:16,200 --> 00:00:20,200
+Failure becomes a lesson.
+
+7
+00:00:20,200 --> 00:00:23,600
+Track the ISS and real orbital debris.
+NASA GIBS imagery · CelesTrak orbits
+
+8
+00:00:23,600 --> 00:00:27,000
+Investigate a typhoon. Check space weather.
+NASA EONET · NOAA SWPC
+
+9
+00:00:27,000 --> 00:00:30,000
+Free, open-source STEM for under-resourced classrooms.
+nasaspacemission.vercel.app

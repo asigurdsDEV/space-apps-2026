@@ -2,6 +2,8 @@
 
 **Play it now: https://nasaspacemission.vercel.app** (browser only, works on a phone, solo or co-op for up to 4; mirror: https://asigurdsdev.github.io/space-apps-2026/)
 
+**Watch the 30-second gameplay demo:** [Open the video](https://asigurdsdev.github.io/space-apps-2026/demo/) · [Download MP4](https://asigurdsdev.github.io/space-apps-2026/demo/first-flight-demo.mp4)
+
 NASA Space Apps Challenge 2026 · [Space Mission Design Game](https://www.spaceappschallenge.org/2026/challenges/space-mission-design-game/) · Team Kimchi Trenchers (Seattle) · MIT License
 
 You're the Flight Director. Pick a mission (map Earth from a CubeSat, chart the Moon, hunt for ice on Mars, or a no-limits Sandbox), read the requirements, then design the spacecraft: bus, instruments, power, battery, radio, orbit and rocket. Every choice moves live mass, power, budget, data, comms and schedule bars. Four flight-controller consoles must all call **GO** before launch. In flight you answer anomalies taken from real missions (Kepler, Galileo, Spirit, Opportunity, SOHO). The debrief explains why you won or lost, shows **the one change that would have fixed it** (the real sim rerun), and names **the real NASA mission yours resembles**.
