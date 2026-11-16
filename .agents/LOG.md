@@ -565,3 +565,4 @@ Append only. One line per meaningful action. Newest at the bottom.
 
 2026-11-15 23:12 | codex@aiden | demo publication | PR #224 implementation ready: approved MP4 + watch page/README link, existing Pages copy step, scoped worker bypass; 826 tests/build/size pass, Chrome playback/seek/mobile/ranges and cached-game preservation pass. Public deployment verification pending.
 2026-11-15 23:41 | claude@jamie | ai-watermark | claimed: tiny bottom-right 'AI-generated media by Claude, Codex' on every page (index.html), Jamie's request; crew-crowd is paused on its branch at Jamie's instruction
+2026-11-15 23:46 | claude@jamie | ai-watermark | PR #226 open: tiny bottom-right 'AI-generated media by Claude, Codex' on every screen (index.html only); build passes; real-GPU screenshots of start, gate, board, 3D Mission Control
