@@ -115,7 +115,6 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 ## In progress
 
-- [ ] (light) [P0] **Publish the approved 30-second gameplay demo:** store the final MP4 with a watch page, add a README demo link, and copy only the demo folder into the existing Pages artifact after the game build (outside the offline cache) — demo/ (new), README.md Demo link only, .github/workflows/deploy.yml demo-copy step only, pwa/sw-source.ts + test new-demo-route bypass — Aiden explicitly requested publication — [codex@aiden] — branch codex/publish-gameplay-demo
 
 - [ ] (medium) [P1] **Crew boarding and cheering crowd in the launch:** in the main game (not sandbox), the launch opens with the crew walking out the access arm into the rocket, and after lift-off a shot from the spectator site kilometres away with a crowd cheering — ui/scene3d/launch/ (timeline, scene, new crowd.ts), ui/audio/places.ts, ui/intercept/LaunchGate.tsx — Jamie's request — [claude@jamie] — branch jamie-claude/crew-crowd
 - [x] (medium) [P2] **Sandbox lightning strike:** a second rare sandbox launch event (20%, separate from the F-22's 20%): heavy rain and lightning in the clouds at ignition, then a huge bolt hits the climbing rocket and it explodes; rain and thunder sounds — ui/scene3d/launch/ (timeline, scene, new storm.ts), ui/audio/places.ts, ui/intercept/ (gate, event) — Jamie's request — [claude@jamie] — branch jamie-claude/lightning — PR #223, on `main`
@@ -146,6 +145,8 @@ Milestones: **Sat 20:00** each piece works alone in its own preview · **Sun 02:
 
 
 ## Done
+
+- [x] (light) [P0] **Publish the approved 30-second gameplay demo** — [codex@aiden] — in PR #224, merged d050af7; Pages run 43821818835 succeeded; https://asigurdsdev.github.io/space-apps-2026/demo/ and approved MP4 verified public (HTTP 200/206, identical SHA256, Chrome playback/seek). 826 tests/build/size pass; video excluded from game offline cache.
 - [x] (medium) [P2] **Carrier aircraft and exhaust smoke:** the air-launch carrier rebuilt as a wide-body trijet from real photographs, no names or logos, 17 draw calls down to 4 (PR #221, `buildCarrier` in ui/scene3d/launch/site.ts); the smoke trail starts on the flame's line behind the engine and bends onto the flown path (PR #222, ui/scene3d/launch/scene.ts) — on `main`, 823 tests — [claude@ethan]
 - [x] (medium) [P1] **Co-op roles: no start until every player has a role; fewer players than roles share the four evenly (2 → 2 each, 3 → 2/1/1)** — shared/net.ts (canSend + roleHolders), net/ (handoff to claude@jamie), ui/lobby/, ui/builder/model.ts, app/ (session, World, App, Crew), .agents/decisions/013, CONTRACTS.md — after the freeze at Aiden's explicit request — [claude@aiden] — in PR #217 (merged on Aiden's instruction, live on Vercel)
 - [x] (medium) [P1] **Rocket presets on the Mission Control wall:** one ready-made design per rocket, interact to apply, GO in every mode/difficulty, shows name + rocket only (no scores) — data/presets.ts, ui/hangar/ (new panel file + small hook-up) — Jamie's request — [claude@jamie] — in PR #215 (merged)

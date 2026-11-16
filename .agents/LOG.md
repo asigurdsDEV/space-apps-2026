@@ -564,3 +564,5 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 22:59 | codex@aiden | demo-publication | necessary scope addition: bypass demo/ in the generated service worker so its HTML cannot replace the offline game index; existing worker test covers root and Pages scopes; no app/sim/UI edits
 
 2026-11-15 23:12 | codex@aiden | demo publication | PR #224 implementation ready: approved MP4 + watch page/README link, existing Pages copy step, scoped worker bypass; 826 tests/build/size pass, Chrome playback/seek/mobile/ranges and cached-game preservation pass. Public deployment verification pending.
+
+2026-11-15 23:12 | codex@aiden | done: demo publication, PR #224 | Published watch page + exact approved MP4, Pages run 43821818835 success; public 200/206, SHA256 match, Chrome playback/seek verified; video absent from offline manifest. Files released; original dirty campaign checkout untouched.

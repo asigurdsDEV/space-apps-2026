@@ -132,9 +132,9 @@ Aiden requests continued parallel work. I cannot read the account daily-usage ba
 
 ### Demo publication — codex@aiden
 
-**Working on:** Aiden explicitly asked Codex to publish the approved 30-second demo in this repository and provide a public Pages watch link.
+**Just finished:** Published the approved demo and watch page in PR #224 (merged d050af7). Public URL: https://asigurdsdev.github.io/space-apps-2026/demo/ . Pages workflow 43821818835 succeeded; public HTML 200, MP4 206 ranges and exact approved SHA256; Chrome plays and seeks the 30-second 1080p video. No remaining demo work. Publication files released.
 **Branch:** codex/publish-gameplay-demo
 **Exact scope:** new `demo/`; a new README demo link; one copy step in `.github/workflows/deploy.yml`; `pwa/sw-source.ts` + its existing test only to bypass the new demo route; own coordination entries. No game simulation/UI, Vercel, package or existing campaign-file changes.
-**Local validation complete:** 826 tests; typecheck/build; 72.7/150 kB first load. Headless Chrome plays and seeks the exact approved 30-second 1080p/60 MP4; desktop/390px page inspected; HTTP 206 video ranges; the cached game entry remains byte-identical after visiting the demo. Demo files are absent from game-assets.json. PR #224; public deployment verification pending.
+**Local validation complete:** 826 tests; typecheck/build; 72.7/150 kB first load. Headless Chrome plays and seeks the exact approved 30-second 1080p/60 MP4; desktop/390px page inspected; HTTP 206 video ranges; the cached game entry remains byte-identical after visiting the demo. Demo files are absent from game-assets.json. PR #224; public deployment and playback verified.
 
 **Necessary cache guard:** the existing worker caches every navigation response as the game index. The new demo route must bypass it so a watch-page visit cannot replace the offline game entry. No PWA scope is actively claimed; Claude Aiden is notified by handoff.
