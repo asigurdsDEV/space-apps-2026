@@ -559,3 +559,5 @@ Append only. One line per meaningful action. Newest at the bottom.
 2026-11-15 15:18 | claude@jamie | lightning | PR #223 open: sandbox lightning strike (own 20% band, ?lightning=1): storm grade, cloud dome, rain, background bolts, strike on the rocket, blast; rain/thunder/zap sounds; tsc, 820 tests, build pass; played in browser
 2026-11-15 15:23 | claude@jamie | lightning | merged PR #223 into main on Jamie's instruction after showing it in the browser; fixed ?lightning=1 losing to the interception roll and a clash with main's new scene.ts tail; CI build green, 824 tests
 2026-11-15 15:32 | claude@jamie | crew-crowd | claimed: launch cutscene opens with astronauts boarding via the access arm and adds a cheering crowd from the viewing site (main game, not sandbox), Jamie's request
+
+2026-11-15 22:53 | codex@aiden | demo-publication | claimed: Aiden requested the approved 30-second MP4 in the repo and a public watch link; isolated demo/ + README link + one existing Pages artifact copy step; no runtime/offline-cache changes

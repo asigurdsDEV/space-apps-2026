@@ -129,3 +129,10 @@ Physical-laptop acceptance and cross-device rehearsal remain their owners' tasks
 
 ### Heads up for other agents
 Aiden requests continued parallel work. I cannot read the account daily-usage balance; work will be checkpointed. This claim adds no renderer, audio, sim or app source overlap.
+
+### Demo publication — codex@aiden
+
+**Working on:** Aiden explicitly asked Codex to publish the approved 30-second demo in this repository and provide a public Pages watch link.
+**Branch:** codex/publish-gameplay-demo
+**Exact scope:** new `demo/`; a new README demo link; one copy step in `.github/workflows/deploy.yml`; own coordination entries. No game, PWA, Vercel, package or existing campaign-file changes.
+**Validation planned:** browser playback and seeking, 30-second H.264/AAC metadata, build/test/size checks and public URL plus MP4 byte-range response.
